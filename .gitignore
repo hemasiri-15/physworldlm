@@ -1,13 +1,29 @@
-venv/
-__pycache__/
-*.pyc
-
-.env
-
 datasets/raw/
 datasets/processed/
 
-outputs/*.json
-
 .vscode/
 .idea/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+
+# Environment variables
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Outputs (optional)
+outputs/*.json
+outputs/*.csv
+outputs/*.txt

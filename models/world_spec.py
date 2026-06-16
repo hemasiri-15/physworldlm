@@ -323,9 +323,11 @@ class WorldSpec:
             temperature_K=   env_d.get("temperature_K", 293.15),
             pressure_Pa=     env_d.get("pressure_Pa", 101325.0),
             air_density=     env_d.get("air_density_kgm3", 1.225),
-            wind=            Wind(**{k: v for k, v in env_d.get("wind", {}).items()
-                                     if k in ("speed_ms","direction_rad")}
-                                  ) if env_d.get("wind") else Wind(),
+            wind=            Wind(
+                             speed=env_d.get("wind", {}).get("speed_ms", 0.0),
+                             direction=env_d.get("wind", {}).get("direction_rad", 0.0),
+            ),
+
             terrain_type=    env_d.get("terrain_type", "flat"),
             friction_global= env_d.get("friction_global", 0.5),
             time_of_day=     env_d.get("time_of_day", "day"),
