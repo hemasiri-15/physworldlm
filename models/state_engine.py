@@ -326,7 +326,15 @@ class StateEngine:
         }
 
         self.t: float = 0.0
-        self.trajectory: Trajectory = Trajectory(scene_id=spec.scene_id, description=spec.description)
+        self.trajectory: Trajectory = Trajectory(
+            scene_id=spec.scene_id,
+            description=spec.description,
+            entity_ids=[
+                e.id
+                for e in spec.entities
+                if not e.is_static
+            ]
+        )
 
         # number of integration steps and export cadence
         self._n_steps: int = max(1, round(self.duration / self.dt))
@@ -640,7 +648,15 @@ class StateEngine:
             eid: s.copy() for eid, s in self._initial_static_states.items()
         }
         self.t = 0.0
-        self.trajectory = Trajectory(scene_id=self.spec.scene_id)
+        self.trajectory = Trajectory(
+            scene_id=self.spec.scene_id,
+            description=self.spec.description,
+            entity_ids=[
+                e.id
+                for e in spec.entities
+                if not e.is_static
+            ],
+        )
 
     def simulate(self) -> Trajectory:
         """

@@ -24,7 +24,7 @@ import json
 import math
 from dataclasses import dataclass, field
 from typing import Optional
-
+from models.world_spec import Vec3
 
 # ─────────────────────────────────────────────
 # Frame  (one timestep snapshot for one entity)
@@ -75,17 +75,24 @@ class Frame:
     @classmethod
     def from_dict(cls, d: dict) -> "Frame":
         return cls(
-            t=                d["t"],
-            entity_id=        d["entity_id"],
-            position=         tuple(d["position"]),
-            velocity=         tuple(d["velocity"]),
-            acceleration=     tuple(d["acceleration"]),
-            orientation=      tuple(d.get("orientation", [0, 0, 0])),
-            angular_vel=      tuple(d.get("angular_vel",  [0, 0, 0])),
-            kinetic_energy=   d.get("kinetic_energy_J",   0.0),
-            potential_energy= d.get("potential_energy_J", 0.0),
-        )
+            t=d["t"],
+            entity_id=d["entity_id"],
 
+            position=Vec3(*d["position"]),
+            velocity=Vec3(*d["velocity"]),
+            acceleration=Vec3(*d["acceleration"]),
+
+            orientation=Vec3(
+                *d.get("orientation", [0.0, 0.0, 0.0])
+            ),
+
+            angular_vel=Vec3(
+                *d.get("angular_vel", [0.0, 0.0, 0.0])
+            ),
+
+            kinetic_energy=d.get("kinetic_energy_J", 0.0),
+            potential_energy=d.get("potential_energy_J", 0.0),
+        )
 
 # ─────────────────────────────────────────────
 # Trajectory  (full simulation output)
@@ -166,13 +173,18 @@ class Trajectory:
     def displacement(self, entity_id: str) -> float:
         """Euclidean distance from initial to final position."""
         ef = self.frames_for(entity_id)
+
         if len(ef) < 2:
             return 0.0
+
+        p0 = ef[0].position
+        p1 = ef[-1].position
+
         dx = p1.x - p0.x
         dy = p1.y - p0.y
         dz = p1.z - p0.z
 
-        return math.sqrt(dx*dx + dy*dy + dz*dz)
+        return math.sqrt(dx * dx + dy * dy + dz * dz)
 
     # ── serialization ────────────────────────
 
