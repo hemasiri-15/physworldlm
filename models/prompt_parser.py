@@ -187,6 +187,8 @@ ENTITY_ALIASES: dict[str, set[str]] = {
         "platform", "platforms", "scaffold", "scaffolding",
         "pole", "poles", "mast", "masts",
         "slab", "slabs", "panel", "panels",
+        "table", "tables", "shelf", "shelves",
+        "platform", "platforms", "desk", "desks",
     },
     "terrain": {
         "ground", "road", "roads", "surface", "surfaces",
