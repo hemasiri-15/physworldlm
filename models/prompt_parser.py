@@ -596,13 +596,24 @@ class PromptParser:
                 quantity = _QUANTITY_WORDS[word]
                 # Peek ahead (skip adjectives) for the entity noun
                 j = i + 1
+
                 while j < len(words):
                     candidate = words[j].strip(".,;:!?()")
-                    # Skip colour/size adjectives
-                    if self._classify_word(candidate) is None and not candidate.isdigit():
+
+                    # skip numbers and mass units
+                    if candidate.isdigit() or candidate.lower() in {
+                        "kg", "g", "gram", "grams"
+                    }:
                         j += 1
                         continue
+
+                    # skip adjectives and non-entity words
+                    if self._classify_word(candidate) is None:
+                        j += 1
+                        continue
+
                     break
+
                 if j < len(words):
                     entity_word = words[j].strip(".,;:!?()")
                     entity_type = self._classify_word(entity_word)
