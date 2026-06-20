@@ -54,6 +54,7 @@ Each line in the output file is a self-contained JSON object:
   "entity_type":            "vehicle",
   "parent_class":           "rigid_body",
   "root_class":             "physical_entity",
+  "coarse_class":           "transport",
   "superclass":             "vehicle",
   "subclass":               "car",
 
@@ -61,10 +62,19 @@ Each line in the output file is a self-contained JSON object:
   "phase":                  "solid",
   "mobility":               "self_propelled",
   "size_class":             "large",
+  "shape":                  "box",
+  "mass_class":             "heavy",
+  "contact_type":           "rigid",
+  "stability":              "dynamic",
+  "affected_by_gravity":    true,
+  "floats":                 false,
+  "friction_class":         "medium",
+  "restitution_class":      "low",
 
   "properties":             ["rigid", "rolling", "motorized"],
   "interaction_properties": ["rigid", "conductive"],
   "affordances":            ["drive", "transport", "collide"],
+  "capabilities":           ["drive", "steer", "accelerate", "collide"],
   "scene_roles":            ["actor", "collider"],
   "aliases":                ["car", "automobile"],
 
@@ -79,13 +89,21 @@ MULTI-TASK FUTURE COMPATIBILITY
 ────────────────────────────────
 Records are structured to support:
     Entity classification     : token → entity_type
+    Hierarchical classification: token → parent_class, root_class, coarse_class
     Material prediction       : token → material
     Phase prediction          : token → phase
     Mobility prediction       : token → mobility
     Size estimation           : token → size_class
+    Shape prediction          : token → shape
+    Mass estimation           : token → mass_class
+    Contact type prediction   : token → contact_type
+    Stability prediction      : token → stability
+    Physics flags             : token → affected_by_gravity, floats
+    Friction prediction       : token → friction_class
+    Restitution prediction    : token → restitution_class
     Affordance prediction     : token → affordances
+    Capability prediction     : token → capabilities
     Property prediction       : token → interaction_properties
-    Hierarchical classification: token → parent_class, root_class
 
 USAGE
 ─────
@@ -1003,7 +1021,44 @@ HARD_EXAMPLES: list[tuple[str, str]] = [
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 8  –  NEW: Material ontology
+# SECTION 8  –  NEW: Coarse-class ontology
+#
+# coarse_class sits between entity_type and parent_class/root_class, giving
+# the multi-head classifier a mid-level prediction target that groups
+# semantically related entity types.
+#
+# Mapping:
+#   entity_type → coarse_class
+#
+# coarse_class values:
+#   living_entity   transport      machine_like   manmade_object
+#   environment     astronomical   dynamic        abstract
+# ─────────────────────────────────────────────────────────────────────────────
+
+ENTITY_COARSE_CLASS: dict[str, str] = {
+    "agent":          "living_entity",
+    "animal":         "living_entity",
+    "plant":          "living_entity",
+    "vehicle":        "transport",
+    "robot":          "machine_like",
+    "machine":        "machine_like",
+    "furniture":      "manmade_object",
+    "tool":           "manmade_object",
+    "container":      "manmade_object",
+    "electronic":     "manmade_object",
+    "weapon":         "manmade_object",
+    "sports_object":  "manmade_object",
+    "structure":      "environment",
+    "terrain":        "environment",
+    "fluid":          "environment",
+    "projectile":     "dynamic",
+    "particle":       "dynamic",
+    "celestial_body": "astronomical",
+    "non_physical":   "abstract",
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 9  –  NEW: Material ontology
 #
 # Maps entity_type (and optionally subclass keyword) to likely primary
 # material.  The resolver checks subclass keywords first, then falls back
@@ -1076,7 +1131,7 @@ MATERIAL_KEYWORD_OVERRIDES: dict[str, str] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 9  –  NEW: Phase ontology
+# SECTION 10  –  NEW: Phase ontology
 #
 # Solid / liquid / gas / plasma / granular
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1127,7 +1182,7 @@ PHASE_KEYWORD_OVERRIDES: dict[str, str] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 10  –  NEW: Mobility ontology
+# SECTION 11  –  NEW: Mobility ontology
 #
 # static / movable / self_propelled / flowing / flying
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1174,7 +1229,7 @@ MOBILITY_KEYWORD_OVERRIDES: dict[str, str] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 11  –  NEW: Size ontology
+# SECTION 12  –  NEW: Size ontology
 #
 # tiny / small / medium / large / huge / astronomical
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1224,7 +1279,7 @@ SIZE_KEYWORD_OVERRIDES: dict[str, str] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 12  –  NEW: Affordance ontology
+# SECTION 13  –  NEW: Affordance ontology
 #
 # What actions can an agent perform on / with this entity?
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1270,7 +1325,7 @@ SUBCLASS_AFFORDANCES: dict[str, list[str]] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 13  –  NEW: Interaction properties (expanded)
+# SECTION 14  –  NEW: Interaction properties (expanded)
 #
 # Replaces and extends the original PROPERTY_POOL with a richer set.
 # These properties are physics-engine hints beyond the base "properties" field.
@@ -1307,7 +1362,7 @@ ENTITY_INTERACTION_PROPERTIES: dict[str, list[str]] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 14  –  NEW: Scene role priors
+# SECTION 15  –  NEW: Scene role priors
 #
 # What role does this entity typically play in a simulated scene?
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1340,7 +1395,7 @@ ENTITY_SCENE_ROLES: dict[str, list[str]] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 15  –  NEW: Alias dictionary
+# SECTION 16  –  NEW: Alias dictionary
 #
 # Common synonyms and alternative names per entity_type (entity-level).
 # Token-specific aliases are looked up at generation time.
@@ -1387,7 +1442,415 @@ TOKEN_ALIASES: dict[str, list[str]] = {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 16  –  Data record dataclass  (extended from original)
+# SECTION 17  –  NEW: Shape ontology
+#
+# Coarse geometric shape — used downstream to select collision primitives.
+#
+# Values:
+#   sphere  box  cylinder  plane  humanoid  elongated  irregular  amorphous
+# ─────────────────────────────────────────────────────────────────────────────
+
+SHAPE_VALUES = [
+    "sphere", "box", "cylinder", "plane", "humanoid",
+    "elongated", "irregular", "amorphous",
+]
+
+# Default shape per entity_type
+ENTITY_SHAPES: dict[str, str] = {
+    "agent":          "humanoid",
+    "animal":         "irregular",
+    "plant":          "elongated",
+    "vehicle":        "box",
+    "robot":          "humanoid",
+    "machine":        "box",
+    "furniture":      "box",
+    "tool":           "elongated",
+    "container":      "cylinder",
+    "electronic":     "box",
+    "weapon":         "elongated",
+    "sports_object":  "sphere",
+    "structure":      "box",
+    "terrain":        "plane",
+    "fluid":          "amorphous",
+    "projectile":     "cylinder",
+    "particle":       "sphere",
+    "celestial_body": "sphere",
+    "non_physical":   "unknown",
+}
+
+# Keyword → shape overrides
+SHAPE_KEYWORD_OVERRIDES: dict[str, str] = {
+    "ball":       "sphere",  "sphere":     "sphere",  "globe":     "sphere",
+    "bubble":     "sphere",  "orb":        "sphere",  "pebble":    "sphere",
+    "car":        "box",     "truck":      "box",     "bus":       "box",
+    "box":        "box",     "cube":       "box",
+    "building":   "box",     "house":      "box",     "block":     "box",
+    "cabinet":    "box",     "crate":      "box",
+    "cylinder":   "cylinder","barrel":     "cylinder","can":       "cylinder",
+    "bottle":     "cylinder","pipe":       "cylinder","rod":       "cylinder",
+    "pillar":     "cylinder","column":     "cylinder",
+    "road":       "plane",   "floor":      "plane",   "ground":    "plane",
+    "field":      "plane",   "runway":     "plane",   "surface":   "plane",
+    "table":      "plane",   "wall":       "plane",
+    "person":     "humanoid","human":      "humanoid","man":       "humanoid",
+    "woman":      "humanoid","robot":      "humanoid","android":   "humanoid",
+    "tree":       "elongated","pole":      "elongated","stick":    "elongated",
+    "sword":      "elongated","knife":     "elongated","spear":    "elongated",
+    "arrow":      "elongated","rifle":     "elongated","bat":      "elongated",
+    "water":      "amorphous","smoke":     "amorphous","cloud":    "amorphous",
+    "fire":       "amorphous","lava":      "amorphous","fog":      "amorphous",
+    "rock":       "irregular","mountain":  "irregular","debris":   "irregular",
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 18  –  NEW: Mass class ontology
+#
+# Coarse mass class — used to set mass priors before simulation.
+#
+# Values (roughly logarithmic decades):
+#   tiny (<1g)  light (1g–1kg)  medium (1kg–100kg)
+#   heavy (100kg–10t)  extreme (10t–1Mt)  planetary (>1Mt)
+# ─────────────────────────────────────────────────────────────────────────────
+
+MASS_VALUES = ["tiny", "light", "medium", "heavy", "extreme", "planetary"]
+
+ENTITY_MASS_CLASSES: dict[str, str] = {
+    "agent":          "medium",
+    "animal":         "medium",
+    "plant":          "heavy",
+    "vehicle":        "heavy",
+    "robot":          "medium",
+    "machine":        "heavy",
+    "furniture":      "medium",
+    "tool":           "light",
+    "container":      "light",
+    "electronic":     "light",
+    "weapon":         "light",
+    "sports_object":  "light",
+    "structure":      "extreme",
+    "terrain":        "extreme",
+    "fluid":          "heavy",
+    "projectile":     "tiny",
+    "particle":       "tiny",
+    "celestial_body": "planetary",
+    "non_physical":   "unknown",
+}
+
+MASS_KEYWORD_OVERRIDES: dict[str, str] = {
+    "dust":       "tiny",    "particle":   "tiny",   "atom":      "tiny",
+    "bullet":     "tiny",    "pellet":     "tiny",   "spark":     "tiny",
+    "pollen":     "tiny",    "feather":    "tiny",
+    "ball":       "light",   "bottle":     "light",  "cup":       "light",
+    "phone":      "light",   "knife":      "light",  "arrow":     "light",
+    "book":       "light",   "leaf":       "light",
+    "person":     "medium",  "human":      "medium", "dog":       "medium",
+    "chair":      "medium",  "laptop":     "medium",
+    "car":        "heavy",   "truck":      "heavy",  "elephant":  "heavy",
+    "motorcycle": "heavy",   "machine":    "heavy",
+    "ship":       "extreme", "building":   "extreme","bridge":    "extreme",
+    "airplane":   "extreme", "tank":       "extreme","train":     "extreme",
+    "planet":     "planetary","star":      "planetary","moon":    "planetary",
+    "asteroid":   "extreme", "mountain":   "extreme",
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 19  –  NEW: Contact-type ontology
+#
+# Selects the physics solver / collision response model.
+#
+# Values:
+#   rigid  elastic  fluid  granular  soft_body
+# ─────────────────────────────────────────────────────────────────────────────
+
+CONTACT_TYPE_VALUES = ["rigid", "elastic", "fluid", "granular", "soft_body"]
+
+ENTITY_CONTACT_TYPES: dict[str, str] = {
+    "agent":          "soft_body",
+    "animal":         "soft_body",
+    "plant":          "soft_body",
+    "vehicle":        "rigid",
+    "robot":          "rigid",
+    "machine":        "rigid",
+    "furniture":      "rigid",
+    "tool":           "rigid",
+    "container":      "rigid",
+    "electronic":     "rigid",
+    "weapon":         "rigid",
+    "sports_object":  "elastic",
+    "structure":      "rigid",
+    "terrain":        "rigid",
+    "fluid":          "fluid",
+    "projectile":     "rigid",
+    "particle":       "granular",
+    "celestial_body": "rigid",
+    "non_physical":   "unknown",
+}
+
+CONTACT_TYPE_KEYWORD_OVERRIDES: dict[str, str] = {
+    "water":   "fluid",    "river":   "fluid",    "lava":    "fluid",
+    "oil":     "fluid",    "blood":   "fluid",    "milk":    "fluid",
+    "gas":     "fluid",    "steam":   "fluid",    "smoke":   "fluid",
+    "cloud":   "fluid",    "fog":     "fluid",    "air":     "fluid",
+    "sand":    "granular", "dust":    "granular", "gravel":  "granular",
+    "snow":    "granular", "ash":     "granular", "powder":  "granular",
+    "soil":    "granular", "dirt":    "granular",
+    "ball":    "elastic",  "balloon": "elastic",  "rubber":  "elastic",
+    "tire":    "elastic",  "tyre":    "elastic",
+    "human":   "soft_body","person":  "soft_body","animal":  "soft_body",
+    "flesh":   "soft_body","dog":     "soft_body","cat":     "soft_body",
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 20  –  NEW: Stability ontology
+#
+# How does this entity behave when unperturbed?
+#
+# Values:
+#   stable    – resting equilibrium; resists displacement
+#   unstable  – tends to tip or collapse under small perturbations
+#   dynamic   – inherently in motion; no stable resting state in normal use
+# ─────────────────────────────────────────────────────────────────────────────
+
+STABILITY_VALUES = ["stable", "unstable", "dynamic"]
+
+ENTITY_STABILITY: dict[str, str] = {
+    "agent":          "dynamic",
+    "animal":         "dynamic",
+    "plant":          "stable",
+    "vehicle":        "dynamic",
+    "robot":          "dynamic",
+    "machine":        "stable",
+    "furniture":      "stable",
+    "tool":           "stable",
+    "container":      "stable",
+    "electronic":     "stable",
+    "weapon":         "stable",
+    "sports_object":  "dynamic",
+    "structure":      "stable",
+    "terrain":        "stable",
+    "fluid":          "dynamic",
+    "projectile":     "dynamic",
+    "particle":       "dynamic",
+    "celestial_body": "dynamic",
+    "non_physical":   "unknown",
+}
+
+STABILITY_KEYWORD_OVERRIDES: dict[str, str] = {
+    "mountain":   "stable",   "building":   "stable",  "dam":       "stable",
+    "wall":       "stable",   "bridge":     "stable",  "tree":      "stable",
+    "boulder":    "stable",   "road":       "stable",  "floor":     "stable",
+    "river":      "dynamic",  "smoke":      "dynamic", "flame":     "dynamic",
+    "tornado":    "dynamic",  "bullet":     "dynamic", "missile":   "dynamic",
+    "fire":       "dynamic",  "lava":       "dynamic", "cloud":     "dynamic",
+    "pencil":     "unstable", "vase":       "unstable","bottle":    "unstable",
+    "coin":       "unstable", "cup":        "unstable",
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 21  –  NEW: Gravity and buoyancy flags
+#
+# affected_by_gravity  – participates in gravitational acceleration (9.81 m/s²)
+# floats               – positive buoyancy in water (density < ~1000 kg/m³)
+#
+# Both are booleans; terrain serves as the reference frame and is excluded
+# from gravity integration.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Default per entity_type: (affected_by_gravity, floats)
+ENTITY_GRAVITY_BUOYANCY: dict[str, tuple[bool, bool]] = {
+    "agent":          (True,  False),
+    "animal":         (True,  False),
+    "plant":          (True,  False),
+    "vehicle":        (True,  False),
+    "robot":          (True,  False),
+    "machine":        (True,  False),
+    "furniture":      (True,  False),
+    "tool":           (True,  False),
+    "container":      (True,  False),
+    "electronic":     (True,  False),
+    "weapon":         (True,  False),
+    "sports_object":  (True,  False),
+    "structure":      (True,  False),
+    "terrain":        (False, False),   # terrain is the fixed reference frame
+    "fluid":          (True,  True),    # fluid medium itself flows / floats
+    "projectile":     (True,  False),
+    "particle":       (True,  False),
+    "celestial_body": (True,  False),
+    "non_physical":   (False, False),
+}
+
+# Token-level overrides: substring → (affected_by_gravity, floats)
+GRAVITY_BUOYANCY_KEYWORD_OVERRIDES: dict[str, tuple[bool, bool]] = {
+    "boat":         (True, True),  "ship":        (True, True),
+    "yacht":        (True, True),  "raft":         (True, True),
+    "kayak":        (True, True),  "canoe":        (True, True),
+    "submarine":    (True, True),  "hovercraft":   (True, True),
+    "balloon":      (True, True),  "blimp":        (True, True),
+    "wood":         (True, True),  "cork":         (True, True),
+    "foam":         (True, True),  "ice":          (True, True),
+    "terrain":      (False, False),"ground":       (False, False),
+    "mountain":     (False, False),"road":         (False, False),
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 22  –  NEW: Friction class ontology
+#
+# Coarse surface friction — maps to coefficient of friction prior.
+#
+# Values:
+#   low    (μ < 0.15,  e.g. ice, oil, wet glass)
+#   medium (μ 0.15–0.5, e.g. steel on steel, wood on concrete)
+#   high   (μ > 0.5,   e.g. rubber on asphalt, sandpaper)
+# ─────────────────────────────────────────────────────────────────────────────
+
+FRICTION_VALUES = ["low", "medium", "high"]
+
+ENTITY_FRICTION_CLASSES: dict[str, str] = {
+    "agent":          "high",
+    "animal":         "high",
+    "plant":          "medium",
+    "vehicle":        "medium",
+    "robot":          "medium",
+    "machine":        "medium",
+    "furniture":      "medium",
+    "tool":           "medium",
+    "container":      "medium",
+    "electronic":     "low",
+    "weapon":         "medium",
+    "sports_object":  "high",
+    "structure":      "high",
+    "terrain":        "medium",
+    "fluid":          "low",
+    "projectile":     "low",
+    "particle":       "medium",
+    "celestial_body": "medium",
+    "non_physical":   "unknown",
+}
+
+FRICTION_KEYWORD_OVERRIDES: dict[str, str] = {
+    "ice":       "low",    "teflon":    "low",    "glass":     "low",
+    "oil":       "low",    "water":     "low",    "snow":      "low",
+    "marble":    "low",    "polished":  "low",    "wet":       "low",
+    "rubber":    "high",   "asphalt":   "high",   "sandpaper": "high",
+    "tire":      "high",   "tyre":      "high",   "carpet":    "high",
+    "velcro":    "high",   "skin":      "high",   "grass":     "high",
+    "gravel":    "high",   "concrete":  "high",
+    "steel":     "medium", "wood":      "medium", "plastic":   "medium",
+    "stone":     "medium", "fabric":    "medium", "soil":      "medium",
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 23  –  NEW: Restitution class ontology
+#
+# Coarse coefficient of restitution (bounciness / elasticity on impact).
+#
+# Values:
+#   low    (e < 0.3,  e.g. clay, sandbag — absorbs impact)
+#   medium (e 0.3–0.7, e.g. wood, steel, rigid bodies)
+#   high   (e > 0.7,  e.g. rubber ball, superball — bouncy)
+# ─────────────────────────────────────────────────────────────────────────────
+
+RESTITUTION_VALUES = ["low", "medium", "high"]
+
+ENTITY_RESTITUTION_CLASSES: dict[str, str] = {
+    "agent":          "low",
+    "animal":         "low",
+    "plant":          "low",
+    "vehicle":        "low",
+    "robot":          "medium",
+    "machine":        "medium",
+    "furniture":      "low",
+    "tool":           "medium",
+    "container":      "medium",
+    "electronic":     "low",
+    "weapon":         "medium",
+    "sports_object":  "high",
+    "structure":      "low",
+    "terrain":        "low",
+    "fluid":          "low",
+    "projectile":     "medium",
+    "particle":       "low",
+    "celestial_body": "medium",
+    "non_physical":   "unknown",
+}
+
+RESTITUTION_KEYWORD_OVERRIDES: dict[str, str] = {
+    "tennis ball":  "high",   "basketball":  "high",  "squash ball": "high",
+    "golf ball":    "high",   "rubber ball": "high",  "ping pong":   "high",
+    "superball":    "high",   "bouncy":      "high",
+    "rock":         "medium", "steel":       "medium","marble":      "medium",
+    "billiard":     "medium", "bullet":      "medium",
+    "clay":         "low",    "sand":        "low",   "mud":         "low",
+    "foam":         "low",    "wood":        "low",   "flesh":       "low",
+    "pillow":       "low",    "sandbag":     "low",   "human":       "low",
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 24  –  NEW: Capabilities ontology
+#
+# What can this entity DO in a simulation?
+#
+# Capabilities describe the entity's own active physics behaviours.
+# They are distinct from affordances, which describe what an external agent
+# can do TO or WITH the entity.
+#
+# Examples:
+#   car      → [drive, steer, accelerate, brake, collide]
+#   ball     → [roll, bounce, collide]
+#   water    → [flow, splash, erode, dissolve]
+#   robot    → [move, grasp, navigate, interact]
+#   fire     → [spread, ignite, consume]
+#   person   → [walk, run, jump, grasp, push, climb]
+# ─────────────────────────────────────────────────────────────────────────────
+
+ENTITY_CAPABILITIES: dict[str, list[str]] = {
+    "agent":          ["walk", "run", "jump", "grasp", "push", "climb",
+                       "interact", "communicate"],
+    "animal":         ["walk", "run", "jump", "swim", "fly", "bite",
+                       "chase", "flee"],
+    "plant":          ["grow", "sway", "root", "spread"],
+    "vehicle":        ["drive", "steer", "accelerate", "brake", "collide",
+                       "transport"],
+    "robot":          ["move", "navigate", "grasp", "manipulate", "interact",
+                       "charge", "patrol"],
+    "machine":        ["operate", "process", "rotate", "vibrate", "generate"],
+    "furniture":      ["support", "block", "slide"],
+    "tool":           ["cut", "grasp", "measure", "fasten", "pry"],
+    "container":      ["hold", "release", "pour", "seal"],
+    "electronic":     ["compute", "transmit", "receive", "display", "sense"],
+    "weapon":         ["fire", "strike", "explode", "penetrate", "deploy"],
+    "sports_object":  ["roll", "bounce", "spin", "collide", "deflect"],
+    "structure":      ["support", "block", "shelter", "collapse"],
+    "terrain":        ["support", "friction", "channel", "absorb"],
+    "fluid":          ["flow", "splash", "erode", "dissolve", "evaporate",
+                       "freeze", "spread"],
+    "projectile":     ["fly", "spin", "collide", "penetrate", "explode"],
+    "particle":       ["drift", "settle", "disperse", "agglomerate"],
+    "celestial_body": ["orbit", "rotate", "attract", "emit"],
+    "non_physical":   [],
+}
+
+# Subclass-level capability extensions (merged with entity-type base)
+SUBCLASS_CAPABILITIES: dict[str, list[str]] = {
+    "car":            ["drive", "steer", "accelerate", "brake"],
+    "aircraft":       ["fly", "take_off", "land", "bank", "ascend", "descend"],
+    "watercraft":     ["sail", "navigate", "dock", "capsize", "drift"],
+    "spacecraft":     ["orbit", "thrust", "dock", "reenter"],
+    "drone":          ["hover", "fly", "navigate", "film"],
+    "firearm":        ["fire", "eject", "reload"],
+    "explosive":      ["detonate", "fragment", "blast"],
+    "ball":           ["roll", "bounce", "spin", "deflect"],
+    "liquid":         ["flow", "splash", "pool", "evaporate", "freeze"],
+    "gas":            ["expand", "diffuse", "compress", "ignite"],
+    "human":          ["walk", "run", "jump", "grasp", "speak", "throw"],
+    "humanoid_robot": ["walk", "balance", "grasp", "navigate"],
+    "rover":          ["roll", "navigate", "scan", "sample"],
+    "planet":         ["orbit", "rotate", "attract", "weather"],
+    "star":           ["emit", "fuse", "attract", "radiate"],
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
+# SECTION 25  –  Data record dataclass  (v3 — extends v2)
 # ─────────────────────────────────────────────────────────────────────────────
 
 @dataclass
@@ -1395,21 +1858,21 @@ class EntityRecord:
     """
     A single training example for the hierarchical entity classifier.
 
-    Original fields
-    ───────────────
+    Original fields  (v1)
+    ──────────────────────
     token               : surface form fed to the tokenizer
     entity_type         : leaf-level ontology class (direct prediction target)
     parent_class        : intermediate ontology node (used in hierarchical loss)
     root_class          : always "physical_entity" (or "non_physical")
-    superclass          : coarse label grouping for loss weighting
+    superclass          : kept for backward compatibility; equals entity_type
     subclass            : fine-grained label within entity_type
     properties          : original inferred physical properties
     confidence          : [0, 1]  — 1.0 for unambiguous, <1.0 for ambiguous
     variant_of          : canonical seed form, or None if this IS the seed
     variant_type        : e.g. "plural", "colour_adj", "compound", "hard_example"
 
-    NEW fields (v2 — all optional with sensible defaults)
-    ──────────────────────────────────────────────────────
+    v2 fields
+    ──────────
     material            : primary material composition (see MATERIALS list)
     phase               : thermodynamic phase  (solid / liquid / gas / plasma / granular)
     mobility            : kinematic class  (static / movable / self_propelled / flowing / flying)
@@ -1420,8 +1883,27 @@ class EntityRecord:
     aliases             : alternative names / synonyms for this token
     negative            : True if this is a non-physical negative example
     possible_classes    : alternative plausible entity_type labels (ambiguous examples)
+
+    v3 fields  (NEW — all optional with sensible defaults)
+    ────────────────────────────────────────────────────────
+    coarse_class        : mid-level grouping between entity_type and parent_class
+                          (transport / machine_like / manmade_object / living_entity /
+                           environment / astronomical / dynamic / abstract)
+    shape               : coarse collision geometry
+                          (sphere / box / cylinder / plane / humanoid /
+                           elongated / irregular / amorphous)
+    mass_class          : coarse mass prior
+                          (tiny / light / medium / heavy / extreme / planetary)
+    contact_type        : physics solver hint
+                          (rigid / elastic / fluid / granular / soft_body)
+    stability           : resting behaviour  (stable / unstable / dynamic)
+    affected_by_gravity : participates in gravitational acceleration
+    floats              : positive buoyancy in water
+    friction_class      : surface friction prior  (low / medium / high)
+    restitution_class   : bounciness prior  (low / medium / high)
+    capabilities        : active physics behaviours this entity can exhibit
     """
-    # ── original fields ───────────────────────────────────────────────────────
+    # ── v1 fields ─────────────────────────────────────────────────────────────
     token:                  str
     entity_type:            str
     parent_class:           str
@@ -1433,7 +1915,7 @@ class EntityRecord:
     variant_of:             Optional[str]       = None
     variant_type:           Optional[str]       = None
 
-    # ── NEW fields ────────────────────────────────────────────────────────────
+    # ── v2 fields ─────────────────────────────────────────────────────────────
     material:               str                 = "unknown"
     phase:                  str                 = "solid"
     mobility:               str                 = "movable"
@@ -1445,12 +1927,24 @@ class EntityRecord:
     negative:               bool                = False
     possible_classes:       Optional[list[str]] = None
 
+    # ── v3 fields ─────────────────────────────────────────────────────────────
+    coarse_class:           str                 = "unknown"
+    shape:                  str                 = "irregular"
+    mass_class:             str                 = "medium"
+    contact_type:           str                 = "rigid"
+    stability:              str                 = "stable"
+    affected_by_gravity:    bool                = True
+    floats:                 bool                = False
+    friction_class:         str                 = "medium"
+    restitution_class:      str                 = "low"
+    capabilities:           list[str]           = field(default_factory=list)
+
     def to_dict(self) -> dict:
         return asdict(self)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 17  –  Core generator class  (extended from original)
+# SECTION 26  –  Core generator class
 # ─────────────────────────────────────────────────────────────────────────────
 
 class EntityDatasetGenerator:
@@ -1573,7 +2067,7 @@ class EntityDatasetGenerator:
                 subclass, extra_props = self._pick_subclass(token, entity_type)
                 props = _dedupe_list(base_props + extra_props)
 
-                # Resolve new extended fields
+                # Resolve v2 fields
                 material   = self._resolve_material(token, entity_type)
                 phase      = self._resolve_phase(token, entity_type)
                 mobility   = self._resolve_mobility(token, entity_type)
@@ -1582,6 +2076,17 @@ class EntityDatasetGenerator:
                 int_props   = self._resolve_interaction_properties(entity_type)
                 scene_roles = ENTITY_SCENE_ROLES.get(entity_type, [])
                 aliases     = TOKEN_ALIASES.get(token.lower(), [])
+
+                # Resolve v3 fields
+                coarse_class  = ENTITY_COARSE_CLASS.get(entity_type, "unknown")
+                shape         = self._resolve_shape(token, entity_type)
+                mass_class    = self._resolve_mass(token, entity_type)
+                contact_type  = self._resolve_contact_type(token, entity_type)
+                stability     = self._resolve_stability(token, entity_type)
+                grav, flt     = self._resolve_gravity_buoyancy(token, entity_type)
+                friction      = self._resolve_friction(token, entity_type)
+                restitution   = self._resolve_restitution(token, entity_type)
+                capabilities  = self._resolve_capabilities(token, entity_type, subclass)
 
                 records.append(EntityRecord(
                     token=                  token,
@@ -1594,7 +2099,7 @@ class EntityDatasetGenerator:
                     confidence=             1.0,
                     variant_of=             None,
                     variant_type=           None,
-                    # new fields
+                    # v2 fields
                     material=               material,
                     phase=                  phase,
                     mobility=               mobility,
@@ -1605,6 +2110,17 @@ class EntityDatasetGenerator:
                     aliases=                aliases,
                     negative=               is_negative,
                     possible_classes=       None,
+                    # v3 fields
+                    coarse_class=           coarse_class,
+                    shape=                  shape,
+                    mass_class=             mass_class,
+                    contact_type=           contact_type,
+                    stability=              stability,
+                    affected_by_gravity=    grav,
+                    floats=                 flt,
+                    friction_class=         friction,
+                    restitution_class=      restitution,
+                    capabilities=           capabilities,
                 ))
         return records
 
@@ -1650,7 +2166,7 @@ class EntityDatasetGenerator:
                 confidence=             1.0,
                 variant_of=             rec.token,
                 variant_type=           "plural",
-                # propagate new fields
+                # propagate v2 fields
                 material=               rec.material,
                 phase=                  rec.phase,
                 mobility=               rec.mobility,
@@ -1661,6 +2177,17 @@ class EntityDatasetGenerator:
                 aliases=                rec.aliases,
                 negative=               rec.negative,
                 possible_classes=       rec.possible_classes,
+                # propagate v3 fields
+                coarse_class=           rec.coarse_class,
+                shape=                  rec.shape,
+                mass_class=             rec.mass_class,
+                contact_type=           rec.contact_type,
+                stability=              rec.stability,
+                affected_by_gravity=    rec.affected_by_gravity,
+                floats=                 rec.floats,
+                friction_class=         rec.friction_class,
+                restitution_class=      rec.restitution_class,
+                capabilities=           rec.capabilities,
             ))
         return new_records
 
@@ -1796,6 +2323,16 @@ class EntityDatasetGenerator:
                 aliases=                TOKEN_ALIASES.get(token.lower(), []),
                 negative=               False,
                 possible_classes=       None,
+                coarse_class=           ENTITY_COARSE_CLASS.get(entity_type, "unknown"),
+                shape=                  self._resolve_shape(token, entity_type),
+                mass_class=             self._resolve_mass(token, entity_type),
+                contact_type=           self._resolve_contact_type(token, entity_type),
+                stability=              self._resolve_stability(token, entity_type),
+                affected_by_gravity=    self._resolve_gravity_buoyancy(token, entity_type)[0],
+                floats=                 self._resolve_gravity_buoyancy(token, entity_type)[1],
+                friction_class=         self._resolve_friction(token, entity_type),
+                restitution_class=      self._resolve_restitution(token, entity_type),
+                capabilities=           self._resolve_capabilities(token, entity_type, subclass),
             ))
         return records
 
@@ -1836,6 +2373,16 @@ class EntityDatasetGenerator:
                 aliases=                TOKEN_ALIASES.get(ex["token"].lower(), []),
                 negative=               (entity_type == "non_physical"),
                 possible_classes=       ex.get("possible_classes", None),
+                coarse_class=           ENTITY_COARSE_CLASS.get(entity_type, "unknown"),
+                shape=                  self._resolve_shape(ex["token"], entity_type),
+                mass_class=             self._resolve_mass(ex["token"], entity_type),
+                contact_type=           self._resolve_contact_type(ex["token"], entity_type),
+                stability=              self._resolve_stability(ex["token"], entity_type),
+                affected_by_gravity=    self._resolve_gravity_buoyancy(ex["token"], entity_type)[0],
+                floats=                 self._resolve_gravity_buoyancy(ex["token"], entity_type)[1],
+                friction_class=         self._resolve_friction(ex["token"], entity_type),
+                restitution_class=      self._resolve_restitution(ex["token"], entity_type),
+                capabilities=           self._resolve_capabilities(ex["token"], entity_type, subclass),
             ))
         return records
 
@@ -1882,8 +2429,7 @@ class EntityDatasetGenerator:
     def _make_variant(rec: EntityRecord, token: str, vtype: str) -> EntityRecord:
         """
         Create a variant EntityRecord from a seed, overriding token and
-        variant_type while propagating all other fields (including new v2
-        fields) unchanged.
+        variant_type while propagating all other fields (v1, v2, v3) unchanged.
         """
         return EntityRecord(
             token=                  token,
@@ -1896,6 +2442,7 @@ class EntityDatasetGenerator:
             confidence=             rec.confidence,
             variant_of=             rec.token,
             variant_type=           vtype,
+            # v2 fields
             material=               rec.material,
             phase=                  rec.phase,
             mobility=               rec.mobility,
@@ -1906,9 +2453,20 @@ class EntityDatasetGenerator:
             aliases=                rec.aliases,
             negative=               rec.negative,
             possible_classes=       rec.possible_classes,
+            # v3 fields
+            coarse_class=           rec.coarse_class,
+            shape=                  rec.shape,
+            mass_class=             rec.mass_class,
+            contact_type=           rec.contact_type,
+            stability=              rec.stability,
+            affected_by_gravity=    rec.affected_by_gravity,
+            floats=                 rec.floats,
+            friction_class=         rec.friction_class,
+            restitution_class=      rec.restitution_class,
+            capabilities=           rec.capabilities,
         )
 
-    # ── NEW: extended field resolvers ─────────────────────────────────────────
+    # ── v2 field resolvers ────────────────────────────────────────────────────
 
     @staticmethod
     def _resolve_material(token: str, entity_type: str) -> str:
@@ -1963,6 +2521,86 @@ class EntityDatasetGenerator:
         """Return the canonical interaction properties for this entity_type."""
         return list(ENTITY_INTERACTION_PROPERTIES.get(entity_type, []))
 
+    # ── v3 field resolvers ────────────────────────────────────────────────────
+
+    @staticmethod
+    def _resolve_shape(token: str, entity_type: str) -> str:
+        """Keyword-match → entity_type default fallback."""
+        tok = token.lower()
+        for kw, sh in SHAPE_KEYWORD_OVERRIDES.items():
+            if kw in tok:
+                return sh
+        return ENTITY_SHAPES.get(entity_type, "irregular")
+
+    @staticmethod
+    def _resolve_mass(token: str, entity_type: str) -> str:
+        """Keyword-match → entity_type default fallback."""
+        tok = token.lower()
+        for kw, mc in MASS_KEYWORD_OVERRIDES.items():
+            if kw in tok:
+                return mc
+        return ENTITY_MASS_CLASSES.get(entity_type, "medium")
+
+    @staticmethod
+    def _resolve_contact_type(token: str, entity_type: str) -> str:
+        """Keyword-match → entity_type default fallback."""
+        tok = token.lower()
+        for kw, ct in CONTACT_TYPE_KEYWORD_OVERRIDES.items():
+            if kw in tok:
+                return ct
+        return ENTITY_CONTACT_TYPES.get(entity_type, "rigid")
+
+    @staticmethod
+    def _resolve_stability(token: str, entity_type: str) -> str:
+        """Keyword-match → entity_type default fallback."""
+        tok = token.lower()
+        for kw, st in STABILITY_KEYWORD_OVERRIDES.items():
+            if kw in tok:
+                return st
+        return ENTITY_STABILITY.get(entity_type, "stable")
+
+    @staticmethod
+    def _resolve_gravity_buoyancy(
+        token: str, entity_type: str
+    ) -> tuple[bool, bool]:
+        """Keyword-match → entity_type default fallback.
+        Returns (affected_by_gravity, floats)."""
+        tok = token.lower()
+        for kw, gb in GRAVITY_BUOYANCY_KEYWORD_OVERRIDES.items():
+            if kw in tok:
+                return gb
+        return ENTITY_GRAVITY_BUOYANCY.get(entity_type, (True, False))
+
+    @staticmethod
+    def _resolve_friction(token: str, entity_type: str) -> str:
+        """Keyword-match → entity_type default fallback."""
+        tok = token.lower()
+        for kw, fr in FRICTION_KEYWORD_OVERRIDES.items():
+            if kw in tok:
+                return fr
+        return ENTITY_FRICTION_CLASSES.get(entity_type, "medium")
+
+    @staticmethod
+    def _resolve_restitution(token: str, entity_type: str) -> str:
+        """Keyword-match → entity_type default fallback."""
+        tok = token.lower()
+        for kw, rs in RESTITUTION_KEYWORD_OVERRIDES.items():
+            if kw in tok:
+                return rs
+        return ENTITY_RESTITUTION_CLASSES.get(entity_type, "low")
+
+    @staticmethod
+    def _resolve_capabilities(
+        token: str, entity_type: str, subclass: str
+    ) -> list[str]:
+        """
+        Merge entity-level capabilities with subclass-specific extensions.
+        Subclass capabilities are prepended so they appear first.
+        """
+        base = list(ENTITY_CAPABILITIES.get(entity_type, []))
+        sub  = list(SUBCLASS_CAPABILITIES.get(subclass, []))
+        return _dedupe_list(sub + base)
+
     # ── original helpers (preserved verbatim) ─────────────────────────────────
 
     @staticmethod
@@ -2000,7 +2638,7 @@ class EntityDatasetGenerator:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 18  –  Module-level helper functions  (original — preserved verbatim)
+# SECTION 27  –  Module-level helper functions  (original — preserved verbatim)
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _dedupe_list(lst: list[str]) -> list[str]:
@@ -2053,7 +2691,7 @@ def _pluralise(word: str) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# SECTION 19  –  CLI entry point  (original — preserved verbatim)
+# SECTION 28  –  CLI entry point  (original — preserved verbatim)
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _parse_args() -> argparse.Namespace:
