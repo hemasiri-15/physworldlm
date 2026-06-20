@@ -3,128 +3,6 @@ dataset_gen/generate_entity_dataset.py
 ───────────────────────────────────────────────────────────────────────────────
 Synthetic dataset generator for the PhysWorldLM hierarchical entity ontology
 classifier.
-
-PURPOSE
-───────
-Generates a large JSONL dataset suitable for training a MiniLM-based
-hierarchical entity classifier.  The generator does NOT train any model —
-it only produces the dataset that a downstream training script will consume.
-
-ONTOLOGY HIERARCHY
-───────────────────
-physical_entity
-│
-├── living
-│      ├── agent
-│      ├── animal
-│      └── plant
-│
-├── rigid_body
-│      ├── vehicle
-│      ├── robot
-│      ├── machine
-│      ├── furniture
-│      ├── tool
-│      ├── container
-│      ├── electronic
-│      ├── weapon
-│      └── sports_object
-│
-├── environment
-│      ├── structure
-│      ├── terrain
-│      └── fluid
-│
-├── dynamic_object
-│      ├── projectile
-│      └── particle
-│
-└── astronomical
-       └── celestial_body
-
-Special class (negative examples):
-    non_physical  — abstract concepts with no physical manifestation
-
-OUTPUT RECORD SCHEMA (JSONL)
-─────────────────────────────
-Each line in the output file is a self-contained JSON object:
-
-{
-  "token":                  "Ferrari",
-  "entity_type":            "vehicle",
-  "parent_class":           "rigid_body",
-  "root_class":             "physical_entity",
-  "coarse_class":           "transport",
-  "superclass":             "vehicle",
-  "subclass":               "car",
-
-  "material":               "steel",
-  "phase":                  "solid",
-  "mobility":               "self_propelled",
-  "size_class":             "large",
-  "shape":                  "box",
-  "mass_class":             "heavy",
-  "contact_type":           "rigid",
-  "stability":              "dynamic",
-  "affected_by_gravity":    true,
-  "floats":                 false,
-  "friction_class":         "medium",
-  "restitution_class":      "low",
-
-  "properties":             ["rigid", "rolling", "motorized"],
-  "interaction_properties": ["rigid", "conductive"],
-  "affordances":            ["drive", "transport", "collide"],
-  "capabilities":           ["drive", "steer", "accelerate", "collide"],
-  "scene_roles":            ["actor", "collider"],
-  "aliases":                ["car", "automobile"],
-
-  "confidence":             1.0,
-  "negative":               false,
-  "possible_classes":       null,
-  "variant_of":             "Ferrari",
-  "variant_type":           "brand_compound"
-}
-
-MULTI-TASK FUTURE COMPATIBILITY
-────────────────────────────────
-Records are structured to support:
-    Entity classification     : token → entity_type
-    Hierarchical classification: token → parent_class, root_class, coarse_class
-    Material prediction       : token → material
-    Phase prediction          : token → phase
-    Mobility prediction       : token → mobility
-    Size estimation           : token → size_class
-    Shape prediction          : token → shape
-    Mass estimation           : token → mass_class
-    Contact type prediction   : token → contact_type
-    Stability prediction      : token → stability
-    Physics flags             : token → affected_by_gravity, floats
-    Friction prediction       : token → friction_class
-    Restitution prediction    : token → restitution_class
-    Affordance prediction     : token → affordances
-    Capability prediction     : token → capabilities
-    Property prediction       : token → interaction_properties
-
-USAGE
-─────
-    python dataset_gen/generate_entity_dataset.py
-    python dataset_gen/generate_entity_dataset.py --output datasets/entity_classification.jsonl
-    python dataset_gen/generate_entity_dataset.py --samples 50000 --seed 42
-    python dataset_gen/generate_entity_dataset.py --balance --quiet
-
-FUTURE PIPELINE
-───────────────
-The produced dataset feeds directly into:
-
-    MiniLM encoder
-         ↓
-    Hierarchical classifier  (entity_type  +  parent_class  +  subclass)
-         ↓
-    Physics ontology resolver
-         ↓
-    Graph builder  →  WorldSpec
-         ↓
-    Simulation engine  (Bullet / MuJoCo / Gazebo)
 """
 
 from __future__ import annotations
@@ -142,14 +20,10 @@ from typing import Optional
 # SECTION 1  –  Ontology definition
 # ─────────────────────────────────────────────────────────────────────────────
 
-# Every leaf class maps to:
-#   (parent_class, root_class)
 ONTOLOGY: dict[str, tuple[str, str]] = {
-    # living
     "agent":          ("living",        "physical_entity"),
     "animal":         ("living",        "physical_entity"),
     "plant":          ("living",        "physical_entity"),
-    # rigid_body
     "vehicle":        ("rigid_body",    "physical_entity"),
     "robot":          ("rigid_body",    "physical_entity"),
     "machine":        ("rigid_body",    "physical_entity"),
@@ -159,38 +33,14 @@ ONTOLOGY: dict[str, tuple[str, str]] = {
     "electronic":     ("rigid_body",    "physical_entity"),
     "weapon":         ("rigid_body",    "physical_entity"),
     "sports_object":  ("rigid_body",    "physical_entity"),
-    # environment
     "structure":      ("environment",   "physical_entity"),
     "terrain":        ("environment",   "physical_entity"),
     "fluid":          ("environment",   "physical_entity"),
-    # dynamic_object
     "projectile":     ("dynamic_object","physical_entity"),
     "particle":       ("dynamic_object","physical_entity"),
-    # astronomical
     "celestial_body": ("astronomical",  "physical_entity"),
-    # special negative class — not a physical entity
     "non_physical":   ("abstract",      "non_physical"),
 }
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 2  –  Physical property taxonomy  (original — preserved verbatim)
-#
-# Properties drive physics-engine inference:
-#   rolling       → wheel friction, rolling resistance
-#   motorized     → acceleration constraints, torque limits
-#   rigid         → rigid-body collision solver
-#   elastic       → restitution coefficient > 0
-#   flowing       → fluid-dynamics solver
-#   deformable    → soft-body / FEM solver
-#   living        → biological-motion model
-#   sharp         → penetration / cutting interactions
-#   massive       → gravitational dominance
-#   conductive    → electrical / thermal simulation
-#   container     → interior volume / cargo physics
-#   floating      → buoyancy enabled
-#   flammable     → combustion model
-#   rotating      → angular-momentum tracking
-# ─────────────────────────────────────────────────────────────────────────────
 
 PROPERTY_POOL: list[str] = [
     "rigid", "soft", "rolling", "motorized", "living", "flowing",
@@ -198,8 +48,6 @@ PROPERTY_POOL: list[str] = [
     "massive", "rotating", "floating", "conductive",
 ]
 
-# Canonical property sets per entity_type
-# (used for seed tokens; variants may inherit a subset)
 ENTITY_PROPERTIES: dict[str, list[str]] = {
     "agent":          ["living", "soft", "rigid"],
     "animal":         ["living", "soft"],
@@ -225,14 +73,6 @@ ENTITY_PROPERTIES: dict[str, list[str]] = {
     "celestial_body": ["rigid", "massive", "rotating"],
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 3  –  Hierarchical subclass taxonomy  (original — preserved verbatim)
-#
-# superclass  = the *coarser* class used by the hierarchical loss
-# subclass    = a *finer* subdivision within entity_type
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Maps entity_type → list of (subclass, [additional_properties])
 SUBCLASS_MAP: dict[str, list[tuple[str, list[str]]]] = {
     "vehicle": [
         ("car",          ["rolling"]),
@@ -359,13 +199,8 @@ SUBCLASS_MAP: dict[str, list[tuple[str, list[str]]]] = {
     ],
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 4  –  Seed vocabulary  (original — preserved verbatim)
-# ─────────────────────────────────────────────────────────────────────────────
-
 SEED_VOCAB: dict[str, list[str]] = {
 
-    # ── agent ─────────────────────────────────────────────────────────────────
     "agent": [
         "person", "man", "woman", "human", "people", "individual", "someone",
         "adult", "teenager", "child", "kid", "toddler", "infant", "baby",
@@ -396,7 +231,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "coach", "referee", "umpire", "spectator", "fan",
     ],
 
-    # ── animal ────────────────────────────────────────────────────────────────
     "animal": [
         "dog", "cat", "horse", "cow", "pig", "sheep", "goat", "rabbit",
         "hamster", "guinea pig", "gerbil", "rat", "mouse", "ferret",
@@ -424,7 +258,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "wild boar", "badger", "skunk", "raccoon", "opossum",
     ],
 
-    # ── plant ─────────────────────────────────────────────────────────────────
     "plant": [
         "tree", "oak", "pine", "maple", "birch", "willow", "palm",
         "cedar", "sequoia", "redwood", "bamboo", "eucalyptus",
@@ -445,7 +278,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "Venus flytrap", "water lily", "lotus", "reed", "cattail",
     ],
 
-    # ── vehicle ───────────────────────────────────────────────────────────────
     "vehicle": [
         "car", "automobile", "sedan", "coupe", "hatchback", "wagon",
         "convertible", "SUV", "crossover", "minivan", "pickup truck",
@@ -475,7 +307,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "snowmobile", "jet ski", "segway", "electric scooter",
     ],
 
-    # ── robot ─────────────────────────────────────────────────────────────────
     "robot": [
         "robot", "android", "humanoid robot", "bipedal robot",
         "Boston Dynamics robot", "Atlas robot", "Spot robot",
@@ -501,7 +332,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "construction robot", "bricklaying robot", "3D printing robot",
     ],
 
-    # ── machine ───────────────────────────────────────────────────────────────
     "machine": [
         "engine", "motor", "generator", "turbine", "compressor",
         "pump", "hydraulic pump", "pneumatic pump",
@@ -527,7 +357,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "loom", "spinning wheel", "textile machine", "knitting machine",
     ],
 
-    # ── furniture ─────────────────────────────────────────────────────────────
     "furniture": [
         "chair", "armchair", "recliner", "rocking chair", "office chair",
         "stool", "barstool", "bench", "ottoman", "footstool",
@@ -550,7 +379,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "folding table", "folding chair", "picnic table",
     ],
 
-    # ── tool ──────────────────────────────────────────────────────────────────
     "tool": [
         "hammer", "mallet", "sledgehammer",
         "screwdriver", "Phillips screwdriver", "flathead screwdriver",
@@ -576,7 +404,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "grinder", "angle grinder", "bench grinder",
     ],
 
-    # ── container ─────────────────────────────────────────────────────────────
     "container": [
         "box", "cardboard box", "wooden box", "metal box",
         "crate", "wooden crate", "plastic crate", "pallet",
@@ -601,7 +428,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "fuel canister", "propane tank", "oxygen cylinder",
     ],
 
-    # ── electronic ────────────────────────────────────────────────────────────
     "electronic": [
         "smartphone", "iPhone", "Android phone", "mobile phone",
         "tablet", "iPad", "Android tablet", "e-reader", "Kindle",
@@ -629,7 +455,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "VR headset", "AR glasses", "mixed reality device",
     ],
 
-    # ── weapon ────────────────────────────────────────────────────────────────
     "weapon": [
         "gun", "pistol", "revolver", "handgun", "sidearm",
         "rifle", "assault rifle", "AK-47", "M16", "AR-15",
@@ -656,7 +481,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "nunchaku", "sai", "shuriken", "throwing star",
     ],
 
-    # ── sports_object ─────────────────────────────────────────────────────────
     "sports_object": [
         "football", "soccer ball", "basketball", "volleyball",
         "baseball", "softball", "cricket ball", "tennis ball",
@@ -681,7 +505,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "bowling ball", "bowling pin", "lane",
     ],
 
-    # ── structure ─────────────────────────────────────────────────────────────
     "structure": [
         "wall", "brick wall", "concrete wall", "retaining wall",
         "building", "skyscraper", "tower", "high-rise", "apartment",
@@ -708,7 +531,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "water tower", "oil derrick", "drilling platform",
     ],
 
-    # ── terrain ───────────────────────────────────────────────────────────────
     "terrain": [
         "ground", "earth", "soil", "dirt", "mud",
         "road", "highway", "motorway", "expressway", "freeway",
@@ -734,7 +556,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "lava field", "volcanic terrain", "crater",
     ],
 
-    # ── fluid ─────────────────────────────────────────────────────────────────
     "fluid": [
         "water", "freshwater", "saltwater", "seawater", "distilled water",
         "river", "stream", "creek", "brook", "tributary",
@@ -761,7 +582,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "coolant", "antifreeze", "brake fluid", "transmission fluid",
     ],
 
-    # ── projectile ────────────────────────────────────────────────────────────
     "projectile": [
         "bullet", "round", "cartridge", "slug", "buckshot",
         "arrow", "bolt", "crossbow bolt", "broadhead",
@@ -787,7 +607,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "net", "bola", "grappling hook",
     ],
 
-    # ── particle ──────────────────────────────────────────────────────────────
     "particle": [
         "dust", "dust particle", "fine dust", "PM2.5", "PM10",
         "smoke particle", "soot", "ash", "char",
@@ -810,7 +629,6 @@ SEED_VOCAB: dict[str, list[str]] = {
         "paint chip", "rust flake", "corrosion particle",
     ],
 
-    # ── celestial_body ────────────────────────────────────────────────────────
     "celestial_body": [
         "planet", "terrestrial planet", "gas giant", "ice giant",
         "Earth", "Mars", "Venus", "Mercury", "Jupiter", "Saturn",
@@ -835,51 +653,36 @@ SEED_VOCAB: dict[str, list[str]] = {
         "dark matter halo", "interstellar object",
     ],
 
-    # ── non_physical  (negative examples — abstract concepts) ─────────────────
     "non_physical": [
-        # emotions & mental states
         "love", "hate", "anger", "fear", "joy", "sadness", "jealousy",
         "happiness", "grief", "anxiety", "depression", "excitement",
         "boredom", "loneliness", "pride", "shame", "guilt", "hope",
-        # abstract social concepts
         "democracy", "freedom", "justice", "equality", "liberty",
         "authority", "power", "politics", "government", "law",
         "culture", "tradition", "ideology", "philosophy", "religion",
         "morality", "ethics", "virtue", "sin", "belief",
-        # cognitive / informational
         "thought", "idea", "concept", "knowledge", "memory",
         "imagination", "consciousness", "awareness", "intelligence",
         "logic", "reasoning", "creativity", "intuition", "wisdom",
         "algorithm", "software", "program", "code", "function",
         "data", "information", "signal", "pattern", "model",
         "theory", "hypothesis", "proof", "theorem", "axiom",
-        # aesthetic / cultural
         "beauty", "art", "music", "poetry", "narrative", "story",
         "myth", "legend", "humor", "irony", "metaphor",
-        # economic / social processes
         "economics", "capitalism", "socialism", "currency", "value",
         "trade", "market", "inflation", "recession", "profit",
         "democracy", "election", "vote", "policy", "law",
-        # mathematics / formal systems
         "mathematics", "geometry", "calculus", "algebra", "statistics",
         "probability", "infinity", "symmetry", "topology",
-        # language
         "language", "grammar", "syntax", "semantics", "word",
         "sentence", "meaning", "definition", "metaphor",
-        # time / space as abstract
         "time", "duration", "moment", "eternity", "past", "future",
         "space", "dimension", "distance", "direction",
-        # miscellaneous abstract
         "relationship", "communication", "trust", "friendship",
         "community", "society", "civilization", "history",
         "change", "growth", "decay", "entropy", "chaos", "order",
     ],
 }
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 5  –  Adjective and modifier banks for variant generation
-#               (original — preserved verbatim)
-# ─────────────────────────────────────────────────────────────────────────────
 
 ADJECTIVES: dict[str, list[str]] = {
     "colour": [
@@ -916,7 +719,6 @@ ADJECTIVES: dict[str, list[str]] = {
     },
 }
 
-# Compound noun modifiers per entity_type
 COMPOUND_MODIFIERS: dict[str, list[str]] = {
     "vehicle":       ["sports", "race", "street", "off-road", "all-terrain",
                       "electric", "hydrogen", "hybrid", "self-driving", "luxury"],
@@ -935,10 +737,6 @@ COMPOUND_MODIFIERS: dict[str, list[str]] = {
     "animal":        ["pack", "herd", "flock", "school"],
     "plant":         ["tropical", "alpine", "desert", "aquatic"],
 }
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 6  –  Ambiguous examples  (original — preserved verbatim)
-# ─────────────────────────────────────────────────────────────────────────────
 
 AMBIGUOUS_EXAMPLES: list[dict] = [
     {"token": "drone",         "entity_type": "robot",   "confidence": 0.75,
@@ -983,10 +781,6 @@ AMBIGUOUS_EXAMPLES: list[dict] = [
      "possible_classes": ["fluid", "particle"]},
 ]
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 7  –  Hard examples  (original — preserved verbatim)
-# ─────────────────────────────────────────────────────────────────────────────
-
 HARD_EXAMPLES: list[tuple[str, str]] = [
     ("bookshelf",           "structure"),
     ("smartphone",          "electronic"),
@@ -1020,21 +814,6 @@ HARD_EXAMPLES: list[tuple[str, str]] = [
     ("flamethrower",        "weapon"),
 ]
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 8  –  NEW: Coarse-class ontology
-#
-# coarse_class sits between entity_type and parent_class/root_class, giving
-# the multi-head classifier a mid-level prediction target that groups
-# semantically related entity types.
-#
-# Mapping:
-#   entity_type → coarse_class
-#
-# coarse_class values:
-#   living_entity   transport      machine_like   manmade_object
-#   environment     astronomical   dynamic        abstract
-# ─────────────────────────────────────────────────────────────────────────────
-
 ENTITY_COARSE_CLASS: dict[str, str] = {
     "agent":          "living_entity",
     "animal":         "living_entity",
@@ -1057,27 +836,12 @@ ENTITY_COARSE_CLASS: dict[str, str] = {
     "non_physical":   "abstract",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 9  –  NEW: Material ontology
-#
-# Maps entity_type (and optionally subclass keyword) to likely primary
-# material.  The resolver checks subclass keywords first, then falls back
-# to the entity_type default.
-#
-# Supported materials:
-#   steel  iron  aluminum  wood  plastic  rubber  glass  paper  fabric
-#   concrete  stone  water  ice  sand  soil  flesh  ceramic  carbon_fiber
-#   mixed  unknown
-# ─────────────────────────────────────────────────────────────────────────────
-
-# material values used across the codebase
 MATERIALS = [
     "steel", "iron", "aluminum", "wood", "plastic", "rubber", "glass",
     "paper", "fabric", "concrete", "stone", "water", "ice", "sand",
     "soil", "flesh", "ceramic", "carbon_fiber", "mixed", "unknown",
 ]
 
-# Default material per entity_type (used when subclass keyword matching fails)
 ENTITY_MATERIALS: dict[str, str] = {
     "agent":          "flesh",
     "animal":         "flesh",
@@ -1100,9 +864,7 @@ ENTITY_MATERIALS: dict[str, str] = {
     "non_physical":   "unknown",
 }
 
-# Keyword → material overrides; checked against token.lower()
 MATERIAL_KEYWORD_OVERRIDES: dict[str, str] = {
-    # materials explicitly named
     "wooden":     "wood",   "oak":      "wood",   "pine":     "wood",
     "maple":      "wood",   "bamboo":   "wood",   "timber":   "wood",
     "steel":      "steel",  "iron":     "iron",   "aluminum": "aluminum",
@@ -1117,7 +879,6 @@ MATERIAL_KEYWORD_OVERRIDES: dict[str, str] = {
     "paper":      "paper",  "cardboard":"paper",
     "ceramic":    "ceramic","porcelain":"ceramic","clay":     "ceramic",
     "carbon":     "carbon_fiber",
-    # entity-specific keywords
     "water":      "water",  "river":    "water",  "ocean":    "water",
     "lake":       "water",  "rain":     "water",  "blood":    "water",
     "ice":        "ice",    "glacier":  "ice",    "snow":     "ice",
@@ -1130,15 +891,8 @@ MATERIAL_KEYWORD_OVERRIDES: dict[str, str] = {
     "bottle":     "glass",  "jar":      "glass",  "cup":      "glass",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 10  –  NEW: Phase ontology
-#
-# Solid / liquid / gas / plasma / granular
-# ─────────────────────────────────────────────────────────────────────────────
-
 PHASES = ["solid", "liquid", "gas", "plasma", "granular"]
 
-# Default phase per entity_type
 ENTITY_PHASES: dict[str, str] = {
     "agent":          "solid",
     "animal":         "solid",
@@ -1161,7 +915,6 @@ ENTITY_PHASES: dict[str, str] = {
     "non_physical":   "unknown",
 }
 
-# Keyword → phase overrides; checked against token.lower()
 PHASE_KEYWORD_OVERRIDES: dict[str, str] = {
     "water":   "liquid", "river":   "liquid", "lake":    "liquid",
     "ocean":   "liquid", "oil":     "liquid", "blood":   "liquid",
@@ -1181,15 +934,8 @@ PHASE_KEYWORD_OVERRIDES: dict[str, str] = {
     "ice":     "solid",  "glacier": "solid",  "crystal": "solid",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 11  –  NEW: Mobility ontology
-#
-# static / movable / self_propelled / flowing / flying
-# ─────────────────────────────────────────────────────────────────────────────
-
 MOBILITY_VALUES = ["static", "movable", "self_propelled", "flowing", "flying"]
 
-# Default mobility per entity_type
 ENTITY_MOBILITY: dict[str, str] = {
     "agent":          "self_propelled",
     "animal":         "self_propelled",
@@ -1212,7 +958,6 @@ ENTITY_MOBILITY: dict[str, str] = {
     "non_physical":   "unknown",
 }
 
-# Keyword → mobility overrides
 MOBILITY_KEYWORD_OVERRIDES: dict[str, str] = {
     "wall":       "static",   "building":   "static",   "bridge":   "static",
     "road":       "static",   "mountain":   "static",   "terrain":  "static",
@@ -1228,15 +973,8 @@ MOBILITY_KEYWORD_OVERRIDES: dict[str, str] = {
     "ball":       "movable",  "bottle":     "movable",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 12  –  NEW: Size ontology
-#
-# tiny / small / medium / large / huge / astronomical
-# ─────────────────────────────────────────────────────────────────────────────
-
 SIZE_VALUES = ["tiny", "small", "medium", "large", "huge", "astronomical"]
 
-# Default size per entity_type
 ENTITY_SIZE_CLASSES: dict[str, str] = {
     "agent":          "medium",
     "animal":         "medium",
@@ -1259,7 +997,6 @@ ENTITY_SIZE_CLASSES: dict[str, str] = {
     "non_physical":   "unknown",
 }
 
-# Keyword → size overrides
 SIZE_KEYWORD_OVERRIDES: dict[str, str] = {
     "dust":       "tiny",   "particle":  "tiny",  "atom":     "tiny",
     "molecule":   "tiny",   "nanoparticle":"tiny","proton":   "tiny",
@@ -1277,12 +1014,6 @@ SIZE_KEYWORD_OVERRIDES: dict[str, str] = {
     "micro":      "tiny",   "nano":      "tiny",  "mini":     "small",
     "giant":      "huge",   "massive":   "huge",
 }
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 13  –  NEW: Affordance ontology
-#
-# What actions can an agent perform on / with this entity?
-# ─────────────────────────────────────────────────────────────────────────────
 
 ENTITY_AFFORDANCES: dict[str, list[str]] = {
     "agent":          ["move", "interact", "communicate", "grasp", "push"],
@@ -1306,7 +1037,6 @@ ENTITY_AFFORDANCES: dict[str, list[str]] = {
     "non_physical":   [],
 }
 
-# Subclass-level affordance overrides / extensions
 SUBCLASS_AFFORDANCES: dict[str, list[str]] = {
     "car":           ["drive", "park", "accelerate", "brake", "steer", "collide"],
     "truck":         ["drive", "load", "unload", "tow", "collide"],
@@ -1324,13 +1054,6 @@ SUBCLASS_AFFORDANCES: dict[str, list[str]] = {
     "gas":           ["expand", "compress", "diffuse", "ignite"],
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 14  –  NEW: Interaction properties (expanded)
-#
-# Replaces and extends the original PROPERTY_POOL with a richer set.
-# These properties are physics-engine hints beyond the base "properties" field.
-# ─────────────────────────────────────────────────────────────────────────────
-
 INTERACTION_PROPERTIES_POOL: list[str] = [
     "rigid", "soft", "elastic", "deformable", "rolling", "motorized",
     "sharp", "fragile", "flammable", "conductive", "magnetic",
@@ -1338,7 +1061,6 @@ INTERACTION_PROPERTIES_POOL: list[str] = [
     "heavy", "compressible", "porous", "abrasive",
 ]
 
-# Default interaction properties per entity_type
 ENTITY_INTERACTION_PROPERTIES: dict[str, list[str]] = {
     "agent":          ["soft", "deformable"],
     "animal":         ["soft", "deformable"],
@@ -1360,12 +1082,6 @@ ENTITY_INTERACTION_PROPERTIES: dict[str, list[str]] = {
     "celestial_body": ["rigid", "heavy", "magnetic"],
     "non_physical":   [],
 }
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 15  –  NEW: Scene role priors
-#
-# What role does this entity typically play in a simulated scene?
-# ─────────────────────────────────────────────────────────────────────────────
 
 SCENE_ROLES_POOL: list[str] = [
     "actor", "obstacle", "support", "medium", "collider",
@@ -1394,14 +1110,6 @@ ENTITY_SCENE_ROLES: dict[str, list[str]] = {
     "non_physical":   [],
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 16  –  NEW: Alias dictionary
-#
-# Common synonyms and alternative names per entity_type (entity-level).
-# Token-specific aliases are looked up at generation time.
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Maps specific tokens (lowercased) to a list of alias strings
 TOKEN_ALIASES: dict[str, list[str]] = {
     "car":          ["automobile", "vehicle", "auto", "motorcar"],
     "truck":        ["lorry", "HGV", "semi"],
@@ -1441,21 +1149,11 @@ TOKEN_ALIASES: dict[str, list[str]] = {
     "planet":       ["world", "orb", "terrestrial body"],
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 17  –  NEW: Shape ontology
-#
-# Coarse geometric shape — used downstream to select collision primitives.
-#
-# Values:
-#   sphere  box  cylinder  plane  humanoid  elongated  irregular  amorphous
-# ─────────────────────────────────────────────────────────────────────────────
-
 SHAPE_VALUES = [
     "sphere", "box", "cylinder", "plane", "humanoid",
     "elongated", "irregular", "amorphous",
 ]
 
-# Default shape per entity_type
 ENTITY_SHAPES: dict[str, str] = {
     "agent":          "humanoid",
     "animal":         "irregular",
@@ -1478,7 +1176,6 @@ ENTITY_SHAPES: dict[str, str] = {
     "non_physical":   "unknown",
 }
 
-# Keyword → shape overrides
 SHAPE_KEYWORD_OVERRIDES: dict[str, str] = {
     "ball":       "sphere",  "sphere":     "sphere",  "globe":     "sphere",
     "bubble":     "sphere",  "orb":        "sphere",  "pebble":    "sphere",
@@ -1501,16 +1198,6 @@ SHAPE_KEYWORD_OVERRIDES: dict[str, str] = {
     "fire":       "amorphous","lava":      "amorphous","fog":      "amorphous",
     "rock":       "irregular","mountain":  "irregular","debris":   "irregular",
 }
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 18  –  NEW: Mass class ontology
-#
-# Coarse mass class — used to set mass priors before simulation.
-#
-# Values (roughly logarithmic decades):
-#   tiny (<1g)  light (1g–1kg)  medium (1kg–100kg)
-#   heavy (100kg–10t)  extreme (10t–1Mt)  planetary (>1Mt)
-# ─────────────────────────────────────────────────────────────────────────────
 
 MASS_VALUES = ["tiny", "light", "medium", "heavy", "extreme", "planetary"]
 
@@ -1553,15 +1240,6 @@ MASS_KEYWORD_OVERRIDES: dict[str, str] = {
     "asteroid":   "extreme", "mountain":   "extreme",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 19  –  NEW: Contact-type ontology
-#
-# Selects the physics solver / collision response model.
-#
-# Values:
-#   rigid  elastic  fluid  granular  soft_body
-# ─────────────────────────────────────────────────────────────────────────────
-
 CONTACT_TYPE_VALUES = ["rigid", "elastic", "fluid", "granular", "soft_body"]
 
 ENTITY_CONTACT_TYPES: dict[str, str] = {
@@ -1600,17 +1278,6 @@ CONTACT_TYPE_KEYWORD_OVERRIDES: dict[str, str] = {
     "flesh":   "soft_body","dog":     "soft_body","cat":     "soft_body",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 20  –  NEW: Stability ontology
-#
-# How does this entity behave when unperturbed?
-#
-# Values:
-#   stable    – resting equilibrium; resists displacement
-#   unstable  – tends to tip or collapse under small perturbations
-#   dynamic   – inherently in motion; no stable resting state in normal use
-# ─────────────────────────────────────────────────────────────────────────────
-
 STABILITY_VALUES = ["stable", "unstable", "dynamic"]
 
 ENTITY_STABILITY: dict[str, str] = {
@@ -1646,17 +1313,6 @@ STABILITY_KEYWORD_OVERRIDES: dict[str, str] = {
     "coin":       "unstable", "cup":        "unstable",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 21  –  NEW: Gravity and buoyancy flags
-#
-# affected_by_gravity  – participates in gravitational acceleration (9.81 m/s²)
-# floats               – positive buoyancy in water (density < ~1000 kg/m³)
-#
-# Both are booleans; terrain serves as the reference frame and is excluded
-# from gravity integration.
-# ─────────────────────────────────────────────────────────────────────────────
-
-# Default per entity_type: (affected_by_gravity, floats)
 ENTITY_GRAVITY_BUOYANCY: dict[str, tuple[bool, bool]] = {
     "agent":          (True,  False),
     "animal":         (True,  False),
@@ -1671,15 +1327,14 @@ ENTITY_GRAVITY_BUOYANCY: dict[str, tuple[bool, bool]] = {
     "weapon":         (True,  False),
     "sports_object":  (True,  False),
     "structure":      (True,  False),
-    "terrain":        (False, False),   # terrain is the fixed reference frame
-    "fluid":          (True,  True),    # fluid medium itself flows / floats
+    "terrain":        (False, False),
+    "fluid":          (True,  True),
     "projectile":     (True,  False),
     "particle":       (True,  False),
     "celestial_body": (True,  False),
     "non_physical":   (False, False),
 }
 
-# Token-level overrides: substring → (affected_by_gravity, floats)
 GRAVITY_BUOYANCY_KEYWORD_OVERRIDES: dict[str, tuple[bool, bool]] = {
     "boat":         (True, True),  "ship":        (True, True),
     "yacht":        (True, True),  "raft":         (True, True),
@@ -1691,17 +1346,6 @@ GRAVITY_BUOYANCY_KEYWORD_OVERRIDES: dict[str, tuple[bool, bool]] = {
     "terrain":      (False, False),"ground":       (False, False),
     "mountain":     (False, False),"road":         (False, False),
 }
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 22  –  NEW: Friction class ontology
-#
-# Coarse surface friction — maps to coefficient of friction prior.
-#
-# Values:
-#   low    (μ < 0.15,  e.g. ice, oil, wet glass)
-#   medium (μ 0.15–0.5, e.g. steel on steel, wood on concrete)
-#   high   (μ > 0.5,   e.g. rubber on asphalt, sandpaper)
-# ─────────────────────────────────────────────────────────────────────────────
 
 FRICTION_VALUES = ["low", "medium", "high"]
 
@@ -1739,17 +1383,6 @@ FRICTION_KEYWORD_OVERRIDES: dict[str, str] = {
     "stone":     "medium", "fabric":    "medium", "soil":      "medium",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 23  –  NEW: Restitution class ontology
-#
-# Coarse coefficient of restitution (bounciness / elasticity on impact).
-#
-# Values:
-#   low    (e < 0.3,  e.g. clay, sandbag — absorbs impact)
-#   medium (e 0.3–0.7, e.g. wood, steel, rigid bodies)
-#   high   (e > 0.7,  e.g. rubber ball, superball — bouncy)
-# ─────────────────────────────────────────────────────────────────────────────
-
 RESTITUTION_VALUES = ["low", "medium", "high"]
 
 ENTITY_RESTITUTION_CLASSES: dict[str, str] = {
@@ -1785,24 +1418,6 @@ RESTITUTION_KEYWORD_OVERRIDES: dict[str, str] = {
     "pillow":       "low",    "sandbag":     "low",   "human":       "low",
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 24  –  NEW: Capabilities ontology
-#
-# What can this entity DO in a simulation?
-#
-# Capabilities describe the entity's own active physics behaviours.
-# They are distinct from affordances, which describe what an external agent
-# can do TO or WITH the entity.
-#
-# Examples:
-#   car      → [drive, steer, accelerate, brake, collide]
-#   ball     → [roll, bounce, collide]
-#   water    → [flow, splash, erode, dissolve]
-#   robot    → [move, grasp, navigate, interact]
-#   fire     → [spread, ignite, consume]
-#   person   → [walk, run, jump, grasp, push, climb]
-# ─────────────────────────────────────────────────────────────────────────────
-
 ENTITY_CAPABILITIES: dict[str, list[str]] = {
     "agent":          ["walk", "run", "jump", "grasp", "push", "climb",
                        "interact", "communicate"],
@@ -1830,7 +1445,6 @@ ENTITY_CAPABILITIES: dict[str, list[str]] = {
     "non_physical":   [],
 }
 
-# Subclass-level capability extensions (merged with entity-type base)
 SUBCLASS_CAPABILITIES: dict[str, list[str]] = {
     "car":            ["drive", "steer", "accelerate", "brake"],
     "aircraft":       ["fly", "take_off", "land", "bank", "ascend", "descend"],
@@ -1849,61 +1463,8 @@ SUBCLASS_CAPABILITIES: dict[str, list[str]] = {
     "star":           ["emit", "fuse", "attract", "radiate"],
 }
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 25  –  Data record dataclass  (v3 — extends v2)
-# ─────────────────────────────────────────────────────────────────────────────
-
 @dataclass
 class EntityRecord:
-    """
-    A single training example for the hierarchical entity classifier.
-
-    Original fields  (v1)
-    ──────────────────────
-    token               : surface form fed to the tokenizer
-    entity_type         : leaf-level ontology class (direct prediction target)
-    parent_class        : intermediate ontology node (used in hierarchical loss)
-    root_class          : always "physical_entity" (or "non_physical")
-    superclass          : kept for backward compatibility; equals entity_type
-    subclass            : fine-grained label within entity_type
-    properties          : original inferred physical properties
-    confidence          : [0, 1]  — 1.0 for unambiguous, <1.0 for ambiguous
-    variant_of          : canonical seed form, or None if this IS the seed
-    variant_type        : e.g. "plural", "colour_adj", "compound", "hard_example"
-
-    v2 fields
-    ──────────
-    material            : primary material composition (see MATERIALS list)
-    phase               : thermodynamic phase  (solid / liquid / gas / plasma / granular)
-    mobility            : kinematic class  (static / movable / self_propelled / flowing / flying)
-    size_class          : coarse size  (tiny / small / medium / large / huge / astronomical)
-    affordances         : list of action labels an agent can perform w/ this entity
-    interaction_properties : expanded physical interaction flags
-    scene_roles         : typical scene roles  (actor / obstacle / support / ...)
-    aliases             : alternative names / synonyms for this token
-    negative            : True if this is a non-physical negative example
-    possible_classes    : alternative plausible entity_type labels (ambiguous examples)
-
-    v3 fields  (NEW — all optional with sensible defaults)
-    ────────────────────────────────────────────────────────
-    coarse_class        : mid-level grouping between entity_type and parent_class
-                          (transport / machine_like / manmade_object / living_entity /
-                           environment / astronomical / dynamic / abstract)
-    shape               : coarse collision geometry
-                          (sphere / box / cylinder / plane / humanoid /
-                           elongated / irregular / amorphous)
-    mass_class          : coarse mass prior
-                          (tiny / light / medium / heavy / extreme / planetary)
-    contact_type        : physics solver hint
-                          (rigid / elastic / fluid / granular / soft_body)
-    stability           : resting behaviour  (stable / unstable / dynamic)
-    affected_by_gravity : participates in gravitational acceleration
-    floats              : positive buoyancy in water
-    friction_class      : surface friction prior  (low / medium / high)
-    restitution_class   : bounciness prior  (low / medium / high)
-    capabilities        : active physics behaviours this entity can exhibit
-    """
-    # ── v1 fields ─────────────────────────────────────────────────────────────
     token:                  str
     entity_type:            str
     parent_class:           str
@@ -1915,7 +1476,6 @@ class EntityRecord:
     variant_of:             Optional[str]       = None
     variant_type:           Optional[str]       = None
 
-    # ── v2 fields ─────────────────────────────────────────────────────────────
     material:               str                 = "unknown"
     phase:                  str                 = "solid"
     mobility:               str                 = "movable"
@@ -1927,7 +1487,6 @@ class EntityRecord:
     negative:               bool                = False
     possible_classes:       Optional[list[str]] = None
 
-    # ── v3 fields ─────────────────────────────────────────────────────────────
     coarse_class:           str                 = "unknown"
     shape:                  str                 = "irregular"
     mass_class:             str                 = "medium"
@@ -1943,27 +1502,7 @@ class EntityRecord:
         return asdict(self)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 26  –  Core generator class
-# ─────────────────────────────────────────────────────────────────────────────
-
 class EntityDatasetGenerator:
-    """
-    Generates a large, balanced, deduplicated JSONL dataset for training a
-    hierarchical entity ontology classifier.
-
-    The generator is deliberately stateless between generate() calls so that
-    it can be embedded in a larger pipeline or called repeatedly with
-    different seeds.
-
-    Parameters
-    ──────────
-    seed          : random seed for full reproducibility
-    max_samples   : hard cap on output records (0 = unlimited)
-    balance       : if True, undersample majority classes to match minority
-    verbose       : print progress to stdout
-    """
-
     def __init__(
         self,
         seed:        int  = 42,
@@ -1977,31 +1516,10 @@ class EntityDatasetGenerator:
         self.verbose     = verbose
         random.seed(seed)
 
-    # ── public API ────────────────────────────────────────────────────────────
-
     def generate(self) -> list[EntityRecord]:
-        """
-        Run the full generation pipeline and return a list of EntityRecord.
-
-        Pipeline:
-          1. Seed records (one per vocabulary entry, including non_physical)
-          2. Plural variants
-          3. Colour-adjective variants
-          4. Size-adjective variants
-          5. Material-adjective variants
-          6. State-adjective variants
-          7. Domain-adjective variants
-          8. Compound-noun variants
-          9. Case variants  (upper / lower / camelCase / hyphenated)
-         10. Hard examples
-         11. Ambiguous examples
-         12. Deduplication
-         13. Optional balancing
-        """
         t0 = time.time()
         records: list[EntityRecord] = []
 
-        # Steps 1–9: vocabulary expansion
         records.extend(self._generate_seeds())
         records.extend(self._generate_plural_variants(records))
         records.extend(self._generate_adjective_variants(records, "colour"))
@@ -2012,23 +1530,18 @@ class EntityDatasetGenerator:
         records.extend(self._generate_compound_variants(records))
         records.extend(self._generate_case_variants(records))
 
-        # Steps 10–11: curated additions
         records.extend(self._add_hard_examples())
         records.extend(self._add_ambiguous_examples())
 
-        # Step 12: deduplication (preserve first occurrence)
         records = self._deduplicate(records)
 
-        # Step 13: optional class balancing
         if self.balance:
             records = self._balance_classes(records)
 
-        # Step 14: optional cap
         if self.max_samples > 0:
             random.shuffle(records)
             records = records[:self.max_samples]
 
-        # Final sort for deterministic output (token then entity_type)
         records.sort(key=lambda r: (r.token.lower(), r.entity_type))
 
         elapsed = time.time() - t0
@@ -2038,19 +1551,15 @@ class EntityDatasetGenerator:
         return records
 
     def save(self, records: list[EntityRecord], path: str) -> None:
-        """Write records to a JSONL file, creating parent directories if needed."""
         out = Path(path)
         out.parent.mkdir(parents=True, exist_ok=True)
         with out.open("w", encoding="utf-8") as fh:
             for rec in records:
                 fh.write(json.dumps(rec.to_dict(), ensure_ascii=False) + "\n")
         if self.verbose:
-            print(f"[DatasetGen] saved {len(records):,} records → {out}")
-
-    # ── step 1: seed records ──────────────────────────────────────────────────
+            print(f"[DatasetGen] saved {len(records):,} records -> {out}")
 
     def _generate_seeds(self) -> list[EntityRecord]:
-        """Create one EntityRecord per entry in SEED_VOCAB (all classes)."""
         records: list[EntityRecord] = []
         for entity_type, tokens in SEED_VOCAB.items():
             is_negative = (entity_type == "non_physical")
@@ -2067,7 +1576,6 @@ class EntityDatasetGenerator:
                 subclass, extra_props = self._pick_subclass(token, entity_type)
                 props = _dedupe_list(base_props + extra_props)
 
-                # Resolve v2 fields
                 material   = self._resolve_material(token, entity_type)
                 phase      = self._resolve_phase(token, entity_type)
                 mobility   = self._resolve_mobility(token, entity_type)
@@ -2077,7 +1585,6 @@ class EntityDatasetGenerator:
                 scene_roles = ENTITY_SCENE_ROLES.get(entity_type, [])
                 aliases     = TOKEN_ALIASES.get(token.lower(), [])
 
-                # Resolve v3 fields
                 coarse_class  = ENTITY_COARSE_CLASS.get(entity_type, "unknown")
                 shape         = self._resolve_shape(token, entity_type)
                 mass_class    = self._resolve_mass(token, entity_type)
@@ -2099,7 +1606,6 @@ class EntityDatasetGenerator:
                     confidence=             1.0,
                     variant_of=             None,
                     variant_type=           None,
-                    # v2 fields
                     material=               material,
                     phase=                  phase,
                     mobility=               mobility,
@@ -2110,7 +1616,6 @@ class EntityDatasetGenerator:
                     aliases=                aliases,
                     negative=               is_negative,
                     possible_classes=       None,
-                    # v3 fields
                     coarse_class=           coarse_class,
                     shape=                  shape,
                     mass_class=             mass_class,
@@ -2124,32 +1629,17 @@ class EntityDatasetGenerator:
                 ))
         return records
 
-    # ── step 2: plural variants ───────────────────────────────────────────────
-
     def _generate_plural_variants(
         self, seeds: list[EntityRecord]
     ) -> list[EntityRecord]:
-        """
-        Generate English plural forms for seed tokens.
-
-        Rules applied (in order):
-          • ends in 'fe'   → 'ves'  (knife → knives)
-          • ends in 'f'    → 'ves'  (leaf → leaves)
-          • ends in 'us'   → 'i'    (radius → radii)
-          • ends in 'is'   → 'es'   (axis → axes)
-          • ends in vowel+'o' → 'es'
-          • ends in 's','x','z','ch','sh' → 'es'
-          • ends in consonant+'y' → 'ies'
-          • otherwise → 's'
-        """
         new_records: list[EntityRecord] = []
         seed_tokens = {r.token.lower() for r in seeds}
 
         for rec in seeds:
             if rec.variant_type is not None:
-                continue  # only pluralise seeds
+                continue
             if rec.negative:
-                continue  # no plural of abstract nouns
+                continue
             plural = _pluralise(rec.token)
             if plural.lower() == rec.token.lower():
                 continue
@@ -2166,7 +1656,6 @@ class EntityDatasetGenerator:
                 confidence=             1.0,
                 variant_of=             rec.token,
                 variant_type=           "plural",
-                # propagate v2 fields
                 material=               rec.material,
                 phase=                  rec.phase,
                 mobility=               rec.mobility,
@@ -2177,7 +1666,6 @@ class EntityDatasetGenerator:
                 aliases=                rec.aliases,
                 negative=               rec.negative,
                 possible_classes=       rec.possible_classes,
-                # propagate v3 fields
                 coarse_class=           rec.coarse_class,
                 shape=                  rec.shape,
                 mass_class=             rec.mass_class,
@@ -2191,20 +1679,11 @@ class EntityDatasetGenerator:
             ))
         return new_records
 
-    # ── steps 3–7: adjective variants ─────────────────────────────────────────
-
     def _generate_adjective_variants(
         self,
         records:  list[EntityRecord],
         adj_type: str,
     ) -> list[EntityRecord]:
-        """
-        Prepend adjectives of the given type to a random sample of seed tokens.
-
-        adj_type is one of: 'colour', 'size', 'material', 'state'.
-        We sample a subset of seeds and adjectives to avoid combinatorial
-        explosion while still covering diverse surface forms.
-        """
         adjectives = ADJECTIVES.get(adj_type, [])
         if not adjectives:
             return []
@@ -2222,7 +1701,6 @@ class EntityDatasetGenerator:
     def _generate_domain_adjective_variants(
         self, records: list[EntityRecord]
     ) -> list[EntityRecord]:
-        """Prepend domain-specific adjectives (from ADJECTIVES['domain'])."""
         domain_adjs: dict = ADJECTIVES.get("domain", {})
         seeds = [r for r in records if r.variant_type is None and not r.negative]
         new_records: list[EntityRecord] = []
@@ -2236,12 +1714,9 @@ class EntityDatasetGenerator:
                 new_records.append(self._make_variant(rec, token, "domain_adj"))
         return new_records
 
-    # ── step 8: compound variants ─────────────────────────────────────────────
-
     def _generate_compound_variants(
         self, records: list[EntityRecord]
     ) -> list[EntityRecord]:
-        """Prepend compound modifiers (sports car, off-road truck, etc.)."""
         seeds = [r for r in records if r.variant_type is None and not r.negative]
         new_records: list[EntityRecord] = []
 
@@ -2254,19 +1729,9 @@ class EntityDatasetGenerator:
                 new_records.append(self._make_variant(rec, token, "compound"))
         return new_records
 
-    # ── step 9: case and typography variants ──────────────────────────────────
-
     def _generate_case_variants(
         self, records: list[EntityRecord]
     ) -> list[EntityRecord]:
-        """
-        Generate surface-form variants:
-          • UPPERCASE  (TESLA)
-          • lowercase  (tesla)
-          • CamelCase  (Tesla)
-          • hyphenated (sports-car)
-        Only applied to single-word or two-word seed tokens.
-        """
         seeds = [r for r in records if r.variant_type is None]
         new_records: list[EntityRecord] = []
 
@@ -2291,10 +1756,7 @@ class EntityDatasetGenerator:
 
         return new_records
 
-    # ── step 10: hard examples ────────────────────────────────────────────────
-
     def _add_hard_examples(self) -> list[EntityRecord]:
-        """Inject the curated hard-example list with slightly reduced confidence."""
         records: list[EntityRecord] = []
         for token, entity_type in HARD_EXAMPLES:
             parent_class, root_class = ONTOLOGY[entity_type]
@@ -2336,10 +1798,7 @@ class EntityDatasetGenerator:
             ))
         return records
 
-    # ── step 11: ambiguous examples ───────────────────────────────────────────
-
     def _add_ambiguous_examples(self) -> list[EntityRecord]:
-        """Inject the curated ambiguous-example list with reduced confidence."""
         records: list[EntityRecord] = []
         for ex in AMBIGUOUS_EXAMPLES:
             entity_type = ex["entity_type"]
@@ -2386,14 +1845,8 @@ class EntityDatasetGenerator:
             ))
         return records
 
-    # ── step 12: deduplication ────────────────────────────────────────────────
-
     @staticmethod
     def _deduplicate(records: list[EntityRecord]) -> list[EntityRecord]:
-        """
-        Remove exact duplicate (token, entity_type) pairs, keeping the first
-        occurrence (the highest-confidence / seed version).
-        """
         seen: set[tuple[str, str]] = set()
         out:  list[EntityRecord]   = []
         for rec in records:
@@ -2403,14 +1856,8 @@ class EntityDatasetGenerator:
                 out.append(rec)
         return out
 
-    # ── step 13: class balancing ──────────────────────────────────────────────
-
     @staticmethod
     def _balance_classes(records: list[EntityRecord]) -> list[EntityRecord]:
-        """
-        Undersample majority classes so every entity_type has the same count
-        as the smallest class.
-        """
         from collections import defaultdict
         buckets: dict[str, list[EntityRecord]] = defaultdict(list)
         for rec in records:
@@ -2423,14 +1870,8 @@ class EntityDatasetGenerator:
             balanced.extend(recs[:min_count])
         return balanced
 
-    # ── variant factory helper ────────────────────────────────────────────────
-
     @staticmethod
     def _make_variant(rec: EntityRecord, token: str, vtype: str) -> EntityRecord:
-        """
-        Create a variant EntityRecord from a seed, overriding token and
-        variant_type while propagating all other fields (v1, v2, v3) unchanged.
-        """
         return EntityRecord(
             token=                  token,
             entity_type=            rec.entity_type,
@@ -2442,7 +1883,6 @@ class EntityDatasetGenerator:
             confidence=             rec.confidence,
             variant_of=             rec.token,
             variant_type=           vtype,
-            # v2 fields
             material=               rec.material,
             phase=                  rec.phase,
             mobility=               rec.mobility,
@@ -2453,7 +1893,6 @@ class EntityDatasetGenerator:
             aliases=                rec.aliases,
             negative=               rec.negative,
             possible_classes=       rec.possible_classes,
-            # v3 fields
             coarse_class=           rec.coarse_class,
             shape=                  rec.shape,
             mass_class=             rec.mass_class,
@@ -2466,11 +1905,8 @@ class EntityDatasetGenerator:
             capabilities=           rec.capabilities,
         )
 
-    # ── v2 field resolvers ────────────────────────────────────────────────────
-
     @staticmethod
     def _resolve_material(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, mat in MATERIAL_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2479,7 +1915,6 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _resolve_phase(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, phase in PHASE_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2488,7 +1923,6 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _resolve_mobility(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, mob in MOBILITY_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2497,7 +1931,6 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _resolve_size(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, sz in SIZE_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2508,24 +1941,16 @@ class EntityDatasetGenerator:
     def _resolve_affordances(
         token: str, entity_type: str, subclass: str
     ) -> list[str]:
-        """
-        Merge entity-level affordances with any subclass-specific overrides.
-        Subclass affordances extend (not replace) the entity-type list.
-        """
         base = list(ENTITY_AFFORDANCES.get(entity_type, []))
         sub  = list(SUBCLASS_AFFORDANCES.get(subclass, []))
         return _dedupe_list(sub + base)
 
     @staticmethod
     def _resolve_interaction_properties(entity_type: str) -> list[str]:
-        """Return the canonical interaction properties for this entity_type."""
         return list(ENTITY_INTERACTION_PROPERTIES.get(entity_type, []))
-
-    # ── v3 field resolvers ────────────────────────────────────────────────────
 
     @staticmethod
     def _resolve_shape(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, sh in SHAPE_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2534,7 +1959,6 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _resolve_mass(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, mc in MASS_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2543,7 +1967,6 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _resolve_contact_type(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, ct in CONTACT_TYPE_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2552,7 +1975,6 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _resolve_stability(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, st in STABILITY_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2563,8 +1985,6 @@ class EntityDatasetGenerator:
     def _resolve_gravity_buoyancy(
         token: str, entity_type: str
     ) -> tuple[bool, bool]:
-        """Keyword-match → entity_type default fallback.
-        Returns (affected_by_gravity, floats)."""
         tok = token.lower()
         for kw, gb in GRAVITY_BUOYANCY_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2573,7 +1993,6 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _resolve_friction(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, fr in FRICTION_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2582,7 +2001,6 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _resolve_restitution(token: str, entity_type: str) -> str:
-        """Keyword-match → entity_type default fallback."""
         tok = token.lower()
         for kw, rs in RESTITUTION_KEYWORD_OVERRIDES.items():
             if kw in tok:
@@ -2593,22 +2011,12 @@ class EntityDatasetGenerator:
     def _resolve_capabilities(
         token: str, entity_type: str, subclass: str
     ) -> list[str]:
-        """
-        Merge entity-level capabilities with subclass-specific extensions.
-        Subclass capabilities are prepended so they appear first.
-        """
         base = list(ENTITY_CAPABILITIES.get(entity_type, []))
         sub  = list(SUBCLASS_CAPABILITIES.get(subclass, []))
         return _dedupe_list(sub + base)
 
-    # ── original helpers (preserved verbatim) ─────────────────────────────────
-
     @staticmethod
     def _pick_subclass(token: str, entity_type: str) -> tuple[str, list[str]]:
-        """
-        Heuristically assign a subclass to a token by keyword matching.
-        Falls back to the first subclass in SUBCLASS_MAP.
-        """
         subcls_opts = SUBCLASS_MAP.get(entity_type, [])
         if not subcls_opts:
             return ("", [])
@@ -2623,26 +2031,20 @@ class EntityDatasetGenerator:
 
     @staticmethod
     def _print_stats(records: list[EntityRecord], elapsed: float) -> None:
-        """Print a per-class breakdown to stdout."""
         from collections import Counter
         counts = Counter(r.entity_type for r in records)
         total  = len(records)
         print(f"\n[DatasetGen] generation complete  {total:,} records  "
               f"({elapsed:.1f}s)")
         print(f"{'entity_type':<22} {'count':>8}  {'%':>6}")
-        print("─" * 42)
+        print("-" * 42)
         for etype in sorted(counts):
             n = counts[etype]
             print(f"{etype:<22} {n:>8,}  {100*n/total:>5.1f}%")
         print()
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 27  –  Module-level helper functions  (original — preserved verbatim)
-# ─────────────────────────────────────────────────────────────────────────────
-
 def _dedupe_list(lst: list[str]) -> list[str]:
-    """Return lst with duplicates removed, preserving order."""
     seen: set[str] = set()
     out:  list[str] = []
     for item in lst:
@@ -2653,10 +2055,6 @@ def _dedupe_list(lst: list[str]) -> list[str]:
 
 
 def _pluralise(word: str) -> str:
-    """
-    Generate an English plural form for a given token (or the last word of a
-    multi-word token).  Handles common irregular patterns.
-    """
     parts = word.rsplit(" ", 1)
     if len(parts) == 2:
         return parts[0] + " " + _pluralise(parts[1])
@@ -2689,10 +2087,6 @@ def _pluralise(word: str) -> str:
         return w[:-1] + "ies"
     return w + "s"
 
-
-# ─────────────────────────────────────────────────────────────────────────────
-# SECTION 28  –  CLI entry point  (original — preserved verbatim)
-# ─────────────────────────────────────────────────────────────────────────────
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -2729,7 +2123,6 @@ def _parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
-    """Entry point for command-line execution."""
     args = _parse_args()
 
     gen = EntityDatasetGenerator(
