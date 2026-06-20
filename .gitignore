@@ -1,6 +1,25 @@
+# Weights
+*.pt
+*.pth
+
+# Large datasets
+datasets/entity/train.jsonl
+datasets/entity/val.jsonl
+datasets/entity/test.jsonl
+
+datasets/entity/train.jsonl.gz
+datasets/entity/val.jsonl.gz
+datasets/entity/test.jsonl.gz
+
+datasets/entity_classification.jsonl
+
 datasets/raw/
 datasets/processed/
 
+# Cache
+.cache/
+
+# VSCode
 .vscode/
 .idea/
 
