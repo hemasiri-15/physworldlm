@@ -1,0 +1,298 @@
+============================================================
+DATASET STATISTICS
+============================================================
+Generated:    2026-06-20T08:01:52.058032+00:00
+
+Total Samples: 29,537
+
+Train: 23,629
+Val:   2,953
+Test:  2,955
+
+Entity Types
+------------
+  agent                           2,549
+  animal                          2,383
+  vehicle                         2,310
+  fluid                           1,881
+  electronic                      1,782
+  terrain                         1,724
+  weapon                          1,700
+  structure                       1,698
+  tool                            1,516
+  container                       1,459
+  plant                           1,426
+  sports_object                   1,426
+  robot                           1,383
+  projectile                      1,357
+  furniture                       1,331
+  machine                         1,264
+  celestial_body                  1,183
+  particle                        1,033
+  non_physical                      132
+
+Parent Classes
+--------------
+  rigid_body                     14,171
+  living                          6,358
+  environment                     5,303
+  dynamic_object                  2,390
+  astronomical                    1,183
+  abstract                          132
+
+Root Classes
+------------
+  physical_entity                29,405
+  non_physical                      132
+
+Coarse Classes
+--------------
+  manmade_object                  9,214
+  living_entity                   6,358
+  environment                     5,303
+  machine_like                    2,647
+  dynamic                         2,390
+  transport                       2,310
+  astronomical                    1,183
+  abstract                          132
+
+Materials
+---------
+  steel                           8,810
+  flesh                           5,025
+  plastic                         2,926
+  wood                            2,678
+  water                           2,238
+  concrete                        1,599
+  soil                            1,563
+  rubber                          1,480
+  stone                           1,367
+  mixed                             821
+  ice                               366
+  glass                             223
+  unknown                           127
+  sand                              119
+  iron                               94
+  paper                              36
+  aluminum                           18
+  ceramic                            16
+  fabric                             16
+  carbon_fiber                       15
+
+Phases
+------
+  solid                          24,990
+  liquid                          2,112
+  granular                        1,237
+  gas                               799
+  plasma                            268
+  unknown                           131
+
+Mobility
+--------
+  self_propelled                 10,424
+  movable                         8,922
+  static                          5,939
+  flowing                         3,571
+  flying                            549
+  unknown                           132
+
+Shapes
+------
+  box                             8,121
+  elongated                       4,608
+  humanoid                        3,869
+  sphere                          3,621
+  irregular                       2,543
+  cylinder                        2,512
+  plane                           2,088
+  amorphous                       2,044
+  unknown                           131
+
+Mass Classes
+------------
+  light                           7,874
+  medium                          7,425
+  heavy                           6,918
+  extreme                         3,797
+  tiny                            2,210
+  planetary                       1,183
+  unknown                           130
+
+Contact Types
+-------------
+  rigid                          17,473
+  soft_body                       6,346
+  fluid                           2,674
+  elastic                         1,496
+  granular                        1,417
+  unknown                           131
+
+Stability
+---------
+  dynamic                        15,703
+  stable                         13,601
+  unknown                           132
+  unstable                          101
+
+Friction
+--------
+  medium                         15,901
+  high                            7,970
+  low                             5,535
+  unknown                           131
+
+Restitution
+-----------
+  low                            18,076
+  medium                          9,942
+  high                            1,387
+  unknown                           132
+
+Capabilities
+------------
+  walk                            6,059
+  grasp                           5,448
+  collide                         5,093
+  jump                            4,932
+  run                             4,932
+  support                         4,753
+  interact                        3,932
+  fly                             3,838
+  spread                          3,307
+  explode                         3,057
+  penetrate                       3,057
+  block                           3,029
+  spin                            2,783
+  climb                           2,549
+  communicate                     2,549
+  push                            2,549
+  speak                           2,531
+  throw                           2,531
+  rotate                          2,447
+  bite                            2,383
+  chase                           2,383
+  flee                            2,383
+  swim                            2,383
+  accelerate                      2,310
+  brake                           2,310
+  drive                           2,310
+  steer                           2,310
+  transport                       2,310
+  dissolve                        1,881
+  erode                           1,881
+  evaporate                       1,881
+  flow                            1,881
+  freeze                          1,881
+  splash                          1,881
+  compute                         1,782
+  display                         1,782
+  receive                         1,782
+  sense                           1,782
+  transmit                        1,782
+  absorb                          1,724
+  channel                         1,724
+  friction                        1,724
+  pool                            1,712
+  deploy                          1,700
+  fire                            1,700
+  strike                          1,700
+  collapse                        1,698
+  shelter                         1,698
+  eject                           1,680
+  reload                          1,680
+  ... (46 more)
+
+Affordances
+-----------
+  interact                        8,097
+  move                            7,646
+  observe                         4,992
+  grasp                           4,134
+  push                            3,880
+  pour                            3,340
+  charge                          3,165
+  carry                           3,159
+  power_off                       3,046
+  power_on                        3,046
+  cut                             2,942
+  communicate                     2,549
+  jump                            2,531
+  run                             2,531
+  walk                            2,531
+  avoid                           2,383
+  collide                         2,310
+  drive                           2,310
+  park                            2,310
+  steer                           2,310
+  transport                       2,310
+  accelerate                      2,066
+  brake                           2,066
+  contain                         1,881
+  evaporate                       1,881
+  flow                            1,881
+  splash                          1,881
+  configure                       1,782
+  dig                             1,724
+  drive_on                        1,724
+  traverse                        1,724
+  walk_on                         1,724
+  dissolve                        1,712
+  freeze                          1,712
+  aim                             1,700
+  deploy                          1,700
+  fire                            1,700
+  reload                          1,700
+  climb                           1,698
+  enter                           1,698
+  exit                            1,698
+  lean_on                         1,698
+  pass_through                    1,698
+  holster                         1,680
+  fasten                          1,516
+  measure                         1,516
+  use                             1,516
+  carve                           1,479
+  slice                           1,479
+  close                           1,459
+  ... (48 more)
+
+Scene Roles
+-----------
+  actor                          14,887
+  collider                       13,108
+  obstacle                        8,626
+  support                         6,270
+  background                      5,340
+  terrain                         4,788
+  medium                          2,914
+  projectile                      2,783
+  container                       1,459
+  manipulator                     1,383
+
+Variant Types
+-------------
+  size_adj                        5,022
+  colour_adj                      5,021
+  material_adj                    5,017
+  state_adj                       4,948
+  compound                        2,637
+  domain_adj                      2,364
+  __unknown__                     1,798
+  plural                          1,612
+  camelcase                         562
+  hyphenated                        546
+  hard_example                        6
+  ambiguous                           4
+
+Rare Classes (by entity_type)
+------------------------------
+  count < 10: 0
+  count < 20: 0
+  count < 50: 0
+
+Duplicate Tokens: 0
+Negative Examples: 132
+Hard Examples: 6
+Ambiguous Examples: 4
+============================================================

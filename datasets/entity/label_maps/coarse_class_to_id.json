@@ -1,0 +1,10 @@
+{
+  "abstract": 0,
+  "astronomical": 1,
+  "dynamic": 2,
+  "environment": 3,
+  "living_entity": 4,
+  "machine_like": 5,
+  "manmade_object": 6,
+  "transport": 7
+}

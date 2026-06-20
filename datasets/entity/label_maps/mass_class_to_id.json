@@ -1,0 +1,9 @@
+{
+  "extreme": 0,
+  "heavy": 1,
+  "light": 2,
+  "medium": 3,
+  "planetary": 4,
+  "tiny": 5,
+  "unknown": 6
+}

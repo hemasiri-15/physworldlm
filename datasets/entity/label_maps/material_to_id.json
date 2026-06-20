@@ -1,0 +1,22 @@
+{
+  "aluminum": 0,
+  "carbon_fiber": 1,
+  "ceramic": 2,
+  "concrete": 3,
+  "fabric": 4,
+  "flesh": 5,
+  "glass": 6,
+  "ice": 7,
+  "iron": 8,
+  "mixed": 9,
+  "paper": 10,
+  "plastic": 11,
+  "rubber": 12,
+  "sand": 13,
+  "soil": 14,
+  "steel": 15,
+  "stone": 16,
+  "unknown": 17,
+  "water": 18,
+  "wood": 19
+}

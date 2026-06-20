@@ -1,0 +1,8 @@
+{
+  "gas": 0,
+  "granular": 1,
+  "liquid": 2,
+  "plasma": 3,
+  "solid": 4,
+  "unknown": 5
+}

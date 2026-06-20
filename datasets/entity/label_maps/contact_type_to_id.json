@@ -1,0 +1,8 @@
+{
+  "elastic": 0,
+  "fluid": 1,
+  "granular": 2,
+  "rigid": 3,
+  "soft_body": 4,
+  "unknown": 5
+}

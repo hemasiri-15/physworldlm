@@ -1,0 +1,8 @@
+{
+  "flowing": 0,
+  "flying": 1,
+  "movable": 2,
+  "self_propelled": 3,
+  "static": 4,
+  "unknown": 5
+}

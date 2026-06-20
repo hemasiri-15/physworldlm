@@ -1,0 +1,21 @@
+{
+  "0": "agent",
+  "1": "animal",
+  "10": "plant",
+  "11": "projectile",
+  "12": "robot",
+  "13": "sports_object",
+  "14": "structure",
+  "15": "terrain",
+  "16": "tool",
+  "17": "vehicle",
+  "18": "weapon",
+  "2": "celestial_body",
+  "3": "container",
+  "4": "electronic",
+  "5": "fluid",
+  "6": "furniture",
+  "7": "machine",
+  "8": "non_physical",
+  "9": "particle"
+}

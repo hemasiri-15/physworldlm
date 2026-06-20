@@ -1,0 +1,12 @@
+{
+  "actor": 14887,
+  "background": 5340,
+  "collider": 13108,
+  "container": 1459,
+  "manipulator": 1383,
+  "medium": 2914,
+  "obstacle": 8626,
+  "projectile": 2783,
+  "support": 6270,
+  "terrain": 4788
+}

@@ -1,0 +1,12 @@
+{
+  "0": "actor",
+  "1": "background",
+  "2": "collider",
+  "3": "container",
+  "4": "manipulator",
+  "5": "medium",
+  "6": "obstacle",
+  "7": "projectile",
+  "8": "support",
+  "9": "terrain"
+}

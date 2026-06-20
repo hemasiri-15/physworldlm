@@ -1,0 +1,11 @@
+{
+  "amorphous": 0,
+  "box": 1,
+  "cylinder": 2,
+  "elongated": 3,
+  "humanoid": 4,
+  "irregular": 5,
+  "plane": 6,
+  "sphere": 7,
+  "unknown": 8
+}

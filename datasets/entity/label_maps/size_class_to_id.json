@@ -1,0 +1,9 @@
+{
+  "astronomical": 0,
+  "huge": 1,
+  "large": 2,
+  "medium": 3,
+  "small": 4,
+  "tiny": 5,
+  "unknown": 6
+}

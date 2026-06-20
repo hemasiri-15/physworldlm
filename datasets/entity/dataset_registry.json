@@ -1,0 +1,18 @@
+{
+  "entity_dataset_v1": {
+    "affordance_counts": "affordance_counts.json",
+    "capability_counts": "capability_counts.json",
+    "label_maps_dir": "label_maps",
+    "metadata": "metadata.json",
+    "scene_role_counts": "scene_role_counts.json",
+    "seed": 42,
+    "statistics": "statistics.txt",
+    "test": "test.jsonl",
+    "test_compressed": "test.jsonl.gz",
+    "train": "train.jsonl",
+    "train_compressed": "train.jsonl.gz",
+    "val": "val.jsonl",
+    "val_compressed": "val.jsonl.gz",
+    "version": "1.0"
+  }
+}

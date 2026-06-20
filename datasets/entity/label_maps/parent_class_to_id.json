@@ -1,0 +1,8 @@
+{
+  "abstract": 0,
+  "astronomical": 1,
+  "dynamic_object": 2,
+  "environment": 3,
+  "living": 4,
+  "rigid_body": 5
+}
