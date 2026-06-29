@@ -1,0 +1,1679 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/renderer.schema.json",
+  "title": "PhysWorldLM Renderer Schema",
+  "description": "PhysWorldLM World Specification Rendering Standard (PW-WSF-1200). Universal rendering configuration for any PhysWorldLM scene. Completely renderer-independent and simulator-independent. The renderer describes HOW the world is viewed — it never owns entities, materials, or transforms.",
+  "type": "object",
+  "required": ["schema_meta", "renderer"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "RFC 4122 universally unique identifier."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. 1.2.3"
+    },
+
+    "URI": {
+      "type": "string",
+      "format": "uri"
+    },
+
+    "Vector2": {
+      "type": "object",
+      "required": ["x","y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" }
+      }
+    },
+
+    "Vector3": {
+      "type": "object",
+      "required": ["x","y","z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+
+    "ColorRGB": {
+      "type": "object",
+      "description": "Linear RGB color, components in [0, 1].",
+      "required": ["r","g","b"],
+      "additionalProperties": false,
+      "properties": {
+        "r": { "type": "number", "minimum": 0, "maximum": 1 },
+        "g": { "type": "number", "minimum": 0, "maximum": 1 },
+        "b": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "ColorRGBA": {
+      "type": "object",
+      "description": "Linear RGBA color, components in [0, 1].",
+      "required": ["r","g","b"],
+      "additionalProperties": false,
+      "properties": {
+        "r": { "type": "number", "minimum": 0, "maximum": 1 },
+        "g": { "type": "number", "minimum": 0, "maximum": 1 },
+        "b": { "type": "number", "minimum": 0, "maximum": 1 },
+        "a": { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0 }
+      }
+    },
+
+    "HDRColor": {
+      "type": "object",
+      "description": "HDR color — components may exceed 1.0. Multiplied by intensity.",
+      "required": ["r","g","b"],
+      "additionalProperties": false,
+      "properties": {
+        "r":         { "type": "number", "minimum": 0 },
+        "g":         { "type": "number", "minimum": 0 },
+        "b":         { "type": "number", "minimum": 0 },
+        "intensity": { "type": "number", "minimum": 0, "default": 1.0 }
+      }
+    },
+
+    "Resolution": {
+      "type": "object",
+      "description": "Pixel resolution.",
+      "required": ["width_px","height_px"],
+      "additionalProperties": false,
+      "properties": {
+        "width_px":  { "type": "integer", "minimum": 1 },
+        "height_px": { "type": "integer", "minimum": 1 },
+        "dpi":       { "type": "number",  "minimum": 0 },
+        "aspect_ratio": { "type": "number", "minimum": 0, "description": "width / height. Computed if omitted." }
+      }
+    },
+
+    "FrameRate": {
+      "type": "object",
+      "description": "Frame rate specification.",
+      "required": ["fps"],
+      "additionalProperties": false,
+      "properties": {
+        "fps":          { "type": "number", "minimum": 0, "description": "Frames per second." },
+        "frame_budget_ms": { "type": "number", "minimum": 0, "description": "Target frame budget in milliseconds." },
+        "vsync":        { "type": "boolean", "default": false },
+        "uncapped":     { "type": "boolean", "default": false }
+      }
+    },
+
+    "TransformReference": {
+      "type": "object",
+      "description": "Reference to a transform defined in transform.schema.json or world.schema.json.",
+      "required": ["entity_id"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id":    { "$ref": "#/$defs/UUID" },
+        "socket_name":  { "type": "string", "description": "Optional named socket or bone to attach to." },
+        "offset_position": { "$ref": "#/$defs/Vector3" },
+        "offset_rotation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "z": { "type": "number" },
+            "w": { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "InlineTransform": {
+      "type": "object",
+      "description": "Explicit world-space transform when not attached to an entity.",
+      "additionalProperties": false,
+      "properties": {
+        "position": { "$ref": "#/$defs/Vector3" },
+        "rotation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "z": { "type": "number" },
+            "w": { "type": "number" }
+          }
+        },
+        "scale": { "$ref": "#/$defs/Vector3" },
+        "reference_frame": {
+          "type": "string",
+          "enum": ["world","local","geo","NED","ENU","ECEF"],
+          "default": "world"
+        }
+      }
+    },
+
+    "EntityReference": {
+      "type": "object",
+      "description": "Reference to an entity in world.schema.json.",
+      "required": ["entity_id"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id":  { "$ref": "#/$defs/UUID" },
+        "name_hint":  { "type": "string" }
+      }
+    },
+
+    "AssetReference": {
+      "type": "object",
+      "description": "Reference to an asset in asset.schema.json.",
+      "required": ["asset_id"],
+      "additionalProperties": false,
+      "properties": {
+        "asset_id":   { "$ref": "#/$defs/UUID" },
+        "name_hint":  { "type": "string" }
+      }
+    },
+
+    "MaterialReference": {
+      "type": "object",
+      "description": "Reference to a material in material.schema.json.",
+      "required": ["material_id"],
+      "additionalProperties": false,
+      "properties": {
+        "material_id": { "$ref": "#/$defs/UUID" },
+        "name_hint":   { "type": "string" },
+        "variant":     { "type": "string" }
+      }
+    },
+
+    "TextureReference": {
+      "type": "object",
+      "description": "Reference to a texture asset.",
+      "required": ["asset_id"],
+      "additionalProperties": false,
+      "properties": {
+        "asset_id":   { "$ref": "#/$defs/UUID" },
+        "name_hint":  { "type": "string" },
+        "channel":    { "type": "string" }
+      }
+    },
+
+    "LightReference": {
+      "type": "object",
+      "description": "Reference to a named light within the renderer.",
+      "required": ["light_id"],
+      "additionalProperties": false,
+      "properties": {
+        "light_id":  { "$ref": "#/$defs/UUID" },
+        "name_hint": { "type": "string" }
+      }
+    },
+
+    "CameraReference": {
+      "type": "object",
+      "description": "Reference to a named camera within the renderer.",
+      "required": ["camera_id"],
+      "additionalProperties": false,
+      "properties": {
+        "camera_id": { "$ref": "#/$defs/UUID" },
+        "name_hint": { "type": "string" }
+      }
+    },
+
+    "ToneMapping": {
+      "type": "object",
+      "description": "Tone mapping operator configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "operator": {
+          "type": "string",
+          "enum": ["none","reinhard","aces","filmic","hable","lottes","uchimura","agx","linear","custom"],
+          "default": "aces"
+        },
+        "exposure":         { "type": "number", "description": "EV100 exposure value." },
+        "whitepoint":       { "type": "number", "minimum": 0 },
+        "gamma":            { "type": "number", "minimum": 0, "default": 2.2 },
+        "custom_lut_ref":   { "$ref": "#/$defs/TextureReference" }
+      }
+    },
+
+    "AntiAliasing": {
+      "type": "object",
+      "description": "Anti-aliasing configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["none","msaa","taa","fxaa","smaa","dlss","fsr","xess","tsr","custom"],
+          "default": "taa"
+        },
+        "msaa_samples": { "type": "integer", "enum": [1,2,4,8,16], "default": 4 },
+        "dlss_mode": {
+          "type": "string",
+          "enum": ["quality","balanced","performance","ultra_performance","custom"]
+        },
+        "fsr_mode": {
+          "type": "string",
+          "enum": ["ultra_quality","quality","balanced","performance","ultra_performance"]
+        },
+        "sharpness": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "SamplingConfig": {
+      "type": "object",
+      "description": "Path/ray tracing sampling configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "samples_per_pixel":     { "type": "integer", "minimum": 1 },
+        "min_bounces":           { "type": "integer", "minimum": 0, "default": 0 },
+        "max_bounces":           { "type": "integer", "minimum": 0, "default": 8 },
+        "diffuse_bounces":       { "type": "integer", "minimum": 0 },
+        "specular_bounces":      { "type": "integer", "minimum": 0 },
+        "transmission_bounces":  { "type": "integer", "minimum": 0 },
+        "volume_bounces":        { "type": "integer", "minimum": 0 },
+        "russian_roulette":      { "type": "boolean", "default": true },
+        "denoiser": {
+          "type": "string",
+          "enum": ["none","oidn","optix","nrd","dlss_rr","custom"],
+          "default": "none"
+        }
+      }
+    },
+
+    "RenderTargetBuffer": {
+      "type": "object",
+      "description": "A single output render buffer / AOV.",
+      "required": ["name","type"],
+      "additionalProperties": false,
+      "properties": {
+        "name":   { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "rgb","rgba","depth","depth_linear",
+            "normal_world","normal_camera",
+            "motion_vector","optical_flow",
+            "object_id","instance_id",
+            "semantic_segmentation","instance_segmentation","panoptic_segmentation",
+            "albedo","roughness","metallic","emissive","specular",
+            "ao","shadow","diffuse_lighting","specular_lighting","indirect_lighting",
+            "velocity","position_world",
+            "lidar","radar","thermal_ir","multispectral","hyperspectral",
+            "bounding_box","custom"
+          ]
+        },
+        "format": {
+          "type": "string",
+          "enum": ["uint8","uint16","float16","float32","int32","uint32","custom"],
+          "default": "uint8"
+        },
+        "channels": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "resolution_override": { "$ref": "#/$defs/Resolution" },
+        "enabled": { "type": "boolean", "default": true }
+      }
+    },
+
+    "RenderPass": {
+      "type": "object",
+      "description": "A discrete rendering pass within a pipeline.",
+      "required": ["pass_id","name","pass_type"],
+      "additionalProperties": false,
+      "properties": {
+        "pass_id":   { "$ref": "#/$defs/UUID" },
+        "name":      { "type": "string" },
+        "pass_type": {
+          "type": "string",
+          "enum": ["shadow","geometry","lighting","gbuffer","transparency","post_process","composite","custom"]
+        },
+        "enabled":    { "type": "boolean", "default": true },
+        "order":      { "type": "integer", "description": "Execution order within the pipeline." },
+        "camera_ref": { "$ref": "#/$defs/CameraReference" },
+        "targets":    { "type": "array", "items": { "$ref": "#/$defs/RenderTargetBuffer" } },
+        "parameters": { "type": "object", "additionalProperties": true }
+      }
+    },
+
+    "LODConfig": {
+      "type": "object",
+      "description": "LOD selection configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":                    { "type": "boolean", "default": true },
+        "bias":                       { "type": "number", "description": "Global LOD bias. Positive = use lower detail sooner." },
+        "force_lod_index":            { "type": "integer", "minimum": 0, "description": "Force all objects to this LOD; omit to use automatic." },
+        "nanite_enabled":             { "type": "boolean", "default": false },
+        "impostors_enabled":          { "type": "boolean", "default": true },
+        "distance_scale":             { "type": "number", "minimum": 0, "default": 1.0 }
+      }
+    },
+
+    "CullingConfig": {
+      "type": "object",
+      "description": "Visibility culling configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "frustum_culling":    { "type": "boolean", "default": true },
+        "occlusion_culling":  { "type": "boolean", "default": true },
+        "distance_culling":   { "type": "boolean", "default": true },
+        "max_draw_distance_m":{ "type": "number", "minimum": 0 },
+        "backface_culling":   { "type": "boolean", "default": true },
+        "portal_culling":     { "type": "boolean", "default": false },
+        "hierarchical_z":     { "type": "boolean", "default": true }
+      }
+    },
+
+    "DepthOfField": {
+      "type": "object",
+      "description": "Depth-of-field configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":          { "type": "boolean", "default": false },
+        "focus_distance_m": { "type": "number", "minimum": 0 },
+        "aperture_fstop":   { "type": "number", "minimum": 0 },
+        "focal_length_mm":  { "type": "number", "minimum": 0 },
+        "sensor_width_mm":  { "type": "number", "minimum": 0 },
+        "bokeh_blades":     { "type": "integer", "minimum": 3 },
+        "max_coc_radius_px":{ "type": "number", "minimum": 0 }
+      }
+    },
+
+    "MotionBlur": {
+      "type": "object",
+      "description": "Motion blur configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":         { "type": "boolean", "default": false },
+        "shutter_angle_deg":{ "type": "number", "minimum": 0, "maximum": 360, "default": 180 },
+        "samples":         { "type": "integer", "minimum": 1, "default": 8 },
+        "max_blur_px":     { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "Camera": {
+      "type": "object",
+      "description": "Camera definition within the renderer.",
+      "required": ["camera_id","name","projection"],
+      "additionalProperties": false,
+      "properties": {
+        "camera_id":    { "$ref": "#/$defs/UUID" },
+        "name":         { "type": "string" },
+        "description":  { "type": "string" },
+        "camera_class": {
+          "type": "string",
+          "enum": ["perspective","orthographic","panoramic_equirect","panoramic_cubemap","fisheye","stereo_left","stereo_right","vr_left","vr_right","ar","satellite","drone","vehicle_mounted","security","sensor","custom"],
+          "default": "perspective"
+        },
+        "projection": {
+          "type": "string",
+          "enum": ["perspective","orthographic","fisheye_equidistant","fisheye_equisolid","panoramic_equirectangular","panoramic_cubemap","custom"]
+        },
+        "transform_ref":    { "$ref": "#/$defs/TransformReference" },
+        "inline_transform": { "$ref": "#/$defs/InlineTransform" },
+        "fov_vertical_deg": { "type": "number", "minimum": 0, "maximum": 180, "description": "Vertical field of view in degrees (perspective)." },
+        "focal_length_mm":  { "type": "number", "minimum": 0 },
+        "sensor_width_mm":  { "type": "number", "minimum": 0 },
+        "sensor_height_mm": { "type": "number", "minimum": 0 },
+        "near_plane_m":     { "type": "number", "minimum": 0, "default": 0.1 },
+        "far_plane_m":      { "type": "number", "minimum": 0, "default": 10000 },
+        "ortho_width_m":    { "type": "number", "minimum": 0, "description": "Width in world units for orthographic cameras." },
+        "aperture_fstop":   { "type": "number", "minimum": 0 },
+        "iso":              { "type": "number", "minimum": 0 },
+        "shutter_speed_s":  { "type": "number", "minimum": 0 },
+        "lens_distortion": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "model": { "type": "string", "enum": ["none","brown_conrady","fisheye","custom"] },
+            "k1": { "type": "number" },
+            "k2": { "type": "number" },
+            "k3": { "type": "number" },
+            "p1": { "type": "number" },
+            "p2": { "type": "number" }
+          }
+        },
+        "rolling_shutter": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":        { "type": "boolean", "default": false },
+            "readout_time_s": { "type": "number", "minimum": 0 }
+          }
+        },
+        "depth_of_field":  { "$ref": "#/$defs/DepthOfField" },
+        "motion_blur":     { "$ref": "#/$defs/MotionBlur" },
+        "resolution":      { "$ref": "#/$defs/Resolution" },
+        "frame_rate":      { "$ref": "#/$defs/FrameRate" },
+        "clip_planes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["normal","distance_m"],
+            "additionalProperties": false,
+            "properties": {
+              "normal":     { "$ref": "#/$defs/Vector3" },
+              "distance_m": { "type": "number" }
+            }
+          }
+        },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "Viewport": {
+      "type": "object",
+      "description": "A viewport defines one rendered view — camera + resolution + target buffers.",
+      "required": ["viewport_id","name","camera_ref"],
+      "additionalProperties": false,
+      "properties": {
+        "viewport_id":   { "$ref": "#/$defs/UUID" },
+        "name":          { "type": "string" },
+        "description":   { "type": "string" },
+        "enabled":       { "type": "boolean", "default": true },
+        "camera_ref":    { "$ref": "#/$defs/CameraReference" },
+        "resolution":    { "$ref": "#/$defs/Resolution" },
+        "frame_rate":    { "$ref": "#/$defs/FrameRate" },
+        "hdr_enabled":   { "type": "boolean", "default": false },
+        "render_targets":{ "type": "array", "items": { "$ref": "#/$defs/RenderTargetBuffer" } },
+        "anti_aliasing": { "$ref": "#/$defs/AntiAliasing" },
+        "tone_mapping":  { "$ref": "#/$defs/ToneMapping" },
+        "post_processing":{ "$ref": "#/$defs/PostProcessing" },
+        "viewport_rect": {
+          "type": "object",
+          "description": "Normalized screen rect [0,1] for split-screen or PiP layouts.",
+          "additionalProperties": false,
+          "properties": {
+            "x":      { "type": "number", "minimum": 0, "maximum": 1 },
+            "y":      { "type": "number", "minimum": 0, "maximum": 1 },
+            "width":  { "type": "number", "minimum": 0, "maximum": 1 },
+            "height": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "purpose": {
+          "type": "string",
+          "enum": ["primary","tactical_map","uav","satellite","thermal","lidar","radar","semantic","depth","optical_flow","instance","custom"],
+          "description": "Semantic purpose of this viewport for AI and multi-output pipelines."
+        },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "Light": {
+      "type": "object",
+      "description": "A light source within the rendered scene.",
+      "required": ["light_id","name","light_type"],
+      "additionalProperties": false,
+      "properties": {
+        "light_id":     { "$ref": "#/$defs/UUID" },
+        "name":         { "type": "string" },
+        "enabled":      { "type": "boolean", "default": true },
+        "light_type": {
+          "type": "string",
+          "enum": ["directional","point","spot","area_rect","area_disk","area_sphere","dome","environment","sun","moon","hdri","ies","emissive","custom"]
+        },
+        "color":        { "$ref": "#/$defs/HDRColor" },
+        "temperature_k":{ "type": "number", "minimum": 1000, "maximum": 20000, "description": "Color temperature in Kelvin. Overrides color if set." },
+        "intensity":    { "type": "number", "minimum": 0, "description": "Luminous intensity (cd) for point/spot, luminous flux (lm) for area, illuminance (lux) for directional." },
+        "intensity_unit": {
+          "type": "string",
+          "enum": ["candela","lumen","lux","nit","watt","custom"],
+          "default": "lumen"
+        },
+        "range_m":      { "type": "number", "minimum": 0 },
+        "spot_inner_angle_deg": { "type": "number", "minimum": 0, "maximum": 90 },
+        "spot_outer_angle_deg": { "type": "number", "minimum": 0, "maximum": 90 },
+        "area_width_m":  { "type": "number", "minimum": 0 },
+        "area_height_m": { "type": "number", "minimum": 0 },
+        "transform_ref": { "$ref": "#/$defs/TransformReference" },
+        "inline_transform": { "$ref": "#/$defs/InlineTransform" },
+        "cast_shadows":  { "type": "boolean", "default": true },
+        "shadow_config": { "$ref": "#/$defs/ShadowConfig" },
+        "volumetric":    { "type": "boolean", "default": false },
+        "ies_profile_ref":{ "$ref": "#/$defs/AssetReference" },
+        "hdri_ref":      { "$ref": "#/$defs/TextureReference" },
+        "affect_diffuse":  { "type": "boolean", "default": true },
+        "affect_specular": { "type": "boolean", "default": true },
+        "affect_volumetrics": { "type": "boolean", "default": true },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "ShadowConfig": {
+      "type": "object",
+      "description": "Shadow rendering configuration for a light.",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["none","shadow_map","cascaded_shadow_map","ray_traced","hybrid","custom"],
+          "default": "shadow_map"
+        },
+        "resolution_px":    { "type": "integer", "minimum": 64 },
+        "cascade_count":    { "type": "integer", "minimum": 1, "maximum": 8, "default": 4 },
+        "soft_shadows":     { "type": "boolean", "default": true },
+        "pcf_samples":      { "type": "integer", "minimum": 1 },
+        "bias":             { "type": "number" },
+        "slope_bias":       { "type": "number" },
+        "max_distance_m":   { "type": "number", "minimum": 0 },
+        "contact_shadows":  { "type": "boolean", "default": false }
+      }
+    },
+
+    "GlobalIllumination": {
+      "type": "object",
+      "description": "Global illumination configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["none","path_tracing","rtxgi","lumen","screen_space","lightmaps","photon_mapping","irradiance_probes","vxgi","custom"],
+          "default": "none"
+        },
+        "enabled":             { "type": "boolean", "default": false },
+        "intensity_scale":     { "type": "number", "minimum": 0, "default": 1.0 },
+        "max_bounces":         { "type": "integer", "minimum": 0, "default": 4 },
+        "irradiance_probe_spacing_m": { "type": "number", "minimum": 0 },
+        "cache_resolution":    { "type": "integer" },
+        "rtxgi_update_budget_ms": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "Reflections": {
+      "type": "object",
+      "description": "Reflection configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["none","ssr","planar","cubemap","ray_traced","probe_based","hybrid","custom"],
+          "default": "ssr"
+        },
+        "enabled":         { "type": "boolean", "default": true },
+        "ssr_max_steps":   { "type": "integer", "minimum": 0 },
+        "ssr_thickness_m": { "type": "number", "minimum": 0 },
+        "probe_count":     { "type": "integer", "minimum": 0 },
+        "probe_resolution":{ "type": "integer" },
+        "max_ray_distance_m":{ "type": "number", "minimum": 0 }
+      }
+    },
+
+    "AtmosphereConfig": {
+      "type": "object",
+      "description": "Physically-based sky and atmosphere configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "type": "string",
+          "enum": ["none","preetham","hosek_wilkie","bruneton","nishita","custom"],
+          "default": "nishita"
+        },
+        "enabled":              { "type": "boolean", "default": true },
+        "planet_radius_m":      { "type": "number", "minimum": 0, "default": 6371000 },
+        "atmosphere_height_m":  { "type": "number", "minimum": 0, "default": 100000 },
+        "rayleigh_coefficient": { "$ref": "#/$defs/Vector3" },
+        "mie_coefficient":      { "type": "number", "minimum": 0 },
+        "mie_directional":      { "type": "number", "minimum": -1, "maximum": 1 },
+        "ozone_enabled":        { "type": "boolean", "default": true },
+        "sun_disk_enabled":     { "type": "boolean", "default": true },
+        "sun_disk_angular_diameter_deg": { "type": "number", "minimum": 0 },
+        "moon_enabled":         { "type": "boolean", "default": false },
+        "moon_phase":           { "type": "number", "minimum": 0, "maximum": 1, "description": "0=new, 0.5=full, 1=new." },
+        "night_sky_intensity":  { "type": "number", "minimum": 0 },
+        "stars_enabled":        { "type": "boolean", "default": false },
+        "exposure":             { "type": "number" }
+      }
+    },
+
+    "FogConfig": {
+      "type": "object",
+      "description": "Fog and volumetric fog configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":          { "type": "boolean", "default": false },
+        "type": {
+          "type": "string",
+          "enum": ["none","linear","exponential","exponential_squared","volumetric","height_fog","custom"],
+          "default": "exponential"
+        },
+        "density":          { "type": "number", "minimum": 0 },
+        "color":            { "$ref": "#/$defs/ColorRGB" },
+        "start_distance_m": { "type": "number", "minimum": 0 },
+        "end_distance_m":   { "type": "number", "minimum": 0 },
+        "height_falloff":   { "type": "number", "minimum": 0, "description": "Exponential height falloff coefficient." },
+        "base_height_m":    { "type": "number" },
+        "max_opacity":      { "type": "number", "minimum": 0, "maximum": 1 },
+        "inscattering_color":{ "$ref": "#/$defs/ColorRGB" },
+        "directional_inscattering_exponent": { "type": "number" },
+        "volumetric_scattering_intensity":   { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "CloudConfig": {
+      "type": "object",
+      "description": "Cloud rendering configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":         { "type": "boolean", "default": false },
+        "type": {
+          "type": "string",
+          "enum": ["none","billboard","volumetric","procedural","mesh","custom"],
+          "default": "volumetric"
+        },
+        "coverage":        { "type": "number", "minimum": 0, "maximum": 1 },
+        "density":         { "type": "number", "minimum": 0 },
+        "altitude_min_m":  { "type": "number" },
+        "altitude_max_m":  { "type": "number" },
+        "wind_speed_mps":  { "type": "number", "minimum": 0 },
+        "wind_direction_deg": { "type": "number", "minimum": 0, "maximum": 360 },
+        "shadow_enabled":  { "type": "boolean", "default": true },
+        "noise_texture_ref":{ "$ref": "#/$defs/TextureReference" }
+      }
+    },
+
+    "WeatherRenderConfig": {
+      "type": "object",
+      "description": "Rendering configuration for weather effects.",
+      "additionalProperties": false,
+      "properties": {
+        "rain": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":       { "type": "boolean", "default": false },
+            "intensity":     { "type": "number", "minimum": 0, "maximum": 1 },
+            "wind_effect":   { "type": "boolean", "default": true },
+            "splashes":      { "type": "boolean", "default": true },
+            "ripples":       { "type": "boolean", "default": true }
+          }
+        },
+        "snow": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":       { "type": "boolean", "default": false },
+            "intensity":     { "type": "number", "minimum": 0, "maximum": 1 },
+            "accumulation":  { "type": "boolean", "default": false }
+          }
+        },
+        "dust_storm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":       { "type": "boolean", "default": false },
+            "intensity":     { "type": "number", "minimum": 0, "maximum": 1 },
+            "color":         { "$ref": "#/$defs/ColorRGB" }
+          }
+        },
+        "lightning": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":       { "type": "boolean", "default": false },
+            "frequency_hz":  { "type": "number", "minimum": 0 }
+          }
+        },
+        "fog":  { "$ref": "#/$defs/FogConfig" },
+        "clouds": { "$ref": "#/$defs/CloudConfig" },
+        "weather_schema_ref": {
+          "type": "string",
+          "description": "Reference to a weather.schema.json weather preset UUID."
+        }
+      }
+    },
+
+    "WaterConfig": {
+      "type": "object",
+      "description": "Water surface rendering configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":         { "type": "boolean", "default": false },
+        "type": {
+          "type": "string",
+          "enum": ["none","ocean","lake","river","puddle","underwater","custom"]
+        },
+        "wave_height_m":   { "type": "number", "minimum": 0 },
+        "wave_speed_mps":  { "type": "number", "minimum": 0 },
+        "wind_direction_deg":{ "type": "number", "minimum": 0, "maximum": 360 },
+        "reflection":      { "type": "boolean", "default": true },
+        "refraction":      { "type": "boolean", "default": true },
+        "caustics":        { "type": "boolean", "default": false },
+        "foam_enabled":    { "type": "boolean", "default": false },
+        "water_color":     { "$ref": "#/$defs/ColorRGB" },
+        "absorption_color":{ "$ref": "#/$defs/ColorRGB" },
+        "ior":             { "type": "number", "minimum": 1, "default": 1.333 },
+        "underwater_fog_density": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "TerrainRenderConfig": {
+      "type": "object",
+      "description": "Terrain-specific rendering configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["none","heightmap","mesh","cesium_3dtiles","virtual_heightfield","custom"]
+        },
+        "tessellation_enabled": { "type": "boolean", "default": false },
+        "tessellation_factor":  { "type": "number", "minimum": 1 },
+        "displacement_enabled": { "type": "boolean", "default": false },
+        "texture_blending":     { "type": "boolean", "default": true },
+        "layer_count":          { "type": "integer", "minimum": 0 },
+        "lod":                  { "$ref": "#/$defs/LODConfig" },
+        "streaming":            { "$ref": "#/$defs/StreamingConfig" },
+        "cesium_tileset_ref":   { "$ref": "#/$defs/AssetReference" }
+      }
+    },
+
+    "VegetationConfig": {
+      "type": "object",
+      "description": "Vegetation rendering configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":         { "type": "boolean", "default": false },
+        "wind_enabled":    { "type": "boolean", "default": true },
+        "wind_speed_mps":  { "type": "number", "minimum": 0 },
+        "wind_direction_deg": { "type": "number", "minimum": 0, "maximum": 360 },
+        "seasonal_variation": { "type": "boolean", "default": false },
+        "season": {
+          "type": "string",
+          "enum": ["spring","summer","autumn","winter","custom"]
+        },
+        "lod":              { "$ref": "#/$defs/LODConfig" },
+        "imposters_enabled":{ "type": "boolean", "default": true },
+        "density_scale":    { "type": "number", "minimum": 0, "default": 1.0 },
+        "max_render_distance_m": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "ParticleRenderConfig": {
+      "type": "object",
+      "description": "Particle system rendering configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":         { "type": "boolean", "default": true },
+        "max_particles":   { "type": "integer", "minimum": 0 },
+        "sort_enabled":    { "type": "boolean", "default": true },
+        "lighting_enabled":{ "type": "boolean", "default": false },
+        "shadow_casting":  { "type": "boolean", "default": false },
+        "receive_shadows": { "type": "boolean", "default": false },
+        "gpu_simulation":  { "type": "boolean", "default": true }
+      }
+    },
+
+    "DecalConfig": {
+      "type": "object",
+      "description": "Decal rendering configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":        { "type": "boolean", "default": true },
+        "max_decals":     { "type": "integer", "minimum": 0 },
+        "fade_distance_m":{ "type": "number", "minimum": 0 },
+        "sort_enabled":   { "type": "boolean", "default": true }
+      }
+    },
+
+    "PostProcessing": {
+      "type": "object",
+      "description": "Post-processing effects stack.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "bloom": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":    { "type": "boolean", "default": false },
+            "intensity":  { "type": "number", "minimum": 0 },
+            "threshold":  { "type": "number", "minimum": 0 },
+            "radius":     { "type": "number", "minimum": 0 },
+            "lens_flare": { "type": "boolean", "default": false }
+          }
+        },
+        "ambient_occlusion": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":    { "type": "boolean", "default": false },
+            "method": { "type": "string", "enum": ["none","ssao","hbao","rtao","gtao","custom"] },
+            "intensity":  { "type": "number", "minimum": 0 },
+            "radius_m":   { "type": "number", "minimum": 0 },
+            "samples":    { "type": "integer", "minimum": 1 }
+          }
+        },
+        "screen_space_reflections": { "$ref": "#/$defs/Reflections" },
+        "tone_mapping":   { "$ref": "#/$defs/ToneMapping" },
+        "color_grading": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":        { "type": "boolean", "default": false },
+            "lut_ref":        { "$ref": "#/$defs/TextureReference" },
+            "lut_intensity":  { "type": "number", "minimum": 0, "maximum": 1 },
+            "saturation":     { "type": "number", "minimum": 0, "maximum": 2, "default": 1.0 },
+            "contrast":       { "type": "number", "minimum": 0, "maximum": 2, "default": 1.0 },
+            "brightness":     { "type": "number", "minimum": 0 },
+            "shadows_color":  { "$ref": "#/$defs/ColorRGB" },
+            "midtones_color": { "$ref": "#/$defs/ColorRGB" },
+            "highlights_color":{ "$ref": "#/$defs/ColorRGB" }
+          }
+        },
+        "vignette": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":   { "type": "boolean", "default": false },
+            "intensity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "roundness": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "chromatic_aberration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":   { "type": "boolean", "default": false },
+            "intensity": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "film_grain": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":   { "type": "boolean", "default": false },
+            "intensity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "size":      { "type": "number", "minimum": 0 }
+          }
+        },
+        "sharpening": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":   { "type": "boolean", "default": false },
+            "intensity": { "type": "number", "minimum": 0, "maximum": 1 },
+            "method": { "type": "string", "enum": ["none","cas","fxaa_sharp","unsharp_mask","custom"] }
+          }
+        },
+        "denoising": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":   { "type": "boolean", "default": false },
+            "method": { "type": "string", "enum": ["none","oidn","optix","nrd","temporal","spatial","custom"] },
+            "strength":  { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+
+    "ColorManagement": {
+      "type": "object",
+      "description": "Color space and display management.",
+      "additionalProperties": false,
+      "properties": {
+        "color_space": {
+          "type": "string",
+          "enum": ["srgb","rec709","rec2020","aces_cg","linear","p3_d65","custom"],
+          "default": "srgb"
+        },
+        "display_standard": {
+          "type": "string",
+          "enum": ["sdr","hdr10","dolby_vision","hlg","custom"],
+          "default": "sdr"
+        },
+        "working_color_space": {
+          "type": "string",
+          "enum": ["linear","aces_cg","srgb","custom"],
+          "default": "linear"
+        },
+        "output_transform": {
+          "type": "string",
+          "enum": ["none","srgb","rec709","aces","custom"]
+        },
+        "ocio_config_ref":  { "type": "string", "description": "Path or URI to an OpenColorIO config file." }
+      }
+    },
+
+    "StreamingConfig": {
+      "type": "object",
+      "description": "Asset and texture streaming configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":              { "type": "boolean", "default": true },
+        "texture_streaming":    { "type": "boolean", "default": true },
+        "geometry_streaming":   { "type": "boolean", "default": true },
+        "terrain_streaming":    { "type": "boolean", "default": true },
+        "max_texture_vram_mb":  { "type": "integer", "minimum": 0 },
+        "mip_bias":             { "type": "number" },
+        "priority_radius_m":    { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "XRConfig": {
+      "type": "object",
+      "description": "Extended reality (VR/AR/MR) rendering configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":         { "type": "boolean", "default": false },
+        "xr_mode": {
+          "type": "string",
+          "enum": ["none","vr","ar","mr","custom"]
+        },
+        "openxr_runtime":  { "type": "string" },
+        "stereo_rendering":{ "type": "boolean", "default": true },
+        "ipd_m":           { "type": "number", "minimum": 0, "description": "Interpupillary distance in meters." },
+        "foveated_rendering": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":       { "type": "boolean", "default": false },
+            "method": { "type": "string", "enum": ["none","fixed","eye_tracked","variable_rate","custom"] },
+            "inner_radius":  { "type": "number", "minimum": 0, "maximum": 1 },
+            "outer_radius":  { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "eye_tracking":    { "type": "boolean", "default": false },
+        "hand_tracking":   { "type": "boolean", "default": false },
+        "passthrough":     { "type": "boolean", "default": false }
+      }
+    },
+
+    "DebugRenderConfig": {
+      "type": "object",
+      "description": "Debug visualization overlays.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":              { "type": "boolean", "default": false },
+        "wireframe":            { "type": "boolean", "default": false },
+        "bounding_boxes":       { "type": "boolean", "default": false },
+        "collision_shapes":     { "type": "boolean", "default": false },
+        "physics_debug":        { "type": "boolean", "default": false },
+        "sensor_frustums":      { "type": "boolean", "default": false },
+        "ai_debug":             { "type": "boolean", "default": false },
+        "navigation_mesh":      { "type": "boolean", "default": false },
+        "event_visualization":  { "type": "boolean", "default": false },
+        "light_gizmos":         { "type": "boolean", "default": false },
+        "overdraw_visualization":{ "type": "boolean", "default": false },
+        "show_fps":             { "type": "boolean", "default": false }
+      }
+    },
+
+    "PerformanceBudget": {
+      "type": "object",
+      "description": "Performance targets and GPU/CPU budgets.",
+      "additionalProperties": false,
+      "properties": {
+        "target_fps":             { "type": "number", "minimum": 0 },
+        "frame_budget_ms":        { "type": "number", "minimum": 0 },
+        "max_draw_calls":         { "type": "integer", "minimum": 0 },
+        "max_triangle_count":     { "type": "integer", "minimum": 0 },
+        "max_gpu_memory_mb":      { "type": "integer", "minimum": 0 },
+        "max_cpu_memory_mb":      { "type": "integer", "minimum": 0 },
+        "max_texture_memory_mb":  { "type": "integer", "minimum": 0 },
+        "streaming_budget_mb_s":  { "type": "number", "minimum": 0, "description": "Streaming bandwidth budget (MB/s)." }
+      }
+    },
+
+    "GISRenderConfig": {
+      "type": "object",
+      "description": "GIS and geospatial rendering configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":          { "type": "boolean", "default": false },
+        "cesium_enabled":   { "type": "boolean", "default": false },
+        "cesium_ion_token": { "type": "string" },
+        "base_imagery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "provider": { "type": "string", "enum": ["cesium_world_imagery","bing_maps","openstreetmap","wmts","wms","custom"] },
+            "url":       { "$ref": "#/$defs/URI" },
+            "layer":     { "type": "string" }
+          }
+        },
+        "terrain_provider": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "provider": { "type": "string", "enum": ["cesium_world_terrain","quantized_mesh","heightmap","custom"] },
+            "url":       { "$ref": "#/$defs/URI" }
+          }
+        },
+        "tileset_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AssetReference" }
+        },
+        "geojson_layers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AssetReference" }
+        }
+      }
+    },
+
+    "SceneVisibility": {
+      "type": "object",
+      "description": "Controls which entities and assets are visible in this render configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "visible_entities": {
+          "type": "array",
+          "description": "Explicit list of visible entity IDs. Empty means all entities are visible.",
+          "items": { "$ref": "#/$defs/EntityReference" }
+        },
+        "hidden_entities": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/EntityReference" }
+        },
+        "visible_layers": {
+          "type": "array",
+          "description": "Named render layers to include.",
+          "items": { "type": "string" }
+        },
+        "hidden_layers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "material_overrides": {
+          "type": "array",
+          "description": "Override materials for specific entities.",
+          "items": {
+            "type": "object",
+            "required": ["entity_id","material_ref"],
+            "additionalProperties": false,
+            "properties": {
+              "entity_id":    { "$ref": "#/$defs/UUID" },
+              "material_ref": { "$ref": "#/$defs/MaterialReference" }
+            }
+          }
+        }
+      }
+    },
+
+    "AIRenderTargets": {
+      "type": "object",
+      "description": "AI and synthetic data render target configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "enabled":           { "type": "boolean", "default": false },
+        "rgb":               { "type": "boolean", "default": true },
+        "depth":             { "type": "boolean", "default": false },
+        "depth_linear":      { "type": "boolean", "default": false },
+        "semantic_segmentation":  { "type": "boolean", "default": false },
+        "instance_segmentation":  { "type": "boolean", "default": false },
+        "panoptic_segmentation":  { "type": "boolean", "default": false },
+        "optical_flow":      { "type": "boolean", "default": false },
+        "surface_normals":   { "type": "boolean", "default": false },
+        "motion_vectors":    { "type": "boolean", "default": false },
+        "object_ids":        { "type": "boolean", "default": false },
+        "bounding_boxes_2d": { "type": "boolean", "default": false },
+        "bounding_boxes_3d": { "type": "boolean", "default": false },
+        "lidar_render":      { "type": "boolean", "default": false },
+        "radar_render":      { "type": "boolean", "default": false },
+        "thermal_ir_render": { "type": "boolean", "default": false },
+        "multispectral_render":{ "type": "boolean", "default": false },
+        "albedo":            { "type": "boolean", "default": false },
+        "format": {
+          "type": "string",
+          "enum": ["png","exr","npy","hdf5","ros_bag","custom"],
+          "default": "png"
+        },
+        "output_path":       { "type": "string" },
+        "annotation_format": {
+          "type": "string",
+          "enum": ["coco","pascal_voc","yolo","kitti","nuscenes","custom"]
+        }
+      }
+    },
+
+    "RuntimeConfig": {
+      "type": "object",
+      "description": "Runtime execution mode configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": ["interactive","headless","offline","batch","distributed","cloud","custom"],
+          "default": "interactive"
+        },
+        "headless":         { "type": "boolean", "default": false },
+        "offscreen":        { "type": "boolean", "default": false },
+        "frame_count":      { "type": "integer", "minimum": 0, "description": "Number of frames to render (offline/batch mode)." },
+        "output_path":      { "type": "string" },
+        "output_format": {
+          "type": "string",
+          "enum": ["png","jpeg","exr","video_mp4","video_h265","custom"]
+        },
+        "output_fps":       { "type": "number", "minimum": 0 },
+        "distributed_nodes":{ "type": "integer", "minimum": 1 },
+        "cloud_provider":   { "type": "string" }
+      }
+    },
+
+    "BackendHints": {
+      "type": "object",
+      "description": "Optional backend-specific configuration blocks. Keys are backend names.",
+      "additionalProperties": false,
+      "properties": {
+        "omniverse_rtx":     { "type": "object", "additionalProperties": true },
+        "omniverse_storm":   { "type": "object", "additionalProperties": true },
+        "unreal_engine":     { "type": "object", "additionalProperties": true },
+        "unity_hdrp":        { "type": "object", "additionalProperties": true },
+        "unity_urp":         { "type": "object", "additionalProperties": true },
+        "blender_cycles":    { "type": "object", "additionalProperties": true },
+        "blender_eevee":     { "type": "object", "additionalProperties": true },
+        "vulkan":            { "type": "object", "additionalProperties": true },
+        "opengl":            { "type": "object", "additionalProperties": true },
+        "directx12":         { "type": "object", "additionalProperties": true },
+        "metal":             { "type": "object", "additionalProperties": true },
+        "webgpu":            { "type": "object", "additionalProperties": true },
+        "ospray":            { "type": "object", "additionalProperties": true },
+        "embree":            { "type": "object", "additionalProperties": true },
+        "custom":            { "type": "object", "additionalProperties": true }
+      }
+    },
+
+    "RendererIdentity": {
+      "type": "object",
+      "description": "Identity block for the renderer configuration.",
+      "required": ["renderer_uuid","renderer_id","name"],
+      "additionalProperties": false,
+      "properties": {
+        "renderer_uuid":  { "$ref": "#/$defs/UUID" },
+        "renderer_id":    { "type": "string" },
+        "name":           { "type": "string" },
+        "description":    { "type": "string" },
+        "version":        { "$ref": "#/$defs/VersionString" },
+        "revision":       { "type": "string" },
+        "renderer_profile": {
+          "type": "string",
+          "enum": ["photorealistic","realtime","scientific","military","robotics","synthetic_data","xr","gis","custom"]
+        },
+        "ontology_uri":   { "$ref": "#/$defs/URI" },
+        "knowledge_graph_uri": { "$ref": "#/$defs/URI" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "world_ref": {
+          "type": "string",
+          "description": "UUID of the WorldSpec this renderer is bound to."
+        }
+      }
+    },
+
+    "RenderPipeline": {
+      "type": "object",
+      "description": "Core rendering pipeline specification.",
+      "required": ["pipeline_type"],
+      "additionalProperties": false,
+      "properties": {
+        "pipeline_type": {
+          "type": "string",
+          "enum": ["rasterization","ray_tracing","path_tracing","hybrid","deferred","forward","clustered","tiled","scientific","custom"],
+          "default": "hybrid"
+        },
+        "backend": {
+          "type": "string",
+          "enum": [
+            "omniverse_rtx_interactive","omniverse_rtx_path_tracing","omniverse_storm",
+            "hydra_storm","hydra_embree","hydra_custom",
+            "vulkan","opengl","directx12","directx11","metal","webgpu",
+            "unreal_nanite_lumen","unreal_forward","unity_hdrp","unity_urp",
+            "blender_cycles","blender_eevee",
+            "arnold","redshift","vray","octane","ospray","embree",
+            "custom"
+          ]
+        },
+        "ray_tracing_enabled":    { "type": "boolean", "default": false },
+        "path_tracing_enabled":   { "type": "boolean", "default": false },
+        "sampling":               { "$ref": "#/$defs/SamplingConfig" },
+        "global_illumination":    { "$ref": "#/$defs/GlobalIllumination" },
+        "reflections":            { "$ref": "#/$defs/Reflections" },
+        "subsurface_scattering":  { "type": "boolean", "default": false },
+        "volumetrics_enabled":    { "type": "boolean", "default": false },
+        "transparency_method": {
+          "type": "string",
+          "enum": ["none","alpha_blend","oit","ray_traced","stochastic","custom"],
+          "default": "oit"
+        },
+        "ambient_occlusion":      { "type": "boolean", "default": true },
+        "neural_rendering": {
+          "type": "object",
+          "description": "Neural rendering techniques (NeRF, 3DGS, etc.).",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":  { "type": "boolean", "default": false },
+            "method": { "type": "string", "enum": ["none","nerf","instant_ngp","3dgs","gaussian_splatting","custom"] },
+            "model_ref":{ "$ref": "#/$defs/AssetReference" }
+          }
+        }
+      }
+    },
+
+    "Renderer": {
+      "type": "object",
+      "description": "Complete renderer configuration for a PhysWorldLM scene.",
+      "required": ["identity","pipeline"],
+      "additionalProperties": false,
+      "properties": {
+
+        "identity":     { "$ref": "#/$defs/RendererIdentity" },
+        "pipeline":     { "$ref": "#/$defs/RenderPipeline" },
+        "scene":        { "$ref": "#/$defs/SceneVisibility" },
+
+        "cameras": {
+          "type": "array",
+          "description": "All cameras in this rendering configuration.",
+          "items": { "$ref": "#/$defs/Camera" },
+          "minItems": 1
+        },
+
+        "viewports": {
+          "type": "array",
+          "description": "All simultaneous rendered viewports. Each viewport may have its own camera, resolution, and output targets.",
+          "items": { "$ref": "#/$defs/Viewport" }
+        },
+
+        "lights": {
+          "type": "array",
+          "description": "All light sources.",
+          "items": { "$ref": "#/$defs/Light" }
+        },
+
+        "atmosphere":   { "$ref": "#/$defs/AtmosphereConfig" },
+        "fog":          { "$ref": "#/$defs/FogConfig" },
+        "clouds":       { "$ref": "#/$defs/CloudConfig" },
+        "weather":      { "$ref": "#/$defs/WeatherRenderConfig" },
+        "water":        { "$ref": "#/$defs/WaterConfig" },
+        "terrain":      { "$ref": "#/$defs/TerrainRenderConfig" },
+        "vegetation":   { "$ref": "#/$defs/VegetationConfig" },
+        "particles":    { "$ref": "#/$defs/ParticleRenderConfig" },
+        "decals":       { "$ref": "#/$defs/DecalConfig" },
+
+        "color_management":{ "$ref": "#/$defs/ColorManagement" },
+        "lod":             { "$ref": "#/$defs/LODConfig" },
+        "culling":         { "$ref": "#/$defs/CullingConfig" },
+        "streaming":       { "$ref": "#/$defs/StreamingConfig" },
+        "performance":     { "$ref": "#/$defs/PerformanceBudget" },
+        "xr":              { "$ref": "#/$defs/XRConfig" },
+        "gis":             { "$ref": "#/$defs/GISRenderConfig" },
+        "ai_render_targets":{ "$ref": "#/$defs/AIRenderTargets" },
+        "debug":           { "$ref": "#/$defs/DebugRenderConfig" },
+        "runtime":         { "$ref": "#/$defs/RuntimeConfig" },
+
+        "render_passes": {
+          "type": "array",
+          "description": "Ordered render passes.",
+          "items": { "$ref": "#/$defs/RenderPass" }
+        },
+
+        "backend_hints":  { "$ref": "#/$defs/BackendHints" },
+
+        "standards": {
+          "type": "object",
+          "description": "Declared standards and APIs this configuration targets.",
+          "additionalProperties": false,
+          "properties": {
+            "openusd":     { "type": "boolean" },
+            "materialx":   { "type": "boolean" },
+            "mdl":         { "type": "boolean" },
+            "gltf":        { "type": "boolean" },
+            "openxr":      { "type": "boolean" },
+            "vulkan":      { "type": "boolean" },
+            "opengl":      { "type": "boolean" },
+            "directx":     { "type": "boolean" },
+            "opencl":      { "type": "boolean" },
+            "cuda":        { "type": "boolean" }
+          }
+        },
+
+        "extensions": {
+          "type": "object",
+          "description": "Vendor/domain extension namespaces. Keys MUST be reverse-DNS strings.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "schema_meta": {
+      "type": "object",
+      "description": "Schema-level metadata.",
+      "required": ["standard","version","status"],
+      "additionalProperties": false,
+      "properties": {
+        "standard":    { "type": "string", "const": "PW-WSF-1200" },
+        "version":     { "$ref": "#/$defs/VersionString" },
+        "revision":    { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["draft","review","approved","published","deprecated","withdrawn"]
+        },
+        "title":       { "type": "string", "default": "PhysWorldLM Renderer Schema" },
+        "description": { "type": "string" },
+        "committee":   { "type": "string", "default": "PhysWorldLM Architecture Committee" },
+        "publication": { "$ref": "#/$defs/Timestamp" },
+        "license":     { "type": "string", "default": "Apache-2.0" },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name":         { "type": "string" },
+              "organization": { "type": "string" },
+              "url":          { "$ref": "#/$defs/URI" }
+            }
+          }
+        },
+        "references": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/URI" }
+        },
+        "compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "world_schema":       { "$ref": "#/$defs/VersionString" },
+            "asset_schema":       { "$ref": "#/$defs/VersionString" },
+            "json_schema_draft":  { "type": "string", "const": "2020-12" }
+          }
+        }
+      }
+    },
+
+    "renderer": { "$ref": "#/$defs/Renderer" }
+
+  },
+
+  "examples": [
+    {
+      "$comment": "Example 1: Omniverse RTX Path Tracing — Photorealistic scene",
+      "schema_meta": {
+        "standard": "PW-WSF-1200",
+        "version": "1.0.0",
+        "status": "published",
+        "compatibility": { "world_schema": "1.0.0", "asset_schema": "1.0.0", "json_schema_draft": "2020-12" }
+      },
+      "renderer": {
+        "identity": {
+          "renderer_uuid": "b1c2d3e4-0001-0001-0001-000000000001",
+          "renderer_id": "omni-rtx-path-trace-01",
+          "name": "Omniverse RTX Path Tracing — High Fidelity",
+          "renderer_profile": "photorealistic",
+          "version": "1.0.0",
+          "tags": ["omniverse","path_tracing","photorealistic"]
+        },
+        "pipeline": {
+          "pipeline_type": "path_tracing",
+          "backend": "omniverse_rtx_path_tracing",
+          "ray_tracing_enabled": true,
+          "path_tracing_enabled": true,
+          "sampling": {
+            "samples_per_pixel": 512,
+            "max_bounces": 16,
+            "denoiser": "optix"
+          },
+          "global_illumination": {
+            "method": "path_tracing",
+            "enabled": true,
+            "max_bounces": 8
+          },
+          "reflections": { "method": "ray_traced", "enabled": true }
+        },
+        "cameras": [
+          {
+            "camera_id": "c0000001-0000-0000-0000-000000000001",
+            "name": "main_camera",
+            "camera_class": "perspective",
+            "projection": "perspective",
+            "fov_vertical_deg": 60,
+            "near_plane_m": 0.1,
+            "far_plane_m": 50000,
+            "aperture_fstop": 8.0,
+            "focal_length_mm": 35,
+            "resolution": { "width_px": 3840, "height_px": 2160 },
+            "frame_rate": { "fps": 24 },
+            "motion_blur": { "enabled": true, "shutter_angle_deg": 180, "samples": 16 }
+          }
+        ],
+        "viewports": [
+          {
+            "viewport_id": "v0000001-0000-0000-0000-000000000001",
+            "name": "primary",
+            "camera_ref": { "camera_id": "c0000001-0000-0000-0000-000000000001" },
+            "resolution": { "width_px": 3840, "height_px": 2160 },
+            "hdr_enabled": true,
+            "purpose": "primary",
+            "render_targets": [
+              { "name": "color",  "type": "rgba",  "format": "float16", "channels": 4 },
+              { "name": "depth",  "type": "depth", "format": "float32", "channels": 1 }
+            ],
+            "tone_mapping": { "operator": "aces", "exposure": 0.0 }
+          }
+        ],
+        "lights": [
+          {
+            "light_id": "l0000001-0000-0000-0000-000000000001",
+            "name": "sun",
+            "light_type": "directional",
+            "color": { "r": 1.0, "g": 0.98, "b": 0.95, "intensity": 100000 },
+            "intensity_unit": "lux",
+            "cast_shadows": true,
+            "shadow_config": { "method": "ray_traced", "soft_shadows": true }
+          }
+        ],
+        "atmosphere": {
+          "model": "nishita",
+          "enabled": true,
+          "sun_disk_enabled": true,
+          "ozone_enabled": true
+        },
+        "color_management": { "color_space": "aces_cg", "output_transform": "aces", "display_standard": "hdr10" },
+        "backend_hints": {
+          "omniverse_rtx": {
+            "rtx_mode": "path_tracing",
+            "mgpu_enabled": false
+          }
+        }
+      }
+    },
+    {
+      "$comment": "Example 2: Multi-output AI Synthetic Data — RGB + Semantic + Depth + Normals simultaneously",
+      "schema_meta": {
+        "standard": "PW-WSF-1200",
+        "version": "1.0.0",
+        "status": "published",
+        "compatibility": { "world_schema": "1.0.0", "json_schema_draft": "2020-12" }
+      },
+      "renderer": {
+        "identity": {
+          "renderer_uuid": "b1c2d3e4-0002-0002-0002-000000000002",
+          "renderer_id": "synth-data-multi-out",
+          "name": "Synthetic Data Generation — Multi-Output",
+          "renderer_profile": "synthetic_data",
+          "version": "1.0.0",
+          "tags": ["synthetic_data","ai","segmentation","depth"]
+        },
+        "pipeline": {
+          "pipeline_type": "rasterization",
+          "backend": "omniverse_rtx_interactive",
+          "ray_tracing_enabled": false,
+          "global_illumination": { "method": "irradiance_probes", "enabled": true }
+        },
+        "cameras": [
+          {
+            "camera_id": "c0000002-0000-0000-0000-000000000001",
+            "name": "data_camera",
+            "camera_class": "perspective",
+            "projection": "perspective",
+            "fov_vertical_deg": 90,
+            "near_plane_m": 0.05,
+            "far_plane_m": 1000,
+            "resolution": { "width_px": 1920, "height_px": 1080 },
+            "frame_rate": { "fps": 30 }
+          }
+        ],
+        "viewports": [
+          {
+            "viewport_id": "v0000002-0000-0000-0000-000000000001",
+            "name": "rgb_view",
+            "camera_ref": { "camera_id": "c0000002-0000-0000-0000-000000000001" },
+            "resolution": { "width_px": 1920, "height_px": 1080 },
+            "purpose": "primary",
+            "render_targets": [
+              { "name": "rgb",          "type": "rgb",                    "format": "uint8",   "channels": 3 },
+              { "name": "depth",        "type": "depth_linear",           "format": "float32", "channels": 1 },
+              { "name": "semantic_seg", "type": "semantic_segmentation",  "format": "uint16",  "channels": 1 },
+              { "name": "instance_seg", "type": "instance_segmentation",  "format": "uint32",  "channels": 1 },
+              { "name": "normals",      "type": "normal_world",           "format": "float16", "channels": 3 },
+              { "name": "motion_vec",   "type": "motion_vector",          "format": "float16", "channels": 2 },
+              { "name": "obj_ids",      "type": "object_id",              "format": "uint32",  "channels": 1 }
+            ]
+          }
+        ],
+        "lights": [
+          {
+            "light_id": "l0000002-0000-0000-0000-000000000001",
+            "name": "environment",
+            "light_type": "dome",
+            "intensity": 1.0,
+            "intensity_unit": "nit"
+          }
+        ],
+        "ai_render_targets": {
+          "enabled": true,
+          "rgb": true,
+          "depth": true,
+          "depth_linear": true,
+          "semantic_segmentation": true,
+          "instance_segmentation": true,
+          "surface_normals": true,
+          "motion_vectors": true,
+          "object_ids": true,
+          "bounding_boxes_2d": true,
+          "bounding_boxes_3d": true,
+          "format": "png",
+          "annotation_format": "coco",
+          "output_path": "/data/synthetic_output"
+        },
+        "runtime": {
+          "mode": "headless",
+          "headless": true,
+          "offscreen": true,
+          "output_path": "/data/synthetic_output",
+          "output_format": "png"
+        }
+      }
+    },
+    {
+      "$comment": "Example 3: Military ISR — Thermal + EO + Radar simultaneous viewports",
+      "schema_meta": {
+        "standard": "PW-WSF-1200",
+        "version": "1.0.0",
+        "status": "published",
+        "compatibility": { "world_schema": "1.0.0", "json_schema_draft": "2020-12" }
+      },
+      "renderer": {
+        "identity": {
+          "renderer_uuid": "b1c2d3e4-0003-0003-0003-000000000003",
+          "renderer_id": "military-isr-render",
+          "name": "Military ISR Multi-Sensor Renderer",
+          "renderer_profile": "military",
+          "version": "1.0.0",
+          "tags": ["military","isr","thermal","eo","radar","multi_sensor"]
+        },
+        "pipeline": {
+          "pipeline_type": "hybrid",
+          "backend": "omniverse_rtx_interactive",
+          "ray_tracing_enabled": true,
+          "global_illumination": { "method": "rtxgi", "enabled": true }
+        },
+        "cameras": [
+          {
+            "camera_id": "c0000003-0001-0000-0000-000000000001",
+            "name": "eo_camera",
+            "camera_class": "sensor",
+            "projection": "perspective",
+            "fov_vertical_deg": 45,
+            "near_plane_m": 1,
+            "far_plane_m": 30000,
+            "resolution": { "width_px": 1920, "height_px": 1080 }
+          },
+          {
+            "camera_id": "c0000003-0002-0000-0000-000000000002",
+            "name": "ir_camera",
+            "camera_class": "sensor",
+            "projection": "perspective",
+            "fov_vertical_deg": 30,
+            "near_plane_m": 1,
+            "far_plane_m": 20000,
+            "resolution": { "width_px": 1280, "height_px": 720 }
+          }
+        ],
+        "viewports": [
+          {
+            "viewport_id": "v0000003-0001-0000-0000-000000000001",
+            "name": "eo_view",
+            "camera_ref": { "camera_id": "c0000003-0001-0000-0000-000000000001" },
+            "purpose": "primary",
+            "resolution": { "width_px": 1920, "height_px": 1080 },
+            "render_targets": [
+              { "name": "rgb",     "type": "rgb",   "format": "uint8",   "channels": 3 },
+              { "name": "depth",   "type": "depth", "format": "float32", "channels": 1 }
+            ]
+          },
+          {
+            "viewport_id": "v0000003-0002-0000-0000-000000000002",
+            "name": "thermal_view",
+            "camera_ref": { "camera_id": "c0000003-0002-0000-0000-000000000002" },
+            "purpose": "thermal",
+            "resolution": { "width_px": 1280, "height_px": 720 },
+            "render_targets": [
+              { "name": "thermal", "type": "thermal_ir", "format": "float32", "channels": 1 }
+            ]
+          },
+          {
+            "viewport_id": "v0000003-0003-0000-0000-000000000003",
+            "name": "semantic_view",
+            "camera_ref": { "camera_id": "c0000003-0001-0000-0000-000000000001" },
+            "purpose": "semantic",
+            "resolution": { "width_px": 1920, "height_px": 1080 },
+            "render_targets": [
+              { "name": "semantic", "type": "semantic_segmentation", "format": "uint16", "channels": 1 }
+            ]
+          }
+        ],
+        "lights": [
+          {
+            "light_id": "l0000003-0001-0000-0000-000000000001",
+            "name": "sun",
+            "light_type": "directional",
+            "color": { "r": 1.0, "g": 0.95, "b": 0.85, "intensity": 80000 },
+            "intensity_unit": "lux",
+            "cast_shadows": true,
+            "shadow_config": { "method": "cascaded_shadow_map", "cascade_count": 4, "soft_shadows": true }
+          }
+        ],
+        "atmosphere": { "model": "nishita", "enabled": true, "sun_disk_enabled": true },
+        "weather": {
+          "fog": { "enabled": true, "type": "exponential", "density": 0.002 }
+        }
+      }
+    }
+  ]
+}

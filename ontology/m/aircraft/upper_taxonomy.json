@@ -1,0 +1,974 @@
+{
+  "ontology_id": "PWMO-AIRCRAFT-UPPER-TAXONOMY",
+  "version": "1.0.0",
+  "description": "Complete upper taxonomy for all military aircraft categories. Classifies aircraft by mission, role, platform type, flight principle, propulsion, autonomy, generation, operational environment, and every engineering-relevant axis.",
+  "schema_version": "PWMO-2025",
+  "classification_axes": [
+    "platform_type",
+    "mission_role",
+    "generation",
+    "flight_principle",
+    "takeoff_method",
+    "landing_method",
+    "propulsion_type",
+    "autonomy_level",
+    "stealth_class",
+    "crew_configuration",
+    "operational_environment",
+    "speed_regime",
+    "range_class",
+    "altitude_class",
+    "carrier_compatibility",
+    "wing_configuration",
+    "engine_configuration",
+    "airframe_configuration",
+    "payload_class",
+    "special_mission"
+  ],
+
+  "taxonomy": {
+
+    "MilitaryAircraft": {
+      "id": "MA",
+      "label": "Military Aircraft",
+      "description": "Any aircraft designed, procured, or operated for military purposes including combat, support, training, logistics, surveillance, and special missions.",
+      "subclasses": {
+
+        "FixedWingAircraft": {
+          "id": "MA-FW",
+          "label": "Fixed Wing Aircraft",
+          "description": "Aircraft that generate lift by means of fixed aerofoil surfaces (wings). Aerodynamic lift is produced by forward motion relative to the air.",
+          "flight_principle": "aerodynamic_lift_fixed_wing",
+          "subclasses": {
+
+            "Fighter": {
+              "id": "MA-FW-FTR",
+              "label": "Fighter Aircraft",
+              "description": "Aircraft optimized for air-to-air combat. Primary mission is gaining and maintaining air superiority by destroying enemy aircraft.",
+              "subclasses": {
+
+                "AirSuperiorityFighter": {
+                  "id": "MA-FW-FTR-ASF",
+                  "label": "Air Superiority Fighter",
+                  "description": "Dedicated to achieving control of airspace by defeating all enemy air threats. Optimized for BVR and WVR engagements.",
+                  "attributes": {
+                    "primary_mission": "air_superiority",
+                    "secondary_missions": ["combat_air_patrol", "escort", "intercept"],
+                    "typical_bvr_range_km": "160+",
+                    "typical_wvr_capability": true,
+                    "supercruise_desirable": true,
+                    "high_agility_required": true
+                  },
+                  "examples": ["F-22A", "Su-57", "J-20", "MiG-31"]
+                },
+
+                "MultiroleFighter": {
+                  "id": "MA-FW-FTR-MRF",
+                  "label": "Multirole Fighter",
+                  "description": "Capable of performing both air-to-air and air-to-ground missions in a single sortie. Balances agility with strike payload.",
+                  "attributes": {
+                    "primary_mission": "multirole",
+                    "secondary_missions": ["air_superiority", "strike", "close_air_support", "sead", "maritime_strike"],
+                    "sensor_fusion_required": true
+                  },
+                  "examples": ["F-35", "Rafale", "Eurofighter Typhoon", "F/A-18E/F", "Su-30MKI", "MiG-35", "J-16", "Tejas Mk1A", "Gripen E", "F-2"]
+                },
+
+                "Interceptor": {
+                  "id": "MA-FW-FTR-INT",
+                  "label": "Interceptor",
+                  "description": "Optimized for rapid climb and high-speed intercept of enemy aircraft or missiles. Often sacrifices maneuverability for speed and altitude.",
+                  "attributes": {
+                    "primary_mission": "intercept",
+                    "high_speed_required": true,
+                    "rapid_climb_required": true,
+                    "typical_max_mach": "2.5+",
+                    "typical_service_ceiling_ft": "65000+"
+                  },
+                  "examples": ["MiG-25", "MiG-31", "F-106", "EF-111", "Su-15"]
+                },
+
+                "StrikeFighter": {
+                  "id": "MA-FW-FTR-SF",
+                  "label": "Strike Fighter",
+                  "description": "Aircraft optimized for ground attack with retained air-to-air self-defense capability. Ground attack is primary mission.",
+                  "attributes": {
+                    "primary_mission": "strike",
+                    "air_to_air_self_defense": true,
+                    "precision_strike_required": true
+                  },
+                  "examples": ["F-15E", "Su-34", "Tornado IDS", "F-111"]
+                },
+
+                "NavalFighter": {
+                  "id": "MA-FW-FTR-NF",
+                  "label": "Naval Fighter",
+                  "description": "Fighter designed for carrier operations. Includes structural reinforcement for catapult launch and arrested landing.",
+                  "attributes": {
+                    "carrier_compatible": true,
+                    "folding_wings": true,
+                    "arrested_landing_capable": true,
+                    "corrosion_resistant_structure": true
+                  },
+                  "subclasses": {
+                    "CATOBARFighter": {
+                      "id": "MA-FW-FTR-NF-CAT",
+                      "label": "CATOBAR Naval Fighter",
+                      "description": "Carrier aircraft launched by steam or EMALS catapult, recovered via arresting wires.",
+                      "examples": ["F/A-18E/F", "Rafale M", "F-14", "EA-18G"]
+                    },
+                    "STOBARFighter": {
+                      "id": "MA-FW-FTR-NF-STB",
+                      "label": "STOBAR Naval Fighter",
+                      "description": "Short Take-Off But Arrested Recovery. Uses ski-jump ramp for launch, arrested landing for recovery.",
+                      "examples": ["Su-33", "MiG-29K", "J-15", "Tejas Navy"]
+                    },
+                    "STOVLFighter": {
+                      "id": "MA-FW-FTR-NF-STOVL",
+                      "label": "STOVL Naval Fighter",
+                      "description": "Short Take-Off Vertical Landing. Can operate from short-deck carriers and amphibious assault ships without catapults or wires.",
+                      "examples": ["F-35B", "AV-8B Harrier II", "Sea Harrier"]
+                    }
+                  }
+                },
+
+                "FifthGenerationFighter": {
+                  "id": "MA-FW-FTR-5G",
+                  "label": "Fifth Generation Fighter",
+                  "description": "Aircraft incorporating stealth, AESA radar, sensor fusion, supercruise capability, and internal weapon carriage as design requirements.",
+                  "attributes": {
+                    "stealth_class": "very_low_observable",
+                    "internal_weapons_bay": true,
+                    "aesa_radar": true,
+                    "sensor_fusion": true,
+                    "supercruise_capable": true,
+                    "dlo_structure": true
+                  },
+                  "examples": ["F-22A", "F-35A", "F-35B", "F-35C", "Su-57", "J-20", "J-31"]
+                },
+
+                "SixthGenerationFighter": {
+                  "id": "MA-FW-FTR-6G",
+                  "label": "Sixth Generation Fighter",
+                  "description": "Next-generation air dominance aircraft incorporating AI-enabled mission systems, directed energy weapons, optionally manned configurations, loyal wingman control, advanced stealth, and hypersonic missile integration.",
+                  "attributes": {
+                    "optionally_manned": true,
+                    "ai_mission_systems": true,
+                    "directed_energy_weapons": "planned",
+                    "loyal_wingman_controller": true,
+                    "hypersonic_weapon_integration": true
+                  },
+                  "examples": ["NGAD (US)", "Tempest (UK/Italy/Japan)", "SCAF (France/Germany/Spain)", "GCAP"]
+                }
+              }
+            },
+
+            "Bomber": {
+              "id": "MA-FW-BMB",
+              "label": "Bomber",
+              "description": "Aircraft designed to attack surface targets with large payloads of bombs, missiles, or other ordnance. Emphasizes payload, range, and penetration capability.",
+              "subclasses": {
+
+                "StrategicBomber": {
+                  "id": "MA-FW-BMB-STR",
+                  "label": "Strategic Bomber",
+                  "description": "Long-range bomber capable of striking targets deep in enemy territory, including nuclear delivery. Intercontinental range.",
+                  "attributes": {
+                    "nuclear_capable": true,
+                    "intercontinental_range": true,
+                    "typical_range_km": "10000+",
+                    "typical_payload_kg": "20000+"
+                  },
+                  "examples": ["B-52H", "B-1B", "B-2A", "Tu-95MS", "Tu-160", "H-6K", "H-6N", "H-20"]
+                },
+
+                "TacticalBomber": {
+                  "id": "MA-FW-BMB-TAC",
+                  "label": "Tactical Bomber",
+                  "description": "Medium-range bomber for operational and tactical depth strikes. Less range than strategic bomber but higher precision.",
+                  "attributes": {
+                    "typical_range_km": "3000-8000",
+                    "precision_strike_required": true
+                  },
+                  "examples": ["Su-24M", "Tornado IDS", "B-57", "Tu-22M3"]
+                },
+
+                "StealthBomber": {
+                  "id": "MA-FW-BMB-STH",
+                  "label": "Stealth Bomber",
+                  "description": "Bomber incorporating very low observable design to penetrate integrated air defense systems.",
+                  "attributes": {
+                    "stealth_class": "very_low_observable",
+                    "flying_wing_configuration": true,
+                    "internal_weapons_only": true
+                  },
+                  "examples": ["B-2A Spirit", "B-21 Raider", "H-20 (China)"]
+                },
+
+                "DiveBomber": {
+                  "id": "MA-FW-BMB-DIV",
+                  "label": "Dive Bomber",
+                  "description": "Historical aircraft designed to deliver bombs in a steep dive for accuracy. Mostly WWII era.",
+                  "status": "retired_class",
+                  "examples": ["SBD Dauntless", "Ju 87 Stuka"]
+                },
+
+                "TorpedoBomber": {
+                  "id": "MA-FW-BMB-TRP",
+                  "label": "Torpedo Bomber",
+                  "description": "Aircraft designed to deliver aerial torpedoes against naval vessels. Historical role.",
+                  "status": "retired_class",
+                  "examples": ["TBF Avenger", "Swordfish"]
+                }
+              }
+            },
+
+            "AttackAircraft": {
+              "id": "MA-FW-ATK",
+              "label": "Attack Aircraft",
+              "description": "Aircraft optimized for close air support and direct attack of ground targets in close proximity to friendly forces.",
+              "subclasses": {
+
+                "CloseAirSupport": {
+                  "id": "MA-FW-ATK-CAS",
+                  "label": "Close Air Support Aircraft",
+                  "description": "Designed for low-altitude, highly precise fire support to ground troops in direct contact with enemy. Requires loiter capability and robust communications.",
+                  "attributes": {
+                    "loiter_capable": true,
+                    "armor_protection": true,
+                    "gun_required": true,
+                    "low_speed_maneuverability": true,
+                    "pilot_communication_with_jtac": true
+                  },
+                  "examples": ["A-10C", "Su-25", "OA-1K Skyraider II", "Gripen A"]
+                },
+
+                "Gunship": {
+                  "id": "MA-FW-ATK-GUN",
+                  "label": "Gunship",
+                  "description": "Fixed-wing aircraft converted or designed to carry heavy lateral-firing cannon and sensor systems for persistent armed overwatch.",
+                  "attributes": {
+                    "lateral_firing_weapons": true,
+                    "loiter_time_hours": "4+",
+                    "precision_fire_control": true
+                  },
+                  "examples": ["AC-130J Ghostrider", "AC-130W Stinger II", "MC-130W Combat Spear"]
+                },
+
+                "LightAttack": {
+                  "id": "MA-FW-ATK-LA",
+                  "label": "Light Attack Aircraft",
+                  "description": "Low-cost, propeller or turboprop aircraft for COIN operations, armed overwatch, and light strike.",
+                  "examples": ["A-29 Super Tucano", "AT-6 Wolverine", "Beechcraft AT-6", "Cessna OA-37"]
+                },
+
+                "SEAD": {
+                  "id": "MA-FW-ATK-SEAD",
+                  "label": "SEAD Aircraft",
+                  "description": "Suppression of Enemy Air Defense. Specialized aircraft or configured variant to detect and destroy radar, SAM, and air defense systems.",
+                  "attributes": {
+                    "anti_radiation_missiles": true,
+                    "radar_detection_suite": true
+                  },
+                  "examples": ["EA-18G Growler", "F-16CJ Wild Weasel", "Tornado ECR"]
+                },
+
+                "DEAD": {
+                  "id": "MA-FW-ATK-DEAD",
+                  "label": "DEAD Aircraft",
+                  "description": "Destruction of Enemy Air Defense. Kinetic destruction of integrated air defense network nodes.",
+                  "examples": ["F-35A", "F-22A (role)", "Rafale"]
+                }
+              }
+            },
+
+            "Reconnaissance": {
+              "id": "MA-FW-RCN",
+              "label": "Reconnaissance Aircraft",
+              "description": "Aircraft whose primary mission is collection of intelligence through photographic, electronic, or other sensor means.",
+              "subclasses": {
+
+                "StrategicReconnaissance": {
+                  "id": "MA-FW-RCN-STR",
+                  "label": "Strategic Reconnaissance",
+                  "description": "High-altitude, long-range aircraft for national-level intelligence collection.",
+                  "examples": ["U-2S", "SR-71A", "A-12", "RQ-4 Global Hawk", "E-8C JSTARS"]
+                },
+
+                "TacticalReconnaissance": {
+                  "id": "MA-FW-RCN-TAC",
+                  "label": "Tactical Reconnaissance",
+                  "description": "Shorter-range aircraft providing battlefield and operational intelligence.",
+                  "examples": ["RF-4E", "RF-16", "Mirage F1CR", "Su-24MR"]
+                },
+
+                "ISR": {
+                  "id": "MA-FW-RCN-ISR",
+                  "label": "Intelligence Surveillance Reconnaissance",
+                  "description": "Multi-sensor ISR platforms combining imaging, SIGINT, ELINT, and MASINT collection.",
+                  "subclasses": {
+                    "SIGINT": {
+                      "id": "MA-FW-RCN-ISR-SIG",
+                      "label": "SIGINT Platform",
+                      "description": "Signals intelligence collection. Intercepts communications and electronic emissions.",
+                      "examples": ["RC-135V/W Rivet Joint", "EP-3E Aries II", "Tu-214R", "Shaanxi Y-8G"]
+                    },
+                    "ELINT": {
+                      "id": "MA-FW-RCN-ISR-ELI",
+                      "label": "ELINT Platform",
+                      "description": "Electronic intelligence. Catalogues radar emissions, frequencies, pulse patterns.",
+                      "examples": ["RC-135S Cobra Ball", "EP-3E", "IL-20M Coot-A"]
+                    },
+                    "IMINT": {
+                      "id": "MA-FW-RCN-ISR-IMG",
+                      "label": "IMINT Platform",
+                      "description": "Imagery intelligence. EO, IR, and SAR imaging for ground target analysis.",
+                      "examples": ["U-2S", "RQ-4", "SR-71", "Predator A"]
+                    },
+                    "MASINT": {
+                      "id": "MA-FW-RCN-ISR-MAS",
+                      "label": "MASINT Platform",
+                      "description": "Measurement and signature intelligence. Collects signatures of weapons and systems.",
+                      "examples": ["WC-135W Constant Phoenix", "RC-135S"]
+                    },
+                    "HUMINT_Support": {
+                      "id": "MA-FW-RCN-ISR-HUM",
+                      "label": "HUMINT Support Platform",
+                      "description": "Supports human intelligence operations through covert insertion, extraction, or communications relay.",
+                      "examples": ["MC-12W Liberty", "C-12 Huron (ISR config)"]
+                    }
+                  }
+                },
+
+                "MaritimePatrol": {
+                  "id": "MA-FW-RCN-MPА",
+                  "label": "Maritime Patrol Aircraft",
+                  "description": "Long-endurance aircraft for maritime domain awareness, ASW, and surface search.",
+                  "subclasses": {
+                    "ASW": {
+                      "id": "MA-FW-RCN-MPA-ASW",
+                      "label": "Anti-Submarine Warfare Aircraft",
+                      "description": "Specialized in locating, tracking, and destroying enemy submarines using sonobuoys, MAD, and torpedoes.",
+                      "examples": ["P-8A Poseidon", "P-8I Neptune", "Tu-142", "IL-38N", "P-3C Orion", "ATL2", "CP-140 Aurora"]
+                    },
+                    "SurfaceSearch": {
+                      "id": "MA-FW-RCN-MPA-SS",
+                      "label": "Surface Search Aircraft",
+                      "description": "Detection and classification of surface vessels.",
+                      "examples": ["CN-235 MPA", "C-295 MPA", "Do 228"]
+                    }
+                  }
+                },
+
+                "AEW": {
+                  "id": "MA-FW-RCN-AEW",
+                  "label": "Airborne Early Warning",
+                  "description": "Aircraft carrying airborne radar to provide early warning of incoming aircraft, missiles, and surface threats beyond ground radar horizon.",
+                  "subclasses": {
+                    "AEWC": {
+                      "id": "MA-FW-RCN-AEW-C",
+                      "label": "AEW&C Aircraft",
+                      "description": "Airborne Early Warning and Control. Combines early warning with battlespace management and datalink distribution.",
+                      "examples": ["E-3 Sentry", "E-7A Wedgetail", "A-50U Mainstay", "KJ-2000", "KJ-500", "Embraer EMB-145 AEW&C", "Phalcon", "Netra AEW&CS"]
+                    },
+                    "AEW": {
+                      "id": "MA-FW-RCN-AEW-AEW",
+                      "label": "AEW Only",
+                      "description": "Early warning only. No command and control role.",
+                      "examples": ["E-2D Advanced Hawkeye", "Saab 340 AEW", "IL-976 (concept)"]
+                    }
+                  }
+                }
+              }
+            },
+
+            "ElectronicWarfareAircraft": {
+              "id": "MA-FW-EW",
+              "label": "Electronic Warfare Aircraft",
+              "description": "Aircraft whose primary payload is electronic warfare systems: jamming, SIGINT, ELINT, electronic attack, and electronic protection.",
+              "subclasses": {
+                "StandoffJammer": {
+                  "id": "MA-FW-EW-SOJ",
+                  "label": "Standoff Jammer",
+                  "description": "Jamming aircraft operating outside threat rings to suppress enemy radar and communications.",
+                  "examples": ["EC-130H Compass Call", "RC-135V/W (EW role)"]
+                },
+                "EscortJammer": {
+                  "id": "MA-FW-EW-ESJ",
+                  "label": "Escort Jammer",
+                  "description": "EW aircraft that accompany strike packages to suppress defenses along the route and in target area.",
+                  "examples": ["EA-18G Growler", "EA-6B Prowler"]
+                },
+                "SignalsJammer": {
+                  "id": "MA-FW-EW-SJ",
+                  "label": "Communications Jammer",
+                  "description": "Specialized in jamming enemy tactical and strategic communications.",
+                  "examples": ["EC-130H Compass Call", "IL-22PP Porubshchik"]
+                }
+              }
+            },
+
+            "Tanker": {
+              "id": "MA-FW-TKR",
+              "label": "Tanker Aircraft",
+              "description": "Aircraft that provide aerial refueling to extend the range and endurance of receiver aircraft.",
+              "subclasses": {
+                "StrategicTanker": {
+                  "id": "MA-FW-TKR-STR",
+                  "label": "Strategic Tanker",
+                  "description": "Large capacity tanker for strategic force projection.",
+                  "examples": ["KC-135R/T", "KC-46A", "KC-10A", "A330 MRTT", "IL-78M", "H-6U", "H-6N (receiver)", "KC-30"]
+                },
+                "TacticalTanker": {
+                  "id": "MA-FW-TKR-TAC",
+                  "label": "Tactical Tanker",
+                  "description": "Smaller tankers for shorter-range tactical refueling.",
+                  "examples": ["S-3B Viking (tanker role)", "Buddy Pod equipped aircraft"]
+                },
+                "BuddyRefueling": {
+                  "id": "MA-FW-TKR-BUD",
+                  "label": "Buddy Refueling Aircraft",
+                  "description": "Tactical aircraft fitted with centerline refueling pods to serve as impromptu tankers.",
+                  "examples": ["F/A-18E/F with D-704", "A-7 (buddy refueling)"]
+                }
+              }
+            },
+
+            "Transport": {
+              "id": "MA-FW-TRP",
+              "label": "Transport Aircraft",
+              "description": "Aircraft for moving personnel, equipment, and supplies.",
+              "subclasses": {
+                "StrategicAirlifter": {
+                  "id": "MA-FW-TRP-STR",
+                  "label": "Strategic Airlifter",
+                  "description": "Very large, intercontinental range cargo aircraft. Moves heavy outsized cargo across strategic distances.",
+                  "attributes": {
+                    "typical_payload_kg": "70000+",
+                    "intercontinental_range": true
+                  },
+                  "examples": ["C-17A Globemaster III", "C-5M Super Galaxy", "An-124 Ruslan", "An-22 Antei", "IL-76MD-90A", "Y-20A"]
+                },
+                "TacticalAirlifter": {
+                  "id": "MA-FW-TRP-TAC",
+                  "label": "Tactical Airlifter",
+                  "description": "Medium aircraft for intratheater airlift, capable of operating from short unprepared strips.",
+                  "examples": ["C-130J Super Hercules", "A400M Atlas", "C-295", "An-26", "Y-9", "C-27J Spartan", "CASA CN-235"]
+                },
+                "LightTransport": {
+                  "id": "MA-FW-TRP-LT",
+                  "label": "Light Transport",
+                  "description": "Small transport for liaison, medevac, and utility roles.",
+                  "examples": ["C-12 Huron", "C-21A", "UC-35", "Cessna 208"]
+                },
+                "VIPTransport": {
+                  "id": "MA-FW-TRP-VIP",
+                  "label": "VIP / Executive Transport",
+                  "description": "Configured for senior leadership transport with communications, security, and comfort.",
+                  "examples": ["VC-25A Air Force One", "E-4B NAOC", "C-37B Gulfstream", "Tu-214PU", "A319CJ"]
+                },
+                "MedicalEvacuation": {
+                  "id": "MA-FW-TRP-MEV",
+                  "label": "Medical Evacuation Transport",
+                  "description": "Aircraft configured for patient transport and in-flight medical treatment.",
+                  "examples": ["C-17A (medevac config)", "C-130J (medevac)", "C-9A Nightingale"]
+                },
+                "AirdropAircraft": {
+                  "id": "MA-FW-TRP-AD",
+                  "label": "Airdrop Aircraft",
+                  "description": "Configured for parachute delivery of personnel and equipment.",
+                  "examples": ["C-130J", "C-17A", "An-26 (airdrop)"]
+                }
+              }
+            },
+
+            "Trainer": {
+              "id": "MA-FW-TRN",
+              "label": "Trainer Aircraft",
+              "description": "Aircraft used for initial pilot training, advanced combat training, and weapons instruction.",
+              "subclasses": {
+                "PrimaryTrainer": {
+                  "id": "MA-FW-TRN-PRI",
+                  "label": "Primary Trainer",
+                  "description": "Initial flight training. Basic aircraft handling and airmanship.",
+                  "examples": ["T-6A Texan II", "PC-21", "HAL HPT-32 Deepak", "Yak-152", "HT-9 Red Hawk"]
+                },
+                "JetTrainer": {
+                  "id": "MA-FW-TRN-JET",
+                  "label": "Jet Trainer",
+                  "description": "Advanced jet familiarization and combat lead-in training.",
+                  "examples": ["T-38C Talon", "T-45C Goshawk", "M-346 Master", "BAE Hawk 200", "L-39NG Albatros", "Yak-130", "K-8 Karakorum", "HJT-36 Sitara"]
+                },
+                "CombatTrainer": {
+                  "id": "MA-FW-TRN-CMB",
+                  "label": "Lead-In Fighter Trainer",
+                  "description": "Light combat aircraft also used as lead-in trainer to advanced fighters.",
+                  "examples": ["T-7A Red Hawk", "FA-50 Golden Eagle", "Hawk 200", "L-159 ALCA", "MB-339"]
+                },
+                "NavalTrainer": {
+                  "id": "MA-FW-TRN-NAV",
+                  "label": "Naval Aviation Trainer",
+                  "description": "Carrier operations specific training.",
+                  "examples": ["T-45C Goshawk", "HAL HJT-16 Kiran"]
+                }
+              }
+            },
+
+            "SpecialMissionAircraft": {
+              "id": "MA-FW-SPM",
+              "label": "Special Mission Aircraft",
+              "description": "Aircraft configured for specific specialized roles beyond standard combat categories.",
+              "subclasses": {
+                "CommandPost": {
+                  "id": "MA-FW-SPM-CP",
+                  "label": "Airborne Command Post",
+                  "description": "Airborne command and control centers for national leadership and battlefield command.",
+                  "examples": ["E-4B NAOC", "E-6B Mercury TACAMO", "Tu-214SR", "Xian Y-20 (C2 variant)"]
+                },
+                "BattlefieldCoordinator": {
+                  "id": "MA-FW-SPM-BAC",
+                  "label": "Battlefield Coordinator",
+                  "description": "Airborne battle management and control for ground and air forces.",
+                  "examples": ["E-8C JSTARS", "MC-12W Liberty"]
+                },
+                "SearchAndRescue": {
+                  "id": "MA-FW-SPM-SAR",
+                  "label": "Combat Search and Rescue",
+                  "description": "Recovery of downed aircrew behind enemy lines.",
+                  "examples": ["HC-130J Combat King II", "MC-130J Commando II", "HH-60W Jolly Green II"]
+                },
+                "PsychologicalOperations": {
+                  "id": "MA-FW-SPM-PSYOP",
+                  "label": "Psychological Operations Aircraft",
+                  "description": "Broadcasts propaganda, leaflets, and communications disruption.",
+                  "examples": ["EC-130E COMMANDO SOLO", "MC-130W"]
+                },
+                "SpecialOperations": {
+                  "id": "MA-FW-SPM-SOF",
+                  "label": "Special Operations Aircraft",
+                  "description": "Insertion, extraction, and support of special operations forces.",
+                  "examples": ["MC-130J Commando II", "MC-130H Combat Talon II", "HC-130P/N", "An-72P"]
+                },
+                "CalibrationAircraft": {
+                  "id": "MA-FW-SPM-CAL",
+                  "label": "Calibration Aircraft",
+                  "description": "Checks and calibrates ground-based navigation and radar systems.",
+                  "examples": ["C-12 (calibration)", "Learjet 35 (calibration)"]
+                },
+                "AtmosphericResearch": {
+                  "id": "MA-FW-SPM-ATM",
+                  "label": "Atmospheric / Weather Research",
+                  "description": "Collects meteorological data, penetrates storms.",
+                  "examples": ["WC-130J Weatherbird", "WC-135W Constant Phoenix"]
+                }
+              }
+            },
+
+            "ExperimentalAircraft": {
+              "id": "MA-FW-EXP",
+              "label": "Experimental Aircraft",
+              "description": "Technology demonstrators and experimental platforms not intended for operational service in their tested configuration.",
+              "subclasses": {
+                "TechDemonstrator": {
+                  "id": "MA-FW-EXP-TD",
+                  "label": "Technology Demonstrator",
+                  "description": "Validates specific advanced technologies.",
+                  "examples": ["X-47B", "X-36", "X-44 MANTA", "X-59 Quesst", "Darkstar", "UCAV-N"]
+                },
+                "HypersonicTestVehicle": {
+                  "id": "MA-FW-EXP-HTV",
+                  "label": "Hypersonic Test Vehicle",
+                  "description": "Validates hypersonic flight regimes, materials, and propulsion.",
+                  "examples": ["X-51A Waverider", "HTV-2", "X-43A", "IM-99 Bomarc"]
+                },
+                "Spaceplane": {
+                  "id": "MA-FW-EXP-SP",
+                  "label": "Spaceplane",
+                  "description": "Aircraft capable of reaching orbital or suborbital altitudes.",
+                  "examples": ["X-37B OTV", "X-15", "SR-72 (concept)", "Shenlong"]
+                }
+              }
+            }
+          }
+        },
+
+        "RotaryWingAircraft": {
+          "id": "MA-RW",
+          "label": "Rotary Wing Aircraft",
+          "description": "Aircraft that generate lift through rotating blades (rotors). Capable of vertical takeoff and landing, hover, and low-speed flight.",
+          "flight_principle": "aerodynamic_lift_rotary_wing",
+          "subclasses": {
+
+            "AttackHelicopter": {
+              "id": "MA-RW-ATK",
+              "label": "Attack Helicopter",
+              "description": "Dedicated armed helicopter for anti-armor, close air support, and escort missions.",
+              "subclasses": {
+                "DedicatedAttack": {
+                  "id": "MA-RW-ATK-DED",
+                  "label": "Dedicated Attack Helicopter",
+                  "description": "Purpose-built attack helicopter with tandem crew, FLIR, fire control, and heavy armament.",
+                  "examples": ["AH-64E Apache Guardian", "Mi-28NM Havoc-B", "Ka-52K Katran", "Z-10ME", "HAL Prachand LCH", "T-129 ATAK II", "Mangusta A129"]
+                },
+                "ArmedUtilityHelicopter": {
+                  "id": "MA-RW-ATK-AUH",
+                  "label": "Armed Utility Helicopter",
+                  "description": "Utility helicopter with weapon systems added.",
+                  "examples": ["UH-60M DAP", "UH-1Y Venom", "Mi-8AMTSh"]
+                }
+              }
+            },
+
+            "UtilityHelicopter": {
+              "id": "MA-RW-UTL",
+              "label": "Utility Helicopter",
+              "description": "Multi-purpose helicopter for troop transport, sling load, medevac, and general support.",
+              "examples": ["UH-60M Black Hawk", "Mi-8MTV", "NH90", "H-60 variants", "EC725 Caracal", "CH-149 Cormorant", "HAL Dhruv ALH"]
+            },
+
+            "HeavyLiftHelicopter": {
+              "id": "MA-RW-HVY",
+              "label": "Heavy Lift Helicopter",
+              "description": "Very large helicopters for outsized cargo and heavy external load operations.",
+              "examples": ["CH-47F Chinook", "Mi-26T2", "CH-53K King Stallion", "Mi-6 Hook"]
+            },
+
+            "NavalHelicopter": {
+              "id": "MA-RW-NAV",
+              "label": "Naval Helicopter",
+              "description": "Helicopter designed for shipborne operations: ASW, surface search, torpedo delivery.",
+              "subclasses": {
+                "ASWHelicopter": {
+                  "id": "MA-RW-NAV-ASW",
+                  "label": "ASW Helicopter",
+                  "description": "Anti-submarine warfare helicopter with sonobuoys, dipping sonar, and torpedoes.",
+                  "examples": ["MH-60R Seahawk", "SH-2G Super Seasprite", "NH90 NFH", "AW159 Wildcat", "Ka-27PL Helix", "Z-18F", "HAL Dhruv Naval"]
+                },
+                "UtilityNavalHelicopter": {
+                  "id": "MA-RW-NAV-UTL",
+                  "label": "Naval Utility Helicopter",
+                  "description": "General purpose naval helicopter for VERTREP, SAR, and personnel transport.",
+                  "examples": ["MH-60S Seahawk", "HH-60H Rescue Hawk", "EC725 (naval)"]
+                }
+              }
+            },
+
+            "ReconHelicopter": {
+              "id": "MA-RW-RCN",
+              "label": "Reconnaissance Helicopter",
+              "description": "Optimized for battlefield observation and target designation.",
+              "examples": ["OH-58D Kiowa Warrior", "ARH-70A", "EC145 M (scout)"]
+            },
+
+            "TrainingHelicopter": {
+              "id": "MA-RW-TRN",
+              "label": "Training Helicopter",
+              "description": "Helicopter for rotary wing qualification training.",
+              "examples": ["TH-67 Creek", "TH-73A", "Schweizer TH-300", "Bell 206"]
+            },
+
+            "SARHelicopter": {
+              "id": "MA-RW-SAR",
+              "label": "SAR / CSAR Helicopter",
+              "description": "Combat and non-combat search and rescue.",
+              "examples": ["HH-60W Jolly Green II", "MH-60G Pave Hawk", "HC-130J (fixed wing support)", "AW101 Merlin HM2"]
+            },
+
+            "MedevacHelicopter": {
+              "id": "MA-RW-MEV",
+              "label": "Medevac Helicopter",
+              "description": "Medical evacuation helicopter with patient treatment capability.",
+              "examples": ["UH-60A+ (MEDEVAC)", "HH-60M", "CH-47 (MEDEVAC config)", "EC135 (MEDEVAC)"]
+            },
+
+            "NavalMineCountermeasures": {
+              "id": "MA-RW-MCM",
+              "label": "Helicopter MCM",
+              "description": "Airborne mine sweeping and mine neutralization.",
+              "examples": ["MH-53E Sea Dragon", "AW101 (MCM)"]
+            }
+          }
+        },
+
+        "TiltrotorAircraft": {
+          "id": "MA-TR",
+          "label": "Tiltrotor Aircraft",
+          "description": "Aircraft that combine fixed-wing cruise efficiency with rotorcraft VTOL capability through tilting proprotor systems.",
+          "flight_principle": "tiltrotor",
+          "attributes": {
+            "vtol_capable": true,
+            "fixed_wing_cruise_speed": true
+          },
+          "subclasses": {
+            "MilitaryTiltrotor": {
+              "id": "MA-TR-MIL",
+              "label": "Military Tiltrotor",
+              "examples": ["V-22 Osprey", "CMV-22B", "MV-22B", "CV-22B", "AW609 (civil)"]
+            },
+            "AttackTiltrotor": {
+              "id": "MA-TR-ATK",
+              "label": "Attack Tiltrotor (Concept)",
+              "description": "Proposed armed tiltrotor combining attack helicopter capability with tiltrotor speed.",
+              "examples": ["V-280 Valor (Defiant/Valor competition)", "SB>1 Defiant (coaxial)"]
+            }
+          }
+        },
+
+        "UAV": {
+          "id": "MA-UAV",
+          "label": "Unmanned Aerial Vehicle",
+          "description": "Aircraft without an onboard human crew. Controlled remotely, semi-autonomously, or fully autonomously.",
+          "autonomy_level": "unmanned",
+          "subclasses": {
+
+            "NanoUAV": {
+              "id": "MA-UAV-NANO",
+              "label": "Nano UAV",
+              "description": "Smallest class. Weight under 250g. Hand-launched, short endurance.",
+              "examples": ["Black Hornet PRS", "FLIR Black Hornet 3"]
+            },
+
+            "MicroUAV": {
+              "id": "MA-UAV-MICRO",
+              "label": "Micro UAV",
+              "description": "250g to 2kg. Soldier-level ISR.",
+              "examples": ["RQ-11 Raven", "Wasp III", "Puma AE"]
+            },
+
+            "MiniUAV": {
+              "id": "MA-UAV-MINI",
+              "label": "Mini / Small UAV",
+              "description": "2kg to 25kg. Company and battalion level ISR.",
+              "examples": ["RQ-20 Puma AE", "Scan Eagle", "Aerosonde", "Elbit Skylark"]
+            },
+
+            "TacticalUAV": {
+              "id": "MA-UAV-TAC",
+              "label": "Tactical UAV",
+              "description": "Brigade to division level ISR. Runway or catapult launched.",
+              "examples": ["RQ-7B Shadow", "Hermes 450", "IAI Heron I", "Searcher Mk III"]
+            },
+
+            "MALE": {
+              "id": "MA-UAV-MALE",
+              "label": "Medium Altitude Long Endurance UAV",
+              "description": "Operates at 10,000-50,000ft for 24+ hours. Theater-level ISR and strike.",
+              "examples": ["MQ-9B SkyGuardian", "Bayraktar TB2", "Wing Loong II", "MALE RPAS (Eurodrone)", "Heron TP", "Hermes 900", "MALE (DRDO Tapas)"]
+            },
+
+            "HALE": {
+              "id": "MA-UAV-HALE",
+              "label": "High Altitude Long Endurance UAV",
+              "description": "Operates above 60,000ft for 36+ hours. Strategic ISR.",
+              "examples": ["RQ-4 Global Hawk", "MQ-4C Triton", "RQ-180", "Zephyr S (pseudo-satellite)", "Vulture", "Tu-243 Reis"]
+            },
+
+            "UCAV": {
+              "id": "MA-UAV-UCAV",
+              "label": "Unmanned Combat Air Vehicle",
+              "description": "Autonomous or semi-autonomous combat aircraft without crew.",
+              "subclasses": {
+                "StealthUCAV": {
+                  "id": "MA-UAV-UCAV-STH",
+                  "label": "Stealth UCAV",
+                  "description": "Low-observable UCAV for penetrating defended airspace.",
+                  "examples": ["RQ-170 Sentinel", "RQ-180", "X-47B", "nEUROn", "Taranis", "CH-7 Rainbow UCAV", "GJ-11 Sharp Sword", "S-70 Okhotnik", "Hunter-B"]
+                },
+                "PropellerUCAV": {
+                  "id": "MA-UAV-UCAV-PROP",
+                  "label": "Propeller UCAV",
+                  "description": "Turboprop UCAV for persistent armed overwatch.",
+                  "examples": ["MQ-9 Reaper", "Bayraktar TB2", "Aksungur"]
+                },
+                "LoyalWingman": {
+                  "id": "MA-UAV-UCAV-LW",
+                  "label": "Loyal Wingman / Collaborative Combat Aircraft",
+                  "description": "Unmanned aircraft designed to fly as force multiplier alongside manned fighter.",
+                  "examples": ["XQ-58A Valkyrie", "Boeing MQ-28 Ghost Bat", "MQ-Next (US)", "AFRL VENOM/FURY", "Wingman (Turkey)"]
+                }
+              }
+            },
+
+            "LoiteringMunition": {
+              "id": "MA-UAV-LM",
+              "label": "Loitering Munition / Kamikaze UAV",
+              "description": "Expendable UAV that loiters and dives on target. Single-use weapon.",
+              "examples": ["AeroVironment Switchblade 300/600", "IAI Harop", "WB Electronics Warmate", "KUB-BLA (Lancet)", "ZALA Lancet-3", "Shahed-136", "Harpyye"]
+            },
+
+            "SwarmUAV": {
+              "id": "MA-UAV-SWM",
+              "label": "Swarm UAV",
+              "description": "Large numbers of small coordinated UAVs operating under collective intelligence.",
+              "examples": ["DARPA OFFSET", "PERDIX micro-UAV", "Golden Eagle swarm tests"]
+            },
+
+            "RelayUAV": {
+              "id": "MA-UAV-REL",
+              "label": "Communications Relay UAV",
+              "description": "Acts as communications node for extending BLOS communications.",
+              "examples": ["K-MAX (relay capable)", "MALE relay configs"]
+            },
+
+            "CargoUAV": {
+              "id": "MA-UAV-CGO",
+              "label": "Cargo UAV",
+              "description": "Unmanned resupply and logistics delivery.",
+              "examples": ["K-MAX KARGO", "VTOL Cargo UAV", "MQ-9 Reaper (cargo config)", "Pipistrel Miniliner"]
+            },
+
+            "TargetDrone": {
+              "id": "MA-UAV-TGT",
+              "label": "Target Drone",
+              "description": "Simulates enemy aircraft and missiles for weapon testing and aircrew training.",
+              "examples": ["QF-16", "QF-4", "BQM-167A Skeeter", "MQM-178 Firejet", "Banshee", "Chukar III"]
+            },
+
+            "DecoyUAV": {
+              "id": "MA-UAV-DCY",
+              "label": "Decoy UAV",
+              "description": "Mimics radar signature of aircraft to saturate and deceive enemy defenses.",
+              "examples": ["ADM-160 MALD", "ADM-160B MALD-J", "ITALD", "Perdix (decoy role)"]
+            }
+          }
+        },
+
+        "HypersonicAircraft": {
+          "id": "MA-HYP",
+          "label": "Hypersonic Aircraft",
+          "description": "Aircraft capable of sustained flight above Mach 5.",
+          "speed_regime": "hypersonic",
+          "subclasses": {
+            "HypersonicISR": {
+              "id": "MA-HYP-ISR",
+              "label": "Hypersonic ISR",
+              "examples": ["SR-72 (concept)", "U-2 replacement concepts"]
+            },
+            "HypersonicStrike": {
+              "id": "MA-HYP-STR",
+              "label": "Hypersonic Strike Aircraft",
+              "examples": ["Darkstar (Lockheed)", "X-43 derivatives"]
+            }
+          }
+        }
+      }
+    }
+  },
+
+  "classification_by_generation": {
+    "label": "Aircraft Generation Classification",
+    "description": "Fighter aircraft generations by capabilities and technology.",
+    "generations": {
+      "FirstGeneration": {
+        "id": "GEN-1",
+        "label": "First Generation Jet Fighter",
+        "era": "1944-1953",
+        "characteristics": ["Straight or swept wings", "No radar", "Gun armament only", "Subsonic"],
+        "examples": ["F-80 Shooting Star", "MiG-15", "Me 262", "Gloster Meteor"]
+      },
+      "SecondGeneration": {
+        "id": "GEN-2",
+        "label": "Second Generation Jet Fighter",
+        "era": "1953-1960",
+        "characteristics": ["Supersonic capable", "Early radar", "First AAMs", "Afterburner"],
+        "examples": ["F-100 Super Sabre", "MiG-19", "F-104", "MiG-21 (early)"]
+      },
+      "ThirdGeneration": {
+        "id": "GEN-3",
+        "label": "Third Generation Jet Fighter",
+        "era": "1960-1970",
+        "characteristics": ["Mach 2 capable", "Pulse radar", "Infrared AAM", "Variable sweep (some)"],
+        "examples": ["F-4 Phantom II", "MiG-21bis", "Mirage III", "F-8 Crusader"]
+      },
+      "FourthGeneration": {
+        "id": "GEN-4",
+        "label": "Fourth Generation Fighter",
+        "era": "1970-1995",
+        "characteristics": ["High agility", "Pulse Doppler radar", "BVR AAMs", "FBW (late)"],
+        "examples": ["F-15A", "F-16A", "F/A-18A", "MiG-29", "Su-27", "Mirage 2000"]
+      },
+      "FourthGenerationPlus": {
+        "id": "GEN-4+",
+        "label": "4th Generation Plus",
+        "era": "1995-2010",
+        "characteristics": ["AESA radar (some)", "Glass cockpit", "Precision weapons", "Expanded multirole"],
+        "examples": ["F-15E", "F-16C Block 50", "Su-30MKI", "Rafale", "Eurofighter"]
+      },
+      "FourthGenerationPlusPlus": {
+        "id": "GEN-4++",
+        "label": "4th Generation Plus Plus",
+        "era": "2010-present",
+        "characteristics": ["AESA radar", "IRST", "Advanced EW", "Helmet display", "Extended supermaneuverability"],
+        "examples": ["Su-35S", "F/A-18E/F Block III", "F-16V", "J-10C", "Gripen E", "MiG-35"]
+      },
+      "FifthGeneration": {
+        "id": "GEN-5",
+        "label": "Fifth Generation Fighter",
+        "era": "2005-present",
+        "characteristics": ["VLO stealth", "Internal weapons", "AESA", "Sensor fusion", "Supercruise"],
+        "examples": ["F-22A", "F-35A/B/C", "Su-57", "J-20", "J-31/FC-31"]
+      },
+      "SixthGeneration": {
+        "id": "GEN-6",
+        "label": "Sixth Generation Fighter",
+        "era": "2030+ projected",
+        "characteristics": ["AI integration", "Optionally manned", "DEW", "Loyal wingman control", "Hypersonic weapons"],
+        "examples": ["NGAD", "GCAP/Tempest", "SCAF"]
+      }
+    }
+  },
+
+  "classification_by_takeoff_method": {
+    "CTOL": { "id": "TOM-CTOL", "label": "Conventional Takeoff and Landing", "description": "Standard runway based operations." },
+    "STOL": { "id": "TOM-STOL", "label": "Short Takeoff and Landing", "description": "Operations from very short runways or unprepared strips." },
+    "VTOL": { "id": "TOM-VTOL", "label": "Vertical Takeoff and Landing", "description": "Aircraft that can take off and land vertically." },
+    "STOVL": { "id": "TOM-STOVL", "label": "Short Takeoff Vertical Landing", "description": "Can take off from a short run but land vertically." },
+    "CATOBAR": { "id": "TOM-CAT", "label": "Catapult Assisted Takeoff Barrier Arrested Recovery", "description": "Carrier operations using catapult for launch and arresting wire for recovery." },
+    "STOBAR": { "id": "TOM-STB", "label": "Short Takeoff But Arrested Recovery", "description": "Ski-jump launch, arrested wire recovery. No catapult." },
+    "STOBAR_SKI": { "id": "TOM-SKI", "label": "Ski-Jump Assisted", "description": "Ramp assists aircraft off deck." },
+    "EMALS": { "id": "TOM-EML", "label": "Electromagnetic Launch System", "description": "Electric catapult replacing steam catapult on CVN-78 class." },
+    "AerialLaunch": { "id": "TOM-AIR", "label": "Air Launched", "description": "Released from a carrier aircraft." },
+    "RocketAssisted": { "id": "TOM-JATO", "label": "JATO / RATO Assisted", "description": "Rocket motors assist takeoff from short strips." }
+  },
+
+  "classification_by_stealth": {
+    "NonStealth": { "id": "STH-0", "label": "Non-Stealth", "rcs_class": "conventional" },
+    "LowObservable": { "id": "STH-1", "label": "Low Observable", "rcs_class": "reduced", "description": "Radar cross section reduced by shaping and materials but not optimized." },
+    "VeryLowObservable": { "id": "STH-2", "label": "Very Low Observable", "rcs_class": "VLO", "description": "Full stealth design with internal weapons, RAM coatings, shaping optimized for all radar bands." },
+    "AdaptiveStealth": { "id": "STH-3", "label": "Adaptive Stealth", "rcs_class": "active_management", "description": "Active systems that modify radar return dynamically." }
+  },
+
+  "classification_by_autonomy": {
+    "FullyManned": { "id": "AUT-0", "label": "Fully Manned", "crew_required": true },
+    "OptionallManned": { "id": "AUT-1", "label": "Optionally Manned", "description": "Can fly manned or unmanned." },
+    "RemotelyPiloted": { "id": "AUT-2", "label": "Remotely Piloted", "description": "Human in the loop via datalink." },
+    "SemiAutonomous": { "id": "AUT-3", "label": "Semi-Autonomous", "description": "AI handles portions of mission; human supervises." },
+    "FullyAutonomous": { "id": "AUT-4", "label": "Fully Autonomous", "description": "No human in the loop for mission execution." },
+    "SwarmIntelligence": { "id": "AUT-5", "label": "Swarm / Collective Intelligence", "description": "Multiple autonomous agents operating under coordinated AI." }
+  },
+
+  "classification_by_speed": {
+    "Subsonic": { "id": "SPD-1", "mach_range": "0-0.8" },
+    "Transonic": { "id": "SPD-2", "mach_range": "0.8-1.2" },
+    "Supersonic": { "id": "SPD-3", "mach_range": "1.2-5.0" },
+    "Hypersonic": { "id": "SPD-4", "mach_range": "5.0-25.0" },
+    "Hypervelocity": { "id": "SPD-5", "mach_range": "25+" }
+  },
+
+  "classification_by_range": {
+    "VeryShortRange": { "id": "RNG-1", "range_km": "0-500" },
+    "ShortRange": { "id": "RNG-2", "range_km": "500-1500" },
+    "MediumRange": { "id": "RNG-3", "range_km": "1500-4000" },
+    "LongRange": { "id": "RNG-4", "range_km": "4000-8000" },
+    "IntercontinentalRange": { "id": "RNG-5", "range_km": "8000+" }
+  },
+
+  "classification_by_altitude": {
+    "VeryLowAltitude": { "id": "ALT-1", "altitude_ft": "0-500" },
+    "LowAltitude": { "id": "ALT-2", "altitude_ft": "500-10000" },
+    "MediumAltitude": { "id": "ALT-3", "altitude_ft": "10000-25000" },
+    "HighAltitude": { "id": "ALT-4", "altitude_ft": "25000-65000" },
+    "VeryHighAltitude": { "id": "ALT-5", "altitude_ft": "65000-150000" },
+    "NearSpace": { "id": "ALT-6", "altitude_ft": "150000-330000" }
+  }
+}

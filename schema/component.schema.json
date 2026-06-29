@@ -1,0 +1,1933 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/component.schema.json",
+  "title": "ComponentSpec",
+  "description": "PhysWorldLM Component Specification Format (PW-CSF) v1.0. Canonical definition of every physical, electrical, logical, computational, mechanical, structural, sensing, communication, propulsion, and software subsystem that can exist inside an Entity. Supports unlimited recursive nesting. Simulator-independent, ontology-friendly, knowledge-graph-friendly, military-grade.",
+  "type": "object",
+  "required": ["component_id", "component_type"],
+  "unevaluatedProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier (RFC 4122)."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. 1.0.0."
+    },
+
+    "Vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+
+    "Quaternion": {
+      "type": "object",
+      "required": ["x", "y", "z", "w"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "w": { "type": "number" }
+      }
+    },
+
+    "Matrix3x3": {
+      "description": "Row-major 3×3 matrix (e.g. inertia tensor).",
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 9,
+      "maxItems": 9
+    },
+
+    "Range": {
+      "type": "object",
+      "description": "Inclusive numeric range with optional unit.",
+      "additionalProperties": false,
+      "properties": {
+        "min":  { "type": "number" },
+        "max":  { "type": "number" },
+        "unit": { "type": "string" }
+      }
+    },
+
+    "ScalarWithUnit": {
+      "type": "object",
+      "required": ["value", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "number" },
+        "unit":  { "type": "string", "description": "SI unit symbol or custom string." }
+      }
+    },
+
+    "MountTransform": {
+      "type": "object",
+      "description": "Local-space transform of this component relative to its parent.",
+      "additionalProperties": false,
+      "properties": {
+        "position": { "$ref": "#/$defs/Vector3", "description": "Offset in meters from parent origin." },
+        "rotation": { "$ref": "#/$defs/Quaternion", "description": "Orientation relative to parent." },
+        "scale":    { "$ref": "#/$defs/Vector3", "description": "Scale multiplier (usually [1,1,1])." },
+        "reference_frame": {
+          "type": "string",
+          "enum": ["local", "body", "world", "parent_component"],
+          "default": "parent_component"
+        }
+      }
+    },
+
+    "MaterialRef": {
+      "type": "object",
+      "description": "Reference to a material defined in world.schema.json or inline definition.",
+      "additionalProperties": false,
+      "properties": {
+        "material_id":   { "$ref": "#/$defs/UUID", "description": "Reference to Material in WorldSpec." },
+        "material_name": { "type": "string" },
+        "inline": {
+          "type": "object",
+          "description": "Inline material definition if not referencing a WorldSpec material.",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "ComponentType": {
+      "type": "string",
+      "description": "Canonical component type enumeration covering all known physical, electrical, computational, sensing, actuation, structural, and weapon subsystems.",
+      "enum": [
+        "engine_turbofan", "engine_turbojet", "engine_turboprop", "engine_turboshaft",
+        "engine_piston", "engine_rocket", "engine_ramjet", "engine_scramjet",
+        "engine_electric", "engine_ion", "engine_nuclear",
+        "rotor_main", "rotor_tail", "rotor_coaxial", "rotor_tilt",
+        "propeller_fixed", "propeller_variable_pitch", "propeller_contra_rotating",
+        "wing_fixed", "wing_delta", "wing_swing", "wing_canard", "wing_morphing",
+        "control_fin", "elevon", "aileron", "elevator", "rudder", "flap", "slat",
+        "thruster_cold_gas", "thruster_chemical", "thruster_electric", "thruster_ion",
+        "thruster_hall_effect", "thruster_gridded_ion",
+        "wheel", "track", "suspension", "steering_system", "brake_system",
+        "landing_gear_fixed", "landing_gear_retractable", "landing_gear_ski",
+        "fuel_tank", "fuel_pump", "fuel_line", "fuel_valve", "fuel_manifold",
+        "battery_lithium_ion", "battery_lithium_polymer", "battery_solid_state",
+        "battery_nickel_metal_hydride", "battery_lead_acid", "battery_thermal",
+        "generator_ac", "generator_dc", "generator_thermoelectric",
+        "solar_panel", "fuel_cell", "power_supply", "power_converter", "power_conditioner",
+        "bus_electrical", "circuit_breaker", "relay", "transformer", "inverter", "rectifier",
+        "capacitor_bank", "supercapacitor",
+        "cpu", "gpu", "dsp", "fpga", "asic", "npu", "mcu", "soc", "tpu",
+        "memory_ram", "memory_rom", "memory_flash", "memory_eeprom",
+        "storage_ssd", "storage_hdd", "storage_nvme",
+        "computer_mission", "computer_flight", "computer_fire_control",
+        "computer_navigation", "computer_autopilot", "computer_payload",
+        "computer_battle_management", "computer_communications",
+        "circuit_board_main", "circuit_board_io", "circuit_board_power",
+        "sensor_radar", "sensor_lidar", "sensor_sonar", "sensor_sar",
+        "sensor_eo_camera", "sensor_ir_camera", "sensor_hyperspectral",
+        "sensor_multispectral", "sensor_laser_rangefinder", "sensor_laser_designator",
+        "sensor_imu", "sensor_ins", "sensor_gps", "sensor_gnss",
+        "sensor_altimeter", "sensor_barometer", "sensor_magnetometer",
+        "sensor_acoustic", "sensor_seismic", "sensor_chemical",
+        "sensor_biological", "sensor_nuclear_radiation", "sensor_rfid",
+        "sensor_sigint", "sensor_elint", "sensor_comint",
+        "sensor_aoa", "sensor_airspeed", "sensor_rate_gyro",
+        "sensor_force_torque", "sensor_proximity", "sensor_touch",
+        "sensor_vibration", "sensor_strain_gauge", "sensor_temperature",
+        "sensor_pressure", "sensor_flow", "sensor_current", "sensor_voltage",
+        "actuator_electric_motor", "actuator_servo", "actuator_hydraulic_linear",
+        "actuator_hydraulic_rotary", "actuator_pneumatic_linear",
+        "actuator_pneumatic_rotary", "actuator_piezoelectric",
+        "actuator_shape_memory_alloy", "actuator_solenoid",
+        "actuator_reaction_wheel", "actuator_control_moment_gyro",
+        "actuator_magnetorquer",
+        "antenna_dipole", "antenna_monopole", "antenna_patch",
+        "antenna_phased_array", "antenna_parabolic", "antenna_helical",
+        "antenna_horn", "antenna_yagi",
+        "radio_vhf", "radio_uhf", "radio_hf", "radio_satcom",
+        "datalink_link16", "datalink_link22", "datalink_cdl",
+        "datalink_ttl", "datalink_jtids",
+        "transceiver_rf", "transceiver_optical", "transceiver_acoustic",
+        "modem", "transponder_iff", "transponder_adsb", "transponder_mode_s",
+        "laser_comm",
+        "turret", "gun_barrel", "cannon", "autocannon",
+        "missile_launcher_rail", "missile_launcher_box", "missile_launcher_vls",
+        "torpedo_tube", "bomb_rack", "pylon", "hardpoint",
+        "warhead_he", "warhead_ap", "warhead_shaped_charge",
+        "warhead_thermobaric", "warhead_nuclear", "warhead_submunition",
+        "warhead_emp",
+        "seeker_radar_active", "seeker_radar_semi_active", "seeker_ir_imaging",
+        "seeker_ir_uncooled", "seeker_tv", "seeker_laser", "seeker_gps_ins",
+        "seeker_multi_mode",
+        "armor_rha", "armor_composite", "armor_reactive",
+        "armor_slat", "armor_add", "armor_trophy_aps",
+        "hydraulic_pump", "hydraulic_reservoir", "hydraulic_valve",
+        "hydraulic_actuator", "hydraulic_accumulator", "hydraulic_filter",
+        "pneumatic_compressor", "pneumatic_valve", "pneumatic_actuator",
+        "gearbox", "transmission", "differential", "clutch", "torque_converter",
+        "bearing_ball", "bearing_roller", "bearing_thrust", "bearing_magnetic",
+        "joint_revolute", "joint_prismatic", "joint_spherical", "joint_universal",
+        "joint_fixed", "joint_flexible",
+        "manipulator_arm", "end_effector", "gripper", "tool_changer",
+        "docking_port", "berthing_mechanism", "payload_adapter",
+        "heat_exchanger", "radiator", "cooling_fan", "heat_pipe",
+        "thermoelectric_cooler", "vapor_cycle", "cold_plate",
+        "pressure_vessel", "accumulator", "tank_pressurized",
+        "pipe", "valve_flow", "valve_pressure_relief", "valve_check",
+        "pump_fluid", "pump_vacuum", "compressor",
+        "cable_power", "cable_signal", "cable_fiber_optic",
+        "connector_electrical", "connector_fluid", "connector_mechanical",
+        "structural_frame", "structural_spar", "structural_rib",
+        "structural_bulkhead", "structural_skin", "structural_longeron",
+        "structural_stringer",
+        "satellite_bus", "spacecraft_payload", "star_tracker",
+        "sun_sensor", "earth_sensor", "reaction_control_system",
+        "separation_system", "deployment_mechanism",
+        "robotic_leg", "robotic_spine", "robotic_neck",
+        "linear_actuator", "rotary_actuator",
+        "optical_lens", "optical_mirror", "optical_filter",
+        "optical_prism", "optical_fiber_bundle",
+        "night_vision_gen1", "night_vision_gen2", "night_vision_gen3",
+        "thermal_imager", "image_intensifier",
+        "countermeasure_chaff", "countermeasure_flare",
+        "countermeasure_jammer_rf", "countermeasure_jammer_ir",
+        "countermeasure_decoy_towed", "countermeasure_laser_dazzler",
+        "winch", "hook", "sling_load_attachment",
+        "refueling_probe", "refueling_drogue", "refueling_boom",
+        "hatch", "door", "ramp", "canopy", "fairing",
+        "parachute", "airbag", "flotation_device",
+        "medical_sensor", "medical_actuator",
+        "agricultural_spray_nozzle", "agricultural_seed_dispenser",
+        "mining_drill", "mining_cutter", "mining_conveyor",
+        "construction_tool", "demolition_charge",
+        "firefighting_nozzle", "search_light", "speaker",
+        "custom"
+      ]
+    },
+
+    "ComponentDomain": {
+      "type": "string",
+      "enum": [
+        "military", "civilian", "industrial", "medical", "construction",
+        "maritime", "aerospace", "automotive", "space", "agriculture",
+        "mining", "disaster_response", "robotics", "smart_city",
+        "factory", "energy", "research", "custom"
+      ]
+    },
+
+    "OperationalState": {
+      "type": "string",
+      "description": "Runtime operational state of the component.",
+      "enum": [
+        "nominal", "standby", "active", "idle", "enabled", "disabled",
+        "initializing", "calibrating", "warming_up", "cooling_down",
+        "fault", "fault_degraded", "fault_safe",
+        "offline", "maintenance", "repair",
+        "overheated", "frozen", "flooded", "contaminated",
+        "jammed", "locked", "unlocked", "stuck",
+        "damaged_minor", "damaged_moderate", "damaged_severe", "destroyed",
+        "depleted", "saturated", "overloaded",
+        "armed", "safe", "fired", "expended",
+        "deployed", "stowed", "transitioning",
+        "tracking", "searching", "acquiring", "lost_track",
+        "transmitting", "receiving", "jamming",
+        "custom"
+      ]
+    },
+
+    "InterfaceProtocol": {
+      "type": "string",
+      "description": "Digital or analog interface protocol.",
+      "enum": [
+        "ethernet_100base_t", "ethernet_1000base_t", "ethernet_10gbase_t",
+        "ethernet_tsn", "afdx", "arinc429", "arinc664",
+        "mil_std_1553b", "mil_std_1760",
+        "can_2b", "canopen", "canfd",
+        "uart", "rs232", "rs422", "rs485",
+        "spi", "i2c", "i3c", "smbus",
+        "usb2", "usb3", "usb4",
+        "pcie_gen3", "pcie_gen4", "pcie_gen5",
+        "spacewire", "spacewire_rmap",
+        "mil_std_188_165",
+        "fibre_channel",
+        "hdlc", "sdlc",
+        "modbus", "profibus", "profinet",
+        "ethercat", "sercos",
+        "discrete_analog_0_5v", "discrete_analog_0_10v",
+        "discrete_analog_4_20ma",
+        "discrete_digital_ttl", "discrete_digital_lvds",
+        "discrete_digital_rs485",
+        "custom"
+      ]
+    },
+
+    "PowerBusType": {
+      "type": "string",
+      "enum": [
+        "dc_28v", "dc_270v", "dc_540v", "dc_12v", "dc_24v", "dc_48v",
+        "ac_115v_400hz", "ac_235v_400hz", "ac_115v_60hz", "ac_230v_50hz",
+        "custom"
+      ]
+    },
+
+    "FluidType": {
+      "type": "string",
+      "enum": [
+        "avgas", "jet_a", "jet_a1", "jp8", "jp5", "jp4", "rp1",
+        "mogas", "diesel", "biodiesel",
+        "lox", "liquid_hydrogen", "liquid_methane", "liquid_nitrogen",
+        "compressed_air", "helium", "nitrogen_gas",
+        "hydraulic_mil_h_5606", "hydraulic_mil_h_83282", "hydraulic_skydrol",
+        "coolant_water", "coolant_ethylene_glycol", "coolant_propylene_glycol",
+        "lubricant_mil_l_23699", "lubricant_mobil_jet",
+        "seawater", "freshwater",
+        "custom"
+      ]
+    },
+
+    "IdentityBlock": {
+      "type": "object",
+      "description": "Complete identity and provenance fields for a component.",
+      "additionalProperties": false,
+      "properties": {
+        "component_id":      { "$ref": "#/$defs/UUID", "description": "Primary UUID of this component instance." },
+        "parent_component_id": { "$ref": "#/$defs/UUID", "description": "UUID of the parent component (null for root)." },
+        "entity_owner_id":   { "$ref": "#/$defs/UUID", "description": "UUID of the owning Entity in WorldSpec." },
+        "world_id":          { "$ref": "#/$defs/UUID", "description": "UUID of the WorldSpec this component belongs to." },
+        "canonical_name":    { "type": "string", "description": "Machine-readable canonical identifier e.g. 'turbofan_engine_f100_pw229'." },
+        "display_name":      { "type": "string", "description": "Human-readable display label." },
+        "aliases":           { "type": "array", "items": { "type": "string" }, "description": "Alternative names and designations." },
+        "description":       { "type": "string" },
+        "ontology_uri":      { "type": "string", "format": "uri", "description": "URI linking this component to an ontology class e.g. 'pw:TurbofanEngine'." },
+        "persistent_identifier": { "type": "string", "description": "Persistent external ID e.g. NATO NSPA stock number, NSN, UUID from external system." },
+        "template_id":       { "$ref": "#/$defs/UUID", "description": "Template component this instance was derived from." },
+        "prototype_id":      { "$ref": "#/$defs/UUID", "description": "Prototype / archetype reference." },
+        "version":           { "$ref": "#/$defs/VersionString" },
+        "revision":          { "type": "string", "description": "Engineering change revision letter e.g. 'C'." },
+        "serial_number":     { "type": "string" },
+        "part_number":       { "type": "string" },
+        "nato_stock_number": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{3}-\\d{4}$" },
+        "manufacturer":      { "type": "string" },
+        "manufacturer_code": { "type": "string" },
+        "country_of_origin": { "type": "string", "description": "ISO 3166-1 alpha-2 country code." },
+        "classification_level": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret"],
+          "default": "unclassified"
+        },
+        "export_control": {
+          "type": "string",
+          "enum": ["ear99", "eccn", "itar", "none", "unknown"],
+          "description": "Export control classification."
+        },
+        "tags":              { "type": "array", "items": { "type": "string" } },
+        "notes":             { "type": "string" }
+      }
+    },
+
+    "ClassificationBlock": {
+      "type": "object",
+      "description": "Taxonomic and ontological classification of a component.",
+      "additionalProperties": false,
+      "properties": {
+        "domain":      { "$ref": "#/$defs/ComponentDomain" },
+        "category": {
+          "type": "string",
+          "enum": [
+            "propulsion", "power", "structural", "mechanical", "electrical",
+            "computational", "sensing", "actuation", "communication", "navigation",
+            "weapon", "protection", "thermal_management", "fluid_system",
+            "optical", "software", "payload", "interface", "storage",
+            "life_support", "chemical_biological", "nuclear", "countermeasure",
+            "ground_support", "launch_recovery", "custom"
+          ]
+        },
+        "class":       { "type": "string", "description": "Primary class within category e.g. 'turbine_engine'." },
+        "subclass":    { "type": "string", "description": "Refinement of class e.g. 'turbofan'." },
+        "type":        { "$ref": "#/$defs/ComponentType" },
+        "subtype":     { "type": "string", "description": "Domain-specific subtype string e.g. 'high_bypass_ratio'." },
+        "family":      { "type": "string", "description": "Product family e.g. 'F100' or 'AIM-9 Sidewinder'." },
+        "series":      { "type": "string", "description": "Product series designator." },
+        "generation":  { "type": "string", "description": "Technology generation e.g. 'Gen4', '5th_gen'." },
+        "technology":  {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Enabling technology tags e.g. ['composite', 'additive_manufactured', 'ai_embedded']."
+        },
+        "function":    { "type": "array", "items": { "type": "string" }, "description": "Functional purpose tags." },
+        "capability":  { "type": "array", "items": { "type": "string" }, "description": "Capability tags e.g. ['all_weather', 'stealth', 'jam_resistant']." },
+        "platform":    { "type": "array", "items": { "type": "string" }, "description": "Compatible platform types e.g. ['F-35', 'M1A2', 'DDG-51']." },
+        "discipline": {
+          "type": "string",
+          "enum": [
+            "aerodynamics", "structures", "propulsion", "avionics",
+            "electronics", "software", "systems_engineering", "mechanical_engineering",
+            "electrical_engineering", "chemical_engineering", "nuclear_engineering",
+            "optical_engineering", "robotics", "ai_ml", "custom"
+          ]
+        },
+        "role":        { "type": "string", "description": "Operational role e.g. 'primary_propulsion', 'backup_navigation'." },
+        "mission":     { "type": "array", "items": { "type": "string" }, "description": "Mission types this component supports." },
+        "NATO_function_code": { "type": "string" },
+        "MIL_spec":    { "type": "array", "items": { "type": "string" }, "description": "Applicable MIL-STD specifications." },
+        "DO_spec":     { "type": "array", "items": { "type": "string" }, "description": "Applicable DO- specifications e.g. 'DO-178C', 'DO-254'." },
+        "custom_taxonomy": { "type": "object", "additionalProperties": { "type": "string" } }
+      }
+    },
+
+    "HierarchyBlock": {
+      "type": "object",
+      "description": "Component tree structure, containment, and attachment relationships.",
+      "additionalProperties": false,
+      "properties": {
+        "parent_component_id": { "$ref": "#/$defs/UUID" },
+        "child_component_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "Direct child components in the assembly tree."
+        },
+        "assembly_id":         { "$ref": "#/$defs/UUID", "description": "Assembly group this component belongs to." },
+        "subassembly_ids":     { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "dependency_ids":      {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "Components this component functionally depends on."
+        },
+        "ownership_type": {
+          "type": "string",
+          "enum": ["composition", "aggregation", "association", "containment"],
+          "default": "composition"
+        },
+        "attachment_point":    { "type": "string", "description": "Named attachment point on parent e.g. 'left_wing_pylon_1'." },
+        "attachment_type": {
+          "type": "string",
+          "enum": [
+            "bolted", "welded", "riveted", "bonded", "snap_fit",
+            "threaded", "press_fit", "friction", "magnetic",
+            "quick_release", "explosive_release", "rail_slide",
+            "fluid_coupled", "electrically_coupled", "logically_coupled", "custom"
+          ]
+        },
+        "depth_in_tree":       { "type": "integer", "minimum": 0, "description": "Depth from root entity (0 = root component)." },
+        "bill_of_materials_ref": { "type": "string", "description": "Reference to an external BOM document or URI." },
+        "component_tree_path": {
+          "type": "string",
+          "description": "Dot-separated path from root entity e.g. 'aircraft.left_engine.fuel_pump.motor'."
+        },
+        "replaces_component_id": { "$ref": "#/$defs/UUID", "description": "Component ID this instance replaces (upgrade/repair)." },
+        "is_redundant_of":       { "$ref": "#/$defs/UUID", "description": "Primary component ID if this is a redundant backup." },
+        "redundancy_level":      { "type": "integer", "minimum": 1, "description": "1 = primary, 2 = first redundant, etc." }
+      }
+    },
+
+    "PhysicalBlock": {
+      "type": "object",
+      "description": "Geometric and physical material properties of the component.",
+      "additionalProperties": false,
+      "properties": {
+        "mass_kg":              { "type": "number", "minimum": 0, "description": "Total mass in kilograms." },
+        "dry_mass_kg":          { "type": "number", "minimum": 0 },
+        "wet_mass_kg":          { "type": "number", "minimum": 0, "description": "Mass when fully loaded with fluids." },
+        "density_kg_m3":        { "type": "number", "minimum": 0 },
+        "volume_m3":            { "type": "number", "minimum": 0 },
+        "length_m":             { "type": "number", "minimum": 0 },
+        "width_m":              { "type": "number", "minimum": 0 },
+        "height_m":             { "type": "number", "minimum": 0 },
+        "diameter_m":           { "type": "number", "minimum": 0 },
+        "wall_thickness_m":     { "type": "number", "minimum": 0 },
+        "surface_area_m2":      { "type": "number", "minimum": 0 },
+        "wetted_area_m2":       { "type": "number", "minimum": 0, "description": "Aerodynamic wetted area." },
+        "frontal_area_m2":      { "type": "number", "minimum": 0 },
+        "center_of_gravity":    { "$ref": "#/$defs/Vector3", "description": "CoG offset from component origin (m)." },
+        "center_of_pressure":   { "$ref": "#/$defs/Vector3", "description": "CoP offset from component origin (m)." },
+        "center_of_buoyancy":   { "$ref": "#/$defs/Vector3" },
+        "inertia_tensor":       { "$ref": "#/$defs/Matrix3x3", "description": "3×3 inertia tensor (kg·m²), row-major." },
+        "principal_moments":    { "$ref": "#/$defs/Vector3", "description": "Ixx, Iyy, Izz diagonal moments (kg·m²)." },
+        "bounding_box": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min": { "$ref": "#/$defs/Vector3" },
+            "max": { "$ref": "#/$defs/Vector3" }
+          }
+        },
+        "geometry_primitive": {
+          "type": "string",
+          "enum": ["box", "sphere", "capsule", "cylinder", "cone", "custom"],
+          "description": "Collision / physics primitive."
+        },
+        "geometry_asset_ref": { "type": "string", "description": "Path or URI to mesh asset (USD, GLB, OBJ, FBX)." },
+        "primary_material":   { "$ref": "#/$defs/MaterialRef" },
+        "materials_by_zone": {
+          "type": "array",
+          "description": "Per-zone material assignments.",
+          "items": {
+            "type": "object",
+            "required": ["zone", "material"],
+            "additionalProperties": false,
+            "properties": {
+              "zone":     { "type": "string" },
+              "material": { "$ref": "#/$defs/MaterialRef" }
+            }
+          }
+        },
+        "structural_properties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "yield_strength_pa":       { "type": "number", "minimum": 0 },
+            "ultimate_strength_pa":    { "type": "number", "minimum": 0 },
+            "young_modulus_pa":        { "type": "number", "minimum": 0 },
+            "shear_modulus_pa":        { "type": "number", "minimum": 0 },
+            "poisson_ratio":           { "type": "number", "minimum": 0, "maximum": 0.5 },
+            "hardness_vickers":        { "type": "number", "minimum": 0 },
+            "hardness_brinell":        { "type": "number", "minimum": 0 },
+            "hardness_rockwell":       { "type": "number" },
+            "fatigue_limit_pa":        { "type": "number", "minimum": 0 },
+            "fracture_toughness":      { "type": "number", "minimum": 0, "description": "MPa·√m" },
+            "elongation_at_break_pct": { "type": "number", "minimum": 0 },
+            "creep_rate":              { "type": "number" },
+            "safety_factor":           { "type": "number", "minimum": 1.0 }
+          }
+        },
+        "thermal_expansion_per_k": { "type": "number", "description": "Coefficient of thermal expansion (1/K)." },
+        "radar_cross_section_m2":  { "type": "number", "description": "Radar cross section in m². Negative = classified." },
+        "ir_signature":            { "type": "number", "description": "Relative IR signature (normalized 0–1)." },
+        "acoustic_signature_db":   { "type": "number" },
+        "magnetic_signature":      { "type": "number", "description": "Relative magnetic signature." }
+      }
+    },
+
+    "MechanicalBlock": {
+      "type": "object",
+      "description": "Mechanical performance parameters.",
+      "additionalProperties": false,
+      "properties": {
+        "max_torque_nm":         { "type": "number", "description": "Maximum output torque (N·m)." },
+        "continuous_torque_nm":  { "type": "number" },
+        "stall_torque_nm":       { "type": "number" },
+        "max_rpm":               { "type": "number", "minimum": 0 },
+        "idle_rpm":              { "type": "number", "minimum": 0 },
+        "rated_rpm":             { "type": "number", "minimum": 0 },
+        "max_force_n":           { "type": "number", "description": "Maximum linear force (N)." },
+        "continuous_force_n":    { "type": "number" },
+        "max_pressure_pa":       { "type": "number", "minimum": 0 },
+        "operating_pressure_pa": { "type": "number", "minimum": 0 },
+        "burst_pressure_pa":     { "type": "number", "minimum": 0 },
+        "max_displacement_m":    { "type": "number", "description": "Maximum linear stroke (m)." },
+        "min_displacement_m":    { "type": "number" },
+        "stroke_m":              { "type": "number", "minimum": 0 },
+        "gear_ratio":            { "type": "number", "description": "Output/input gear ratio." },
+        "gear_stages":           { "type": "integer", "minimum": 1 },
+        "max_load_capacity_n":   { "type": "number", "minimum": 0 },
+        "axial_load_capacity_n": { "type": "number", "minimum": 0 },
+        "radial_load_capacity_n":{ "type": "number", "minimum": 0 },
+        "bearing_load_n":        { "type": "number", "minimum": 0 },
+        "max_stress_pa":         { "type": "number" },
+        "max_strain":            { "type": "number" },
+        "max_deflection_m":      { "type": "number" },
+        "vibration_isolation_db":{ "type": "number" },
+        "resonant_frequency_hz": { "type": "number", "minimum": 0 },
+        "damping_ratio":         { "type": "number", "minimum": 0 },
+        "backlash_deg":          { "type": "number", "minimum": 0 },
+        "compliance_rad_per_nm": { "type": "number" },
+        "lubrication_type": {
+          "type": "string",
+          "enum": ["dry", "grease", "oil_splash", "oil_circulating", "oil_mist", "magnetic", "custom"]
+        },
+        "lubrication_interval_h":{ "type": "number", "minimum": 0 },
+        "wear_rate_m3_per_nm":   { "type": "number" },
+        "mechanical_efficiency":  { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "ElectricalBlock": {
+      "type": "object",
+      "description": "Electrical and electronic characteristics.",
+      "additionalProperties": false,
+      "properties": {
+        "input_voltage_v":         { "$ref": "#/$defs/Range" },
+        "nominal_voltage_v":       { "type": "number" },
+        "output_voltage_v":        { "$ref": "#/$defs/Range" },
+        "rated_current_a":         { "type": "number", "minimum": 0 },
+        "peak_current_a":          { "type": "number", "minimum": 0 },
+        "inrush_current_a":        { "type": "number", "minimum": 0 },
+        "rated_power_w":           { "type": "number", "minimum": 0 },
+        "peak_power_w":            { "type": "number", "minimum": 0 },
+        "standby_power_w":         { "type": "number", "minimum": 0 },
+        "frequency_hz":            { "$ref": "#/$defs/Range", "description": "AC frequency range." },
+        "resistance_ohm":          { "type": "number", "minimum": 0 },
+        "capacitance_f":           { "type": "number", "minimum": 0 },
+        "inductance_h":            { "type": "number", "minimum": 0 },
+        "impedance_ohm":           { "type": "number", "minimum": 0 },
+        "power_factor":            { "type": "number", "minimum": 0, "maximum": 1 },
+        "power_bus":               { "$ref": "#/$defs/PowerBusType" },
+        "power_source_id":         { "$ref": "#/$defs/UUID", "description": "Component UUID of power source." },
+        "energy_capacity_wh":      { "type": "number", "minimum": 0, "description": "For batteries and capacitors." },
+        "charge_rate_w":           { "type": "number", "minimum": 0 },
+        "discharge_rate_w":        { "type": "number", "minimum": 0 },
+        "cycle_life":              { "type": "integer", "minimum": 0 },
+        "state_of_charge_pct":     { "type": "number", "minimum": 0, "maximum": 100 },
+        "state_of_health_pct":     { "type": "number", "minimum": 0, "maximum": 100 },
+        "self_discharge_rate_pct_month": { "type": "number" },
+        "grounding_type": {
+          "type": "string",
+          "enum": ["chassis", "floating", "isolated", "single_point", "multi_point", "custom"]
+        },
+        "protection_features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "overcurrent", "overvoltage", "undervoltage", "overtemperature",
+              "reverse_polarity", "short_circuit", "esd", "emi_rfi",
+              "lightning_strike", "emp_hardened", "nuclear_hardened", "custom"
+            ]
+          }
+        },
+        "emc_class": { "type": "string", "description": "EMC compliance class e.g. 'MIL-STD-461G'." },
+        "insulation_class": { "type": "string", "enum": ["A", "B", "F", "H", "C", "custom"] },
+        "dielectric_strength_v_mm": { "type": "number" }
+      }
+    },
+
+    "ThermalBlock": {
+      "type": "object",
+      "description": "Thermal properties and management system.",
+      "additionalProperties": false,
+      "properties": {
+        "operating_temp_range_c":  { "$ref": "#/$defs/Range", "description": "Operating temperature range in °C." },
+        "storage_temp_range_c":    { "$ref": "#/$defs/Range" },
+        "survival_temp_range_c":   { "$ref": "#/$defs/Range" },
+        "max_junction_temp_c":     { "type": "number", "description": "For semiconductor devices." },
+        "heat_generation_w":       { "type": "number", "minimum": 0 },
+        "heat_generation_nominal_w": { "type": "number", "minimum": 0 },
+        "heat_generation_peak_w":  { "type": "number", "minimum": 0 },
+        "heat_capacity_j_per_k":   { "type": "number", "minimum": 0 },
+        "specific_heat_j_per_kg_k":{ "type": "number", "minimum": 0 },
+        "thermal_resistance_k_per_w": { "type": "number", "minimum": 0, "description": "Junction-to-case thermal resistance." },
+        "thermal_conductivity_w_per_mk": { "type": "number", "minimum": 0 },
+        "emissivity":              { "type": "number", "minimum": 0, "maximum": 1 },
+        "thermal_time_constant_s": { "type": "number", "minimum": 0 },
+        "current_temp_c":          { "type": "number", "description": "Runtime current temperature." },
+        "cooling_method": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "passive_conduction", "passive_radiation", "forced_air", "liquid_cooling",
+              "vapor_cycle", "heat_pipe", "thermoelectric", "phase_change",
+              "fuel_cooling", "ram_air", "ablative", "custom"
+            ]
+          }
+        },
+        "coolant_type":            { "$ref": "#/$defs/FluidType" },
+        "coolant_flow_rate_kg_s":  { "type": "number", "minimum": 0 },
+        "coolant_inlet_temp_c":    { "type": "number" },
+        "coolant_outlet_temp_c":   { "type": "number" },
+        "thermal_management_ref":  { "$ref": "#/$defs/UUID", "description": "Component ID of cooling system." }
+      }
+    },
+
+    "OpticalBlock": {
+      "type": "object",
+      "description": "Optical and electro-optical properties.",
+      "additionalProperties": false,
+      "properties": {
+        "spectral_range_nm":       { "$ref": "#/$defs/Range", "description": "Operating spectral range in nm." },
+        "spectral_bands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "band_name":   { "type": "string" },
+              "center_nm":   { "type": "number" },
+              "bandwidth_nm":{ "type": "number" }
+            }
+          }
+        },
+        "field_of_view_h_deg":     { "type": "number", "minimum": 0, "maximum": 360 },
+        "field_of_view_v_deg":     { "type": "number", "minimum": 0, "maximum": 180 },
+        "field_of_regard_h_deg":   { "type": "number" },
+        "field_of_regard_v_deg":   { "type": "number" },
+        "focal_length_mm":         { "type": "number", "minimum": 0 },
+        "aperture_mm":             { "type": "number", "minimum": 0 },
+        "f_number":                { "type": "number", "minimum": 0 },
+        "resolution_pixels": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "width":  { "type": "integer", "minimum": 1 },
+            "height": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "pixel_size_um":           { "type": "number", "minimum": 0 },
+        "detector_type": {
+          "type": "string",
+          "enum": [
+            "cmos", "ccd", "ingaas", "hgcdte_cooled", "hgcdte_uncooled",
+            "qwip", "silicon_pin", "avalanche_photodiode", "photomultiplier",
+            "bolometer_microbolometer", "custom"
+          ]
+        },
+        "frame_rate_hz":           { "type": "number", "minimum": 0 },
+        "integration_time_ms":     { "$ref": "#/$defs/Range" },
+        "dynamic_range_db":        { "type": "number" },
+        "noise_equivalent_delta_t":{ "type": "number", "description": "NEDT in millikelvin for thermal imagers." },
+        "reflectivity":            { "type": "number", "minimum": 0, "maximum": 1 },
+        "transmittance":           { "type": "number", "minimum": 0, "maximum": 1 },
+        "absorptance":             { "type": "number", "minimum": 0, "maximum": 1 },
+        "refractive_index":        { "type": "number", "minimum": 1 },
+        "numerical_aperture":      { "type": "number", "minimum": 0, "maximum": 1 },
+        "optical_coating": {
+          "type": "string",
+          "enum": ["ar_coating", "hr_coating", "partial_reflective", "filter", "none", "custom"]
+        },
+        "magnification":           { "$ref": "#/$defs/Range" },
+        "min_detection_range_m":   { "type": "number", "minimum": 0 },
+        "max_detection_range_m":   { "type": "number", "minimum": 0 },
+        "angular_resolution_mrad": { "type": "number", "minimum": 0 },
+        "laser_power_w":           { "type": "number", "minimum": 0 },
+        "laser_wavelength_nm":     { "type": "number", "minimum": 0 },
+        "laser_pulse_width_ns":    { "type": "number", "minimum": 0 },
+        "laser_rep_rate_hz":       { "type": "number", "minimum": 0 },
+        "eye_safe":                { "type": "boolean" }
+      }
+    },
+
+    "CommunicationBlock": {
+      "type": "object",
+      "description": "Communication interface and protocol definitions.",
+      "additionalProperties": false,
+      "properties": {
+        "interfaces": {
+          "type": "array",
+          "description": "All communication interfaces exposed by this component.",
+          "items": {
+            "type": "object",
+            "required": ["interface_id", "protocol"],
+            "additionalProperties": false,
+            "properties": {
+              "interface_id":     { "$ref": "#/$defs/UUID" },
+              "name":             { "type": "string" },
+              "protocol":         { "$ref": "#/$defs/InterfaceProtocol" },
+              "direction": {
+                "type": "string",
+                "enum": ["input", "output", "bidirectional"],
+                "default": "bidirectional"
+              },
+              "connector_type":   { "type": "string", "description": "Physical connector e.g. 'MIL-DTL-38999'." },
+              "pin_count":        { "type": "integer", "minimum": 1 },
+              "data_rate_bps":    { "type": "number", "minimum": 0 },
+              "latency_us":       { "type": "number", "minimum": 0 },
+              "max_cable_length_m":{ "type": "number", "minimum": 0 },
+              "voltage_level_v":  { "type": "number" },
+              "isolated":         { "type": "boolean", "default": false },
+              "connected_to_id":  { "$ref": "#/$defs/UUID", "description": "Component or port this interface connects to." }
+            }
+          }
+        },
+        "rf_properties": {
+          "type": "object",
+          "description": "RF-specific properties if the component is an RF transceiver or antenna.",
+          "additionalProperties": false,
+          "properties": {
+            "frequency_range_mhz":  { "$ref": "#/$defs/Range" },
+            "bandwidth_mhz":        { "type": "number", "minimum": 0 },
+            "transmit_power_w":     { "type": "number", "minimum": 0 },
+            "transmit_power_dbm":   { "type": "number" },
+            "receive_sensitivity_dbm":{ "type": "number" },
+            "noise_figure_db":      { "type": "number" },
+            "gain_db":              { "type": "number" },
+            "antenna_gain_dbi":     { "type": "number" },
+            "beam_width_deg":       { "type": "number", "minimum": 0 },
+            "polarization": {
+              "type": "string",
+              "enum": ["linear_h", "linear_v", "circular_rhcp", "circular_lhcp", "dual", "custom"]
+            },
+            "modulation": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Supported modulation schemes e.g. ['QPSK', 'OFDM', 'FM']."
+            },
+            "spread_spectrum":      { "type": "boolean" },
+            "frequency_hopping":    { "type": "boolean" },
+            "encryption_standard":  { "type": "string" },
+            "link_budget_margin_db":{ "type": "number" },
+            "max_range_km":         { "type": "number", "minimum": 0 },
+            "data_rate_kbps":       { "type": "number", "minimum": 0 },
+            "latency_ms":           { "type": "number", "minimum": 0 },
+            "protocol":             { "type": "string" }
+          }
+        },
+        "network_properties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mac_address":        { "type": "string", "pattern": "^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$" },
+            "ip_address":         { "type": "string" },
+            "subnet_mask":        { "type": "string" },
+            "vlan_id":            { "type": "integer" },
+            "network_id":         { "type": "string" },
+            "qos_priority":       { "type": "integer", "minimum": 0, "maximum": 7 },
+            "time_sync_protocol": { "type": "string", "enum": ["ptp_ieee1588", "ntp", "irig_b", "mil_std_1760_time", "custom"] }
+          }
+        }
+      }
+    },
+
+    "ComputingBlock": {
+      "type": "object",
+      "description": "Computing and processing unit characteristics.",
+      "additionalProperties": false,
+      "properties": {
+        "processor_type": {
+          "type": "string",
+          "enum": [
+            "cpu_general", "cpu_embedded", "gpu_discrete", "gpu_embedded",
+            "dsp", "fpga", "asic", "npu", "mcu", "soc", "tpu",
+            "quantum_processor", "neuromorphic", "custom"
+          ]
+        },
+        "architecture": {
+          "type": "string",
+          "enum": [
+            "x86_64", "arm_cortex_a", "arm_cortex_m", "arm_cortex_r",
+            "risc_v", "powerpc", "mips", "sparc", "custom"
+          ]
+        },
+        "core_count":              { "type": "integer", "minimum": 1 },
+        "thread_count":            { "type": "integer", "minimum": 1 },
+        "clock_speed_mhz":         { "$ref": "#/$defs/Range" },
+        "flops_gflops":            { "type": "number", "minimum": 0, "description": "Peak GFLOPS (FP32)." },
+        "int_ops_gops":            { "type": "number", "minimum": 0, "description": "Peak integer GOPS." },
+        "ram_gb":                  { "type": "number", "minimum": 0 },
+        "ram_type": {
+          "type": "string",
+          "enum": ["ddr4", "ddr5", "lpddr4", "lpddr5", "hbm2", "hbm3", "sram", "custom"]
+        },
+        "ram_bandwidth_gbps":      { "type": "number", "minimum": 0 },
+        "ecc_memory":              { "type": "boolean", "default": false },
+        "cache_l1_kb":             { "type": "number", "minimum": 0 },
+        "cache_l2_mb":             { "type": "number", "minimum": 0 },
+        "cache_l3_mb":             { "type": "number", "minimum": 0 },
+        "storage_capacity_gb":     { "type": "number", "minimum": 0 },
+        "storage_type": {
+          "type": "string",
+          "enum": ["ssd_sata", "ssd_nvme", "hdd", "flash_emmc", "nor_flash", "nand_flash", "custom"]
+        },
+        "operating_system": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "name":    { "type": "string" },
+            "version": { "type": "string" },
+            "rtos":    { "type": "boolean", "default": false },
+            "certified": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Certification standards e.g. ['DO-178C Level A', 'ARINC 653']."
+            }
+          }
+        },
+        "firmware_version":        { "$ref": "#/$defs/VersionString" },
+        "software_version":        { "$ref": "#/$defs/VersionString" },
+        "bsp_version":             { "type": "string", "description": "Board support package version." },
+        "driver_versions": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "middleware": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Middleware frameworks e.g. ['ROS2', 'DDS', 'FACE', 'ARINC 653']."
+        },
+        "ai_accelerator": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type":       { "type": "string", "enum": ["npu", "tpu", "vpu", "fpga_ml", "custom"] },
+            "tops":       { "type": "number", "minimum": 0, "description": "Tera-Operations-Per-Second (INT8)." },
+            "precision":  { "type": "array", "items": { "type": "string" }, "description": "['FP32','FP16','INT8','INT4']." },
+            "framework_support": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "e.g. ['TensorFlow Lite', 'ONNX Runtime', 'TensorRT', 'PyTorch Mobile']."
+            }
+          }
+        },
+        "crypto_module": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fips_140_level":   { "type": "integer", "minimum": 1, "maximum": 4 },
+            "algorithms":       { "type": "array", "items": { "type": "string" } },
+            "hardware_random":  { "type": "boolean" }
+          }
+        },
+        "task_scheduling": {
+          "type": "string",
+          "enum": ["cooperative", "preemptive", "time_triggered", "event_triggered", "mixed", "custom"]
+        },
+        "watchdog_timer":          { "type": "boolean", "default": false },
+        "boot_time_s":             { "type": "number", "minimum": 0 },
+        "latency_deterministic_us":{ "type": "number", "minimum": 0 },
+        "radiation_tolerance_krad":{ "type": "number", "minimum": 0, "description": "Total Ionizing Dose tolerance." },
+        "seu_rate":                { "type": "number", "description": "Single Event Upset rate." }
+      }
+    },
+
+    "SensorEmbeddedSpec": {
+      "type": "object",
+      "description": "An embedded sensor sub-element within a component.",
+      "required": ["sensor_id", "sensor_type"],
+      "additionalProperties": false,
+      "properties": {
+        "sensor_id":             { "$ref": "#/$defs/UUID" },
+        "name":                  { "type": "string" },
+        "sensor_type": {
+          "type": "string",
+          "enum": [
+            "temperature", "pressure", "vibration", "strain", "force", "torque",
+            "current", "voltage", "power", "flow_rate", "level",
+            "position_linear", "position_angular", "velocity_linear", "velocity_angular",
+            "acceleration", "rate_gyro",
+            "proximity", "contact", "touch",
+            "acoustic", "ultrasonic", "chemical", "gas",
+            "optical_encoder", "hall_effect", "resolver",
+            "humidity", "dust", "radiation",
+            "custom"
+          ]
+        },
+        "measurement_range":       { "$ref": "#/$defs/Range" },
+        "resolution":              { "$ref": "#/$defs/ScalarWithUnit" },
+        "accuracy":                { "$ref": "#/$defs/ScalarWithUnit" },
+        "precision":               { "$ref": "#/$defs/ScalarWithUnit" },
+        "repeatability":           { "$ref": "#/$defs/ScalarWithUnit" },
+        "sample_rate_hz":          { "type": "number", "minimum": 0 },
+        "latency_ms":              { "type": "number", "minimum": 0 },
+        "output_interface":        { "$ref": "#/$defs/InterfaceProtocol" },
+        "output_topic":            { "type": "string", "description": "ROS2/DDS topic or ARINC 429 label." },
+        "mount_transform":         { "$ref": "#/$defs/MountTransform" },
+        "noise_density":           { "$ref": "#/$defs/ScalarWithUnit" },
+        "bias_stability":          { "$ref": "#/$defs/ScalarWithUnit" },
+        "cross_axis_sensitivity_pct": { "type": "number" },
+        "calibration_date":        { "$ref": "#/$defs/Timestamp" },
+        "calibration_interval_h":  { "type": "number" },
+        "enabled":                 { "type": "boolean", "default": true },
+        "redundant_of":            { "$ref": "#/$defs/UUID" }
+      }
+    },
+
+    "ActuatorEmbeddedSpec": {
+      "type": "object",
+      "description": "An embedded actuator sub-element within a component.",
+      "required": ["actuator_id", "actuator_type"],
+      "additionalProperties": false,
+      "properties": {
+        "actuator_id":           { "$ref": "#/$defs/UUID" },
+        "name":                  { "type": "string" },
+        "actuator_type": {
+          "type": "string",
+          "enum": [
+            "electric_dc_motor", "electric_bldc_motor", "electric_stepper_motor",
+            "electric_servo", "electric_linear",
+            "hydraulic_linear", "hydraulic_rotary",
+            "pneumatic_linear", "pneumatic_rotary",
+            "piezoelectric", "shape_memory_alloy", "solenoid",
+            "voice_coil", "magnetostrictive",
+            "reaction_wheel", "control_moment_gyro", "magnetorquer",
+            "thruster_rcs", "thruster_main",
+            "custom"
+          ]
+        },
+        "axis": {
+          "type": "string",
+          "enum": ["linear_x", "linear_y", "linear_z", "rotary_x", "rotary_y", "rotary_z", "custom"]
+        },
+        "max_force_n":             { "type": "number" },
+        "max_torque_nm":           { "type": "number" },
+        "max_velocity_m_s":        { "type": "number" },
+        "max_angular_velocity_rad_s": { "type": "number" },
+        "max_acceleration_m_s2":   { "type": "number" },
+        "stroke_m":                { "type": "number", "minimum": 0 },
+        "range_rad":               { "$ref": "#/$defs/Range" },
+        "position_limits":         { "$ref": "#/$defs/Range" },
+        "bandwidth_hz":            { "type": "number", "minimum": 0 },
+        "position_resolution_m":   { "type": "number" },
+        "angular_resolution_rad":  { "type": "number" },
+        "backdrivable":            { "type": "boolean" },
+        "back_emf_constant":       { "type": "number" },
+        "torque_constant_nm_per_a":{ "type": "number" },
+        "efficiency":              { "type": "number", "minimum": 0, "maximum": 1 },
+        "control_interface":       { "$ref": "#/$defs/InterfaceProtocol" },
+        "feedback_sensor_id":      { "$ref": "#/$defs/UUID" },
+        "mount_transform":         { "$ref": "#/$defs/MountTransform" },
+        "enabled":                 { "type": "boolean", "default": true }
+      }
+    },
+
+    "RuntimeStateBlock": {
+      "type": "object",
+      "description": "Runtime dynamic state of the component during simulation.",
+      "additionalProperties": false,
+      "properties": {
+        "operational_state":       { "$ref": "#/$defs/OperationalState" },
+        "previous_state":          { "$ref": "#/$defs/OperationalState" },
+        "state_since_s":           { "type": "number", "description": "Simulation time (s) when current state began." },
+        "health_score_pct":        { "type": "number", "minimum": 0, "maximum": 100 },
+        "degradation_pct":         { "type": "number", "minimum": 0, "maximum": 100 },
+        "is_active":               { "type": "boolean", "default": true },
+        "is_powered":              { "type": "boolean", "default": true },
+        "is_initialized":          { "type": "boolean", "default": false },
+        "is_calibrated":           { "type": "boolean", "default": false },
+        "is_redundant_active":     { "type": "boolean", "default": false },
+        "fault_codes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["code"],
+            "additionalProperties": false,
+            "properties": {
+              "code":        { "type": "string" },
+              "severity": {
+                "type": "string",
+                "enum": ["info", "warning", "caution", "advisory", "fault", "critical"]
+              },
+              "description": { "type": "string" },
+              "timestamp_s": { "type": "number" },
+              "cleared":     { "type": "boolean", "default": false }
+            }
+          }
+        },
+        "bist_status": {
+          "type": "string",
+          "enum": ["pass", "fail", "partial", "not_run", "in_progress"],
+          "description": "Built-In Self Test status."
+        },
+        "bite_codes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Built-In Test Equipment diagnostic codes."
+        },
+        "custom_state": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Domain-specific runtime key-value state not covered above."
+        }
+      }
+    },
+
+    "ResourceBlock": {
+      "type": "object",
+      "description": "Consumable and allocatable resource tracking for this component.",
+      "additionalProperties": false,
+      "properties": {
+        "fuel": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fluid_type":         { "$ref": "#/$defs/FluidType" },
+            "capacity_liters":    { "type": "number", "minimum": 0 },
+            "remaining_liters":   { "type": "number", "minimum": 0 },
+            "consumption_rate_liters_per_s": { "type": "number", "minimum": 0 },
+            "min_reserve_liters": { "type": "number", "minimum": 0 },
+            "density_kg_per_liter": { "type": "number", "minimum": 0 }
+          }
+        },
+        "power": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allocated_w":        { "type": "number", "minimum": 0 },
+            "consumed_w":         { "type": "number", "minimum": 0 },
+            "available_w":        { "type": "number", "minimum": 0 },
+            "energy_used_wh":     { "type": "number", "minimum": 0 }
+          }
+        },
+        "coolant": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fluid_type":         { "$ref": "#/$defs/FluidType" },
+            "capacity_liters":    { "type": "number", "minimum": 0 },
+            "remaining_liters":   { "type": "number", "minimum": 0 },
+            "flow_rate_liters_per_min": { "type": "number", "minimum": 0 }
+          }
+        },
+        "hydraulic_fluid": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fluid_type":         { "$ref": "#/$defs/FluidType" },
+            "capacity_liters":    { "type": "number", "minimum": 0 },
+            "remaining_liters":   { "type": "number", "minimum": 0 },
+            "pressure_pa":        { "type": "number", "minimum": 0 }
+          }
+        },
+        "lubricant": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "fluid_type":         { "$ref": "#/$defs/FluidType" },
+            "capacity_liters":    { "type": "number", "minimum": 0 },
+            "remaining_liters":   { "type": "number", "minimum": 0 }
+          }
+        },
+        "ammunition": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "total_rounds":       { "type": "integer", "minimum": 0 },
+            "remaining_rounds":   { "type": "integer", "minimum": 0 },
+            "magazine_count":     { "type": "integer", "minimum": 0 },
+            "rounds_per_magazine":{ "type": "integer", "minimum": 0 },
+            "round_type":         { "type": "string" }
+          }
+        },
+        "propellant": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "propellant_type":    { "type": "string" },
+            "mass_kg":            { "type": "number", "minimum": 0 },
+            "remaining_mass_kg":  { "type": "number", "minimum": 0 },
+            "isp_s":              { "type": "number", "minimum": 0, "description": "Specific impulse (s)." },
+            "oxidizer_to_fuel_ratio": { "type": "number", "minimum": 0 }
+          }
+        },
+        "compute": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cpu_utilization_pct":    { "type": "number", "minimum": 0, "maximum": 100 },
+            "gpu_utilization_pct":    { "type": "number", "minimum": 0, "maximum": 100 },
+            "ram_used_gb":            { "type": "number", "minimum": 0 },
+            "storage_used_gb":        { "type": "number", "minimum": 0 },
+            "bandwidth_used_mbps":    { "type": "number", "minimum": 0 }
+          }
+        },
+        "consumables": {
+          "type": "array",
+          "description": "Arbitrary additional consumable resources.",
+          "items": {
+            "type": "object",
+            "required": ["name", "unit"],
+            "additionalProperties": false,
+            "properties": {
+              "name":       { "type": "string" },
+              "unit":       { "type": "string" },
+              "capacity":   { "type": "number" },
+              "remaining":  { "type": "number" },
+              "rate":       { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+
+    "MaintenanceBlock": {
+      "type": "object",
+      "description": "Maintenance, reliability, and prognostic health management data.",
+      "additionalProperties": false,
+      "properties": {
+        "mtbf_h":                  { "type": "number", "minimum": 0, "description": "Mean Time Between Failures (hours)." },
+        "mttr_h":                  { "type": "number", "minimum": 0, "description": "Mean Time To Repair (hours)." },
+        "mttf_h":                  { "type": "number", "minimum": 0, "description": "Mean Time To Failure (hours)." },
+        "failure_rate_per_h":      { "type": "number", "minimum": 0, "description": "Lambda (failures/hour)." },
+        "availability_pct":        { "type": "number", "minimum": 0, "maximum": 100 },
+        "design_life_h":           { "type": "number", "minimum": 0 },
+        "service_life_h":          { "type": "number", "minimum": 0 },
+        "operating_hours":         { "type": "number", "minimum": 0 },
+        "operating_cycles":        { "type": "integer", "minimum": 0 },
+        "remaining_useful_life_h": { "type": "number", "minimum": 0 },
+        "next_scheduled_service_h":{ "type": "number", "minimum": 0 },
+        "service_interval_h":      { "type": "number", "minimum": 0 },
+        "service_interval_cycles": { "type": "integer", "minimum": 0 },
+        "last_serviced_at":        { "$ref": "#/$defs/Timestamp" },
+        "last_calibrated_at":      { "$ref": "#/$defs/Timestamp" },
+        "last_inspected_at":       { "$ref": "#/$defs/Timestamp" },
+        "installed_at":            { "$ref": "#/$defs/Timestamp" },
+        "manufactured_at":         { "$ref": "#/$defs/Timestamp" },
+        "warranty_expires_at":     { "$ref": "#/$defs/Timestamp" },
+        "failure_mode_effects": {
+          "type": "array",
+          "description": "FMEA entries.",
+          "items": {
+            "type": "object",
+            "required": ["failure_mode"],
+            "additionalProperties": false,
+            "properties": {
+              "failure_mode":     { "type": "string" },
+              "failure_effect":   { "type": "string" },
+              "failure_cause":    { "type": "string" },
+              "severity":         { "type": "integer", "minimum": 1, "maximum": 10 },
+              "occurrence":       { "type": "integer", "minimum": 1, "maximum": 10 },
+              "detectability":    { "type": "integer", "minimum": 1, "maximum": 10 },
+              "rpn":              { "type": "integer", "minimum": 1, "maximum": 1000, "description": "Risk Priority Number." },
+              "mitigation":       { "type": "string" }
+            }
+          }
+        },
+        "maintenance_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["action_type", "performed_at"],
+            "additionalProperties": false,
+            "properties": {
+              "action_type": {
+                "type": "string",
+                "enum": [
+                  "inspection", "calibration", "lubrication", "cleaning",
+                  "repair", "replacement", "software_update", "firmware_update",
+                  "functional_test", "structural_test", "overhaul", "custom"
+                ]
+              },
+              "performed_at":     { "$ref": "#/$defs/Timestamp" },
+              "performed_by":     { "type": "string" },
+              "organization":     { "type": "string" },
+              "operating_hours_at_service": { "type": "number" },
+              "notes":            { "type": "string" },
+              "work_order_ref":   { "type": "string" }
+            }
+          }
+        },
+        "phm_model_ref":           { "type": "string", "description": "Reference to a PHM/prognostic model file or URI." },
+        "condition_indicators": {
+          "type": "object",
+          "additionalProperties": { "type": "number" },
+          "description": "Named scalar condition indicators e.g. {'vibration_rms_g': 0.4, 'oil_particle_count': 12}."
+        }
+      }
+    },
+
+    "PerformanceBlock": {
+      "type": "object",
+      "description": "Measured and rated performance parameters.",
+      "additionalProperties": false,
+      "properties": {
+        "efficiency_pct":              { "type": "number", "minimum": 0, "maximum": 100 },
+        "thermal_efficiency_pct":      { "type": "number", "minimum": 0, "maximum": 100 },
+        "volumetric_efficiency_pct":   { "type": "number", "minimum": 0, "maximum": 100 },
+        "accuracy":                    { "$ref": "#/$defs/ScalarWithUnit" },
+        "precision":                   { "$ref": "#/$defs/ScalarWithUnit" },
+        "repeatability":               { "$ref": "#/$defs/ScalarWithUnit" },
+        "resolution":                  { "$ref": "#/$defs/ScalarWithUnit" },
+        "latency_ms":                  { "type": "number", "minimum": 0 },
+        "throughput":                  { "$ref": "#/$defs/ScalarWithUnit" },
+        "bandwidth":                   { "$ref": "#/$defs/ScalarWithUnit" },
+        "response_time_ms":            { "type": "number", "minimum": 0 },
+        "settling_time_ms":            { "type": "number", "minimum": 0 },
+        "rise_time_ms":                { "type": "number", "minimum": 0 },
+        "reliability_pct":             { "type": "number", "minimum": 0, "maximum": 100 },
+        "availability_pct":            { "type": "number", "minimum": 0, "maximum": 100 },
+        "noise_db":                    { "type": "number", "description": "Acoustic noise in dBA." },
+        "noise_floor_dbm":             { "type": "number", "description": "Electronic noise floor." },
+        "vibration_grms":              { "type": "number", "minimum": 0 },
+        "snr_db":                      { "type": "number", "description": "Signal-to-Noise Ratio." },
+        "dynamic_range_db":            { "type": "number" },
+        "detection_range_m":           { "type": "number", "minimum": 0 },
+        "tracking_accuracy":           { "$ref": "#/$defs/ScalarWithUnit" },
+        "slew_rate_deg_per_s":         { "type": "number", "minimum": 0 },
+        "lock_on_time_s":              { "type": "number", "minimum": 0 },
+        "probability_of_detection":    { "type": "number", "minimum": 0, "maximum": 1 },
+        "probability_of_false_alarm":  { "type": "number", "minimum": 0, "maximum": 1 },
+        "circular_error_probable_m":   { "type": "number", "minimum": 0 },
+        "time_to_fire_s":              { "type": "number", "minimum": 0 },
+        "rate_of_fire_rpm":            { "type": "number", "minimum": 0 },
+        "muzzle_velocity_mps":         { "type": "number", "minimum": 0 },
+        "specific_impulse_s":          { "type": "number", "minimum": 0 },
+        "thrust_n":                    { "type": "number" },
+        "thrust_specific_fuel_consumption": { "type": "number", "description": "TSFC in kg/(N·s)." },
+        "bypass_ratio":                { "type": "number", "minimum": 0 },
+        "pressure_ratio":              { "type": "number", "minimum": 0 },
+        "overall_pressure_ratio":      { "type": "number", "minimum": 0 },
+        "turbine_inlet_temp_c":        { "type": "number" },
+        "lift_coefficient":            { "type": "number" },
+        "drag_coefficient":            { "type": "number" },
+        "lift_to_drag_ratio":          { "type": "number" },
+        "power_to_weight_w_per_kg":    { "type": "number" },
+        "thrust_to_weight_ratio":      { "type": "number" },
+        "specific_power_w_per_kg":     { "type": "number" },
+        "specific_energy_wh_per_kg":   { "type": "number" },
+        "custom_metrics": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/ScalarWithUnit" },
+          "description": "Named domain-specific performance metrics."
+        }
+      }
+    },
+
+    "RelationshipsBlock": {
+      "type": "object",
+      "description": "Typed semantic relationships to other components and entities.",
+      "additionalProperties": false,
+      "properties": {
+        "has_component":       { "type": "array", "items": { "$ref": "#/$defs/UUID" }, "description": "Child component UUIDs." },
+        "part_of":             { "$ref": "#/$defs/UUID", "description": "Parent component or entity UUID." },
+        "attached_to":         { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "connected_to":        { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "powered_by":          { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "powers":              { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "controls":            { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "controlled_by":       { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "commanded_by":        { "$ref": "#/$defs/UUID" },
+        "communicates_with":   { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "contains":            { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "contained_in":        { "$ref": "#/$defs/UUID" },
+        "depends_on":          { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "required_by":         { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "monitors":            { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "monitored_by":        { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "detects":             { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "tracks":              { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "targets":             { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "fires_at":            { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "consumes_from":       { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "produces_for":        { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "generates_for":       { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "supports":            { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "supported_by":        { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "protects":            { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "protected_by":        { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "mounted_on":          { "$ref": "#/$defs/UUID" },
+        "interfaces_with":     { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "cooled_by":           { "$ref": "#/$defs/UUID" },
+        "cools":               { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "lubricates":          { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "lubricated_by":       { "$ref": "#/$defs/UUID" },
+        "feeds":               { "type": "array", "items": { "$ref": "#/$defs/UUID" }, "description": "Fluid or data feed targets." },
+        "fed_by":              { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "jam_countermeasure_of": { "$ref": "#/$defs/UUID" },
+        "guides":              { "$ref": "#/$defs/UUID", "description": "Seeker guides this munition." },
+        "custom_relationships": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["relation_type", "target_id"],
+            "additionalProperties": false,
+            "properties": {
+              "relation_type": { "type": "string" },
+              "target_id":     { "$ref": "#/$defs/UUID" },
+              "weight":        { "type": "number" },
+              "bidirectional": { "type": "boolean", "default": false },
+              "properties":    { "type": "object", "additionalProperties": true }
+            }
+          }
+        }
+      }
+    },
+
+    "EnvironmentalRatingsBlock": {
+      "type": "object",
+      "description": "Environmental qualification and rating standards compliance.",
+      "additionalProperties": false,
+      "properties": {
+        "ip_rating":               { "type": "string", "pattern": "^IP[0-9X][0-9X]K?$", "description": "IEC 60529 Ingress Protection rating e.g. 'IP67'." },
+        "nema_rating":             { "type": "string" },
+        "mil_spec_environment":    { "type": "array", "items": { "type": "string" }, "description": "e.g. ['MIL-STD-810H', 'MIL-STD-461G']." },
+        "shock_rating_g":          { "type": "number", "minimum": 0 },
+        "vibration_rating_grms":   { "type": "number", "minimum": 0 },
+        "altitude_rating_m":       { "type": "number" },
+        "humidity_rating_pct":     { "$ref": "#/$defs/Range" },
+        "salt_fog_resistance":     { "type": "boolean" },
+        "fungus_resistance":       { "type": "boolean" },
+        "sand_dust_resistance":    { "type": "boolean" },
+        "radiation_hardened":      { "type": "boolean", "default": false },
+        "radiation_tolerance_krad":{ "type": "number" },
+        "emp_hardened":            { "type": "boolean", "default": false },
+        "nuclear_hardened":        { "type": "boolean", "default": false },
+        "flammability_class":      { "type": "string", "description": "e.g. 'UL94-V0'." },
+        "explosive_atmosphere_rated": { "type": "boolean", "default": false },
+        "atex_category":           { "type": "string" },
+        "decontamination_compatible": { "type": "boolean" },
+        "cbrn_protected":          { "type": "boolean", "default": false }
+      }
+    },
+
+    "SafetyBlock": {
+      "type": "object",
+      "description": "Safety classification, interlocks, and certification data.",
+      "additionalProperties": false,
+      "properties": {
+        "safety_integrity_level": {
+          "type": "string",
+          "enum": ["SIL0", "SIL1", "SIL2", "SIL3", "SIL4", "DAL_A", "DAL_B", "DAL_C", "DAL_D", "DAL_E", "ASIL_A", "ASIL_B", "ASIL_C", "ASIL_D", "custom"]
+        },
+        "design_assurance_level": { "type": "string" },
+        "certifications": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Certification identifiers e.g. ['DO-178C', 'FAA-TSO', 'CE', 'FCC', 'MIL-HDBK-516C']."
+        },
+        "safety_category":        { "type": "string", "enum": ["non_safety_critical", "safety_related", "safety_critical", "mission_critical"] },
+        "interlocks": {
+          "type": "array",
+          "description": "Safety interlock conditions.",
+          "items": {
+            "type": "object",
+            "required": ["condition", "action"],
+            "additionalProperties": false,
+            "properties": {
+              "condition":  { "type": "string" },
+              "action":     { "type": "string" },
+              "priority":   { "type": "integer", "minimum": 1 }
+            }
+          }
+        },
+        "arming_safety_features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "safe_and_arm_device", "arm_fire_device", "electrostatic_discharge_protection",
+              "rf_safe", "mechanical_safe", "coded_arming", "custom"
+            ]
+          }
+        },
+        "detonation_safe_separation_m": { "type": "number", "minimum": 0 },
+        "hazardous_materials": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Hazardous materials present e.g. ['beryllium', 'cadmium', 'perchlorate']."
+        }
+      }
+    },
+
+    "WeaponBlock": {
+      "type": "object",
+      "description": "Weapon-specific properties for components classified as weapons or weapon subsystems.",
+      "additionalProperties": false,
+      "properties": {
+        "weapon_category": {
+          "type": "string",
+          "enum": [
+            "kinetic_energy", "chemical_explosive", "nuclear", "thermobaric",
+            "directed_energy_laser", "directed_energy_hprf", "directed_energy_particle",
+            "biological", "chemical_agent",
+            "electronic_warfare", "cyber", "loitering", "swarm", "custom"
+          ]
+        },
+        "guidance_type": {
+          "type": "string",
+          "enum": [
+            "unguided", "laser_spot", "laser_beam_riding", "tv_guided", "ir_homing_uncooled",
+            "ir_homing_cooled", "ir_imaging", "active_radar", "semi_active_radar",
+            "passive_rf", "gps_ins", "gps_ins_terrain", "wire_guided", "fiber_optic_guided",
+            "man_in_the_loop", "ai_autonomous", "multi_mode", "custom"
+          ]
+        },
+        "fusing_type": {
+          "type": "string",
+          "enum": [
+            "contact", "proximity_radar", "proximity_ir", "proximity_acoustic",
+            "time_delay", "altitude_baro", "altitude_radar", "magnetic",
+            "command_detonation", "smart_fuse", "multi_mode_fuse", "custom"
+          ]
+        },
+        "warhead_mass_kg":           { "type": "number", "minimum": 0 },
+        "warhead_explosive_mass_kg": { "type": "number", "minimum": 0 },
+        "warhead_explosive_type":    { "type": "string" },
+        "lethal_radius_m":           { "type": "number", "minimum": 0 },
+        "effective_range_m":         { "type": "number", "minimum": 0 },
+        "min_range_m":               { "type": "number", "minimum": 0 },
+        "max_range_m":               { "type": "number", "minimum": 0 },
+        "pk_single_shot":            { "type": "number", "minimum": 0, "maximum": 1, "description": "Probability of kill per shot." },
+        "reload_time_s":             { "type": "number", "minimum": 0 },
+        "arming_distance_m":         { "type": "number", "minimum": 0 },
+        "salvo_size":                { "type": "integer", "minimum": 1 },
+        "target_types": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Target type capabilities e.g. ['air_maneuvering', 'surface', 'subsurface', 'land']."
+        },
+        "iff_interrogation":         { "type": "boolean", "default": false },
+        "man_in_the_loop":           { "type": "boolean", "default": false },
+        "retargetable_in_flight":    { "type": "boolean", "default": false },
+        "launch_platform_types": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "PropulsionDetailBlock": {
+      "type": "object",
+      "description": "Detailed propulsion-specific properties beyond generic performance.",
+      "additionalProperties": false,
+      "properties": {
+        "propulsion_class": {
+          "type": "string",
+          "enum": [
+            "air_breathing_subsonic", "air_breathing_supersonic", "air_breathing_hypersonic",
+            "rocket_liquid", "rocket_solid", "rocket_hybrid", "rocket_nuclear_thermal",
+            "electric_propulsion", "waterjet", "marine_screw", "sail",
+            "ion_electrospray", "hall_effect", "gridded_ion",
+            "custom"
+          ]
+        },
+        "static_thrust_n":            { "type": "number", "description": "Sea-level static thrust (N)." },
+        "max_thrust_n":               { "type": "number" },
+        "military_thrust_n":          { "type": "number", "description": "Military (dry) thrust (N)." },
+        "afterburner_thrust_n":       { "type": "number", "description": "Wet/afterburner thrust (N)." },
+        "thrust_vector_capable":      { "type": "boolean", "default": false },
+        "thrust_vector_range_deg":    { "type": "number", "minimum": 0 },
+        "bypass_ratio":               { "type": "number", "minimum": 0 },
+        "pressure_ratio_overall":     { "type": "number", "minimum": 0 },
+        "fan_pressure_ratio":         { "type": "number", "minimum": 0 },
+        "compressor_stages":          { "type": "integer", "minimum": 0 },
+        "turbine_stages":             { "type": "integer", "minimum": 0 },
+        "turbine_inlet_temp_k":       { "type": "number", "minimum": 0 },
+        "exhaust_temp_k":             { "type": "number", "minimum": 0 },
+        "exhaust_velocity_mps":       { "type": "number", "minimum": 0 },
+        "mass_flow_kg_s":             { "type": "number", "minimum": 0 },
+        "sfc_kg_per_n_s":             { "type": "number", "minimum": 0, "description": "Specific fuel consumption." },
+        "tsfc_kg_per_kn_h":          { "type": "number", "minimum": 0 },
+        "propulsive_efficiency":      { "type": "number", "minimum": 0, "maximum": 1 },
+        "specific_impulse_s":         { "type": "number", "minimum": 0 },
+        "total_impulse_ns":           { "type": "number", "minimum": 0 },
+        "burn_time_s":                { "type": "number", "minimum": 0 },
+        "chamber_pressure_pa":        { "type": "number", "minimum": 0 },
+        "nozzle_expansion_ratio":     { "type": "number", "minimum": 0 },
+        "igniter_type": {
+          "type": "string",
+          "enum": ["pyrotechnic", "hypergolic", "electric_spark", "laser", "custom"]
+        },
+        "restart_capable":            { "type": "boolean", "default": false },
+        "throttleable":               { "type": "boolean", "default": false },
+        "throttle_range_pct":         { "$ref": "#/$defs/Range" },
+        "time_to_max_thrust_s":       { "type": "number", "minimum": 0 },
+        "time_to_idle_s":             { "type": "number", "minimum": 0 },
+        "noise_epnl_db":              { "type": "number", "description": "Effective Perceived Noise Level." },
+        "emission_co2_g_per_kn_km":   { "type": "number", "minimum": 0 },
+        "emission_nox_g_per_kn_km":   { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "SoftwareBlock": {
+      "type": "object",
+      "description": "Software and firmware configuration for computational components.",
+      "additionalProperties": false,
+      "properties": {
+        "software_version":         { "$ref": "#/$defs/VersionString" },
+        "firmware_version":         { "$ref": "#/$defs/VersionString" },
+        "fpga_bitstream_version":   { "type": "string" },
+        "configuration_version":    { "type": "string" },
+        "build_id":                 { "type": "string" },
+        "build_date":               { "$ref": "#/$defs/Timestamp" },
+        "source_repo_ref":          { "type": "string", "format": "uri" },
+        "checksum_sha256":          { "type": "string", "pattern": "^[a-fA-F0-9]{64}$" },
+        "certification_baseline":   { "type": "string" },
+        "software_partitions": {
+          "type": "array",
+          "description": "ARINC 653 partitions or similar time/space partitions.",
+          "items": {
+            "type": "object",
+            "required": ["partition_id", "name"],
+            "additionalProperties": false,
+            "properties": {
+              "partition_id":  { "type": "integer" },
+              "name":          { "type": "string" },
+              "period_ms":     { "type": "number" },
+              "duration_ms":   { "type": "number" },
+              "safety_level":  { "type": "string" }
+            }
+          }
+        },
+        "configuration_parameters": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Operational configuration parameters as key-value pairs."
+        },
+        "license": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type":       { "type": "string", "enum": ["proprietary", "open_source", "gpl", "mit", "apache", "custom"] },
+            "identifier": { "type": "string" },
+            "expires_at": { "$ref": "#/$defs/Timestamp" }
+          }
+        },
+        "update_mechanism": {
+          "type": "string",
+          "enum": ["manual", "ota_wireless", "ota_wired", "jtag", "usb", "none", "custom"]
+        }
+      }
+    },
+
+    "MetadataBlock": {
+      "type": "object",
+      "description": "Provenance, authorship, simulation, and knowledge-graph metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "created_at":           { "$ref": "#/$defs/Timestamp" },
+        "created_by":           { "type": "string" },
+        "modified_at":          { "$ref": "#/$defs/Timestamp" },
+        "modified_by":          { "type": "string" },
+        "source":               { "type": "string", "description": "Data provenance e.g. 'JANES', 'manufacturer_datasheet', 'estimated'." },
+        "source_uri":           { "type": "string", "format": "uri" },
+        "source_confidence": {
+          "type": "string",
+          "enum": ["verified", "high", "medium", "low", "estimated", "unknown"]
+        },
+        "simulation_only":      { "type": "boolean", "default": false, "description": "True if this component only exists in simulation." },
+        "real_world_ref":       { "type": "string", "description": "Reference to a physical real-world asset or digital twin source." },
+        "digital_twin_id":      { "$ref": "#/$defs/UUID" },
+        "knowledge_graph_node": { "type": "string", "format": "uri", "description": "Knowledge graph node URI for this component." },
+        "ontology_mappings": {
+          "type": "array",
+          "description": "Cross-ontology mappings.",
+          "items": {
+            "type": "object",
+            "required": ["ontology", "uri"],
+            "additionalProperties": false,
+            "properties": {
+              "ontology": { "type": "string", "description": "Ontology name e.g. 'DOLCE', 'BFO', 'MIO', 'DUL'." },
+              "uri":      { "type": "string", "format": "uri" },
+              "relation": { "type": "string", "default": "owl:sameAs" }
+            }
+          }
+        },
+        "simulation_lod": {
+          "type": "string",
+          "enum": ["high_fidelity", "medium_fidelity", "low_fidelity", "icon", "aggregate"],
+          "description": "Level of detail for simulation purposes."
+        },
+        "ros2_namespace":       { "type": "string", "description": "ROS2 namespace for this component." },
+        "dds_domain_id":        { "type": "integer", "minimum": 0, "maximum": 232 },
+        "asset_refs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "External asset references (USD, GLB, STEP, CAD files)."
+        },
+        "documentation_refs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Document references (ICD, IRS, datasheets, TMs)."
+        }
+      }
+    },
+
+    "Component": {
+      "type": "object",
+      "description": "Canonical Component definition for PhysWorldLM. Every physical, electrical, logical, computational, mechanical, structural, sensing, communication, propulsion, or software subsystem that may exist in a simulation. Supports unlimited recursive nesting.",
+      "required": ["component_id", "component_type"],
+      "unevaluatedProperties": false,
+      "properties": {
+
+        "component_id":    { "$ref": "#/$defs/UUID" },
+        "component_type":  { "$ref": "#/$defs/ComponentType" },
+
+        "identity":        { "$ref": "#/$defs/IdentityBlock" },
+        "classification":  { "$ref": "#/$defs/ClassificationBlock" },
+        "hierarchy":       { "$ref": "#/$defs/HierarchyBlock" },
+        "mount_transform": { "$ref": "#/$defs/MountTransform" },
+
+        "physical":        { "$ref": "#/$defs/PhysicalBlock" },
+        "mechanical":      { "$ref": "#/$defs/MechanicalBlock" },
+        "electrical":      { "$ref": "#/$defs/ElectricalBlock" },
+        "thermal":         { "$ref": "#/$defs/ThermalBlock" },
+        "optical":         { "$ref": "#/$defs/OpticalBlock" },
+        "communication":   { "$ref": "#/$defs/CommunicationBlock" },
+        "computing":       { "$ref": "#/$defs/ComputingBlock" },
+        "propulsion":      { "$ref": "#/$defs/PropulsionDetailBlock" },
+        "weapon":          { "$ref": "#/$defs/WeaponBlock" },
+        "software":        { "$ref": "#/$defs/SoftwareBlock" },
+
+        "embedded_sensors": {
+          "type": "array",
+          "description": "Sensors physically embedded within this component.",
+          "items": { "$ref": "#/$defs/SensorEmbeddedSpec" }
+        },
+        "embedded_actuators": {
+          "type": "array",
+          "description": "Actuators physically embedded within this component.",
+          "items": { "$ref": "#/$defs/ActuatorEmbeddedSpec" }
+        },
+
+        "runtime_state":   { "$ref": "#/$defs/RuntimeStateBlock" },
+        "resources":       { "$ref": "#/$defs/ResourceBlock" },
+        "maintenance":     { "$ref": "#/$defs/MaintenanceBlock" },
+        "performance":     { "$ref": "#/$defs/PerformanceBlock" },
+        "relationships":   { "$ref": "#/$defs/RelationshipsBlock" },
+        "environmental":   { "$ref": "#/$defs/EnvironmentalRatingsBlock" },
+        "safety":          { "$ref": "#/$defs/SafetyBlock" },
+        "metadata":        { "$ref": "#/$defs/MetadataBlock" },
+
+        "sub_components": {
+          "type": "array",
+          "description": "Recursively nested child components. Supports unlimited depth (e.g. Aircraft → Engine → Fuel Pump → Motor → Bearing → Seal → Material).",
+          "$comment": "Recursive $ref to Component definition.",
+          "items": { "$ref": "#/$defs/Component" }
+        },
+
+        "custom_extensions": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Domain-specific extension fields not covered by the canonical schema. Use namespaced keys e.g. 'pw_military:fire_control_mode'."
+        }
+      },
+
+      "dependentRequired": {
+        "weapon":     ["component_type"],
+        "propulsion": ["component_type"],
+        "optical":    ["component_type"],
+        "computing":  ["component_type"]
+      },
+
+      "if": {
+        "properties": {
+          "component_type": {
+            "enum": [
+              "warhead_he", "warhead_ap", "warhead_shaped_charge",
+              "warhead_thermobaric", "warhead_nuclear", "warhead_submunition", "warhead_emp",
+              "missile_launcher_rail", "missile_launcher_box", "missile_launcher_vls",
+              "turret", "gun_barrel", "cannon", "autocannon",
+              "seeker_radar_active", "seeker_radar_semi_active", "seeker_ir_imaging",
+              "seeker_ir_uncooled", "seeker_tv", "seeker_laser",
+              "seeker_gps_ins", "seeker_multi_mode",
+              "countermeasure_chaff", "countermeasure_flare",
+              "countermeasure_jammer_rf", "countermeasure_jammer_ir",
+              "countermeasure_decoy_towed", "countermeasure_laser_dazzler"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "safety": {
+            "$ref": "#/$defs/SafetyBlock"
+          }
+        },
+        "required": ["safety"]
+      },
+      "else": {}
+    }
+  },
+
+  "properties": {
+    "component_id":    { "$ref": "#/$defs/UUID" },
+    "component_type":  { "$ref": "#/$defs/ComponentType" },
+    "identity":        { "$ref": "#/$defs/IdentityBlock" },
+    "classification":  { "$ref": "#/$defs/ClassificationBlock" },
+    "hierarchy":       { "$ref": "#/$defs/HierarchyBlock" },
+    "mount_transform": { "$ref": "#/$defs/MountTransform" },
+    "physical":        { "$ref": "#/$defs/PhysicalBlock" },
+    "mechanical":      { "$ref": "#/$defs/MechanicalBlock" },
+    "electrical":      { "$ref": "#/$defs/ElectricalBlock" },
+    "thermal":         { "$ref": "#/$defs/ThermalBlock" },
+    "optical":         { "$ref": "#/$defs/OpticalBlock" },
+    "communication":   { "$ref": "#/$defs/CommunicationBlock" },
+    "computing":       { "$ref": "#/$defs/ComputingBlock" },
+    "propulsion":      { "$ref": "#/$defs/PropulsionDetailBlock" },
+    "weapon":          { "$ref": "#/$defs/WeaponBlock" },
+    "software":        { "$ref": "#/$defs/SoftwareBlock" },
+    "embedded_sensors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/SensorEmbeddedSpec" }
+    },
+    "embedded_actuators": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ActuatorEmbeddedSpec" }
+    },
+    "runtime_state":   { "$ref": "#/$defs/RuntimeStateBlock" },
+    "resources":       { "$ref": "#/$defs/ResourceBlock" },
+    "maintenance":     { "$ref": "#/$defs/MaintenanceBlock" },
+    "performance":     { "$ref": "#/$defs/PerformanceBlock" },
+    "relationships":   { "$ref": "#/$defs/RelationshipsBlock" },
+    "environmental":   { "$ref": "#/$defs/EnvironmentalRatingsBlock" },
+    "safety":          { "$ref": "#/$defs/SafetyBlock" },
+    "metadata":        { "$ref": "#/$defs/MetadataBlock" },
+    "sub_components": {
+      "type": "array",
+      "description": "Recursively nested child components. Supports unlimited depth.",
+      "items": { "$ref": "#/$defs/Component" }
+    },
+    "custom_extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+
+  "dependentRequired": {
+    "weapon":     ["component_type"],
+    "propulsion": ["component_type"],
+    "optical":    ["component_type"],
+    "computing":  ["component_type"]
+  },
+
+  "if": {
+    "properties": {
+      "component_type": {
+        "enum": [
+          "warhead_he", "warhead_ap", "warhead_shaped_charge",
+          "warhead_thermobaric", "warhead_nuclear", "warhead_submunition", "warhead_emp",
+          "missile_launcher_rail", "missile_launcher_box", "missile_launcher_vls",
+          "turret", "gun_barrel", "cannon", "autocannon",
+          "seeker_radar_active", "seeker_radar_semi_active", "seeker_ir_imaging",
+          "seeker_ir_uncooled", "seeker_tv", "seeker_laser",
+          "seeker_gps_ins", "seeker_multi_mode",
+          "countermeasure_chaff", "countermeasure_flare",
+          "countermeasure_jammer_rf", "countermeasure_jammer_ir",
+          "countermeasure_decoy_towed", "countermeasure_laser_dazzler"
+        ]
+      }
+    }
+  },
+  "then": {
+    "required": ["safety"]
+  },
+  "else": {},
+
+  "examples": [
+    {
+      "component_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "component_type": "engine_turbofan",
+      "identity": {
+        "component_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "canonical_name": "f100_pw229_left_engine",
+        "display_name": "F100-PW-229 Left Engine",
+        "aliases": ["IPE", "Increased Performance Engine"],
+        "manufacturer": "Pratt & Whitney",
+        "part_number": "F100-PW-229",
+        "version": "3.0.0",
+        "classification_level": "unclassified"
+      },
+      "classification": {
+        "domain": "military",
+        "category": "propulsion",
+        "class": "turbine_engine",
+        "subclass": "turbofan",
+        "type": "engine_turbofan",
+        "platform": ["F-16C/D", "F-15E"],
+        "discipline": "propulsion",
+        "role": "primary_propulsion"
+      },
+      "physical": {
+        "mass_kg": 1699,
+        "length_m": 5.28,
+        "diameter_m": 1.181
+      },
+      "propulsion": {
+        "propulsion_class": "air_breathing_subsonic",
+        "static_thrust_n": 79178,
+        "afterburner_thrust_n": 129644,
+        "thrust_vector_capable": false,
+        "bypass_ratio": 0.36,
+        "pressure_ratio_overall": 32,
+        "compressor_stages": 13,
+        "turbine_stages": 4,
+        "turbine_inlet_temp_k": 1755,
+        "mass_flow_kg_s": 112,
+        "throttleable": true,
+        "throttle_range_pct": { "min": 0, "max": 100 }
+      },
+      "performance": {
+        "thrust_to_weight_ratio": 7.8,
+        "specific_impulse_s": 2900
+      },
+      "runtime_state": {
+        "operational_state": "nominal",
+        "health_score_pct": 98.5
+      },
+      "sub_components": [
+        {
+          "component_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+          "component_type": "fuel_pump",
+          "identity": {
+            "component_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+            "canonical_name": "f100_main_fuel_pump",
+            "display_name": "Main Fuel Pump"
+          },
+          "classification": {
+            "domain": "military",
+            "category": "fluid_system",
+            "type": "fuel_pump"
+          },
+          "mechanical": {
+            "max_pressure_pa": 6895000,
+            "mechanical_efficiency": 0.92
+          },
+          "electrical": {
+            "rated_power_w": 3500,
+            "nominal_voltage_v": 28
+          },
+          "runtime_state": {
+            "operational_state": "nominal"
+          },
+          "sub_components": [
+            {
+              "component_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+              "component_type": "actuator_electric_motor",
+              "identity": {
+                "component_id": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+                "canonical_name": "fuel_pump_drive_motor",
+                "display_name": "Fuel Pump Drive Motor"
+              },
+              "classification": {
+                "domain": "military",
+                "category": "actuation",
+                "type": "actuator_electric_motor"
+              },
+              "mechanical": {
+                "max_torque_nm": 12.5,
+                "rated_rpm": 12000
+              },
+              "sub_components": [
+                {
+                  "component_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                  "component_type": "bearing_ball",
+                  "identity": {
+                    "component_id": "d4e5f6a7-b8c9-0123-defa-234567890123",
+                    "canonical_name": "motor_front_bearing",
+                    "display_name": "Motor Front Bearing"
+                  },
+                  "classification": {
+                    "domain": "military",
+                    "category": "mechanical",
+                    "type": "bearing_ball"
+                  },
+                  "physical": {
+                    "diameter_m": 0.04
+                  },
+                  "mechanical": {
+                    "radial_load_capacity_n": 9500,
+                    "axial_load_capacity_n": 4200,
+                    "lubrication_type": "grease"
+                  },
+                  "maintenance": {
+                    "mtbf_h": 5000,
+                    "service_interval_h": 1200
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "metadata": {
+        "source": "manufacturer_datasheet",
+        "source_confidence": "high",
+        "simulation_lod": "high_fidelity"
+      }
+    }
+  ]
+}

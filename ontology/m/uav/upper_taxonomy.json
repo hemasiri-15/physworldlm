@@ -1,0 +1,627 @@
+{
+  "ontology": "PhysWorld Military Ontology (PWMO)",
+  "module": "UAV",
+  "file": "upper_taxonomy.json",
+  "version": "1.0.0",
+  "description": "Complete upper taxonomy classification of military UAVs across all dimensions",
+  "classes": {
+    "UAV": {
+      "id": "UAV",
+      "label": "Unmanned Aerial Vehicle",
+      "definition": "Any powered aerial vehicle that does not carry a human operator, is remotely piloted or flies autonomously, and can be recovered or is expendable",
+      "superclass": "AerialSystem",
+      "subclasses": {
+        "by_flight_configuration": {
+          "FixedWingUAV": {
+            "id": "FixedWingUAV",
+            "label": "Fixed-Wing UAV",
+            "definition": "UAV generating lift through aerodynamic wings fixed relative to the fuselage",
+            "subclasses": {
+              "ConventionalFixedWing": {
+                "id": "ConventionalFixedWing",
+                "label": "Conventional Fixed-Wing UAV",
+                "subclasses": {
+                  "TractorConfiguration": { "id": "TractorConfiguration", "label": "Tractor Configuration UAV" },
+                  "PusherConfiguration": { "id": "PusherConfiguration", "label": "Pusher Configuration UAV" },
+                  "TwinEngineFixedWing": { "id": "TwinEngineFixedWing", "label": "Twin-Engine Fixed-Wing UAV" },
+                  "TwinBoomFixedWing": { "id": "TwinBoomFixedWing", "label": "Twin-Boom Fixed-Wing UAV" }
+                }
+              },
+              "FlyingWingUAV": {
+                "id": "FlyingWingUAV",
+                "label": "Flying Wing UAV",
+                "definition": "Tailless fixed-wing UAV where fuselage is integrated into wing",
+                "subclasses": {
+                  "BlendedWingBody": { "id": "BlendedWingBody", "label": "Blended Wing Body UAV" },
+                  "LambdaWing": { "id": "LambdaWing", "label": "Lambda Wing UAV" },
+                  "DeltaWing": { "id": "DeltaWing", "label": "Delta Wing UAV" }
+                }
+              },
+              "CanardConfiguration": { "id": "CanardConfiguration", "label": "Canard Configuration UAV" },
+              "TandemWingUAV": { "id": "TandemWingUAV", "label": "Tandem Wing UAV" }
+            }
+          },
+          "RotaryWingUAV": {
+            "id": "RotaryWingUAV",
+            "label": "Rotary-Wing UAV",
+            "definition": "UAV generating lift through rotating blades",
+            "subclasses": {
+              "SingleRotorUAV": {
+                "id": "SingleRotorUAV",
+                "label": "Single Rotor UAV",
+                "subclasses": {
+                  "TailRotorHelicopter": { "id": "TailRotorHelicopter", "label": "Tail Rotor Helicopter UAV" },
+                  "NoTailRotorHelicopter": { "id": "NoTailRotorHelicopter", "label": "NOTAR Helicopter UAV" }
+                }
+              },
+              "CoaxialRotorUAV": { "id": "CoaxialRotorUAV", "label": "Coaxial Rotor UAV" },
+              "TandemRotorUAV": { "id": "TandemRotorUAV", "label": "Tandem Rotor UAV" },
+              "MultiRotorUAV": {
+                "id": "MultiRotorUAV",
+                "label": "Multi-Rotor UAV",
+                "subclasses": {
+                  "TriCopter": { "id": "TriCopter", "label": "Tricopter UAV" },
+                  "QuadCopter": { "id": "QuadCopter", "label": "Quadcopter UAV" },
+                  "HexaCopter": { "id": "HexaCopter", "label": "Hexacopter UAV" },
+                  "OctoCopter": { "id": "OctoCopter", "label": "Octocopter UAV" },
+                  "DodecaCopter": { "id": "DodecaCopter", "label": "Dodecacopter UAV" }
+                }
+              },
+              "SynchroCopter": { "id": "SynchroCopter", "label": "Synchropter UAV" },
+              "AutogyroUAV": { "id": "AutogyroUAV", "label": "Autogyro UAV" }
+            }
+          },
+          "HybridVTOLUAV": {
+            "id": "HybridVTOLUAV",
+            "label": "Hybrid VTOL UAV",
+            "definition": "UAV capable of vertical takeoff and landing with efficient fixed-wing cruise",
+            "subclasses": {
+              "TiltRotorUAV": { "id": "TiltRotorUAV", "label": "Tilt-Rotor UAV" },
+              "TiltWingUAV": { "id": "TiltWingUAV", "label": "Tilt-Wing UAV" },
+              "TailSitterUAV": { "id": "TailSitterUAV", "label": "Tail-Sitter UAV" },
+              "LiftPlusCruiseUAV": { "id": "LiftPlusCruiseUAV", "label": "Lift-Plus-Cruise UAV" },
+              "VectoredThrustUAV": { "id": "VectoredThrustUAV", "label": "Vectored Thrust UAV" },
+              "DuctedFanVTOL": { "id": "DuctedFanVTOL", "label": "Ducted Fan VTOL UAV" }
+            }
+          },
+          "FlappingWingUAV": {
+            "id": "FlappingWingUAV",
+            "label": "Flapping Wing UAV (Ornithopter)",
+            "subclasses": {
+              "BirdMimicUAV": { "id": "BirdMimicUAV", "label": "Bird-Mimicking UAV" },
+              "InsectMimicUAV": { "id": "InsectMimicUAV", "label": "Insect-Mimicking UAV" }
+            }
+          },
+          "AirshipUAV": {
+            "id": "AirshipUAV",
+            "label": "Airship UAV",
+            "subclasses": {
+              "BlimpUAV": { "id": "BlimpUAV", "label": "Blimp UAV" },
+              "RigidAirshipUAV": { "id": "RigidAirshipUAV", "label": "Rigid Airship UAV" },
+              "HybridAirshipUAV": { "id": "HybridAirshipUAV", "label": "Hybrid Airship UAV" }
+            }
+          }
+        },
+        "by_size_weight": {
+          "NanoUAV": {
+            "id": "NanoUAV",
+            "label": "Nano UAV",
+            "definition": "UAV with MTOW less than 25 grams",
+            "weight_range_g": { "min": 0, "max": 25 },
+            "subclasses": {
+              "NanoFlappingWing": { "id": "NanoFlappingWing", "label": "Nano Flapping Wing UAV" },
+              "NanoQuadrotor": { "id": "NanoQuadrotor", "label": "Nano Quadrotor" },
+              "NanoFixedWing": { "id": "NanoFixedWing", "label": "Nano Fixed Wing UAV" }
+            }
+          },
+          "MicroUAV": {
+            "id": "MicroUAV",
+            "label": "Micro UAV",
+            "definition": "UAV with MTOW between 25g and 2kg; fits within 15cm",
+            "weight_range_g": { "min": 25, "max": 2000 },
+            "subclasses": {
+              "MAV": { "id": "MAV", "label": "Micro Air Vehicle (MAV)" },
+              "MicroQuadrotor": { "id": "MicroQuadrotor", "label": "Micro Quadrotor" },
+              "PocketUAV": { "id": "PocketUAV", "label": "Pocket-Sized UAV" }
+            }
+          },
+          "MiniUAV": {
+            "id": "MiniUAV",
+            "label": "Mini UAV",
+            "definition": "UAV with MTOW between 2kg and 20kg; man-portable",
+            "weight_range_kg": { "min": 2, "max": 20 },
+            "subclasses": {
+              "ManPackableUAV": { "id": "ManPackableUAV", "label": "Man-Packable UAV" },
+              "BackpackUAV": { "id": "BackpackUAV", "label": "Backpack UAV" }
+            }
+          },
+          "SmallUAV": {
+            "id": "SmallUAV",
+            "label": "Small UAV (SUAV)",
+            "weight_range_kg": { "min": 20, "max": 150 }
+          },
+          "TacticalUAV": {
+            "id": "TacticalUAV",
+            "label": "Tactical UAV",
+            "definition": "UAV operating at brigade/battalion level; MTOW 150–600kg",
+            "weight_range_kg": { "min": 150, "max": 600 },
+            "subclasses": {
+              "CompanyLevelUAV": { "id": "CompanyLevelUAV", "label": "Company-Level UAV" },
+              "BattalionLevelUAV": { "id": "BattalionLevelUAV", "label": "Battalion-Level UAV" },
+              "BrigadeLevelUAV": { "id": "BrigadeLevelUAV", "label": "Brigade-Level UAV" }
+            }
+          },
+          "MediumUAV": {
+            "id": "MediumUAV",
+            "label": "Medium UAV",
+            "weight_range_kg": { "min": 600, "max": 1500 }
+          },
+          "LargeUAV": {
+            "id": "LargeUAV",
+            "label": "Large UAV",
+            "weight_range_kg": { "min": 1500, "max": 10000 }
+          },
+          "VeryLargeUAV": {
+            "id": "VeryLargeUAV",
+            "label": "Very Large UAV",
+            "weight_range_kg": { "min": 10000 }
+          }
+        },
+        "by_altitude_endurance": {
+          "LALE": {
+            "id": "LALE",
+            "label": "Low-Altitude Long-Endurance UAV",
+            "altitude_m": { "max": 3000 },
+            "endurance_h": { "min": 12 }
+          },
+          "LASE": {
+            "id": "LASE",
+            "label": "Low-Altitude Short-Endurance UAV",
+            "altitude_m": { "max": 3000 },
+            "endurance_h": { "max": 2 }
+          },
+          "MALE": {
+            "id": "MALE",
+            "label": "Medium-Altitude Long-Endurance UAV",
+            "altitude_m": { "min": 3000, "max": 9000 },
+            "endurance_h": { "min": 24 },
+            "subclasses": {
+              "ArmedMALE": { "id": "ArmedMALE", "label": "Armed MALE UAV" },
+              "ISR_MALE": { "id": "ISR_MALE", "label": "ISR MALE UAV" },
+              "SIGINT_MALE": { "id": "SIGINT_MALE", "label": "SIGINT MALE UAV" }
+            }
+          },
+          "HALE": {
+            "id": "HALE",
+            "label": "High-Altitude Long-Endurance UAV",
+            "altitude_m": { "min": 15000 },
+            "endurance_h": { "min": 24 },
+            "subclasses": {
+              "StratosphericUAV": { "id": "StratosphericUAV", "label": "Stratospheric UAV" },
+              "NearSpaceUAV": { "id": "NearSpaceUAV", "label": "Near-Space UAV" },
+              "HAPS": {
+                "id": "HAPS",
+                "label": "High-Altitude Platform Station (HAPS)",
+                "altitude_m": { "min": 20000 },
+                "endurance": "days to months",
+                "subclasses": {
+                  "SolarHAPS": { "id": "SolarHAPS", "label": "Solar-Powered HAPS" },
+                  "HydrogenHAPS": { "id": "HydrogenHAPS", "label": "Hydrogen-Powered HAPS" },
+                  "PseudoSatellite": { "id": "PseudoSatellite", "label": "Pseudo-Satellite UAV" }
+                }
+              }
+            }
+          },
+          "MASE": {
+            "id": "MASE",
+            "label": "Medium-Altitude Short-Endurance UAV",
+            "altitude_m": { "min": 3000, "max": 9000 },
+            "endurance_h": { "max": 6 }
+          }
+        },
+        "by_mission_role": {
+          "ISR_UAV": {
+            "id": "ISR_UAV",
+            "label": "Intelligence, Surveillance, Reconnaissance UAV",
+            "subclasses": {
+              "ReconnaissanceUAV": { "id": "ReconnaissanceUAV", "label": "Reconnaissance UAV" },
+              "SurveillanceUAV": { "id": "SurveillanceUAV", "label": "Surveillance UAV" },
+              "IntelligenceUAV": { "id": "IntelligenceUAV", "label": "Intelligence-Collection UAV" },
+              "TargetAcquisitionUAV": { "id": "TargetAcquisitionUAV", "label": "Target Acquisition UAV" },
+              "ArtillerySpottingUAV": { "id": "ArtillerySpottingUAV", "label": "Artillery Spotting UAV" },
+              "BattleDamageAssessmentUAV": { "id": "BattleDamageAssessmentUAV", "label": "Battle Damage Assessment UAV" },
+              "BorderPatrolUAV": { "id": "BorderPatrolUAV", "label": "Border Patrol UAV" },
+              "MaritimePatrolUAV": { "id": "MaritimePatrolUAV", "label": "Maritime Patrol UAV" },
+              "AntiSubmarineUAV": { "id": "AntiSubmarineUAV", "label": "Anti-Submarine Warfare UAV" },
+              "MineDetectionUAV": { "id": "MineDetectionUAV", "label": "Mine Detection UAV" },
+              "NuclearDetectionUAV": { "id": "NuclearDetectionUAV", "label": "Nuclear Detection UAV" },
+              "ChemBioDetectionUAV": { "id": "ChemBioDetectionUAV", "label": "CBRN Detection UAV" }
+            }
+          },
+          "SIGINT_UAV": {
+            "id": "SIGINT_UAV",
+            "label": "Signals Intelligence UAV",
+            "subclasses": {
+              "ELINT_UAV": { "id": "ELINT_UAV", "label": "Electronic Intelligence UAV" },
+              "COMINT_UAV": { "id": "COMINT_UAV", "label": "Communications Intelligence UAV" },
+              "MASINT_UAV": { "id": "MASINT_UAV", "label": "Measurement & Signature Intelligence UAV" },
+              "IMINT_UAV": { "id": "IMINT_UAV", "label": "Imagery Intelligence UAV" },
+              "HUMINT_Support_UAV": { "id": "HUMINT_Support_UAV", "label": "HUMINT Support UAV" }
+            }
+          },
+          "UCAV": {
+            "id": "UCAV",
+            "label": "Unmanned Combat Aerial Vehicle",
+            "definition": "UAV designed to conduct air strikes and engage in combat operations",
+            "subclasses": {
+              "AirToGroundStrikeUAV": { "id": "AirToGroundStrikeUAV", "label": "Air-to-Ground Strike UAV" },
+              "CloseAirSupportUAV": { "id": "CloseAirSupportUAV", "label": "Close Air Support UAV" },
+              "AntiTankUAV": { "id": "AntiTankUAV", "label": "Anti-Tank UAV" },
+              "AntiShipUAV": { "id": "AntiShipUAV", "label": "Anti-Ship UAV" },
+              "AirToAirUAV": { "id": "AirToAirUAV", "label": "Air-to-Air Combat UAV" },
+              "DeepStrikeUAV": { "id": "DeepStrikeUAV", "label": "Deep Strike UAV" },
+              "PrecisionStrikeUAV": { "id": "PrecisionStrikeUAV", "label": "Precision Strike UAV" },
+              "SuppressEnemyAirDefenseUAV": { "id": "SuppressEnemyAirDefenseUAV", "label": "SEAD UAV" }
+            }
+          },
+          "LoiteringMunition": {
+            "id": "LoiteringMunition",
+            "label": "Loitering Munition (Kamikaze/Suicide Drone)",
+            "definition": "Expendable UAV that loiters over battlefield and attacks target by direct impact",
+            "subclasses": {
+              "AntiPersonnelLM": { "id": "AntiPersonnelLM", "label": "Anti-Personnel Loitering Munition" },
+              "AntiArmorLM": { "id": "AntiArmorLM", "label": "Anti-Armor Loitering Munition" },
+              "AntiRadiationLM": { "id": "AntiRadiationLM", "label": "Anti-Radiation Loitering Munition" },
+              "AntiShipLM": { "id": "AntiShipLM", "label": "Anti-Ship Loitering Munition" },
+              "AntiUAV_LM": { "id": "AntiUAV_LM", "label": "Anti-UAV Loitering Munition" },
+              "SwarmLM": { "id": "SwarmLM", "label": "Swarm Loitering Munition" },
+              "ManPackableLM": { "id": "ManPackableLM", "label": "Man-Packable Loitering Munition" }
+            }
+          },
+          "EW_UAV": {
+            "id": "EW_UAV",
+            "label": "Electronic Warfare UAV",
+            "subclasses": {
+              "ElectronicAttackUAV": { "id": "ElectronicAttackUAV", "label": "Electronic Attack UAV" },
+              "ElectronicSupportUAV": { "id": "ElectronicSupportUAV", "label": "Electronic Support UAV" },
+              "ElectronicProtectionUAV": { "id": "ElectronicProtectionUAV", "label": "Electronic Protection UAV" },
+              "RadarJammingUAV": { "id": "RadarJammingUAV", "label": "Radar Jamming UAV" },
+              "CommunicationsJammingUAV": { "id": "CommunicationsJammingUAV", "label": "Communications Jamming UAV" },
+              "GPS_JammingUAV": { "id": "GPS_JammingUAV", "label": "GPS Jamming UAV" },
+              "CyberAttackUAV": { "id": "CyberAttackUAV", "label": "Cyber Attack UAV" }
+            }
+          },
+          "DecoyUAV": {
+            "id": "DecoyUAV",
+            "label": "Decoy UAV",
+            "subclasses": {
+              "RadarDecoyUAV": { "id": "RadarDecoyUAV", "label": "Radar Decoy UAV" },
+              "AirDefenseSaturationUAV": { "id": "AirDefenseSaturationUAV", "label": "Air Defense Saturation UAV" },
+              "ActiveDecoyUAV": { "id": "ActiveDecoyUAV", "label": "Active Decoy UAV" },
+              "PassiveDecoyUAV": { "id": "PassiveDecoyUAV", "label": "Passive Decoy UAV" }
+            }
+          },
+          "CargoUAV": {
+            "id": "CargoUAV",
+            "label": "Cargo UAV",
+            "subclasses": {
+              "ResupplyUAV": { "id": "ResupplyUAV", "label": "Resupply UAV" },
+              "MedicalSupplyUAV": { "id": "MedicalSupplyUAV", "label": "Medical Supply UAV" },
+              "AmmunitionResupplyUAV": { "id": "AmmunitionResupplyUAV", "label": "Ammunition Resupply UAV" },
+              "CasevacUAV": { "id": "CasevacUAV", "label": "Casualty Evacuation UAV" },
+              "HeavyLiftUAV": { "id": "HeavyLiftUAV", "label": "Heavy Lift Cargo UAV" }
+            }
+          },
+          "CommunicationsRelayUAV": {
+            "id": "CommunicationsRelayUAV",
+            "label": "Communications Relay UAV",
+            "subclasses": {
+              "SATCOMRelayUAV": { "id": "SATCOMRelayUAV", "label": "SATCOM Relay UAV" },
+              "TacticalRelayUAV": { "id": "TacticalRelayUAV", "label": "Tactical Communications Relay UAV" },
+              "MeshNetworkUAV": { "id": "MeshNetworkUAV", "label": "Mesh Network UAV" },
+              "BeyondLineOfSightRelayUAV": { "id": "BeyondLineOfSightRelayUAV", "label": "Beyond-Line-of-Sight Relay UAV" }
+            }
+          },
+          "SearchAndRescueUAV": { "id": "SearchAndRescueUAV", "label": "Search and Rescue UAV" },
+          "TargetDroneUAV": {
+            "id": "TargetDroneUAV",
+            "label": "Target Drone UAV",
+            "subclasses": {
+              "AerialTargetDrone": { "id": "AerialTargetDrone", "label": "Aerial Target Drone" },
+              "SupersonicTargetDrone": { "id": "SupersonicTargetDrone", "label": "Supersonic Target Drone" },
+              "BallisicTargetSimulator": { "id": "BallisticTargetSimulator", "label": "Ballistic Missile Target Simulator" }
+            }
+          },
+          "LoyalWingman": {
+            "id": "LoyalWingman",
+            "label": "Loyal Wingman / Manned-Unmanned Teaming (MUM-T)",
+            "definition": "Semi-autonomous combat UAV that operates alongside manned aircraft",
+            "subclasses": {
+              "AttritionableLoyalWingman": { "id": "AttritionableLoyalWingman", "label": "Attritionable Loyal Wingman" },
+              "PersistentLoyalWingman": { "id": "PersistentLoyalWingman", "label": "Persistent Loyal Wingman" }
+            }
+          },
+          "SwarmUAV": {
+            "id": "SwarmUAV",
+            "label": "Swarm UAV",
+            "subclasses": {
+              "CoordinatedSwarm": { "id": "CoordinatedSwarm", "label": "Coordinated Swarm UAV" },
+              "SaturationAttackSwarm": { "id": "SaturationAttackSwarm", "label": "Saturation Attack Swarm" },
+              "AutonomousSwarm": { "id": "AutonomousSwarm", "label": "Fully Autonomous Swarm UAV" },
+              "HybridSwarm": { "id": "HybridSwarm", "label": "Hybrid Human-Directed Swarm" }
+            }
+          },
+          "MappingUAV": { "id": "MappingUAV", "label": "Mapping & Survey UAV" },
+          "ScientificUAV": { "id": "ScientificUAV", "label": "Scientific Research UAV" },
+          "DisasterAssessmentUAV": { "id": "DisasterAssessmentUAV", "label": "Disaster Assessment UAV" }
+        },
+        "by_launch_method": {
+          "HandLaunchUAV": { "id": "HandLaunchUAV", "label": "Hand-Launched UAV" },
+          "CatapultLaunchUAV": { "id": "CatapultLaunchUAV", "label": "Catapult-Launched UAV" },
+          "PneumaticLaunchedUAV": { "id": "PneumaticLaunchedUAV", "label": "Pneumatic-Launched UAV" },
+          "RocketAssistedLaunchUAV": { "id": "RocketAssistedLaunchUAV", "label": "Rocket-Assisted Launch UAV (RATO)" },
+          "RunwayTakeoffUAV": { "id": "RunwayTakeoffUAV", "label": "Runway Takeoff UAV" },
+          "VehicleLaunchedUAV": { "id": "VehicleLaunchedUAV", "label": "Vehicle-Launched UAV" },
+          "ShipLaunchedUAV": { "id": "ShipLaunchedUAV", "label": "Ship-Launched UAV" },
+          "AirLaunchedUAV": {
+            "id": "AirLaunchedUAV",
+            "label": "Air-Launched UAV",
+            "subclasses": {
+              "AirLaunchedFromBomber": { "id": "AirLaunchedFromBomber", "label": "Bomber-Launched UAV" },
+              "AirLaunchedFromFighter": { "id": "AirLaunchedFromFighter", "label": "Fighter-Launched UAV" },
+              "AirLaunchedFromUAV": { "id": "AirLaunchedFromUAV", "label": "UAV-Launched UAV" }
+            }
+          },
+          "SubmarineLaunchedUAV": { "id": "SubmarineLaunchedUAV", "label": "Submarine-Launched UAV" },
+          "TubeOrCanisterLaunchedUAV": { "id": "TubeOrCanisterLaunchedUAV", "label": "Tube/Canister-Launched UAV" }
+        },
+        "by_recovery_method": {
+          "RunwayLandingUAV": { "id": "RunwayLandingUAV", "label": "Runway Landing UAV" },
+          "NetRecoveryUAV": { "id": "NetRecoveryUAV", "label": "Net Recovery UAV" },
+          "ParachuteRecoveryUAV": { "id": "ParachuteRecoveryUAV", "label": "Parachute Recovery UAV" },
+          "BellyLandingUAV": { "id": "BellyLandingUAV", "label": "Belly Landing UAV" },
+          "VTOLLandingUAV": { "id": "VTOLLandingUAV", "label": "VTOL Landing UAV" },
+          "ArrestedRecoveryUAV": { "id": "ArrestedRecoveryUAV", "label": "Arrested Recovery UAV" },
+          "WaterLandingUAV": { "id": "WaterLandingUAV", "label": "Water Landing UAV" },
+          "SkyhookRecoveryUAV": { "id": "SkyhookRecoveryUAV", "label": "Skyhook Recovery UAV" },
+          "ExpendableUAV": { "id": "ExpendableUAV", "label": "Expendable (Non-Recoverable) UAV" },
+          "AutoRotationRecoveryUAV": { "id": "AutoRotationRecoveryUAV", "label": "Auto-Rotation Recovery UAV" }
+        },
+        "by_propulsion": {
+          "ElectricUAV": {
+            "id": "ElectricUAV",
+            "label": "Electric Propulsion UAV",
+            "subclasses": {
+              "BatteryElectricUAV": { "id": "BatteryElectricUAV", "label": "Battery-Electric UAV" },
+              "SolarElectricUAV": { "id": "SolarElectricUAV", "label": "Solar-Electric UAV" },
+              "FuelCellElectricUAV": { "id": "FuelCellElectricUAV", "label": "Fuel Cell Electric UAV" }
+            }
+          },
+          "ICE_UAV": {
+            "id": "ICE_UAV",
+            "label": "Internal Combustion Engine UAV",
+            "subclasses": {
+              "GasolineEngineUAV": { "id": "GasolineEngineUAV", "label": "Gasoline Engine UAV" },
+              "HeavyFuelEngineUAV": { "id": "HeavyFuelEngineUAV", "label": "Heavy Fuel Engine UAV" },
+              "WankelEngineUAV": { "id": "WankelEngineUAV", "label": "Wankel Rotary Engine UAV" },
+              "DieselEngineUAV": { "id": "DieselEngineUAV", "label": "Diesel Engine UAV" }
+            }
+          },
+          "TurbineUAV": {
+            "id": "TurbineUAV",
+            "label": "Turbine-Powered UAV",
+            "subclasses": {
+              "TurbojetUAV": { "id": "TurbojetUAV", "label": "Turbojet UAV" },
+              "TurbofanUAV": { "id": "TurbofanUAV", "label": "Turbofan UAV" },
+              "TurbopropUAV": { "id": "TurbopropUAV", "label": "Turboprop UAV" },
+              "TurboshaftUAV": { "id": "TurboshaftUAV", "label": "Turboshaft UAV" }
+            }
+          },
+          "HybridPropulsionUAV": {
+            "id": "HybridPropulsionUAV",
+            "label": "Hybrid Propulsion UAV",
+            "subclasses": {
+              "SerialHybridUAV": { "id": "SerialHybridUAV", "label": "Serial Hybrid UAV" },
+              "ParallelHybridUAV": { "id": "ParallelHybridUAV", "label": "Parallel Hybrid UAV" }
+            }
+          },
+          "HydrogenUAV": { "id": "HydrogenUAV", "label": "Hydrogen-Powered UAV" },
+          "RocketPoweredUAV": { "id": "RocketPoweredUAV", "label": "Rocket-Powered UAV" },
+          "ScramjetUAV": { "id": "ScramjetUAV", "label": "Scramjet UAV" }
+        },
+        "by_autonomy_level": {
+          "RemotelyPilotedUAV": {
+            "id": "RemotelyPilotedUAV",
+            "label": "Remotely Piloted UAV (RPA/RPAS)",
+            "autonomy_level": 0,
+            "definition": "Fully human-controlled UAV with no autonomous capability"
+          },
+          "AutomatedUAV": {
+            "id": "AutomatedUAV",
+            "label": "Automated UAV",
+            "autonomy_level": 1,
+            "definition": "Pre-programmed UAV that follows scripted waypoints"
+          },
+          "SemiAutonomousUAV": {
+            "id": "SemiAutonomousUAV",
+            "label": "Semi-Autonomous UAV",
+            "autonomy_level": 2,
+            "definition": "UAV that executes tasks autonomously within human-defined constraints"
+          },
+          "HighlyAutonomousUAV": {
+            "id": "HighlyAutonomousUAV",
+            "label": "Highly Autonomous UAV",
+            "autonomy_level": 3,
+            "definition": "UAV that adapts to dynamic environments with minimal human oversight"
+          },
+          "FullyAutonomousUAV": {
+            "id": "FullyAutonomousUAV",
+            "label": "Fully Autonomous UAV",
+            "autonomy_level": 4,
+            "definition": "UAV that operates independently with no human-in-the-loop"
+          },
+          "LethalAutonomousWeaponSystem": {
+            "id": "LAWS",
+            "label": "Lethal Autonomous Weapon System (LAWS)",
+            "autonomy_level": 5,
+            "definition": "Fully autonomous system capable of selecting and engaging targets without human authorization"
+          }
+        },
+        "by_stealth": {
+          "LowObservableUAV": {
+            "id": "LowObservableUAV",
+            "label": "Low-Observable (Stealth) UAV",
+            "subclasses": {
+              "RadarStealthUAV": { "id": "RadarStealthUAV", "label": "Radar-Stealth UAV (Low RCS)" },
+              "IRStealthUAV": { "id": "IRStealthUAV", "label": "Infrared-Stealth UAV (Low IR Signature)" },
+              "AcousticStealthUAV": { "id": "AcousticStealthUAV", "label": "Acoustic-Stealth UAV" },
+              "VisualStealthUAV": { "id": "VisualStealthUAV", "label": "Visual-Stealth UAV (Camouflage)" },
+              "MultiSpectralStealthUAV": { "id": "MultiSpectralStealthUAV", "label": "Multi-Spectral Stealth UAV" }
+            }
+          },
+          "ConventionalSignatureUAV": { "id": "ConventionalSignatureUAV", "label": "Conventional Signature UAV" }
+        },
+        "by_speed": {
+          "LowSpeedUAV": { "id": "LowSpeedUAV", "label": "Low-Speed UAV", "speed_kmh": { "max": 200 } },
+          "MediumSpeedUAV": { "id": "MediumSpeedUAV", "label": "Medium-Speed UAV", "speed_kmh": { "min": 200, "max": 500 } },
+          "HighSpeedUAV": { "id": "HighSpeedUAV", "label": "High-Speed UAV", "speed_kmh": { "min": 500, "max": 1000 } },
+          "SupersonicUAV": { "id": "SupersonicUAV", "label": "Supersonic UAV", "speed_mach": { "min": 1.0, "max": 5.0 } },
+          "HypersonicUAV": { "id": "HypersonicUAV", "label": "Hypersonic UAV", "speed_mach": { "min": 5.0 } }
+        },
+        "by_carrier_compatibility": {
+          "NavalUAV": {
+            "id": "NavalUAV",
+            "label": "Naval UAV",
+            "subclasses": {
+              "CarrierBasedUAV": { "id": "CarrierBasedUAV", "label": "Carrier-Based UAV" },
+              "ShipborneUAV": { "id": "ShipborneUAV", "label": "Shipborne UAV (Frigate/Destroyer)" },
+              "AmphibiousUAV": { "id": "AmphibiousUAV", "label": "Amphibious Ship UAV" },
+              "SubmarineLaunchedUAV_Naval": { "id": "SubmarineLaunchedUAV_Naval", "label": "Submarine-Launched UAV" },
+              "MaritimePatrolUAV_Naval": { "id": "MaritimePatrolUAV_Naval", "label": "Maritime Patrol UAV" },
+              "SurfaceShipUAV": { "id": "SurfaceShipUAV", "label": "Surface Ship UAV" }
+            }
+          },
+          "LandBasedUAV": { "id": "LandBasedUAV", "label": "Land-Based UAV" },
+          "AirLaunchedUAV_Carrier": { "id": "AirLaunchedUAV_Carrier", "label": "Air-Launched UAV" }
+        },
+        "by_generation": {
+          "Gen1_UAV": { "id": "Gen1_UAV", "label": "First Generation UAV (1960s–1970s)", "era": "1960-1979" },
+          "Gen2_UAV": { "id": "Gen2_UAV", "label": "Second Generation UAV (1980s)", "era": "1980-1989" },
+          "Gen3_UAV": { "id": "Gen3_UAV", "label": "Third Generation UAV (1990s)", "era": "1990-1999" },
+          "Gen4_UAV": { "id": "Gen4_UAV", "label": "Fourth Generation UAV (2000s)", "era": "2000-2009" },
+          "Gen5_UAV": { "id": "Gen5_UAV", "label": "Fifth Generation UAV (2010s–AI Enabled)", "era": "2010-2019" },
+          "Gen6_UAV": { "id": "Gen6_UAV", "label": "Sixth Generation UAV (2020s–Swarm/Autonomous)", "era": "2020-present" }
+        },
+        "by_special_category": {
+          "ExperimentalUAV": { "id": "ExperimentalUAV", "label": "Experimental / Technology Demonstrator UAV" },
+          "SpaceCapableUAV": {
+            "id": "SpaceCapableUAV",
+            "label": "Space-Capable UAV",
+            "subclasses": {
+              "SpacePlaneUAV": { "id": "SpacePlaneUAV", "label": "Space Plane UAV" },
+              "OrbitCapableUAV": { "id": "OrbitCapableUAV", "label": "Orbit-Capable UAV" }
+            }
+          },
+          "AquaticUAV": {
+            "id": "AquaticUAV",
+            "label": "Aquatic UAV (Amphibious/Water-Capable)",
+            "subclasses": {
+              "SeaplaneDroneUAV": { "id": "SeaplaneDroneUAV", "label": "Seaplane Drone" },
+              "WaterLandingUAV_Special": { "id": "WaterLandingUAV_Special", "label": "Water Landing UAV" }
+            }
+          },
+          "CruiseMissileHybrid": { "id": "CruiseMissileHybrid", "label": "Cruise Missile / UAV Hybrid" },
+          "AntiRadiationUAV": { "id": "AntiRadiationUAV", "label": "Anti-Radiation UAV" }
+        }
+      }
+    }
+  },
+  "flight_modes": {
+    "Manual": { "id": "FM_Manual", "label": "Manual Control" },
+    "Stabilize": { "id": "FM_Stabilize", "label": "Stabilized Flight" },
+    "AltitudeHold": { "id": "FM_AltHold", "label": "Altitude Hold" },
+    "PositionHold": { "id": "FM_PosHold", "label": "Position Hold / Hover" },
+    "Loiter": { "id": "FM_Loiter", "label": "Loiter" },
+    "WaypointMission": { "id": "FM_Waypoint", "label": "Waypoint Mission" },
+    "ReturnToLaunch": { "id": "FM_RTL", "label": "Return To Launch" },
+    "FollowMe": { "id": "FM_Follow", "label": "Follow Me Mode" },
+    "Orbit": { "id": "FM_Orbit", "label": "Orbit Mode" },
+    "FormationFlight": { "id": "FM_Formation", "label": "Formation Flight" },
+    "AutonomousMission": { "id": "FM_Autonomous", "label": "Fully Autonomous Mission" },
+    "SwarmMode": { "id": "FM_Swarm", "label": "Swarm Coordination Mode" },
+    "EmergencyLanding": { "id": "FM_Emergency", "label": "Emergency Landing" },
+    "Failsafe": { "id": "FM_Failsafe", "label": "Failsafe Mode" },
+    "TerrainFollowing": { "id": "FM_TerrainFollow", "label": "Terrain Following Mode" },
+    "NOEFlight": { "id": "FM_NOE", "label": "Nap-of-the-Earth (NOE) Flight" },
+    "LoiterAndAttack": { "id": "FM_LoiterAttack", "label": "Loiter-and-Attack Mode" },
+    "EMCON": { "id": "FM_EMCON", "label": "Emission Control (EMCON) Mode" }
+  },
+  "launch_recovery": {
+    "launch_systems": {
+      "HandLaunch": { "id": "LS_Hand", "label": "Hand Launch" },
+      "Catapult": { "id": "LS_Catapult", "label": "Catapult Launcher" },
+      "PneumaticLauncher": { "id": "LS_Pneumatic", "label": "Pneumatic Launcher" },
+      "RocketAssisted": { "id": "LS_RATO", "label": "Rocket-Assisted Takeoff (RATO)" },
+      "RunwayTakeoff": { "id": "LS_Runway", "label": "Runway Takeoff" },
+      "VTOLLaunch": { "id": "LS_VTOL", "label": "Vertical Takeoff" },
+      "VehicleMounted": { "id": "LS_Vehicle", "label": "Vehicle-Mounted Launcher" },
+      "ShipDeck": { "id": "LS_Ship", "label": "Ship Deck Launch" },
+      "AirLaunch": { "id": "LS_Air", "label": "Air Launch" },
+      "TubeCanister": { "id": "LS_Tube", "label": "Tube/Canister Launch" },
+      "SubmarineLaunch": { "id": "LS_Sub", "label": "Submarine Launch" },
+      "Railgun": { "id": "LS_Railgun", "label": "Railgun Launch" }
+    },
+    "recovery_systems": {
+      "RunwayLanding": { "id": "RS_Runway", "label": "Runway Landing" },
+      "NetRecovery": { "id": "RS_Net", "label": "Net Recovery" },
+      "Parachute": { "id": "RS_Parachute", "label": "Parachute Recovery" },
+      "BellyLanding": { "id": "RS_Belly", "label": "Belly Landing" },
+      "VTOLLanding": { "id": "RS_VTOL", "label": "Vertical Landing (VTOL)" },
+      "ArrestedLanding": { "id": "RS_Arrested", "label": "Arrested Wire Landing" },
+      "WaterLanding": { "id": "RS_Water", "label": "Water Landing" },
+      "SkyhookCapture": { "id": "RS_Skyhook", "label": "Skyhook Capture" },
+      "Expendable": { "id": "RS_Expendable", "label": "Expendable (No Recovery)" },
+      "AutoRotation": { "id": "RS_AutoRot", "label": "Auto-Rotation Recovery" },
+      "AirbagRecovery": { "id": "RS_Airbag", "label": "Airbag Recovery" }
+    }
+  },
+  "performance_parameters": {
+    "MaximumSpeed_kmh": { "id": "P_MaxSpeed", "unit": "km/h", "label": "Maximum Speed" },
+    "CruiseSpeed_kmh": { "id": "P_CruiseSpeed", "unit": "km/h", "label": "Cruise Speed" },
+    "StallSpeed_kmh": { "id": "P_StallSpeed", "unit": "km/h", "label": "Stall Speed" },
+    "Endurance_h": { "id": "P_Endurance", "unit": "hours", "label": "Endurance" },
+    "CombatRadius_km": { "id": "P_CombatRadius", "unit": "km", "label": "Combat Radius" },
+    "FerryRange_km": { "id": "P_FerryRange", "unit": "km", "label": "Ferry Range" },
+    "OperationalCeiling_m": { "id": "P_OpCeiling", "unit": "m", "label": "Operational Ceiling" },
+    "ServiceCeiling_m": { "id": "P_SvcCeiling", "unit": "m", "label": "Service Ceiling" },
+    "PayloadCapacity_kg": { "id": "P_Payload", "unit": "kg", "label": "Payload Capacity" },
+    "MTOW_kg": { "id": "P_MTOW", "unit": "kg", "label": "Maximum Takeoff Weight (MTOW)" },
+    "EmptyWeight_kg": { "id": "P_EmptyWt", "unit": "kg", "label": "Empty Weight" },
+    "ClimbRate_m_s": { "id": "P_ClimbRate", "unit": "m/s", "label": "Climb Rate" },
+    "TurnRate_deg_s": { "id": "P_TurnRate", "unit": "deg/s", "label": "Turn Rate" },
+    "MaxG": { "id": "P_MaxG", "unit": "g", "label": "Maximum G-Force" },
+    "WindResistance_kmh": { "id": "P_WindRes", "unit": "km/h", "label": "Wind Resistance" },
+    "OperatingTemp_C": { "id": "P_OpTemp", "unit": "°C", "label": "Operating Temperature Range" },
+    "NoiseSignature_dB": { "id": "P_Noise", "unit": "dB", "label": "Noise Signature" },
+    "RadarCrossSection_m2": { "id": "P_RCS", "unit": "m²", "label": "Radar Cross Section (RCS)" },
+    "IRSignature_W_sr": { "id": "P_IR", "unit": "W/sr", "label": "Infrared Signature" }
+  },
+  "survivability": {
+    "LowObservable": { "id": "SV_LO", "label": "Low-Observable Design" },
+    "RCSReduction": { "id": "SV_RCS", "label": "Radar Cross Section Reduction" },
+    "IRSuppression": { "id": "SV_IR", "label": "Infrared Signature Suppression" },
+    "AcousticSuppression": { "id": "SV_Acoustic", "label": "Acoustic Signature Suppression" },
+    "Camouflage": { "id": "SV_Camo", "label": "Visual Camouflage" },
+    "Chaff": { "id": "SV_Chaff", "label": "Chaff Dispenser" },
+    "Flare": { "id": "SV_Flare", "label": "Flare Dispenser" },
+    "DIRCM": { "id": "SV_DIRCM", "label": "Directed Infrared Countermeasure (DIRCM)" },
+    "SelfProtectionJammer": { "id": "SV_SPJ", "label": "Self-Protection Jammer" },
+    "Decoy": { "id": "SV_Decoy", "label": "Active Decoy" },
+    "EMCON": { "id": "SV_EMCON", "label": "Emissions Control (EMCON)" },
+    "ArmorProtection": { "id": "SV_Armor", "label": "Armor/Structural Protection" },
+    "RedundantSystems": { "id": "SV_Redundancy", "label": "Redundant Systems" },
+    "FaultTolerance": { "id": "SV_FaultTol", "label": "Fault Tolerance Architecture" },
+    "AntiJamGPS": { "id": "SV_AJ_GPS", "label": "Anti-Jam GPS" },
+    "DRFM": { "id": "SV_DRFM", "label": "Digital RF Memory (DRFM) Protection" }
+  }
+}

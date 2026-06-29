@@ -1,0 +1,1262 @@
+{
+  "metadata": {
+    "worldspec_version": "1.0.0",
+    "scene_name": "Operation Iron Rain",
+    "uuid": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+    "author": "PhysWorldLM Example Generator",
+    "organization": "PhysWorldLM",
+    "created_at": "2026-06-28T00:00:00Z",
+    "modified_at": "2026-06-28T00:00:00Z",
+    "simulation_engine_hint": "omniverse",
+    "ontology_version": "1.0.0",
+    "coordinate_system": "NED",
+    "units": {
+      "length": "meters",
+      "mass": "kg",
+      "time": "seconds",
+      "angle": "degrees",
+      "temperature": "celsius"
+    },
+    "description": "Red nation launches a coordinated multi-vector precision missile strike — ballistic missiles, cruise missiles, loitering munitions, and decoy drones — against a Blue airbase complex in semi-desert terrain. Blue responds with a layered integrated air and missile defense (IAMD): AWACS cueing, AN/TPY-2 and AESA ground radars, Patriot PAC-3, NASAMS, CIWS, and fighter interceptors. Demonstrates the complete IAMD kill chain from launch detection through battle damage assessment. Flagship scenario for PhysWorldLM missile and guidance subsystems.",
+    "tags": ["missile-defense", "IAMD", "cruise-missile", "ballistic-missile", "EW", "layered-defense", "flagship-example"],
+    "classification_level": "unclassified",
+    "domain": "military",
+    "scenario_type": "wargame"
+  },
+
+  "world": {
+    "physics_config": {
+      "gravity": { "x": 0, "y": 0, "z": -9.81 },
+      "air_density_kg_m3": 1.103,
+      "speed_of_sound_mps": 340.3,
+      "physics_step_s": 0.005,
+      "substeps": 8,
+      "solver": "rk4",
+      "collision_detection": "continuous",
+      "enable_fluid": false,
+      "enable_soft_body": false,
+      "enable_cloth": false,
+      "enable_particles": true
+    },
+    "simulation_config": {
+      "duration_s": 10800,
+      "time_scale": 1.0,
+      "random_seed": 1337,
+      "deterministic": true,
+      "tick_rate_hz": 60,
+      "render_rate_hz": 30,
+      "sensor_rate_hz": 20,
+      "log_level": "info",
+      "enable_replay": true
+    },
+    "reference_frame": {
+      "origin_geo": { "latitude": 32.5, "longitude": 44.0, "altitude": 650 },
+      "up_axis": "Z",
+      "planet": "Earth"
+    }
+  },
+
+  "environment": {
+    "setting": "desert",
+    "time_of_day": {
+      "simulation_start_utc": "2026-06-28T02:00:00Z",
+      "time_of_day_s": 7200,
+      "day_of_year": 179,
+      "year": 2026
+    },
+    "weather": {
+      "temperature_c": 22.0,
+      "humidity_pct": 28,
+      "pressure_hpa": 936.0,
+      "wind": {
+        "speed_mps": 4.5,
+        "direction_deg": 270,
+        "gusts_mps": 7.0,
+        "shear_profile": [
+          { "altitude_m": 0,      "speed_mps": 4.5  },
+          { "altitude_m": 1000,   "speed_mps": 8.0  },
+          { "altitude_m": 5000,   "speed_mps": 15.0 },
+          { "altitude_m": 10000,  "speed_mps": 22.0 },
+          { "altitude_m": 20000,  "speed_mps": 30.0 }
+        ]
+      },
+      "precipitation": { "type": "none", "intensity_mm_hr": 0 },
+      "fog": { "enabled": false, "density": 0.0, "visibility_m": 30000 },
+      "cloud_cover_pct": 10,
+      "cloud_base_m": 3500,
+      "cloud_ceiling_m": 6000,
+      "visibility_km": 30,
+      "solar_irradiance_wm2": 0,
+      "sea_state": 0,
+      "wave_height_m": 0,
+      "dust_density": 0.05
+    },
+    "terrain": {
+      "dem_ref": "assets/terrain/semi_desert_hills.tif",
+      "tile_source": "https://tiles.physworldlm.org/terrain/middle_east_region",
+      "bounds": {
+        "southwest": { "latitude": 31.0, "longitude": 42.5 },
+        "northeast": { "latitude": 34.0, "longitude": 45.5 }
+      },
+      "features": [
+        { "feature_type": "runway",  "geometry_ref": "assets/features/iron_rain_runway.geojson",   "properties": { "name": "Alpha Airbase Runway 28L/10R", "length_m": 3500, "width_m": 60, "surface": "concrete" } },
+        { "feature_type": "airfield","geometry_ref": "assets/features/iron_rain_airbase.geojson",  "properties": { "name": "Alpha Airbase",  "icao": "OPAA" } },
+        { "feature_type": "road",    "geometry_ref": "assets/features/desert_msrs.geojson",        "properties": { "name": "Main supply routes" } },
+        { "feature_type": "custom",  "geometry_ref": "assets/features/ridge_lines.geojson",        "properties": { "name": "Zagros foothills ridge lines", "elevation_range_m": "500-1800" } }
+      ]
+    }
+  },
+
+  "organizations": [
+    {
+      "id": "org-blue-iamd-00000000-0000-0000-0000-000000000001",
+      "name": "Blue Integrated Air and Missile Defense Command",
+      "org_type": "corps",
+      "faction": "blue",
+      "callsign": "IRON SHIELD",
+      "country_code": "US",
+      "commander_id": "ent-blue-cmd-000000000000-0000-0000-0000-000000000001",
+      "child_org_ids": [
+        "org-blue-radar-00000000-0000-0000-0000-000000000002",
+        "org-blue-sam-000000000-0000-0000-0000-000000000003",
+        "org-blue-air-000000000-0000-0000-0000-000000000004"
+      ]
+    },
+    {
+      "id": "org-blue-radar-00000000-0000-0000-0000-000000000002",
+      "name": "Blue Sensor & EW Element",
+      "org_type": "battalion",
+      "faction": "blue",
+      "parent_org_id": "org-blue-iamd-00000000-0000-0000-0000-000000000001",
+      "entity_ids": [
+        "ent-blue-awacs-00000000-0000-0000-0000-000000000002",
+        "ent-blue-tpy2-000000000-0000-0000-0000-000000000003",
+        "ent-blue-fps132-00000000-0000-0000-0000-000000000004",
+        "ent-blue-aesa-000000000-0000-0000-0000-000000000005"
+      ]
+    },
+    {
+      "id": "org-blue-sam-000000000-0000-0000-0000-000000000003",
+      "name": "Blue Air Defense Artillery Element",
+      "org_type": "battalion",
+      "faction": "blue",
+      "parent_org_id": "org-blue-iamd-00000000-0000-0000-0000-000000000001",
+      "entity_ids": [
+        "ent-blue-pat-a-00000000-0000-0000-0000-000000000006",
+        "ent-blue-pat-b-00000000-0000-0000-0000-000000000007",
+        "ent-blue-nasams-0000000-0000-0000-0000-000000000008",
+        "ent-blue-ciws-000000000-0000-0000-0000-000000000009"
+      ]
+    },
+    {
+      "id": "org-blue-air-000000000-0000-0000-0000-000000000004",
+      "name": "Blue Fighter Interceptor Squadron",
+      "org_type": "squadron",
+      "faction": "blue",
+      "parent_org_id": "org-blue-iamd-00000000-0000-0000-0000-000000000001",
+      "entity_ids": [
+        "ent-blue-f35-000000000-0000-0000-0000-000000000010",
+        "ent-blue-f16-000000000-0000-0000-0000-000000000011"
+      ]
+    },
+    {
+      "id": "org-red-strike-0000000-0000-0000-0000-000000000005",
+      "name": "Red Missile Strike Group",
+      "org_type": "brigade",
+      "faction": "red",
+      "callsign": "IRON RAIN",
+      "country_code": "XX",
+      "entity_ids": [
+        "ent-red-tel-a-000000000-0000-0000-0000-000000000012",
+        "ent-red-tel-b-000000000-0000-0000-0000-000000000013",
+        "ent-red-tel-c-000000000-0000-0000-0000-000000000014",
+        "ent-red-ew-000000000000-0000-0000-0000-000000000015"
+      ]
+    }
+  ],
+
+  "entities": [
+
+    {
+      "id": "ent-blue-cmd-000000000000-0000-0000-0000-000000000001",
+      "name": "Blue IAMD Command Center",
+      "label": "IRON SHIELD HQ",
+      "entity_type": "building",
+      "subtype": "hardened_command_bunker",
+      "tags": ["blue", "command", "hardened", "HVT"],
+      "owner_faction": "blue",
+      "callsign": "IRON SHIELD",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.50, "longitude": 44.02, "altitude": 650 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 60, "y": 40, "z": 8 },
+        "asset_ref": "assets/structures/hardened_command_bunker.usd",
+        "collision_geometry": "exact"
+      },
+      "materials": [
+        {
+          "id": "mat-cmd-concrete-0000-0000-0000-0000-000000000001",
+          "name": "Reinforced Concrete",
+          "type": "concrete",
+          "density": 2400,
+          "hardness": 9.5,
+          "radar_cross_section": 120,
+          "ir_signature": 0.4,
+          "color": { "r": 0.55, "g": 0.50, "b": 0.44 },
+          "roughness": 0.9,
+          "metallic": 0.0
+        }
+      ],
+      "physics_body": { "body_type": "static", "mass": 500000, "collision_enabled": true },
+      "health": {
+        "hp_max": 5000,
+        "hp_current": 5000,
+        "armor_rating": 95,
+        "damage_model": "component_based",
+        "is_destroyed": false,
+        "destruction_effect": "vfx/structure_collapse_large"
+      },
+      "power": { "source_type": "diesel", "output_kw": 500, "fuel_type": "diesel", "fuel_capacity_liters": 50000, "fuel_remaining_liters": 50000, "endurance_hours": 720 },
+      "sensors": [
+        { "id": "sen-cmd-cam-00000000000-0000-0000-0000-000000000001", "name": "Perimeter EO Camera Array", "sensor_type": "camera_eo", "field_of_view": { "horizontal_deg": 360 }, "resolution": { "width": 1920, "height": 1080 }, "frame_rate_hz": 25, "enabled": true },
+        { "id": "sen-cmd-sigint-0000000000-0000-0000-0000-000000000002", "name": "SIGINT Receiver", "sensor_type": "sigint", "field_of_view": { "horizontal_deg": 360 }, "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-cmd-link16-000000000-0000-0000-0000-000000000001", "name": "Link 16 JTIDS", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true },
+        { "id": "com-cmd-satcom-00000000000-0000-0000-0000-000000000002", "name": "MILSATCOM", "comm_type": "radio_satcom", "range_km": 99999, "encryption": true, "enabled": true }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/command/iamd_fusion.bt",
+        "current_state": "monitoring",
+        "goals": [
+          { "goal_type": "sensor_fusion",         "priority": 1 },
+          { "goal_type": "threat_prioritization",  "priority": 2 },
+          { "goal_type": "fire_control_assignment","priority": 3 },
+          { "goal_type": "bda_collection",         "priority": 4 }
+        ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_tight",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-awacs-00000000-0000-0000-0000-000000000002",
+      "name": "E-3G Sentry AWACS",
+      "label": "MAGIC-01",
+      "entity_type": "aircraft",
+      "subtype": "E-3G",
+      "tags": ["blue", "AWACS", "AEW", "C2"],
+      "owner_faction": "blue",
+      "callsign": "MAGIC-01",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.8, "longitude": 43.5, "altitude": 9000 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "custom",
+        "dimensions": { "x": 46.6, "y": 44.4, "z": 12.7 },
+        "asset_ref": "assets/aircraft/e3g_sentry.usd"
+      },
+      "physics_body": { "body_type": "dynamic", "mass": 147400, "linear_velocity": { "x": 0, "y": 230, "z": 0 }, "drag_coefficient": 0.028, "buoyancy": false },
+      "health": { "hp_max": 500, "hp_current": 500, "armor_rating": 0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "JP-8", "fuel_capacity_liters": 90000, "fuel_remaining_liters": 90000, "endurance_hours": 10 },
+      "propulsion": { "propulsion_type": "jet", "max_speed_mps": 265, "max_altitude_m": 12500, "engine_count": 4 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/awacs/orbit_and_track.bt",
+        "current_state": "orbit",
+        "goals": [
+          { "goal_type": "racetrack_orbit",     "priority": 1 },
+          { "goal_type": "early_warning_radar",  "priority": 2 },
+          { "goal_type": "cue_interceptors",     "priority": 3 }
+        ],
+        "faction": "blue",
+        "autonomous_level": "assisted"
+      },
+      "sensors": [
+        {
+          "id": "sen-awacs-radar-00000000000-0000-0000-0000-000000000001",
+          "name": "AN/APY-2 Rotating Radar",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 360, "min_range_m": 500, "max_range_m": 550000 },
+          "frame_rate_hz": 0.2,
+          "enabled": true,
+          "custom_properties": { "mode": "pulse_doppler", "rotation_rpm": 6, "look_down_capable": true }
+        },
+        {
+          "id": "sen-awacs-esm-0000000000000-0000-0000-0000-000000000002",
+          "name": "AN/ALR-73 Passive Detection System",
+          "sensor_type": "elint",
+          "field_of_view": { "horizontal_deg": 360 },
+          "enabled": true
+        },
+        {
+          "id": "sen-awacs-iff-0000000000000-0000-0000-0000-000000000003",
+          "name": "IFF Interrogator Mode 5",
+          "sensor_type": "custom",
+          "enabled": true
+        }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-awacs-link16-000000000-0000-0000-0000-000000000001", "name": "Link 16 MIDS", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true },
+        { "id": "com-awacs-satcom-0000000000-0000-0000-0000-000000000002", "name": "SATCOM UHF", "comm_type": "radio_satcom", "range_km": 99999, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-tpy2-000000000-0000-0000-0000-000000000003",
+      "name": "AN/TPY-2 Forward-Based Radar",
+      "label": "SENTINEL-TPY2",
+      "entity_type": "radar_system",
+      "subtype": "AN/TPY-2",
+      "tags": ["blue", "radar", "ABM", "ballistic-missile-defense"],
+      "owner_faction": "blue",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.60, "longitude": 43.90, "altitude": 720 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 12, "y": 8, "z": 6 }, "asset_ref": "assets/structures/an_tpy2_radar.usd" },
+      "physics_body": { "body_type": "static", "mass": 80000, "collision_enabled": true },
+      "health": { "hp_max": 800, "hp_current": 800, "armor_rating": 15, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 900, "fuel_type": "diesel", "fuel_capacity_liters": 20000, "fuel_remaining_liters": 20000, "endurance_hours": 168 },
+      "sensors": [
+        {
+          "id": "sen-tpy2-aesa-00000000000-0000-0000-0000-000000000001",
+          "name": "AN/TPY-2 X-Band AESA",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 120, "vertical_deg": 80, "min_range_m": 1000, "max_range_m": 1500000 },
+          "frame_rate_hz": 1.0,
+          "enabled": true,
+          "custom_properties": { "mode": "forward_based_terminal", "frequency_ghz": 9.5, "track_capacity": 1000 }
+        }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-tpy2-link16-0000000000-0000-0000-0000-000000000001", "name": "Link 16", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "ai_behavior": {
+        "controller_type": "rule_based",
+        "current_state": "search_and_track",
+        "goals": [ { "goal_type": "ballistic_track", "priority": 1 }, { "goal_type": "cue_patriot", "priority": 2 } ],
+        "faction": "blue",
+        "autonomous_level": "fully_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-fps132-00000000-0000-0000-0000-000000000004",
+      "name": "AN/FPS-132 UEWR Early Warning Radar",
+      "label": "UEWR-ALPHA",
+      "entity_type": "radar_system",
+      "subtype": "AN/FPS-132",
+      "tags": ["blue", "radar", "EWR", "long-range"],
+      "owner_faction": "blue",
+      "transform": {
+        "geo_coordinate": { "latitude": 33.10, "longitude": 43.50, "altitude": 980 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 30, "y": 25, "z": 40 }, "asset_ref": "assets/structures/uewr_phased_array.usd" },
+      "physics_body": { "body_type": "static", "mass": 1200000, "collision_enabled": true },
+      "health": { "hp_max": 3000, "hp_current": 3000, "armor_rating": 40, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "external", "output_kw": 1800, "endurance_hours": 9999 },
+      "sensors": [
+        {
+          "id": "sen-fps132-uewr-0000000000-0000-0000-0000-000000000001",
+          "name": "UHF Phased Array Early Warning Radar",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 120, "vertical_deg": 85, "min_range_m": 5000, "max_range_m": 5500000 },
+          "frame_rate_hz": 0.5,
+          "enabled": true,
+          "custom_properties": { "frequency_mhz": 420, "track_capacity": 10000, "discrimination": true }
+        }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-fps132-satcom-000000000-0000-0000-0000-000000000001", "name": "MILSATCOM", "comm_type": "radio_satcom", "range_km": 99999, "encryption": true, "enabled": true }
+      ],
+      "ai_behavior": {
+        "controller_type": "rule_based",
+        "current_state": "continuous_search",
+        "goals": [ { "goal_type": "detect_ballistic_launch", "priority": 1 } ],
+        "faction": "blue",
+        "autonomous_level": "fully_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-aesa-000000000-0000-0000-0000-000000000005",
+      "name": "Long-Range AESA Ground Radar",
+      "label": "SENTINEL-GR",
+      "entity_type": "radar_system",
+      "subtype": "LRAESA",
+      "tags": ["blue", "radar", "AESA", "fire-control"],
+      "owner_faction": "blue",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.48, "longitude": 44.05, "altitude": 660 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 8, "y": 6, "z": 10 }, "asset_ref": "assets/structures/lraesa_ground_radar.usd" },
+      "physics_body": { "body_type": "static", "mass": 35000, "collision_enabled": true },
+      "health": { "hp_max": 600, "hp_current": 600, "armor_rating": 10, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 600, "fuel_type": "diesel", "fuel_capacity_liters": 10000, "fuel_remaining_liters": 10000, "endurance_hours": 120 },
+      "sensors": [
+        {
+          "id": "sen-aesa-gr-00000000000000-0000-0000-0000-000000000001",
+          "name": "S-Band AESA Fire Control Radar",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 90, "vertical_deg": 70, "min_range_m": 100, "max_range_m": 450000 },
+          "frame_rate_hz": 5.0,
+          "enabled": true,
+          "custom_properties": { "frequency_ghz": 3.0, "track_capacity": 200, "waveform": "LPI" }
+        },
+        {
+          "id": "sen-aesa-irst-0000000000000-0000-0000-0000-000000000002",
+          "name": "IRST/FLIR Co-boresighted",
+          "sensor_type": "camera_ir",
+          "field_of_view": { "horizontal_deg": 45, "vertical_deg": 30 },
+          "frame_rate_hz": 30,
+          "enabled": true
+        }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-aesa-gr-link16-000000000-0000-0000-0000-000000000001", "name": "Link 16", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "ai_behavior": {
+        "controller_type": "rule_based",
+        "current_state": "fire_control_track",
+        "goals": [ { "goal_type": "track_and_cue_sam", "priority": 1 } ],
+        "faction": "blue",
+        "autonomous_level": "fully_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-pat-a-00000000-0000-0000-0000-000000000006",
+      "name": "Patriot PAC-3 Battery Alpha",
+      "label": "PATRIOT-ALPHA",
+      "entity_type": "air_defense_system",
+      "subtype": "MIM-104F PAC-3",
+      "tags": ["blue", "SAM", "Patriot", "PAC-3", "AADS"],
+      "owner_faction": "blue",
+      "callsign": "PATRIOT-ALPHA",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.53, "longitude": 43.95, "altitude": 655 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 20, "y": 20, "z": 12 }, "asset_ref": "assets/structures/patriot_pac3_battery.usd" },
+      "physics_body": { "body_type": "static", "mass": 120000, "collision_enabled": true },
+      "health": { "hp_max": 1500, "hp_current": 1500, "armor_rating": 20, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 400, "fuel_type": "diesel", "fuel_capacity_liters": 8000, "fuel_remaining_liters": 8000, "endurance_hours": 96 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/aads/patriot_pac3_engage.bt",
+        "current_state": "standby",
+        "goals": [
+          { "goal_type": "receive_cue",    "priority": 1 },
+          { "goal_type": "track_threat",   "priority": 2 },
+          { "goal_type": "launch_pac3",    "priority": 3 },
+          { "goal_type": "reload",         "priority": 4 }
+        ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        {
+          "id": "sen-pat-a-msr-000000000000-0000-0000-0000-000000000001",
+          "name": "AN/MPQ-65 Multifunctional Radar",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 90, "vertical_deg": 80, "min_range_m": 100, "max_range_m": 180000 },
+          "frame_rate_hz": 10.0,
+          "enabled": true,
+          "custom_properties": { "mode": "track_and_fire_control", "frequency_ghz": 5.5 }
+        }
+      ],
+      "weapons": [
+        {
+          "id": "wpn-pat-a-pac3-0000000000-0000-0000-0000-000000000001",
+          "name": "PAC-3 MSE Interceptor (x16)",
+          "weapon_type": "missile",
+          "ammunition_count": 16,
+          "effective_range_m": 35000,
+          "max_range_m": 35000,
+          "warhead_type": "kinetic_hit_to_kill",
+          "guidance_type": "active_radar",
+          "reload_time_s": 180,
+          "state": "ready",
+          "enabled": true
+        }
+      ],
+      "communications": [
+        { "id": "com-pat-a-link16-00000000000-0000-0000-0000-000000000001", "name": "Link 16", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-pat-b-00000000-0000-0000-0000-000000000007",
+      "name": "Patriot PAC-3 Battery Bravo",
+      "label": "PATRIOT-BRAVO",
+      "entity_type": "air_defense_system",
+      "subtype": "MIM-104F PAC-3",
+      "tags": ["blue", "SAM", "Patriot", "PAC-3"],
+      "owner_faction": "blue",
+      "callsign": "PATRIOT-BRAVO",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.47, "longitude": 44.08, "altitude": 645 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 20, "y": 20, "z": 12 }, "asset_ref": "assets/structures/patriot_pac3_battery.usd" },
+      "physics_body": { "body_type": "static", "mass": 120000, "collision_enabled": true },
+      "health": { "hp_max": 1500, "hp_current": 1500, "armor_rating": 20, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 400, "fuel_type": "diesel", "fuel_capacity_liters": 8000, "fuel_remaining_liters": 8000, "endurance_hours": 96 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/aads/patriot_pac3_engage.bt",
+        "current_state": "standby",
+        "goals": [
+          { "goal_type": "receive_cue", "priority": 1 },
+          { "goal_type": "launch_pac3", "priority": 2 }
+        ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        {
+          "id": "sen-pat-b-msr-000000000000-0000-0000-0000-000000000001",
+          "name": "AN/MPQ-65 MSR",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 90, "vertical_deg": 80, "max_range_m": 180000 },
+          "frame_rate_hz": 10.0,
+          "enabled": true
+        }
+      ],
+      "weapons": [
+        { "id": "wpn-pat-b-pac3-0000000000-0000-0000-0000-000000000001", "name": "PAC-3 MSE (x16)", "weapon_type": "missile", "ammunition_count": 16, "effective_range_m": 35000, "warhead_type": "kinetic_hit_to_kill", "guidance_type": "active_radar", "reload_time_s": 180, "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-pat-b-link16-00000000000-0000-0000-0000-000000000001", "name": "Link 16", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-nasams-0000000-0000-0000-0000-000000000008",
+      "name": "NASAMS Battery Gamma",
+      "label": "NASAMS-GAMMA",
+      "entity_type": "air_defense_system",
+      "subtype": "NASAMS-3",
+      "tags": ["blue", "SAM", "NASAMS", "medium-range"],
+      "owner_faction": "blue",
+      "callsign": "NASAMS-GAMMA",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.51, "longitude": 44.00, "altitude": 652 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 15, "y": 10, "z": 8 }, "asset_ref": "assets/structures/nasams3_battery.usd" },
+      "physics_body": { "body_type": "static", "mass": 30000, "collision_enabled": true },
+      "health": { "hp_max": 700, "hp_current": 700, "armor_rating": 10, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 150, "fuel_type": "diesel", "fuel_capacity_liters": 4000, "fuel_remaining_liters": 4000, "endurance_hours": 96 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/aads/nasams_engage.bt",
+        "current_state": "standby",
+        "goals": [
+          { "goal_type": "engage_cruise_missiles", "priority": 1 },
+          { "goal_type": "engage_uav_swarm",       "priority": 2 }
+        ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        {
+          "id": "sen-nasams-aesa-00000000000-0000-0000-0000-000000000001",
+          "name": "AN/TPS-80 G/ATOR",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 360, "min_range_m": 100, "max_range_m": 400000 },
+          "frame_rate_hz": 2.0,
+          "enabled": true,
+          "custom_properties": { "mode": "gallium_nitride_aesa", "track_capacity": 600 }
+        }
+      ],
+      "weapons": [
+        { "id": "wpn-nasams-aim120-000000000-0000-0000-0000-000000000001", "name": "AIM-120C AMRAAM (x24)", "weapon_type": "missile", "ammunition_count": 24, "effective_range_m": 50000, "warhead_type": "blast_fragmentation", "guidance_type": "active_radar", "reload_time_s": 120, "state": "ready", "enabled": true },
+        { "id": "wpn-nasams-aim9x-0000000000-0000-0000-0000-000000000002", "name": "AIM-9X Sidewinder (x12)", "weapon_type": "missile", "ammunition_count": 12, "effective_range_m": 26000, "warhead_type": "blast_fragmentation", "guidance_type": "ir_homing", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-nasams-link16-00000000000-0000-0000-0000-000000000001", "name": "Link 16", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-ciws-000000000-0000-0000-0000-000000000009",
+      "name": "Centurion C-RAM System",
+      "label": "CENTURION-1",
+      "entity_type": "air_defense_system",
+      "subtype": "C-RAM Centurion",
+      "tags": ["blue", "CIWS", "CRAM", "terminal-defense"],
+      "owner_faction": "blue",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.50, "longitude": 44.01, "altitude": 651 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 4, "y": 4, "z": 5 }, "asset_ref": "assets/structures/centurion_cram.usd" },
+      "physics_body": { "body_type": "static", "mass": 12000, "collision_enabled": true },
+      "health": { "hp_max": 300, "hp_current": 300, "armor_rating": 5, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "external", "output_kw": 30, "endurance_hours": 9999 },
+      "ai_behavior": {
+        "controller_type": "rule_based",
+        "current_state": "auto_track_engage",
+        "goals": [ { "goal_type": "intercept_leakers", "priority": 1 } ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "fully_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-ciws-radar-000000000000-0000-0000-0000-000000000001", "name": "AN/TPQ-36 Fire Control Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 5000 }, "frame_rate_hz": 60, "enabled": true },
+        { "id": "sen-ciws-ir-00000000000000-0000-0000-0000-000000000002", "name": "FLIR Terminal", "sensor_type": "camera_ir", "field_of_view": { "horizontal_deg": 10, "vertical_deg": 10 }, "frame_rate_hz": 60, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-ciws-20mm-00000000000000-0000-0000-0000-000000000001", "name": "M168 20mm Vulcan Gatling", "weapon_type": "cannon", "ammunition_count": 4800, "rate_of_fire_rpm": 3000, "muzzle_velocity_mps": 1030, "effective_range_m": 1500, "max_range_m": 2000, "guidance_type": "radar_guided", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-ciws-radio-00000000000-0000-0000-0000-000000000001", "name": "UHF Radio", "comm_type": "radio_uhf", "range_km": 50, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-f35-000000000-0000-0000-0000-000000000010",
+      "name": "F-35A Lightning II — Interceptor",
+      "label": "VIPER-01",
+      "entity_type": "aircraft",
+      "subtype": "F-35A",
+      "tags": ["blue", "fighter", "interceptor", "stealth"],
+      "owner_faction": "blue",
+      "callsign": "VIPER-01",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.50, "longitude": 44.00, "altitude": 665 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 15.7, "y": 10.7, "z": 4.4 }, "asset_ref": "assets/aircraft/f35a_lightning.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 29257, "linear_velocity": { "x": 0, "y": 0, "z": 0 }, "drag_coefficient": 0.018, "lift_coefficient": 2.0, "buoyancy": false },
+      "health": { "hp_max": 500, "hp_current": 500, "armor_rating": 5, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "JP-8", "fuel_capacity_liters": 8382, "fuel_remaining_liters": 8382, "endurance_hours": 2.5 },
+      "propulsion": { "propulsion_type": "jet", "max_speed_mps": 590, "max_altitude_m": 15240, "acceleration_mps2": 20.0, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/fighter/intercept_cruise.bt",
+        "current_state": "on_deck",
+        "goals": [
+          { "goal_type": "scramble_on_cue", "priority": 1 },
+          { "goal_type": "intercept_cruise_missile", "priority": 2 },
+          { "goal_type": "rtb", "priority": 3 }
+        ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "assisted"
+      },
+      "sensors": [
+        { "id": "sen-f35-apg81-00000000000-0000-0000-0000-000000000001", "name": "AN/APG-81 AESA", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 120, "vertical_deg": 60, "max_range_m": 180000 }, "frame_rate_hz": 20, "enabled": true },
+        { "id": "sen-f35-eodas-0000000000-0000-0000-0000-000000000002", "name": "AN/AAQ-40 EODAS", "sensor_type": "camera_ir", "field_of_view": { "horizontal_deg": 360, "vertical_deg": 180 }, "frame_rate_hz": 30, "enabled": true },
+        { "id": "sen-f35-eots-00000000000-0000-0000-0000-000000000003", "name": "AN/AAQ-37 EOTS", "sensor_type": "camera_eo", "resolution": { "width": 4096, "height": 2160 }, "frame_rate_hz": 30, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-f35-aim120-000000000000-0000-0000-0000-000000000001", "name": "AIM-120D AMRAAM (x4)", "weapon_type": "missile", "ammunition_count": 4, "effective_range_m": 180000, "guidance_type": "active_radar", "state": "ready", "enabled": true },
+        { "id": "wpn-f35-aim9x-0000000000000-0000-0000-0000-000000000002", "name": "AIM-9X Sidewinder (x2)", "weapon_type": "missile", "ammunition_count": 2, "effective_range_m": 26000, "guidance_type": "ir_homing", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-f35-link16-0000000000000-0000-0000-0000-000000000001", "name": "Link 16 MIDS", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "inactive", "visibility": "hidden", "is_active": false, "is_collidable": true, "on_ground": true }
+    },
+
+    {
+      "id": "ent-blue-f16-000000000-0000-0000-0000-000000000011",
+      "name": "F-16C Fighting Falcon — Interceptor",
+      "label": "VIPER-02",
+      "entity_type": "aircraft",
+      "subtype": "F-16C Block 50",
+      "tags": ["blue", "fighter", "interceptor"],
+      "owner_faction": "blue",
+      "callsign": "VIPER-02",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.50, "longitude": 44.00, "altitude": 665 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 15.0, "y": 9.5, "z": 5.1 }, "asset_ref": "assets/aircraft/f16c_falcon.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 19000, "linear_velocity": { "x": 0, "y": 0, "z": 0 }, "drag_coefficient": 0.020, "lift_coefficient": 1.9, "buoyancy": false },
+      "health": { "hp_max": 400, "hp_current": 400, "armor_rating": 3, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "JP-8", "fuel_capacity_liters": 3986, "fuel_remaining_liters": 3986, "endurance_hours": 2.0 },
+      "propulsion": { "propulsion_type": "jet", "max_speed_mps": 605, "max_altitude_m": 15240, "acceleration_mps2": 18.0, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/fighter/intercept_cruise.bt",
+        "current_state": "on_deck",
+        "goals": [
+          { "goal_type": "scramble_on_cue",           "priority": 1 },
+          { "goal_type": "intercept_cruise_missile",   "priority": 2 },
+          { "goal_type": "rtb",                        "priority": 3 }
+        ],
+        "faction": "blue",
+        "autonomous_level": "assisted"
+      },
+      "sensors": [
+        { "id": "sen-f16-apg68-0000000000000-0000-0000-0000-000000000001", "name": "AN/APG-68V9 Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 120, "max_range_m": 130000 }, "enabled": true },
+        { "id": "sen-f16-hmcs-00000000000000-0000-0000-0000-000000000002", "name": "HMCS", "sensor_type": "camera_eo", "field_of_view": { "horizontal_deg": 200, "vertical_deg": 100 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-f16-aim120-000000000000000-0000-0000-0000-000000000001", "name": "AIM-120C (x4)", "weapon_type": "missile", "ammunition_count": 4, "effective_range_m": 105000, "guidance_type": "active_radar", "state": "ready", "enabled": true },
+        { "id": "wpn-f16-aim9x-0000000000000000-0000-0000-0000-000000000002", "name": "AIM-9X (x2)",  "weapon_type": "missile", "ammunition_count": 2, "effective_range_m": 26000,  "guidance_type": "ir_homing",    "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-f16-link16-000000000000000-0000-0000-0000-000000000001", "name": "Link 16 MIDS", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "inactive", "visibility": "hidden", "is_active": false, "is_collidable": true, "on_ground": true }
+    },
+
+    {
+      "id": "ent-red-tel-a-000000000-0000-0000-0000-000000000012",
+      "name": "Red TEL Alpha — Ballistic Missile Launcher",
+      "label": "STORM-TEL-A",
+      "entity_type": "ground_vehicle",
+      "subtype": "TEL-MRBM",
+      "tags": ["red", "TEL", "ballistic-missile", "HVT"],
+      "owner_faction": "red",
+      "callsign": "STORM-TEL-A",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.20, "longitude": 46.80, "altitude": 1100 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 22, "y": 4, "z": 4 }, "asset_ref": "assets/vehicles/tel_mrbm.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 90000, "linear_velocity": { "x": 0, "y": 0, "z": 0 }, "drag_coefficient": 0.9, "buoyancy": false },
+      "health": { "hp_max": 800, "hp_current": 800, "armor_rating": 20, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "diesel", "fuel_capacity_liters": 3000, "fuel_remaining_liters": 3000, "endurance_hours": 48 },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 22, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "emplaced",
+        "goals": [
+          { "goal_type": "erect_missile",   "priority": 1 },
+          { "goal_type": "launch_salvo",    "priority": 2 },
+          { "goal_type": "displace",        "priority": 3 }
+        ],
+        "faction": "red",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "semi_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-tel-a-gps-000000000000-0000-0000-0000-000000000001", "name": "GPS/INS Navigation", "sensor_type": "gps", "enabled": true }
+      ],
+      "weapons": [
+        {
+          "id": "wpn-tel-a-mrbm-0000000000-0000-0000-0000-000000000001",
+          "name": "Iskander-M MRBM (x2)",
+          "weapon_type": "missile",
+          "ammunition_count": 2,
+          "effective_range_m": 500000,
+          "max_range_m": 500000,
+          "warhead_type": "high_explosive_penetrator",
+          "guidance_type": "gps_inertial",
+          "state": "ready",
+          "enabled": true,
+          "custom_properties": { "cep_m": 10, "maneuver_capability": true, "decoy_count": 4 }
+        }
+      ],
+      "communications": [
+        { "id": "com-tel-a-radio-000000000000-0000-0000-0000-000000000001", "name": "Encrypted UHF Radio", "comm_type": "radio_uhf", "range_km": 300, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true, "emplaced": true }
+    },
+
+    {
+      "id": "ent-red-tel-b-000000000-0000-0000-0000-000000000013",
+      "name": "Red TEL Bravo — Cruise Missile Launcher",
+      "label": "STORM-TEL-B",
+      "entity_type": "ground_vehicle",
+      "subtype": "TEL-LACM",
+      "tags": ["red", "TEL", "cruise-missile"],
+      "owner_faction": "red",
+      "callsign": "STORM-TEL-B",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.00, "longitude": 46.30, "altitude": 950 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 18, "y": 4, "z": 4 }, "asset_ref": "assets/vehicles/tel_lacm.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 40000, "drag_coefficient": 0.9, "buoyancy": false },
+      "health": { "hp_max": 600, "hp_current": 600, "armor_rating": 15, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "diesel", "fuel_capacity_liters": 2000, "fuel_remaining_liters": 2000, "endurance_hours": 48 },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 20, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "emplaced",
+        "goals": [
+          { "goal_type": "launch_salvo", "priority": 1 },
+          { "goal_type": "displace",     "priority": 2 }
+        ],
+        "faction": "red",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "semi_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-tel-b-gps-000000000000-0000-0000-0000-000000000001", "name": "GPS Navigation", "sensor_type": "gps", "enabled": true }
+      ],
+      "weapons": [
+        {
+          "id": "wpn-tel-b-lacm-0000000000-0000-0000-0000-000000000001",
+          "name": "Land-Attack Cruise Missile (x4)",
+          "weapon_type": "missile",
+          "ammunition_count": 4,
+          "effective_range_m": 1500000,
+          "max_range_m": 1500000,
+          "warhead_type": "high_explosive_blast",
+          "guidance_type": "gps_inertial",
+          "state": "ready",
+          "enabled": true,
+          "custom_properties": {
+            "cep_m": 5,
+            "terrain_following": true,
+            "tercom_enabled": true,
+            "dsmac_enabled": true,
+            "cruise_altitude_m": 30,
+            "cruise_speed_mps": 250
+          }
+        }
+      ],
+      "communications": [
+        { "id": "com-tel-b-radio-000000000000-0000-0000-0000-000000000001", "name": "Encrypted UHF Radio", "comm_type": "radio_uhf", "range_km": 300, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true, "emplaced": true }
+    },
+
+    {
+      "id": "ent-red-tel-c-000000000-0000-0000-0000-000000000014",
+      "name": "Red TEL Charlie — Loitering Munition / Decoy Launcher",
+      "label": "STORM-TEL-C",
+      "entity_type": "ground_vehicle",
+      "subtype": "TEL-UAV-LM",
+      "tags": ["red", "TEL", "loitering-munition", "decoy-drone"],
+      "owner_faction": "red",
+      "callsign": "STORM-TEL-C",
+      "transform": {
+        "geo_coordinate": { "latitude": 33.80, "longitude": 46.10, "altitude": 870 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 10, "y": 3, "z": 3 }, "asset_ref": "assets/vehicles/tel_uav_lm.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 12000, "drag_coefficient": 0.9, "buoyancy": false },
+      "health": { "hp_max": 300, "hp_current": 300, "armor_rating": 5, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "diesel", "fuel_capacity_liters": 500, "fuel_remaining_liters": 500, "endurance_hours": 24 },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 18, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "emplaced",
+        "goals": [ { "goal_type": "launch_swarm", "priority": 1 } ],
+        "faction": "red",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "semi_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-tel-c-gps-000000000000-0000-0000-0000-000000000001", "name": "GPS Navigation", "sensor_type": "gps", "enabled": true }
+      ],
+      "weapons": [
+        {
+          "id": "wpn-tel-c-lm-00000000000-0000-0000-0000-000000000001",
+          "name": "Loitering Munition (x6)",
+          "weapon_type": "loitering_munition",
+          "ammunition_count": 6,
+          "effective_range_m": 40000,
+          "warhead_type": "shaped_charge",
+          "guidance_type": "ir_homing",
+          "state": "ready",
+          "enabled": true
+        },
+        {
+          "id": "wpn-tel-c-decoy-0000000000-0000-0000-0000-000000000002",
+          "name": "Radar Decoy Drone (x8)",
+          "weapon_type": "custom",
+          "ammunition_count": 8,
+          "state": "ready",
+          "enabled": true,
+          "custom_properties": { "rcs_amplification_factor": 10.0, "flight_duration_s": 900 }
+        }
+      ],
+      "communications": [
+        { "id": "com-tel-c-radio-000000000000-0000-0000-0000-000000000001", "name": "UHF Radio", "comm_type": "radio_uhf", "range_km": 150, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-red-ew-000000000000-0000-0000-0000-000000000015",
+      "name": "Red EW Vehicle — GPS/Radar Jammer",
+      "label": "STORM-EW",
+      "entity_type": "ground_vehicle",
+      "subtype": "EW-Jammer",
+      "tags": ["red", "EW", "jammer", "GPS-denial"],
+      "owner_faction": "red",
+      "callsign": "STORM-EW",
+      "transform": {
+        "geo_coordinate": { "latitude": 33.90, "longitude": 46.50, "altitude": 920 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 8, "y": 3, "z": 3 }, "asset_ref": "assets/vehicles/ew_jammer_vehicle.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 8000, "drag_coefficient": 0.9, "buoyancy": false },
+      "health": { "hp_max": 300, "hp_current": 300, "armor_rating": 5, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 200, "fuel_type": "diesel", "fuel_capacity_liters": 600, "fuel_remaining_liters": 600, "endurance_hours": 12 },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 18, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "standby",
+        "goals": [
+          { "goal_type": "gps_jamming",       "priority": 1 },
+          { "goal_type": "radar_jamming",      "priority": 2 },
+          { "goal_type": "drfm_spoofing",      "priority": 3 },
+          { "goal_type": "comms_jamming",      "priority": 4 }
+        ],
+        "faction": "red",
+        "autonomous_level": "semi_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-ew-esm-000000000000000-0000-0000-0000-000000000001", "name": "ESM Receiver", "sensor_type": "elint", "field_of_view": { "horizontal_deg": 360 }, "enabled": true }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-ew-radio-0000000000000-0000-0000-0000-000000000001", "name": "Encrypted UHF Radio", "comm_type": "radio_uhf", "range_km": 200, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "custom_extensions": {
+        "ew_systems": [
+          { "type": "gps_jammer",    "power_kw": 2.0,  "range_km": 80,  "frequencies_mhz": [1575.42, 1227.60] },
+          { "type": "radar_jammer",  "power_kw": 10.0, "range_km": 200, "bands": ["S", "X"] },
+          { "type": "drfm_spoofer",  "power_kw": 5.0,  "range_km": 50  },
+          { "type": "comms_jammer",  "power_kw": 3.0,  "range_km": 100, "bands": ["VHF", "UHF"] }
+        ]
+      }
+    },
+
+    {
+      "id": "ent-blue-airbase-000000000-0000-0000-0000-000000000016",
+      "name": "Alpha Airbase Complex",
+      "label": "ALPHA BASE",
+      "entity_type": "structure",
+      "subtype": "military_airbase",
+      "tags": ["blue", "airbase", "HVT", "infrastructure"],
+      "owner_faction": "blue",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.50, "longitude": 44.00, "altitude": 650 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 4000, "y": 3000, "z": 20 }, "asset_ref": "assets/structures/airbase_complex.usd" },
+      "physics_body": { "body_type": "static", "mass": 500000000, "collision_enabled": true },
+      "health": { "hp_max": 50000, "hp_current": 50000, "armor_rating": 10, "damage_model": "component_based", "is_destroyed": false },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "child_ids": [
+        "ent-blue-runway-00000000-0000-0000-0000-000000000017",
+        "ent-blue-fuel-000000000-0000-0000-0000-000000000018"
+      ]
+    },
+
+    {
+      "id": "ent-blue-runway-00000000-0000-0000-0000-000000000017",
+      "name": "Runway 28L/10R",
+      "label": "RWY 28L",
+      "entity_type": "structure",
+      "subtype": "runway",
+      "tags": ["blue", "runway", "HVT"],
+      "owner_faction": "blue",
+      "parent_id": "ent-blue-airbase-000000000-0000-0000-0000-000000000016",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.500, "longitude": 44.005, "altitude": 650 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 3500, "y": 60, "z": 0.5 }, "asset_ref": "assets/structures/concrete_runway.usd", "collision_geometry": "exact" },
+      "physics_body": { "body_type": "static", "mass": 50000000, "collision_enabled": true },
+      "health": { "hp_max": 8000, "hp_current": 8000, "armor_rating": 5, "damage_model": "component_based", "is_destroyed": false, "destruction_effect": "vfx/runway_cratered" },
+      "materials": [
+        { "id": "mat-rwy-concrete-000000000-0000-0000-0000-000000000001", "name": "Airfield Concrete", "type": "concrete", "density": 2300, "hardness": 8.0, "radar_cross_section": 800, "color": { "r": 0.6, "g": 0.6, "b": 0.58 }, "roughness": 0.8 }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-fuel-000000000-0000-0000-0000-000000000018",
+      "name": "Fuel Depot",
+      "label": "FUEL DEPOT ALPHA",
+      "entity_type": "structure",
+      "subtype": "fuel_storage",
+      "tags": ["blue", "fuel", "HVT", "volatile"],
+      "owner_faction": "blue",
+      "parent_id": "ent-blue-airbase-000000000-0000-0000-0000-000000000016",
+      "transform": {
+        "geo_coordinate": { "latitude": 32.495, "longitude": 43.990, "altitude": 650 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "cylinder", "radius": 15, "height": 10, "asset_ref": "assets/structures/fuel_tank_farm.usd" },
+      "physics_body": { "body_type": "static", "mass": 500000, "collision_enabled": true },
+      "health": { "hp_max": 1000, "hp_current": 1000, "armor_rating": 2, "damage_model": "simple_hp", "is_destroyed": false, "destruction_effect": "vfx/fuel_depot_explosion" },
+      "materials": [
+        { "id": "mat-fuel-metal-000000000000-0000-0000-0000-000000000001", "name": "Fuel Tank Steel", "type": "metal", "density": 7800, "radar_cross_section": 500, "ir_signature": 0.9, "color": { "r": 0.7, "g": 0.65, "b": 0.55 } }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true, "fuel_volume_liters": 4000000 }
+    }
+
+  ],
+
+  "missions": [
+    {
+      "id": "msn-red-strike-000000000000-0000-0000-0000-000000000001",
+      "name": "Operation Iron Rain — Multi-Vector Strike",
+      "mission_type": "strike",
+      "assigned_entity_ids": [
+        "ent-red-tel-a-000000000-0000-0000-0000-000000000012",
+        "ent-red-tel-b-000000000-0000-0000-0000-000000000013",
+        "ent-red-tel-c-000000000-0000-0000-0000-000000000014",
+        "ent-red-ew-000000000000-0000-0000-0000-000000000015"
+      ],
+      "primary_objective": "Destroy Alpha Airbase runway and fuel depot to deny Blue air operations.",
+      "secondary_objectives": [
+        "Destroy or suppress IAMD radar nodes",
+        "Destroy hardened command bunker",
+        "Exhaust interceptor magazines via decoy saturation"
+      ],
+      "area_of_operation": {
+        "center": { "latitude": 32.50, "longitude": 44.00 },
+        "radius_km": 300
+      },
+      "roe": "weapons_free",
+      "status": "active",
+      "priority": 1
+    },
+    {
+      "id": "msn-blue-iamd-000000000000-0000-0000-0000-000000000002",
+      "name": "Layered IAMD — Detect, Track, Intercept",
+      "mission_type": "defend",
+      "assigned_entity_ids": [
+        "ent-blue-cmd-000000000000-0000-0000-0000-000000000001",
+        "ent-blue-awacs-00000000-0000-0000-0000-000000000002",
+        "ent-blue-tpy2-000000000-0000-0000-0000-000000000003",
+        "ent-blue-fps132-00000000-0000-0000-0000-000000000004",
+        "ent-blue-aesa-000000000-0000-0000-0000-000000000005",
+        "ent-blue-pat-a-00000000-0000-0000-0000-000000000006",
+        "ent-blue-pat-b-00000000-0000-0000-0000-000000000007",
+        "ent-blue-nasams-0000000-0000-0000-0000-000000000008",
+        "ent-blue-ciws-000000000-0000-0000-0000-000000000009",
+        "ent-blue-f35-000000000-0000-0000-0000-000000000010",
+        "ent-blue-f16-000000000-0000-0000-0000-000000000011"
+      ],
+      "primary_objective": "Detect all inbound threats; intercept ≥90% of missiles before impact.",
+      "secondary_objectives": [
+        "Protect runway from cratering",
+        "Keep IAMD radar nodes operational",
+        "Conduct BDA post-engagement"
+      ],
+      "area_of_operation": {
+        "center": { "latitude": 32.50, "longitude": 44.00 },
+        "radius_km": 400
+      },
+      "roe": "weapons_free",
+      "status": "active",
+      "priority": 1
+    },
+    {
+      "id": "msn-blue-bda-000000000000-0000-0000-0000-000000000003",
+      "name": "Battle Damage Assessment",
+      "mission_type": "isr",
+      "assigned_entity_ids": [
+        "ent-blue-f35-000000000-0000-0000-0000-000000000010"
+      ],
+      "primary_objective": "Confirm airbase status, identify battle damage, support repair prioritization.",
+      "area_of_operation": {
+        "center": { "latitude": 32.50, "longitude": 44.00 },
+        "radius_km": 20
+      },
+      "roe": "observe_only",
+      "status": "planned",
+      "priority": 3
+    }
+  ],
+
+  "timeline": [
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000001", "time_s": 0,    "action_type": "trigger_event",  "label": "Simulation starts — AWACS on orbit, radars scanning", "parameters": { "event": "sim_start" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000002", "time_s": 1200, "action_type": "trigger_event",  "label": "Red TEL-A erects MRBM — pre-launch emulation", "parameters": { "entity": "ent-red-tel-a-000000000-0000-0000-0000-000000000012" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000003", "time_s": 1500, "action_type": "trigger_event",  "label": "Red EW activates GPS jammer and DRFM spoofer", "parameters": { "entity": "ent-red-ew-000000000000-0000-0000-0000-000000000015", "event_type": "custom", "custom_event": "ew_jamming_start" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000004", "time_s": 1800, "action_type": "trigger_event",  "label": "TEL-C launches 8 decoy drones to saturate radar picture", "parameters": { "source": "ent-red-tel-c-000000000-0000-0000-0000-000000000014", "event_type": "spawn", "asset": "decoy_drone", "count": 8 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000005", "time_s": 2400, "action_type": "trigger_event",  "label": "TEL-A launches 2 Iskander-M MRBM", "parameters": { "source": "ent-red-tel-a-000000000-0000-0000-0000-000000000012", "event_type": "missile_launch", "count": 2, "target_geo": { "latitude": 32.50, "longitude": 44.00 } } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000006", "time_s": 2420, "action_type": "trigger_event",  "label": "UEWR detects MRBM launch plume at 80km apogee", "parameters": { "source": "ent-blue-fps132-00000000-0000-0000-0000-000000000004", "event_type": "detection" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000007", "time_s": 2430, "action_type": "trigger_event",  "label": "TPY-2 acquires ballistic track — fires cueing data to Patriot Alpha", "parameters": { "source": "ent-blue-tpy2-000000000-0000-0000-0000-000000000003", "event_type": "radar_lock" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000008", "time_s": 2440, "action_type": "trigger_event",  "label": "Threat classification complete — TBM confirmed", "parameters": { "event_type": "target_acquired" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000009", "time_s": 2500, "action_type": "trigger_event",  "label": "Patriot Alpha fires 2x PAC-3 MSE vs first MRBM", "parameters": { "source": "ent-blue-pat-a-00000000-0000-0000-0000-000000000006", "event_type": "missile_launch", "count": 2 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000010", "time_s": 2510, "action_type": "trigger_event",  "label": "Patriot Bravo fires 2x PAC-3 MSE vs second MRBM", "parameters": { "source": "ent-blue-pat-b-00000000-0000-0000-0000-000000000007", "event_type": "missile_launch", "count": 2 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000011", "time_s": 2700, "action_type": "trigger_event",  "label": "Both MRBMs intercepted at 40km altitude — kinetic kill", "parameters": { "event_type": "missile_impact", "result": "intercept", "altitude_m": 40000 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000012", "time_s": 3000, "action_type": "trigger_event",  "label": "TEL-B launches 4 cruise missiles — terrain-following mode", "parameters": { "source": "ent-red-tel-b-000000000-0000-0000-0000-000000000013", "event_type": "missile_launch", "count": 4, "cruise_altitude_m": 30 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000013", "time_s": 3600, "action_type": "trigger_event",  "label": "AWACS detects cruise missiles at horizon — cues interceptors", "parameters": { "source": "ent-blue-awacs-00000000-0000-0000-0000-000000000002", "event_type": "detection" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000014", "time_s": 3620, "action_type": "spawn_entity",   "label": "Scramble F-35A and F-16C", "entity_id": "ent-blue-f35-000000000-0000-0000-0000-000000000010" },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000015", "time_s": 3625, "action_type": "spawn_entity",   "label": "Scramble F-16C", "entity_id": "ent-blue-f16-000000000-0000-0000-0000-000000000011" },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000016", "time_s": 4200, "action_type": "trigger_event",  "label": "NASAMS fires 6x AIM-120 at 3 cruise missiles", "parameters": { "source": "ent-blue-nasams-0000000-0000-0000-0000-000000000008", "event_type": "missile_launch", "count": 6 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000017", "time_s": 4250, "action_type": "trigger_event",  "label": "EW DRFM jammer disrupts NASAMS seeker on one round", "parameters": { "event_type": "custom", "custom_event": "ew_seeker_disruption", "intercept_result": "miss" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000018", "time_s": 4260, "action_type": "trigger_event",  "label": "3 cruise missiles intercepted by NASAMS; 1 leaker continues", "parameters": { "event_type": "missile_impact", "result": "intercept_partial", "killed": 3, "leakers": 1 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000019", "time_s": 4270, "action_type": "trigger_event",  "label": "F-35A fires AIM-120D at leaker cruise missile", "parameters": { "source": "ent-blue-f35-000000000-0000-0000-0000-000000000010", "event_type": "fire" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000020", "time_s": 4290, "action_type": "trigger_event",  "label": "F-35A intercepts leaker — AIM-120D direct hit", "parameters": { "event_type": "missile_impact", "result": "intercept" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000021", "time_s": 4500, "action_type": "trigger_event",  "label": "TEL-C launches 6 loitering munitions on airbase", "parameters": { "source": "ent-red-tel-c-000000000-0000-0000-0000-000000000014", "event_type": "missile_launch", "count": 6, "target_geo": { "latitude": 32.50, "longitude": 44.00 } } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000022", "time_s": 4800, "action_type": "trigger_event",  "label": "Centurion C-RAM engages loitering munitions at close range", "parameters": { "source": "ent-blue-ciws-000000000-0000-0000-0000-000000000009", "event_type": "fire", "count": 4800 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000023", "time_s": 4840, "action_type": "trigger_event",  "label": "4 loitering munitions killed by C-RAM; 2 break through", "parameters": { "event_type": "explosion", "leakers": 2 } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000024", "time_s": 4850, "action_type": "trigger_event",  "label": "Two loitering munitions impact fuel depot — massive fire", "parameters": { "target": "ent-blue-fuel-000000000-0000-0000-0000-000000000018", "event_type": "explosion" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000025", "time_s": 4850, "action_type": "set_state",      "label": "Fuel depot destroyed", "entity_id": "ent-blue-fuel-000000000-0000-0000-0000-000000000018", "parameters": { "lifecycle": "destroyed" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000026", "time_s": 5400, "action_type": "trigger_event",  "label": "All Red missiles expended or intercepted — threat neutralized", "parameters": { "event_type": "custom", "custom_event": "strike_exhausted" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000027", "time_s": 5460, "action_type": "set_objective",  "label": "Begin BDA phase — F-35A overflies base", "parameters": { "mission_id": "msn-blue-bda-000000000000-0000-0000-0000-000000000003", "status": "active" } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000028", "time_s": 6000, "action_type": "trigger_event",  "label": "BDA complete — runway intact, fuel depot destroyed, base operational at 80%", "parameters": { "event_type": "mission_complete", "bda": { "runway_status": "intact", "fuel_depot_status": "destroyed", "cmd_center_status": "intact", "operational_pct": 80 } } },
+    { "id": "tl-000000000000000000000-0000-0000-0000-000000000029", "time_s": 10800,"action_type": "trigger_event",  "label": "Simulation ends", "parameters": { "event_type": "mission_complete" } }
+  ],
+
+  "events": [
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000001", "event_type": "spawn",           "timestamp": 0,    "notes": "All Blue assets active at sim start" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000002", "event_type": "custom",          "timestamp": 1200, "source_id": "ent-red-tel-a-000000000-0000-0000-0000-000000000012", "notes": "TEL-A begins missile erection sequence — detectable by satellite IR" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000003", "event_type": "custom",          "timestamp": 1500, "source_id": "ent-red-ew-000000000000-0000-0000-0000-000000000015", "notes": "Red EW activated — GPS jamming L1/L2, DRFM on S/X bands" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000004", "event_type": "spawn",           "timestamp": 1800, "source_id": "ent-red-tel-c-000000000-0000-0000-0000-000000000014", "notes": "8 radar decoy drones launched — inflate threat picture" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000005", "event_type": "detection",       "timestamp": 1820, "source_id": "ent-blue-awacs-00000000-0000-0000-0000-000000000002", "notes": "AWACS picks up 8 small targets — classified as possible decoys, possible cruise missiles" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000006", "event_type": "missile_launch",  "timestamp": 2400, "source_id": "ent-red-tel-a-000000000-0000-0000-0000-000000000012", "notes": "2x Iskander-M MRBM fired — depressed trajectory, maneuver blocks" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000007", "event_type": "detection",       "timestamp": 2420, "source_id": "ent-blue-fps132-00000000-0000-0000-0000-000000000004", "notes": "UEWR detects boost phase plume — launch point triangulated to 34.2N 46.8E" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000008", "event_type": "radar_lock",      "timestamp": 2430, "source_id": "ent-blue-tpy2-000000000-0000-0000-0000-000000000003", "notes": "TPY-2 locks ballistic tracks — cueing data pushed via Link 16 to Patriot batteries" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000009", "event_type": "target_acquired", "timestamp": 2440, "notes": "Threat classification: MRBM confirmed, no decoys; fire authority granted" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000010", "event_type": "missile_launch",  "timestamp": 2500, "source_id": "ent-blue-pat-a-00000000-0000-0000-0000-000000000006", "notes": "Patriot Alpha: 2x PAC-3 MSE launched at MRBM-1" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000011", "event_type": "missile_launch",  "timestamp": 2510, "source_id": "ent-blue-pat-b-00000000-0000-0000-0000-000000000007", "notes": "Patriot Bravo: 2x PAC-3 MSE launched at MRBM-2" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000012", "event_type": "explosion",       "timestamp": 2700, "position": { "x": 0, "y": 0, "z": 40000 }, "effects": [{ "effect_type": "kinetic_kill", "magnitude": 1000, "radius_m": 10 }], "notes": "Both MRBMs intercepted kinetically at 40km altitude" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000013", "event_type": "missile_launch",  "timestamp": 3000, "source_id": "ent-red-tel-b-000000000-0000-0000-0000-000000000013", "notes": "4x LACM fired — terrain-following at 30m AGL, TERCOM/DSMAC guidance" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000014", "event_type": "detection",       "timestamp": 3600, "source_id": "ent-blue-awacs-00000000-0000-0000-0000-000000000002", "notes": "AWACS pulse-Doppler picks up 4 low-altitude fast movers — cruise missile profile" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000015", "event_type": "communication_sent","timestamp": 3615,"source_id": "ent-blue-awacs-00000000-0000-0000-0000-000000000002", "notes": "AWACS broadcasts threat tracks on Link 16 — scramble order issued" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000016", "event_type": "spawn",           "timestamp": 3620, "source_id": "ent-blue-f35-000000000-0000-0000-0000-000000000010", "notes": "F-35A scrambles — afterburner climb" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000017", "event_type": "spawn",           "timestamp": 3625, "source_id": "ent-blue-f16-000000000-0000-0000-0000-000000000011", "notes": "F-16C scrambles" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000018", "event_type": "missile_launch",  "timestamp": 4200, "source_id": "ent-blue-nasams-0000000-0000-0000-0000-000000000008", "notes": "NASAMS fires 6x AIM-120C at 3 cruise missile tracks (2 shots per target)" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000019", "event_type": "custom",          "timestamp": 4250, "notes": "Red EW DRFM disrupts AIM-120 seeker on one round — miss" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000020", "event_type": "missile_impact",  "timestamp": 4260, "notes": "NASAMS kills 3/4 cruise missiles; 1 leaker penetrates engagement zone" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000021", "event_type": "fire",            "timestamp": 4270, "source_id": "ent-blue-f35-000000000-0000-0000-0000-000000000010", "notes": "F-35A fires AIM-120D at leaker — snap shot from 15km" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000022", "event_type": "missile_impact",  "timestamp": 4290, "notes": "AIM-120D kills leaker cruise missile 8km from target" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000023", "event_type": "missile_launch",  "timestamp": 4500, "source_id": "ent-red-tel-c-000000000-0000-0000-0000-000000000014", "notes": "6 loitering munitions launched — autonomous seek-and-strike mode" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000024", "event_type": "fire",            "timestamp": 4800, "source_id": "ent-blue-ciws-000000000-0000-0000-0000-000000000009", "notes": "Centurion C-RAM opens up at 2000m — 3000 rpm sustained fire" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000025", "event_type": "explosion",       "timestamp": 4840, "notes": "C-RAM kills 4/6 loitering munitions; 2 defeat terminal defenses" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000026", "event_type": "explosion",       "timestamp": 4850, "target_id": "ent-blue-fuel-000000000-0000-0000-0000-000000000018", "position": { "x": -400, "y": 0, "z": 0 }, "effects": [{ "effect_type": "blast", "magnitude": 2000, "radius_m": 80, "duration_s": 5 }, { "effect_type": "fire", "magnitude": 5000, "radius_m": 120, "duration_s": 3600 }, { "effect_type": "secondary_explosion", "magnitude": 8000, "radius_m": 200, "duration_s": 30 }], "notes": "Fuel depot catastrophically destroyed — fireball visible 50km away" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000027", "event_type": "destruction",     "timestamp": 4850, "source_id": "ent-blue-fuel-000000000-0000-0000-0000-000000000018", "notes": "Fuel depot destroyed — JP-8 fire, secondary explosions, 3600s burn time" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000028", "event_type": "communication_sent","timestamp": 4860,"notes": "Power failure at sections of airbase — secondary explosion severed grid feed" },
+    { "id": "evt-00000000000000000000-0000-0000-0000-000000000029", "event_type": "mission_complete", "timestamp": 6000, "notes": "BDA: runway intact; fuel depot destroyed; IAMD nodes intact; base 80% operational. Blue partial victory — runway defended, fuel depot lost." }
+  ],
+
+  "relationships": [
+    { "id": "rel-ir-000000000000000001", "source_id": "ent-blue-awacs-00000000-0000-0000-0000-000000000002",  "relation_type": "providesDataTo",  "target_id": "ent-blue-cmd-000000000000-0000-0000-0000-000000000001" },
+    { "id": "rel-ir-000000000000000002", "source_id": "ent-blue-fps132-00000000-0000-0000-0000-000000000004", "relation_type": "providesDataTo",  "target_id": "ent-blue-tpy2-000000000-0000-0000-0000-000000000003" },
+    { "id": "rel-ir-000000000000000003", "source_id": "ent-blue-tpy2-000000000-0000-0000-0000-000000000003",  "relation_type": "providesDataTo",  "target_id": "ent-blue-pat-a-00000000-0000-0000-0000-000000000006" },
+    { "id": "rel-ir-000000000000000004", "source_id": "ent-blue-tpy2-000000000-0000-0000-0000-000000000003",  "relation_type": "providesDataTo",  "target_id": "ent-blue-pat-b-00000000-0000-0000-0000-000000000007" },
+    { "id": "rel-ir-000000000000000005", "source_id": "ent-blue-awacs-00000000-0000-0000-0000-000000000002",  "relation_type": "providesDataTo",  "target_id": "ent-blue-nasams-0000000-0000-0000-0000-000000000008" },
+    { "id": "rel-ir-000000000000000006", "source_id": "ent-blue-awacs-00000000-0000-0000-0000-000000000002",  "relation_type": "providesDataTo",  "target_id": "ent-blue-f35-000000000-0000-0000-0000-000000000010" },
+    { "id": "rel-ir-000000000000000007", "source_id": "ent-blue-cmd-000000000000-0000-0000-0000-000000000001","relation_type": "commandedBy",     "target_id": "org-blue-iamd-00000000-0000-0000-0000-000000000001" },
+    { "id": "rel-ir-000000000000000008", "source_id": "ent-red-tel-a-000000000-0000-0000-0000-000000000012",  "relation_type": "enemyOf",         "target_id": "ent-blue-airbase-000000000-0000-0000-0000-000000000016" },
+    { "id": "rel-ir-000000000000000009", "source_id": "ent-red-ew-000000000000-0000-0000-0000-000000000015",  "relation_type": "interfacesWith",  "target_id": "ent-blue-aesa-000000000-0000-0000-0000-000000000005", "properties": { "effect": "jamming" } },
+    { "id": "rel-ir-000000000000000010", "source_id": "ent-blue-fuel-000000000-0000-0000-0000-000000000018",  "relation_type": "partOf",          "target_id": "ent-blue-airbase-000000000-0000-0000-0000-000000000016" },
+    { "id": "rel-ir-000000000000000011", "source_id": "ent-blue-runway-00000000-0000-0000-0000-000000000017", "relation_type": "partOf",          "target_id": "ent-blue-airbase-000000000-0000-0000-0000-000000000016" }
+  ],
+
+  "assets": {
+    "base_url": "assets/",
+    "entries": [
+      { "id": "ast-ir-0000-0000-0000-0000-000000000001", "name": "E-3G Sentry AWACS",            "path": "aircraft/e3g_sentry.usd",              "format": "usd", "tags": ["aircraft", "AWACS", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000002", "name": "F-35A Lightning II",            "path": "aircraft/f35a_lightning.usd",          "format": "usd", "tags": ["aircraft", "fighter", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000003", "name": "F-16C Fighting Falcon",         "path": "aircraft/f16c_falcon.usd",             "format": "usd", "tags": ["aircraft", "fighter", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000004", "name": "Patriot PAC-3 Battery",         "path": "structures/patriot_pac3_battery.usd",  "format": "usd", "tags": ["SAM", "Patriot", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000005", "name": "NASAMS-3 Battery",              "path": "structures/nasams3_battery.usd",        "format": "usd", "tags": ["SAM", "NASAMS", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000006", "name": "Centurion C-RAM",               "path": "structures/centurion_cram.usd",         "format": "usd", "tags": ["CIWS", "CRAM", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000007", "name": "AN/TPY-2 Radar",               "path": "structures/an_tpy2_radar.usd",          "format": "usd", "tags": ["radar", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000008", "name": "UEWR FPS-132",                  "path": "structures/uewr_phased_array.usd",      "format": "usd", "tags": ["radar", "EWR", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000009", "name": "LR AESA Ground Radar",          "path": "structures/lraesa_ground_radar.usd",    "format": "usd", "tags": ["radar", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000010", "name": "Hardened Command Bunker",       "path": "structures/hardened_command_bunker.usd","format": "usd", "tags": ["structure", "bunker", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000011", "name": "Airbase Complex",               "path": "structures/airbase_complex.usd",        "format": "usd", "tags": ["structure", "airbase", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000012", "name": "Concrete Runway",               "path": "structures/concrete_runway.usd",        "format": "usd", "tags": ["structure", "runway", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000013", "name": "Fuel Tank Farm",                "path": "structures/fuel_tank_farm.usd",         "format": "usd", "tags": ["structure", "fuel", "blue"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000014", "name": "TEL MRBM Launcher",             "path": "vehicles/tel_mrbm.usd",                 "format": "usd", "tags": ["vehicle", "TEL", "red"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000015", "name": "TEL Cruise Missile Launcher",   "path": "vehicles/tel_lacm.usd",                 "format": "usd", "tags": ["vehicle", "TEL", "red"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000016", "name": "TEL UAV/LM Launcher",           "path": "vehicles/tel_uav_lm.usd",               "format": "usd", "tags": ["vehicle", "TEL", "red"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000017", "name": "EW Jammer Vehicle",             "path": "vehicles/ew_jammer_vehicle.usd",         "format": "usd", "tags": ["vehicle", "EW", "red"] },
+      { "id": "ast-ir-0000-0000-0000-0000-000000000018", "name": "Semi-Desert Hills Terrain",     "path": "terrain/semi_desert_hills.tif",          "format": "custom", "tags": ["terrain", "DEM"] }
+    ]
+  },
+
+  "outputs": {
+    "formats": [
+      "json_telemetry",
+      "csv_telemetry",
+      "rtx_render",
+      "physics_log",
+      "sensor_frames",
+      "video_mp4",
+      "ground_truth",
+      "ros_bag",
+      "onnx_observations"
+    ],
+    "output_path": "outputs/missile_strike/",
+    "record_physics": true,
+    "record_sensors": true,
+    "record_events": true,
+    "render_config": {
+      "views": [
+        { "name": "tactical_top_down",          "type": "orthographic",   "altitude_m": 80000,  "fov_km": 250 },
+        { "name": "awacs_radar_ppi",            "type": "radar_ppi",      "entity_id": "ent-blue-awacs-00000000-0000-0000-0000-000000000002" },
+        { "name": "tpy2_track_display",         "type": "radar_ppi",      "entity_id": "ent-blue-tpy2-000000000-0000-0000-0000-000000000003" },
+        { "name": "missile_camera_mrbm",        "type": "perspective",    "notes": "Mounted on MRBM-1 nose — tracks toward Blue airbase" },
+        { "name": "interceptor_camera_pac3",    "type": "perspective",    "notes": "Seeker-eye view of PAC-3 MSE during intercept" },
+        { "name": "ground_camera_thermal",      "type": "ir_camera",      "entity_id": "ent-blue-aesa-000000000-0000-0000-0000-000000000005", "notes": "Co-boresighted IRST — shows missile thermal signature" },
+        { "name": "f35_eodas_360",              "type": "ir_camera",      "entity_id": "ent-blue-f35-000000000-0000-0000-0000-000000000010", "notes": "EODAS 360-degree sphere view" },
+        { "name": "explosion_slow_motion",      "type": "perspective",    "notes": "High-speed 1000fps — fuel depot fireball physics" },
+        { "name": "satellite_sar_view",         "type": "sar",            "altitude_m": 600000,  "resolution_m": 1 },
+        { "name": "semantic_segmentation",      "type": "semantic_seg" },
+        { "name": "depth_buffer",               "type": "depth_buffer" },
+        { "name": "blast_overpressure_map",     "type": "custom",         "notes": "2D overpressure contour map at ground level post-impact" }
+      ],
+      "rtx_settings": {
+        "ray_tracing": true,
+        "denoiser": "dlss",
+        "volumetric_smoke": true,
+        "volumetric_fire": true,
+        "volumetric_dust": true,
+        "night_stars": true,
+        "missile_contrail": true,
+        "explosion_vfx": true,
+        "structural_destruction": true,
+        "debris_physics": true,
+        "fragmentation_particles": true,
+        "shockwave_vfx": true
+      },
+      "dataset_export": {
+        "coco_labels": true,
+        "kitti_labels": true,
+        "openlabel_annotations": true,
+        "ai_training_split": { "train": 0.7, "val": 0.15, "test": 0.15 }
+      }
+    }
+  },
+
+  "validation": {
+    "require_unique_ids": true,
+    "require_valid_transforms": true,
+    "require_physics_on_dynamic": false,
+    "max_entities": 500,
+    "custom_validators": [
+      "validators/check_iamd_intercept_geometry",
+      "validators/check_ballistic_trajectory_physics",
+      "validators/check_ew_coverage_zones"
+    ]
+  }
+}

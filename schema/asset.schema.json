@@ -1,0 +1,1341 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/asset.schema.json",
+  "title": "PhysWorldLM Asset Schema",
+  "description": "PhysWorldLM World Specification Asset Standard (PW-WSF-1100). Universal asset registry for simulation, rendering, AI, robotics, military logistics, digital twins, and geospatial visualization. Renderer-independent and simulator-independent.",
+  "type": "object",
+  "required": ["schema_meta", "asset"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "RFC 4122 universally unique identifier."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. 1.2.3"
+    },
+
+    "URI": {
+      "type": "string",
+      "format": "uri",
+      "description": "Absolute URI."
+    },
+
+    "Hash": {
+      "type": "object",
+      "description": "Cryptographic hash of a file or content blob.",
+      "required": ["algorithm", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "type": "string",
+          "enum": ["sha256", "sha512", "md5", "blake3", "crc32"],
+          "description": "Hash algorithm."
+        },
+        "value": {
+          "type": "string",
+          "description": "Hex-encoded hash digest."
+        }
+      }
+    },
+
+    "FileReference": {
+      "type": "object",
+      "description": "Reference to a single file artifact with integrity metadata.",
+      "required": ["filename", "format"],
+      "additionalProperties": false,
+      "properties": {
+        "filename":    { "type": "string" },
+        "format": {
+          "type": "string",
+          "enum": [
+            "usd","usdz","usda","usdc",
+            "obj","fbx","gltf","glb","stl","ply",
+            "las","laz",
+            "png","jpeg","tiff","dds","exr","hdr","ktx2",
+            "wav","mp3","ogg","flac",
+            "json","xml","yaml","csv","toml",
+            "npy","npz","onnx","pt","pb","tflite","bin",
+            "pdf","svg","dwg","ifc","step",
+            "custom"
+          ]
+        },
+        "mime_type":   { "type": "string" },
+        "size_bytes":  { "type": "integer", "minimum": 0 },
+        "uri":         { "$ref": "#/$defs/URI" },
+        "local_path":  { "type": "string" },
+        "encoding": {
+          "type": "string",
+          "enum": ["none","base64","gzip","zstd","lz4","brotli"]
+        },
+        "compression": {
+          "type": "string",
+          "enum": ["none","gzip","zstd","lz4","brotli","draco","meshopt"]
+        },
+        "hash":        { "$ref": "#/$defs/Hash" },
+        "checksum_crc32": { "type": "string" }
+      }
+    },
+
+    "AssetReference": {
+      "type": "object",
+      "description": "Lightweight reference to another asset by UUID and optional hint.",
+      "required": ["asset_id"],
+      "additionalProperties": false,
+      "properties": {
+        "asset_id":  { "$ref": "#/$defs/UUID" },
+        "name_hint": { "type": "string" },
+        "version":   { "$ref": "#/$defs/VersionString" },
+        "uri":       { "$ref": "#/$defs/URI" }
+      }
+    },
+
+    "EntityReference": {
+      "type": "object",
+      "description": "Reference to an entity in entity.schema.json / world.schema.json.",
+      "required": ["entity_id"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id":  { "$ref": "#/$defs/UUID" },
+        "name_hint":  { "type": "string" },
+        "role":       { "type": "string", "description": "Role this entity plays relative to the asset, e.g. 'platform', 'payload'." }
+      }
+    },
+
+    "OrganizationReference": {
+      "type": "object",
+      "description": "Reference to an organization in organization.schema.json.",
+      "required": ["organization_id"],
+      "additionalProperties": false,
+      "properties": {
+        "organization_id": { "$ref": "#/$defs/UUID" },
+        "name_hint":       { "type": "string" },
+        "role":            { "type": "string" }
+      }
+    },
+
+    "Vector3": {
+      "type": "object",
+      "required": ["x","y","z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+
+    "BoundingBox": {
+      "type": "object",
+      "description": "Axis-aligned bounding box in local asset space (meters).",
+      "required": ["min","max"],
+      "additionalProperties": false,
+      "properties": {
+        "min": { "$ref": "#/$defs/Vector3" },
+        "max": { "$ref": "#/$defs/Vector3" }
+      }
+    },
+
+    "BoundingSphere": {
+      "type": "object",
+      "description": "Bounding sphere in local asset space.",
+      "required": ["center","radius_m"],
+      "additionalProperties": false,
+      "properties": {
+        "center":   { "$ref": "#/$defs/Vector3" },
+        "radius_m": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "GeoCoordinate": {
+      "type": "object",
+      "required": ["latitude","longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90  },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "altitude_m":{ "type": "number" }
+      }
+    },
+
+    "GeoBounds": {
+      "type": "object",
+      "description": "Geographic bounding region.",
+      "required": ["southwest","northeast"],
+      "additionalProperties": false,
+      "properties": {
+        "southwest":    { "$ref": "#/$defs/GeoCoordinate" },
+        "northeast":    { "$ref": "#/$defs/GeoCoordinate" },
+        "min_altitude_m": { "type": "number" },
+        "max_altitude_m": { "type": "number" }
+      }
+    },
+
+    "CoordinateSystem": {
+      "type": "object",
+      "description": "Coordinate system descriptor.",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "convention": {
+          "type": "string",
+          "enum": ["Y_UP","Z_UP","NED","ENU","ECEF","WGS84","local","custom"]
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["meters","centimeters","millimeters","feet","custom"],
+          "default": "meters"
+        },
+        "epsg_code": { "type": "integer" },
+        "wkt":       { "type": "string" }
+      }
+    },
+
+    "LODEntry": {
+      "type": "object",
+      "description": "Level-of-detail entry. LOD 0 is highest fidelity.",
+      "required": ["lod_index","file"],
+      "additionalProperties": false,
+      "properties": {
+        "lod_index":      { "type": "integer", "minimum": 0 },
+        "screen_size_px": { "type": "number",  "minimum": 0, "description": "Pixel screen size threshold to activate this LOD." },
+        "distance_m":     { "type": "number",  "minimum": 0, "description": "Camera distance threshold (meters)." },
+        "triangle_count": { "type": "integer", "minimum": 0 },
+        "vertex_count":   { "type": "integer", "minimum": 0 },
+        "file":           { "$ref": "#/$defs/FileReference" }
+      }
+    },
+
+    "Tags": {
+      "type": "array",
+      "description": "Arbitrary string tags for search and filtering.",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+
+    "SemanticLabels": {
+      "type": "object",
+      "description": "Ontology-aligned semantic annotations.",
+      "additionalProperties": false,
+      "properties": {
+        "ontology_class":     { "type": "string", "description": "e.g. 'MilitaryVehicle', 'Sensor', 'Building'." },
+        "ontology_uri":       { "$ref": "#/$defs/URI" },
+        "knowledge_graph_id": { "type": "string" },
+        "knowledge_graph_uri":{ "$ref": "#/$defs/URI" },
+        "embedding_ref":      { "type": "string", "description": "Reference to a pre-computed embedding vector store." },
+        "search_keywords":    { "type": "array", "items": { "type": "string" } },
+        "functional_tags":    { "type": "array", "items": { "type": "string" } },
+        "military_tags":      { "type": "array", "items": { "type": "string" } },
+        "mission_tags":       { "type": "array", "items": { "type": "string" } },
+        "operational_tags":   { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "Attribution": {
+      "type": "object",
+      "description": "Creator and source attribution.",
+      "additionalProperties": false,
+      "properties": {
+        "creator":      { "type": "string" },
+        "organization": { "type": "string" },
+        "contact":      { "type": "string", "format": "email" },
+        "url":          { "$ref": "#/$defs/URI" },
+        "doi":          { "type": "string" }
+      }
+    },
+
+    "Licensing": {
+      "type": "object",
+      "description": "Licensing and usage rights.",
+      "additionalProperties": false,
+      "properties": {
+        "spdx_id": {
+          "type": "string",
+          "description": "SPDX license identifier e.g. 'Apache-2.0', 'CC-BY-4.0', 'proprietary'."
+        },
+        "license_name":         { "type": "string" },
+        "license_url":          { "$ref": "#/$defs/URI" },
+        "copyright":            { "type": "string" },
+        "attribution_required": { "type": "boolean", "default": false },
+        "redistribution":       {
+          "type": "string",
+          "enum": ["allowed","restricted","prohibited","contact_required","custom"]
+        },
+        "commercial_use":       {
+          "type": "string",
+          "enum": ["allowed","restricted","prohibited","custom"]
+        },
+        "modification":         {
+          "type": "string",
+          "enum": ["allowed","restricted","prohibited","custom"]
+        },
+        "usage_restrictions":   { "type": "string", "description": "Free-text additional restrictions." },
+        "expiry_date":          { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+
+    "Dependency": {
+      "type": "object",
+      "description": "Declared dependency on another asset.",
+      "required": ["asset_id","dependency_type"],
+      "additionalProperties": false,
+      "properties": {
+        "asset_id":        { "$ref": "#/$defs/UUID" },
+        "name_hint":       { "type": "string" },
+        "dependency_type": {
+          "type": "string",
+          "enum": ["required","optional","runtime","build","shared","parent","child","texture","material","animation","skeleton","collision","audio","script","config","custom"]
+        },
+        "version_constraint": { "type": "string", "description": "SemVer range constraint e.g. '>=1.0.0 <2.0.0'." }
+      }
+    },
+
+    "ChangelogEntry": {
+      "type": "object",
+      "required": ["version","date","description"],
+      "additionalProperties": false,
+      "properties": {
+        "version":     { "$ref": "#/$defs/VersionString" },
+        "date":        { "$ref": "#/$defs/Timestamp" },
+        "author":      { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+
+    "MonetaryValue": {
+      "type": "object",
+      "description": "Monetary value in a specified currency.",
+      "required": ["amount","currency"],
+      "additionalProperties": false,
+      "properties": {
+        "amount":   { "type": "number", "minimum": 0 },
+        "currency": { "type": "string", "description": "ISO 4217 currency code e.g. USD, EUR, GBP." }
+      }
+    },
+
+    "MaintenanceRecord": {
+      "type": "object",
+      "description": "A single maintenance event record.",
+      "required": ["id","date","type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":              { "$ref": "#/$defs/UUID" },
+        "date":            { "$ref": "#/$defs/Timestamp" },
+        "type": {
+          "type": "string",
+          "enum": ["inspection","repair","calibration","overhaul","upgrade","preventive","corrective","predictive","emergency","disposal","custom"]
+        },
+        "technician":      { "type": "string" },
+        "organization":    { "type": "string" },
+        "description":     { "type": "string" },
+        "cost":            { "$ref": "#/$defs/MonetaryValue" },
+        "duration_hours":  { "type": "number", "minimum": 0 },
+        "next_due_date":   { "$ref": "#/$defs/Timestamp" },
+        "report_ref":      { "type": "string" },
+        "parts_replaced":  { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "RiskAssessment": {
+      "type": "object",
+      "description": "Structured risk entry.",
+      "required": ["risk_id","category","description"],
+      "additionalProperties": false,
+      "properties": {
+        "risk_id":     { "$ref": "#/$defs/UUID" },
+        "category": {
+          "type": "string",
+          "enum": ["operational","financial","cyber","supply","environmental","geopolitical","technical","physical","custom"]
+        },
+        "description":   { "type": "string" },
+        "likelihood": {
+          "type": "string",
+          "enum": ["very_low","low","medium","high","very_high","critical"]
+        },
+        "impact": {
+          "type": "string",
+          "enum": ["negligible","minor","moderate","major","catastrophic"]
+        },
+        "threat_level":  { "type": "string", "enum": ["low","guarded","elevated","high","severe"] },
+        "criticality":   { "type": "number", "minimum": 0, "maximum": 10 },
+        "mitigation":    { "type": "string" }
+      }
+    },
+
+    "DocumentReference": {
+      "type": "object",
+      "description": "Reference to a supporting document (manual, certificate, report).",
+      "required": ["doc_id","title","type"],
+      "additionalProperties": false,
+      "properties": {
+        "doc_id":    { "$ref": "#/$defs/UUID" },
+        "title":     { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["manual","certificate","license","compliance","inspection_report","maintenance_log","warranty","photograph","drawing","cad_model","spec_sheet","legal","custom"]
+        },
+        "uri":       { "$ref": "#/$defs/URI" },
+        "issued":    { "$ref": "#/$defs/Timestamp" },
+        "expires":   { "$ref": "#/$defs/Timestamp" },
+        "issuer":    { "type": "string" }
+      }
+    },
+
+    "GeometryMeta": {
+      "type": "object",
+      "description": "Geometric metadata for 3D mesh assets.",
+      "additionalProperties": false,
+      "properties": {
+        "vertex_count":   { "type": "integer", "minimum": 0 },
+        "face_count":     { "type": "integer", "minimum": 0 },
+        "edge_count":     { "type": "integer", "minimum": 0 },
+        "uv_set_count":   { "type": "integer", "minimum": 0 },
+        "has_normals":    { "type": "boolean" },
+        "has_tangents":   { "type": "boolean" },
+        "has_vertex_colors": { "type": "boolean" },
+        "bounding_box":   { "$ref": "#/$defs/BoundingBox" },
+        "bounding_sphere":{ "$ref": "#/$defs/BoundingSphere" },
+        "pivot":          { "$ref": "#/$defs/Vector3" },
+        "coordinate_system": { "$ref": "#/$defs/CoordinateSystem" },
+        "lods":           { "type": "array", "items": { "$ref": "#/$defs/LODEntry" } }
+      }
+    },
+
+    "MaterialSlot": {
+      "type": "object",
+      "description": "Named material slot mapping for a mesh.",
+      "required": ["slot_name"],
+      "additionalProperties": false,
+      "properties": {
+        "slot_name":      { "type": "string" },
+        "material_id":    { "$ref": "#/$defs/UUID" },
+        "material_name":  { "type": "string" },
+        "material_ref":   { "$ref": "#/$defs/AssetReference" },
+        "shader":         { "type": "string" },
+        "materialx_path": { "type": "string" },
+        "usd_material":   { "type": "string" },
+        "mdl_material":   { "type": "string" }
+      }
+    },
+
+    "TextureMeta": {
+      "type": "object",
+      "description": "Metadata for a texture asset.",
+      "additionalProperties": false,
+      "properties": {
+        "width_px":    { "type": "integer", "minimum": 1 },
+        "height_px":   { "type": "integer", "minimum": 1 },
+        "channels":    { "type": "integer", "minimum": 1, "maximum": 4 },
+        "bit_depth":   { "type": "integer", "enum": [8, 16, 32] },
+        "color_space": {
+          "type": "string",
+          "enum": ["sRGB","linear","ACEScg","HDR","raw","custom"]
+        },
+        "usage": {
+          "type": "string",
+          "enum": ["diffuse","albedo","normal","roughness","metallic","ao","emissive","opacity","height","displacement","specular","env_map","shadow_map","lightmap","mask","custom"]
+        },
+        "has_mipmaps":    { "type": "boolean" },
+        "is_streaming":   { "type": "boolean" },
+        "compression_format": {
+          "type": "string",
+          "enum": ["none","bc1","bc3","bc4","bc5","bc6h","bc7","astc","etc2","pvrtc","custom"]
+        },
+        "file":           { "$ref": "#/$defs/FileReference" }
+      }
+    },
+
+    "PhysicsMeta": {
+      "type": "object",
+      "description": "Physics properties for a physical asset.",
+      "additionalProperties": false,
+      "properties": {
+        "mass_kg":              { "type": "number", "minimum": 0 },
+        "center_of_mass":       { "$ref": "#/$defs/Vector3" },
+        "inertia_tensor":       { "$ref": "#/$defs/Vector3", "description": "Principal moments of inertia (kg·m²)." },
+        "friction_static":      { "type": "number", "minimum": 0 },
+        "friction_dynamic":     { "type": "number", "minimum": 0 },
+        "restitution":          { "type": "number", "minimum": 0, "maximum": 1 },
+        "density_kg_m3":        { "type": "number", "minimum": 0 },
+        "drag_coefficient":     { "type": "number", "minimum": 0 },
+        "lift_coefficient":     { "type": "number" },
+        "buoyancy_enabled":     { "type": "boolean" },
+        "destruction_enabled":  { "type": "boolean" },
+        "physics_material_ref": { "$ref": "#/$defs/AssetReference" },
+        "preset": {
+          "type": "string",
+          "enum": ["rigid_body","soft_body","cloth","fluid","destruction","particle","rope","custom"]
+        },
+        "simulation_engine_hints": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "physx":   { "type": "object", "additionalProperties": true },
+            "bullet":  { "type": "object", "additionalProperties": true },
+            "mujoco":  { "type": "object", "additionalProperties": true },
+            "custom":  { "type": "object", "additionalProperties": true }
+          }
+        }
+      }
+    },
+
+    "CollisionMeta": {
+      "type": "object",
+      "description": "Collision geometry descriptor.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["exact","convex_hull","triangle_mesh","bounding_box","sphere","capsule","cylinder","cone","compound","none"]
+        },
+        "file":             { "$ref": "#/$defs/FileReference" },
+        "collision_layers": { "type": "array", "items": { "type": "string" } },
+        "collision_mask":   { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "AnimationClip": {
+      "type": "object",
+      "description": "Animation clip metadata.",
+      "required": ["clip_id","name"],
+      "additionalProperties": false,
+      "properties": {
+        "clip_id":          { "$ref": "#/$defs/UUID" },
+        "name":             { "type": "string" },
+        "duration_s":       { "type": "number", "minimum": 0, "description": "Duration in seconds." },
+        "fps":              { "type": "number", "minimum": 0 },
+        "frame_count":      { "type": "integer", "minimum": 0 },
+        "loop":             { "type": "boolean", "default": false },
+        "has_root_motion":  { "type": "boolean", "default": false },
+        "type": {
+          "type": "string",
+          "enum": ["skeletal","morph","camera","vehicle","physics","procedural","custom"]
+        },
+        "skeleton_ref":     { "$ref": "#/$defs/AssetReference" },
+        "file":             { "$ref": "#/$defs/FileReference" }
+      }
+    },
+
+    "SkeletonMeta": {
+      "type": "object",
+      "description": "Skeleton rig metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "bone_count":    { "type": "integer", "minimum": 0 },
+        "ik_chains":     { "type": "array", "items": { "type": "string" } },
+        "retarget_profile": { "type": "string" },
+        "file":          { "$ref": "#/$defs/FileReference" }
+      }
+    },
+
+    "SensorProfile": {
+      "type": "object",
+      "description": "Sensor asset profile (camera, radar, lidar, etc.).",
+      "required": ["sensor_type"],
+      "additionalProperties": false,
+      "properties": {
+        "sensor_type": {
+          "type": "string",
+          "enum": ["camera_eo","camera_ir","radar","lidar","sonar","sar","gps","imu","ins","altimeter","barometer","magnetometer","acoustic","sigint","comint","elint","rfid","chemical","nuclear","biological","seismic","hyperspectral","multispectral","custom"]
+        },
+        "resolution_h": { "type": "integer" },
+        "resolution_v": { "type": "integer" },
+        "fov_h_deg":    { "type": "number" },
+        "fov_v_deg":    { "type": "number" },
+        "range_m":      { "type": "number" },
+        "frequency_hz": { "type": "number" },
+        "wavelength_nm":{ "type": "number" },
+        "noise_model":  { "type": "string" },
+        "latency_ms":   { "type": "number", "minimum": 0 },
+        "parameters":   { "type": "object", "additionalProperties": true }
+      }
+    },
+
+    "AudioMeta": {
+      "type": "object",
+      "description": "Audio asset metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "channels":       { "type": "integer", "minimum": 1 },
+        "sample_rate_hz": { "type": "integer" },
+        "bit_depth":      { "type": "integer" },
+        "duration_s":     { "type": "number", "minimum": 0 },
+        "loop":           { "type": "boolean", "default": false },
+        "spatialized":    { "type": "boolean", "default": false },
+        "attenuation_model": {
+          "type": "string",
+          "enum": ["linear","inverse","inverse_square","logarithmic","none","custom"]
+        },
+        "max_distance_m": { "type": "number", "minimum": 0 },
+        "file":           { "$ref": "#/$defs/FileReference" }
+      }
+    },
+
+    "VFXMeta": {
+      "type": "object",
+      "description": "Visual effects / particle system metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "effect_type": {
+          "type": "string",
+          "enum": ["fire","smoke","explosion","dust","rain","snow","sparks","water","fog","blood","debris","decal","volumetric","weather","custom"]
+        },
+        "max_particles":  { "type": "integer", "minimum": 0 },
+        "duration_s":     { "type": "number" },
+        "looping":        { "type": "boolean" },
+        "world_space":    { "type": "boolean" },
+        "renderer_hints": { "type": "object", "additionalProperties": true },
+        "file":           { "$ref": "#/$defs/FileReference" }
+      }
+    },
+
+    "GISMeta": {
+      "type": "object",
+      "description": "GIS and geospatial dataset metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "crs":              { "type": "string" },
+        "epsg_code":        { "type": "integer" },
+        "bounds":           { "$ref": "#/$defs/GeoBounds" },
+        "elevation_min_m":  { "type": "number" },
+        "elevation_max_m":  { "type": "number" },
+        "resolution_m":     { "type": "number", "minimum": 0 },
+        "layer_type": {
+          "type": "string",
+          "enum": ["terrain_tile","imagery","elevation","point_cloud","vector_layer","cesium_tileset","mesh","raster","custom"]
+        },
+        "cesium_asset_id":  { "type": "string" },
+        "cesium_tileset_url":{ "$ref": "#/$defs/URI" },
+        "terrain_encoding": {
+          "type": "string",
+          "enum": ["heightmap_1.0","quantized_mesh","terrain_rgb","custom"]
+        }
+      }
+    },
+
+    "AIMetadata": {
+      "type": "object",
+      "description": "AI/ML model metadata for AI asset types.",
+      "additionalProperties": false,
+      "properties": {
+        "model_type": {
+          "type": "string",
+          "enum": ["neural_network","rl_policy","behavior_tree","navigation_graph","llm","vlm","diffusion","classifier","detector","segmenter","custom"]
+        },
+        "framework":    { "type": "string", "enum": ["pytorch","tensorflow","onnx","tflite","jax","custom"] },
+        "input_shape":  { "type": "array", "items": { "type": "integer" } },
+        "output_shape": { "type": "array", "items": { "type": "integer" } },
+        "parameter_count": { "type": "integer", "minimum": 0 },
+        "training_dataset": { "type": "string" },
+        "accuracy_metric":  { "type": "number" },
+        "inference_backend":{ "type": "string" },
+        "quantization":     { "type": "string", "enum": ["none","fp16","int8","int4","custom"] },
+        "file":             { "$ref": "#/$defs/FileReference" }
+      }
+    },
+
+    "RenderingMeta": {
+      "type": "object",
+      "description": "Rendering engine compatibility and hints.",
+      "additionalProperties": false,
+      "properties": {
+        "renderers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["openusd","materialx","mdl","omniverse","unreal","unity","blender","vray","octane","arnold","redshift","custom"]
+          }
+        },
+        "supports_nanite":        { "type": "boolean" },
+        "supports_rtx":           { "type": "boolean" },
+        "supports_path_tracing":  { "type": "boolean" },
+        "supports_ray_tracing":   { "type": "boolean" },
+        "supports_instancing":    { "type": "boolean" },
+        "lods":                   { "type": "array", "items": { "$ref": "#/$defs/LODEntry" } }
+      }
+    },
+
+    "SimulationMeta": {
+      "type": "object",
+      "description": "Simulation engine compatibility and fidelity hints.",
+      "additionalProperties": false,
+      "properties": {
+        "simulators": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["physx","bullet","mujoco","gazebo","ros2","isaac_sim","cesium","ode","custom"]
+          }
+        },
+        "physics_fidelity": {
+          "type": "string",
+          "enum": ["low","medium","high","full","custom"]
+        },
+        "collision_fidelity": {
+          "type": "string",
+          "enum": ["none","aabb","convex","mesh","custom"]
+        },
+        "sensor_simulation_support": { "type": "boolean" },
+        "ros2_package":  { "type": "string" },
+        "urdf_ref":      { "type": "string" },
+        "sdf_ref":       { "type": "string" }
+      }
+    },
+
+    "PerformanceMeta": {
+      "type": "object",
+      "description": "Performance and resource usage hints.",
+      "additionalProperties": false,
+      "properties": {
+        "polygon_count":      { "type": "integer", "minimum": 0 },
+        "vertex_count":       { "type": "integer", "minimum": 0 },
+        "draw_calls":         { "type": "integer", "minimum": 0 },
+        "memory_bytes":       { "type": "integer", "minimum": 0 },
+        "texture_memory_bytes":{ "type": "integer", "minimum": 0 },
+        "gpu_memory_bytes":   { "type": "integer", "minimum": 0 },
+        "cpu_cost_normalized":{ "type": "number", "minimum": 0, "maximum": 1 },
+        "streaming_priority": { "type": "integer", "minimum": 0, "maximum": 10 }
+      }
+    },
+
+    "ValidationReport": {
+      "type": "object",
+      "description": "Asset validation status.",
+      "additionalProperties": false,
+      "properties": {
+        "validated":             { "type": "boolean" },
+        "validation_date":       { "$ref": "#/$defs/Timestamp" },
+        "validator_version":     { "type": "string" },
+        "file_integrity_ok":     { "type": "boolean" },
+        "hash_consistency_ok":   { "type": "boolean" },
+        "dependency_resolution_ok": { "type": "boolean" },
+        "geometry_validity_ok":  { "type": "boolean" },
+        "material_refs_ok":      { "type": "boolean" },
+        "lod_consistency_ok":    { "type": "boolean" },
+        "issues": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["severity","message"],
+            "additionalProperties": false,
+            "properties": {
+              "severity": { "type": "string", "enum": ["info","warning","error","critical"] },
+              "code":     { "type": "string" },
+              "message":  { "type": "string" },
+              "path":     { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "AssetIdentity": {
+      "type": "object",
+      "description": "Core identity block for any asset.",
+      "required": ["asset_uuid","asset_id","name"],
+      "additionalProperties": false,
+      "properties": {
+        "asset_uuid":          { "$ref": "#/$defs/UUID" },
+        "asset_id":            { "type": "string", "description": "Human-readable stable identifier." },
+        "name":                { "type": "string" },
+        "display_name":        { "type": "string" },
+        "description":         { "type": "string" },
+        "namespace":           { "type": "string" },
+        "serial_number":       { "type": "string" },
+        "registration_number": { "type": "string" },
+        "nato_stock_number":   { "type": "string", "description": "NATO Stock Number (NSN)." },
+        "persistent_identifier":{ "type": "string", "description": "DOI, ARK, Handle, or similar PID." },
+        "ontology_uri":        { "$ref": "#/$defs/URI" },
+        "knowledge_graph_uri": { "$ref": "#/$defs/URI" }
+      }
+    },
+
+    "AssetClassification": {
+      "type": "object",
+      "description": "Classification and type information for an asset.",
+      "required": ["asset_type"],
+      "additionalProperties": false,
+      "properties": {
+        "asset_type": {
+          "type": "string",
+          "enum": [
+            "aircraft","helicopter","uav","spacecraft","satellite",
+            "ship","submarine","boat",
+            "tank","vehicle","truck","armored_vehicle","artillery",
+            "infantry_soldier","robot","drone",
+            "facility","building","infrastructure","airfield","port","warehouse","factory",
+            "sensor","radar","lidar","camera","sonar",
+            "weapon","missile","ammunition","explosive",
+            "fuel","consumable","spare_part","supply",
+            "software","ai_model","database","network","license",
+            "digital_twin","simulation_asset","knowledge_base",
+            "terrain_tile","gis_dataset","imagery","point_cloud",
+            "material","texture","animation","skeleton","audio","vfx","script",
+            "usd_stage","cesium_tileset","omniverse_asset",
+            "medical_supply","scientific_instrument","energy_system",
+            "custom","unknown"
+          ]
+        },
+        "category": { "type": "string" },
+        "subtype":  { "type": "string" },
+        "domain": {
+          "type": "string",
+          "enum": ["military","civilian","commercial","government","research","industrial","digital","space","medical","scientific","infrastructure","custom"]
+        },
+        "nature": {
+          "type": "string",
+          "enum": ["physical","digital","virtual","hybrid"]
+        },
+        "durability": {
+          "type": "string",
+          "enum": ["durable","consumable","semi_consumable","custom"]
+        },
+        "strategic_level": {
+          "type": "string",
+          "enum": ["strategic","operational","tactical","logistical","individual","custom"]
+        },
+        "classification_code": { "type": "string", "description": "Organization-specific classification code." }
+      }
+    },
+
+    "AssetOwnership": {
+      "type": "object",
+      "description": "Ownership, custody, and supply chain information.",
+      "additionalProperties": false,
+      "properties": {
+        "owner":           { "$ref": "#/$defs/OrganizationReference" },
+        "operator":        { "$ref": "#/$defs/OrganizationReference" },
+        "custodian":       { "$ref": "#/$defs/OrganizationReference" },
+        "maintainer":      { "$ref": "#/$defs/OrganizationReference" },
+        "manufacturer":    { "$ref": "#/$defs/OrganizationReference" },
+        "supplier":        { "$ref": "#/$defs/OrganizationReference" },
+        "vendor":          { "$ref": "#/$defs/OrganizationReference" },
+        "leasing_org":     { "$ref": "#/$defs/OrganizationReference" },
+        "joint_owners": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OrganizationReference" }
+        },
+        "country_of_origin": { "type": "string", "description": "ISO 3166-1 alpha-2 country code." },
+        "manufacturer_part_number": { "type": "string" }
+      }
+    },
+
+    "AssetLocation": {
+      "type": "object",
+      "description": "Physical location and basing information for the asset.",
+      "additionalProperties": false,
+      "properties": {
+        "current_location":  { "$ref": "#/$defs/GeoCoordinate" },
+        "current_location_name": { "type": "string" },
+        "home_base":         { "type": "string" },
+        "assigned_base":     { "type": "string" },
+        "warehouse":         { "type": "string" },
+        "storage_site":      { "type": "string" },
+        "deployment_area":   { "type": "string" },
+        "theater":           { "type": "string" },
+        "country":           { "type": "string", "description": "ISO 3166-1 alpha-2 country code." },
+        "grid_reference":    { "type": "string", "description": "MGRS or UTM grid reference." },
+        "transform_ref":     { "type": "string", "description": "Reference to a Transform in transform.schema.json." }
+      }
+    },
+
+    "AssetLifecycle": {
+      "type": "object",
+      "description": "Lifecycle dates and phases for the asset.",
+      "additionalProperties": false,
+      "properties": {
+        "manufacture_date":   { "$ref": "#/$defs/Timestamp" },
+        "acquisition_date":   { "$ref": "#/$defs/Timestamp" },
+        "commission_date":    { "$ref": "#/$defs/Timestamp" },
+        "deployment_date":    { "$ref": "#/$defs/Timestamp" },
+        "expected_retirement":{ "$ref": "#/$defs/Timestamp" },
+        "retirement_date":    { "$ref": "#/$defs/Timestamp" },
+        "disposal_date":      { "$ref": "#/$defs/Timestamp" },
+        "service_life_years": { "type": "number", "minimum": 0 },
+        "operating_hours":    { "type": "number", "minimum": 0 },
+        "cycles":             { "type": "integer", "minimum": 0, "description": "Flight cycles, engine cycles, etc." },
+        "upgrade_history": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ChangelogEntry" }
+        }
+      }
+    },
+
+    "AssetOperationalStatus": {
+      "type": "object",
+      "description": "Current operational status of the asset.",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["available","operational","deployed","training","standby","under_maintenance","damaged","destroyed","lost","captured","retired","decommissioned","in_storage","in_transit","custom"]
+        },
+        "readiness": {
+          "type": "string",
+          "enum": ["fully_mission_capable","partially_mission_capable","not_mission_capable","unknown"]
+        },
+        "availability_pct":  { "type": "number", "minimum": 0, "maximum": 100 },
+        "reliability_pct":   { "type": "number", "minimum": 0, "maximum": 100 },
+        "utilization_pct":   { "type": "number", "minimum": 0, "maximum": 100 },
+        "uptime_hours":      { "type": "number", "minimum": 0 },
+        "downtime_hours":    { "type": "number", "minimum": 0 },
+        "health_score":      { "type": "number", "minimum": 0, "maximum": 100 },
+        "last_status_update":{ "$ref": "#/$defs/Timestamp" }
+      }
+    },
+
+    "AssetFinancials": {
+      "type": "object",
+      "description": "Financial and accounting data for the asset.",
+      "additionalProperties": false,
+      "properties": {
+        "purchase_cost":      { "$ref": "#/$defs/MonetaryValue" },
+        "replacement_cost":   { "$ref": "#/$defs/MonetaryValue" },
+        "book_value":         { "$ref": "#/$defs/MonetaryValue" },
+        "market_value":       { "$ref": "#/$defs/MonetaryValue" },
+        "insurance_value":    { "$ref": "#/$defs/MonetaryValue" },
+        "depreciation_model": {
+          "type": "string",
+          "enum": ["straight_line","declining_balance","sum_of_years","units_of_production","none","custom"]
+        },
+        "annual_depreciation_rate_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "operational_cost_per_hour":    { "$ref": "#/$defs/MonetaryValue" },
+        "fuel_cost_per_hour":           { "$ref": "#/$defs/MonetaryValue" },
+        "maintenance_cost_per_year":    { "$ref": "#/$defs/MonetaryValue" },
+        "lifecycle_cost":               { "$ref": "#/$defs/MonetaryValue" },
+        "budget_code":        { "type": "string" }
+      }
+    },
+
+    "AssetLogistics": {
+      "type": "object",
+      "description": "Logistics, inventory, and supply chain data.",
+      "additionalProperties": false,
+      "properties": {
+        "stock_level":        { "type": "number", "minimum": 0 },
+        "stock_unit":         { "type": "string" },
+        "reorder_point":      { "type": "number", "minimum": 0 },
+        "max_stock":          { "type": "number", "minimum": 0 },
+        "warehouse_location": { "type": "string" },
+        "bin_location":       { "type": "string" },
+        "transport_class":    { "type": "string" },
+        "hazmat_class":       { "type": "string" },
+        "packaging_spec":     { "type": "string" },
+        "storage_conditions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "temperature_min_c":  { "type": "number" },
+            "temperature_max_c":  { "type": "number" },
+            "humidity_min_pct":   { "type": "number", "minimum": 0, "maximum": 100 },
+            "humidity_max_pct":   { "type": "number", "minimum": 0, "maximum": 100 },
+            "requires_climate_control": { "type": "boolean" },
+            "light_sensitive":    { "type": "boolean" }
+          }
+        },
+        "consumables": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name","quantity","unit"],
+            "additionalProperties": false,
+            "properties": {
+              "name":     { "type": "string" },
+              "quantity": { "type": "number", "minimum": 0 },
+              "unit":     { "type": "string" },
+              "asset_ref":{ "$ref": "#/$defs/AssetReference" }
+            }
+          }
+        },
+        "spare_parts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AssetReference" }
+        }
+      }
+    },
+
+    "AssetMaintenance": {
+      "type": "object",
+      "description": "Maintenance status, schedule, and history.",
+      "additionalProperties": false,
+      "properties": {
+        "last_inspection":      { "$ref": "#/$defs/Timestamp" },
+        "next_inspection":      { "$ref": "#/$defs/Timestamp" },
+        "last_overhaul":        { "$ref": "#/$defs/Timestamp" },
+        "next_overhaul":        { "$ref": "#/$defs/Timestamp" },
+        "remaining_useful_life_hours": { "type": "number", "minimum": 0 },
+        "health_score":         { "type": "number", "minimum": 0, "maximum": 100 },
+        "mtbf_hours":           { "type": "number", "minimum": 0, "description": "Mean Time Between Failures (hours)." },
+        "mttr_hours":           { "type": "number", "minimum": 0, "description": "Mean Time To Repair (hours)." },
+        "maintenance_schedule": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "daily":    { "type": "string" },
+            "weekly":   { "type": "string" },
+            "monthly":  { "type": "string" },
+            "annual":   { "type": "string" },
+            "on_condition": { "type": "string" }
+          }
+        },
+        "maintenance_records": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MaintenanceRecord" }
+        }
+      }
+    },
+
+    "AssetSecurity": {
+      "type": "object",
+      "description": "Security, classification, and cyber protection properties.",
+      "additionalProperties": false,
+      "properties": {
+        "security_classification": {
+          "type": "string",
+          "enum": ["unclassified","restricted","confidential","secret","top_secret","sci","custom"]
+        },
+        "data_classification": { "type": "string" },
+        "access_control": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "role":       { "type": "string" },
+              "permission": { "type": "string", "enum": ["read","write","execute","admin","none"] }
+            }
+          }
+        },
+        "encryption_at_rest": { "type": "boolean" },
+        "encryption_in_transit": { "type": "boolean" },
+        "tamper_detection":  { "type": "boolean" },
+        "cyber_protection_level": { "type": "string" },
+        "itar_controlled":   { "type": "boolean", "description": "Subject to ITAR export controls." },
+        "ear_controlled":    { "type": "boolean", "description": "Subject to EAR export controls." }
+      }
+    },
+
+    "AssetSustainability": {
+      "type": "object",
+      "description": "Environmental and sustainability metrics.",
+      "additionalProperties": false,
+      "properties": {
+        "energy_consumption_kw":  { "type": "number", "minimum": 0 },
+        "fuel_consumption_l_hr":  { "type": "number", "minimum": 0 },
+        "co2_emission_kg_hr":     { "type": "number", "minimum": 0 },
+        "carbon_footprint_kg":    { "type": "number", "minimum": 0 },
+        "recyclability_pct":      { "type": "number", "minimum": 0, "maximum": 100 },
+        "hazardous_materials": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "environmental_compliance": { "type": "boolean" },
+        "waste_management_plan":    { "type": "string" },
+        "rohs_compliant":           { "type": "boolean" },
+        "reach_compliant":          { "type": "boolean" }
+      }
+    },
+
+    "AssetSource": {
+      "type": "object",
+      "description": "Provenance and source information for the digital asset artifact.",
+      "additionalProperties": false,
+      "properties": {
+        "original_source": { "type": "string" },
+        "repository":      { "$ref": "#/$defs/URI" },
+        "download_url":    { "$ref": "#/$defs/URI" },
+        "local_path":      { "type": "string" },
+        "asset_store":     { "type": "string" },
+        "git_ref":         { "type": "string" },
+        "git_commit":      { "type": "string" },
+        "package_name":    { "type": "string" },
+        "package_version": { "type": "string" },
+        "doi":             { "type": "string" }
+      }
+    },
+
+    "Asset": {
+      "type": "object",
+      "description": "Complete asset record. Represents any entity with organizational, operational, financial, or logistical value.",
+      "required": ["identity","classification","version","status"],
+      "additionalProperties": false,
+      "properties": {
+
+        "identity":          { "$ref": "#/$defs/AssetIdentity" },
+        "classification":    { "$ref": "#/$defs/AssetClassification" },
+        "ownership":         { "$ref": "#/$defs/AssetOwnership" },
+
+        "version":           { "$ref": "#/$defs/VersionString" },
+        "revision":          { "type": "string" },
+        "created_at":        { "$ref": "#/$defs/Timestamp" },
+        "updated_at":        { "$ref": "#/$defs/Timestamp" },
+
+        "status":            { "$ref": "#/$defs/AssetOperationalStatus" },
+        "lifecycle":         { "$ref": "#/$defs/AssetLifecycle" },
+        "location":          { "$ref": "#/$defs/AssetLocation" },
+        "financials":        { "$ref": "#/$defs/AssetFinancials" },
+        "logistics":         { "$ref": "#/$defs/AssetLogistics" },
+        "maintenance":       { "$ref": "#/$defs/AssetMaintenance" },
+        "security":          { "$ref": "#/$defs/AssetSecurity" },
+        "sustainability":    { "$ref": "#/$defs/AssetSustainability" },
+
+        "entity_refs": {
+          "type": "array",
+          "description": "Simulation entities this asset corresponds to.",
+          "items": { "$ref": "#/$defs/EntityReference" }
+        },
+
+        "source":            { "$ref": "#/$defs/AssetSource" },
+        "files": {
+          "type": "array",
+          "description": "All file artifacts associated with this asset.",
+          "items": { "$ref": "#/$defs/FileReference" }
+        },
+
+        "geometry":          { "$ref": "#/$defs/GeometryMeta" },
+        "material_slots": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/MaterialSlot" }
+        },
+        "textures": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/TextureMeta" }
+        },
+        "physics":           { "$ref": "#/$defs/PhysicsMeta" },
+        "collision":         { "$ref": "#/$defs/CollisionMeta" },
+        "animations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AnimationClip" }
+        },
+        "skeleton":          { "$ref": "#/$defs/SkeletonMeta" },
+        "sensor_profiles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SensorProfile" }
+        },
+        "audio":             { "$ref": "#/$defs/AudioMeta" },
+        "vfx":               { "$ref": "#/$defs/VFXMeta" },
+        "gis_meta":          { "$ref": "#/$defs/GISMeta" },
+        "ai_meta":           { "$ref": "#/$defs/AIMetadata" },
+
+        "rendering":         { "$ref": "#/$defs/RenderingMeta" },
+        "simulation":        { "$ref": "#/$defs/SimulationMeta" },
+        "performance":       { "$ref": "#/$defs/PerformanceMeta" },
+
+        "tags":              { "$ref": "#/$defs/Tags" },
+        "semantic_labels":   { "$ref": "#/$defs/SemanticLabels" },
+
+        "dependencies": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Dependency" }
+        },
+
+        "versioning": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "current_version":  { "$ref": "#/$defs/VersionString" },
+            "changelog": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/ChangelogEntry" }
+            },
+            "compatibility": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Compatible WorldSpec / schema versions."
+            },
+            "deprecated":     { "type": "boolean", "default": false },
+            "deprecation_notice": { "type": "string" },
+            "successor_asset_id": { "$ref": "#/$defs/UUID" }
+          }
+        },
+
+        "licensing":         { "$ref": "#/$defs/Licensing" },
+        "attribution":       { "$ref": "#/$defs/Attribution" },
+        "documents": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/DocumentReference" }
+        },
+        "risks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/RiskAssessment" }
+        },
+        "validation":        { "$ref": "#/$defs/ValidationReport" },
+
+        "extensions": {
+          "type": "object",
+          "description": "Vendor or domain-specific extension namespaces. Keys MUST be reverse-DNS namespace strings.",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "schema_meta": {
+      "type": "object",
+      "description": "Schema-level metadata and publication information.",
+      "required": ["standard","version","status"],
+      "additionalProperties": false,
+      "properties": {
+        "standard":      { "type": "string", "const": "PW-WSF-1100", "description": "PhysWorldLM World Specification Asset Standard identifier." },
+        "version":       { "$ref": "#/$defs/VersionString" },
+        "revision":      { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["draft","review","approved","published","deprecated","withdrawn"]
+        },
+        "title":         { "type": "string", "default": "PhysWorldLM Asset Schema" },
+        "description":   { "type": "string" },
+        "committee":     { "type": "string", "default": "PhysWorldLM Architecture Committee" },
+        "publication":   { "$ref": "#/$defs/Timestamp" },
+        "license": {
+          "type": "string",
+          "default": "Apache-2.0"
+        },
+        "authors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Attribution" }
+        },
+        "references": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/URI" }
+        },
+        "compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "world_schema":   { "$ref": "#/$defs/VersionString" },
+            "entity_schema":  { "$ref": "#/$defs/VersionString" },
+            "json_schema_draft": { "type": "string", "const": "2020-12" }
+          }
+        }
+      }
+    },
+
+    "asset": { "$ref": "#/$defs/Asset" }
+
+  },
+
+  "examples": [
+    {
+      "schema_meta": {
+        "standard": "PW-WSF-1100",
+        "version": "1.0.0",
+        "status": "published",
+        "title": "PhysWorldLM Asset Schema",
+        "committee": "PhysWorldLM Architecture Committee",
+        "license": "Apache-2.0",
+        "compatibility": {
+          "world_schema": "1.0.0",
+          "json_schema_draft": "2020-12"
+        }
+      },
+      "asset": {
+        "identity": {
+          "asset_uuid": "a1b2c3d4-0001-0001-0001-000000000001",
+          "asset_id": "MBT-M1A2-SEPV3-001",
+          "name": "M1A2 SEPv3 Main Battle Tank",
+          "display_name": "Abrams MBT SEPv3",
+          "description": "US Army M1A2 SEPv3 main battle tank with TUSK III and Trophy APS.",
+          "serial_number": "SN-7734-ABRAMS",
+          "nato_stock_number": "2350-01-587-4450"
+        },
+        "classification": {
+          "asset_type": "tank",
+          "category": "armored_fighting_vehicle",
+          "subtype": "main_battle_tank",
+          "domain": "military",
+          "nature": "physical",
+          "durability": "durable",
+          "strategic_level": "tactical"
+        },
+        "version": "1.0.0",
+        "status": {
+          "status": "operational",
+          "readiness": "fully_mission_capable",
+          "health_score": 95
+        },
+        "geometry": {
+          "vertex_count": 185000,
+          "face_count": 92000,
+          "bounding_box": {
+            "min": { "x": -3.7, "y": 0.0,  "z": -4.9 },
+            "max": { "x":  3.7, "y": 2.44, "z":  4.9 }
+          },
+          "coordinate_system": { "convention": "Z_UP", "unit": "meters" },
+          "lods": [
+            { "lod_index": 0, "triangle_count": 92000, "file": { "filename": "m1a2_lod0.usd", "format": "usd" } },
+            { "lod_index": 1, "triangle_count": 22000, "file": { "filename": "m1a2_lod1.usd", "format": "usd" } },
+            { "lod_index": 2, "triangle_count": 4000,  "file": { "filename": "m1a2_lod2.glb", "format": "glb" } }
+          ]
+        },
+        "physics": {
+          "mass_kg": 66000,
+          "friction_static": 0.9,
+          "friction_dynamic": 0.7,
+          "restitution": 0.1,
+          "preset": "rigid_body"
+        },
+        "tags": ["tank","armored","ground_vehicle","military","NATO","US_Army"],
+        "semantic_labels": {
+          "ontology_class": "MainBattleTank",
+          "military_tags": ["armor","combined_arms"],
+          "operational_tags": ["maneuver","direct_fire"]
+        }
+      }
+    },
+    {
+      "schema_meta": {
+        "standard": "PW-WSF-1100",
+        "version": "1.0.0",
+        "status": "published",
+        "compatibility": { "world_schema": "1.0.0", "json_schema_draft": "2020-12" }
+      },
+      "asset": {
+        "identity": {
+          "asset_uuid": "a1b2c3d4-0002-0002-0002-000000000002",
+          "asset_id": "CESIUM-TILE-001",
+          "name": "Urban Terrain Cesium Tileset — Baghdad CDA",
+          "description": "High-resolution Cesium 3D Tiles of urban terrain, 0.5 m GSD."
+        },
+        "classification": {
+          "asset_type": "cesium_tileset",
+          "domain": "military",
+          "nature": "digital"
+        },
+        "version": "1.0.0",
+        "status": { "status": "available" },
+        "gis_meta": {
+          "epsg_code": 4326,
+          "bounds": {
+            "southwest": { "latitude": 33.30, "longitude": 44.35 },
+            "northeast": { "latitude": 33.35, "longitude": 44.40 }
+          },
+          "elevation_min_m": 30,
+          "elevation_max_m": 55,
+          "layer_type": "cesium_tileset",
+          "cesium_asset_id": "9001234",
+          "cesium_tileset_url": "https://assets.cesium.com/9001234/tileset.json"
+        }
+      }
+    }
+  ]
+}

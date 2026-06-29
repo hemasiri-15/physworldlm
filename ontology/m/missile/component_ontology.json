@@ -1,0 +1,470 @@
+{
+  "MissileComponentOntology": {
+    "MissileSubsystem": {
+      "Airframe": {
+        "NoseCone": {
+          "Ogive": {},
+          "Conical": {},
+          "Blunted": {},
+          "Biconic": {}
+        },
+        "Radome": {
+          "Radome_RF": {},
+          "Radome_IR": {},
+          "Radome_DualMode": {},
+          "Radome_HypersonicThermal": {}
+        },
+        "BodySection": {
+          "ForwardBody": {},
+          "MidBody": {},
+          "AftBody": {},
+          "InterstageAdapter": {}
+        },
+        "TailSection": {
+          "TailCone": {},
+          "BoattailSection": {},
+          "NozzleIntegration": {}
+        },
+        "AeroSurfaces": {
+          "FixedFins": {},
+          "FoldingFins": {},
+          "Canards": {},
+          "Wings": {
+            "DeltaWing": {},
+            "SweptWing": {},
+            "FoldingWing": {}
+          },
+          "Strakes": {},
+          "GridFins": {}
+        },
+        "Materials": {
+          "AluminumAlloy": {},
+          "TitaniumAlloy": {},
+          "SteelAlloy": {},
+          "CarbonFibreComposite": {},
+          "GlassFireComposite": {},
+          "ThermalProtectionLayer": {},
+          "ABLATIVE": {},
+          "RCC": {}
+        }
+      },
+      "GuidanceSystem": {
+        "GuidanceComputer": {
+          "FlightMissionComputer": {},
+          "WeaponsSystemComputer": {},
+          "DataBus": {
+            "MIL_STD_1553": {},
+            "ARINC429": {},
+            "EthernetBus": {}
+          }
+        },
+        "AutopilotSystem": {
+          "ThreerAxisAutopilot": {},
+          "PitchController": {},
+          "YawController": {},
+          "RollController": {},
+          "GainSchedule": {},
+          "AdaptiveControl": {}
+        },
+        "INS_Unit": {
+          "MechanicalGyroINS": {},
+          "RingLaserGyroINS": {},
+          "FiberOpticGyroINS": {},
+          "HemisphericalResonatorGyro": {},
+          "MEMS_INS": {}
+        },
+        "GNSS_Receiver": {
+          "GPS_Receiver": {},
+          "GLONASS_Receiver": {},
+          "BeiDou_Receiver": {},
+          "Galileo_Receiver": {},
+          "NavIC_Receiver": {},
+          "MultiConstellationGNSS": {}
+        },
+        "TerrainGuidance": {
+          "TERCOM_Unit": {},
+          "DSMAC_Unit": {},
+          "DigitalElevationMap": {},
+          "SceneMatchingUnit": {}
+        },
+        "StarTracker": {
+          "StarTrackerOptics": {},
+          "StarCatalogProcessor": {}
+        },
+        "CommandGuidance": {
+          "UpLinkReceiver": {},
+          "DownLinkTransmitter": {},
+          "CommandDecoder": {}
+        }
+      },
+      "SeekerSystem": {
+        "ActiveRadarSeeker": {
+          "ARH_Antenna": {},
+          "ARH_Transmitter": {},
+          "ARH_Receiver": {},
+          "ARH_SignalProcessor": {},
+          "ARH_FMCW": {},
+          "ARH_Pulse": {},
+          "ARH_PulseDoppler": {}
+        },
+        "SemiActiveRadarSeeker": {
+          "SARH_Receiver": {},
+          "SARH_AngleTracker": {},
+          "SARH_IlluminatorInterface": {}
+        },
+        "PassiveRadarSeeker": {
+          "PRH_Wideband": {},
+          "PRH_Narrowband": {},
+          "PRH_SpinScan": {}
+        },
+        "InfraredSeeker": {
+          "IRSeeker_Reticle": {},
+          "IRSeeker_Rosette": {},
+          "IRSeeker_StrappedDown": {},
+          "IRSeeker_AllAspect": {},
+          "IRSeeker_FPA": {},
+          "Detector_PbS": {},
+          "Detector_InSb": {},
+          "Detector_HgCdTe": {},
+          "Detector_QWIP": {}
+        },
+        "ImagingInfraredSeeker": {
+          "IIR_FocalPlaneArray": {},
+          "IIR_CooledDetector": {},
+          "IIR_UncooledDetector": {},
+          "IIR_SceneProcessor": {},
+          "IIR_TargetTracker": {}
+        },
+        "ElectroOpticalSeeker": {
+          "EOSeeker_TV": {},
+          "EOSeeker_CCD": {},
+          "EOSeeker_CMOS": {},
+          "EOSeeker_SceneCorrelation": {}
+        },
+        "LaserSeeker": {
+          "LaserDesignatorSeeker": {},
+          "LaserBeamRidingReceiver": {},
+          "SemiActiveLaserSeeker": {},
+          "LaserRanging": {}
+        },
+        "MillimeterWaveSeeker": {
+          "MMW_ActiveRadar": {},
+          "MMW_PassiveRadiometric": {},
+          "MMW_DualMode": {}
+        },
+        "MultiModeSeeker": {
+          "ARH_IR_DualMode": {},
+          "MMW_IIR_DualMode": {},
+          "GPS_IIR_DualMode": {}
+        }
+      },
+      "NavigationSystem": {
+        "IMU": {
+          "Accelerometer": {
+            "MEMS_Accelerometer": {},
+            "Quartz_Accelerometer": {},
+            "Force_Rebalance_Accelerometer": {}
+          },
+          "Gyroscope": {
+            "RingLaserGyro": {},
+            "FiberOpticGyro": {},
+            "MEMS_Gyro": {},
+            "HemisphericalResonatorGyro": {}
+          }
+        },
+        "Altimeter": {
+          "RadarAltimeter": {},
+          "BarometricAltimeter": {},
+          "LaserAltimeter": {}
+        },
+        "AirDataSystem": {
+          "PitotTube": {},
+          "StaticPort": {},
+          "AirSpeedSensor": {}
+        },
+        "MagneticCompass": {},
+        "SunSensor": {}
+      },
+      "PropulsionSystem": {
+        "SolidRocketMotor": {
+          "SRM_SingleStage": {},
+          "SRM_TwoStage": {},
+          "SRM_ThreeStage": {},
+          "BoosterMotor": {},
+          "SustainerMotor": {},
+          "CombustionChamber": {
+            "CC_Steel": {},
+            "CC_CompositeCase": {},
+            "CC_Titanium": {}
+          },
+          "SolidPropellant": {
+            "HTPB": {},
+            "PBAN": {},
+            "AP_HTPB_Al": {},
+            "DoubleBasePropellant": {},
+            "CMDB": {},
+            "Nitramine_Based": {}
+          },
+          "Nozzle": {
+            "FixedNozzle": {},
+            "FlexibleNozzle": {},
+            "NozzleThroat": {},
+            "NozzleExtension": {},
+            "SubmergedNozzle": {},
+            "PlugNozzle": {}
+          },
+          "Igniter": {
+            "PyrotechnicIgniter": {},
+            "EED": {},
+            "LaserIgniter": {}
+          },
+          "ThrustTerminationSystem": {}
+        },
+        "LiquidRocketEngine": {
+          "LRE_Hypergolic": {
+            "UDMH_N2O4": {},
+            "MMH_N2O4": {},
+            "AK27_UDMH": {}
+          },
+          "LRE_Cryogenic": {
+            "LOX_LH2": {},
+            "LOX_Kerosene": {}
+          },
+          "LRE_StorableMonopropellant": {
+            "Hydrazine": {},
+            "HAN_Based": {}
+          },
+          "FuelTank": {
+            "TitaniumFuelTank": {},
+            "AluminumFuelTank": {},
+            "CompositeFuelTank": {}
+          },
+          "OxidizerTank": {},
+          "TurboPump": {},
+          "Injector": {},
+          "Pressurization": {}
+        },
+        "HybridRocketMotor": {
+          "HRM_Oxidizer": {},
+          "HRM_SolidFuel": {},
+          "HRM_Injector": {}
+        },
+        "Turbojet": {
+          "TJ_Intake": {},
+          "TJ_Compressor": {},
+          "TJ_CombustionChamber": {},
+          "TJ_Turbine": {},
+          "TJ_Afterburner": {},
+          "TJ_Nozzle": {},
+          "TJ_FuelSystem": {}
+        },
+        "Turbofan": {
+          "TF_Fan": {},
+          "TF_CoreEngine": {},
+          "TF_Bypass": {},
+          "TF_Nozzle": {},
+          "TF_FuelControl": {}
+        },
+        "Ramjet": {
+          "RJ_Intake": {
+            "RJ_AxialIntake": {},
+            "RJ_SideMountedIntake": {},
+            "RJ_PitotIntake": {}
+          },
+          "RJ_CombustionChamber": {},
+          "RJ_FuelSystem": {
+            "RJ_LiquidFuel": {},
+            "RJ_GelFuel": {},
+            "RJ_SolidFuelGasGenerator": {}
+          },
+          "RJ_Nozzle": {},
+          "DuctedRocket": {}
+        },
+        "Scramjet": {
+          "SCJ_HypersonicIntake": {},
+          "SCJ_SupersonicCombustor": {},
+          "SCJ_NozzleExpander": {},
+          "SCJ_FuelInjection": {},
+          "SCJ_Isolator": {}
+        },
+        "ThrustVectorControl": {
+          "TVC_GimbaltedNozzle": {},
+          "TVC_JetVane": {},
+          "TVC_FluidInjection": {},
+          "TVC_MovableNozzleExtension": {},
+          "TVC_Vernier": {}
+        },
+        "PropellantManagement": {}
+      },
+      "WarheadSystem": {
+        "KineticKillWarhead": {
+          "KKV_Body": {},
+          "KKV_Divert": {}
+        },
+        "BlastFragmentationWarhead": {
+          "BF_RodWarhead": {},
+          "BF_ExpandingRod": {},
+          "BF_PreformedFragments": {},
+          "BF_NaturalFragmentation": {}
+        },
+        "ContinuousRodWarhead": {},
+        "ShapedChargeWarhead": {
+          "SC_Liner": {},
+          "SC_ExplosiveCharge": {}
+        },
+        "TandemShapedChargeWarhead": {
+          "TSC_PrecursorCharge": {},
+          "TSC_MainCharge": {}
+        },
+        "ClusterWarhead": {
+          "CW_Submunitions": {},
+          "CW_Dispenser": {}
+        },
+        "TerminallyGuidedSubmunition": {},
+        "FuelAirExplosiveWarhead": {
+          "FAE_AerosolGenerator": {},
+          "FAE_Initiator": {}
+        },
+        "ThermobaricWarhead": {},
+        "KineticEnergyPenetrator": {},
+        "BunkerBusterWarhead": {
+          "BB_HardTarget": {},
+          "BB_EarthPenetrating": {}
+        },
+        "NuclearWarhead": {
+          "NW_FissionPrimary": {},
+          "NW_FusionSecondary": {},
+          "NW_Boosted": {},
+          "NW_ReentryVehicle": {},
+          "NW_MIRV": {}
+        },
+        "ChemicalWarhead": {},
+        "EMP_Warhead": {},
+        "RadiologicalWarhead": {}
+      },
+      "FuzeSystem": {
+        "ProximityFuze": {
+          "RF_ProximityFuze": {},
+          "LaserProximityFuze": {},
+          "IR_ProximityFuze": {},
+          "AcousticProximityFuze": {}
+        },
+        "ImpactFuze": {
+          "PointDetonating": {},
+          "Delay": {},
+          "GrazeSensitive": {}
+        },
+        "TimeFuze": {
+          "ElectronicTimeFuze": {},
+          "ClockworkTimeFuze": {}
+        },
+        "CommandDetonation": {},
+        "AltimetricFuze": {},
+        "SafeAndArmDevice": {
+          "SADevice_ElectroMechanical": {},
+          "SADevice_Electronic": {},
+          "InterlockChain": {}
+        }
+      },
+      "PowerSystem": {
+        "ThermalBattery": {
+          "TB_Lithium": {},
+          "TB_Calcium": {}
+        },
+        "LithiumBattery": {},
+        "SilverZincBattery": {},
+        "TurbineAlternator": {},
+        "RamAirTurbine": {},
+        "SolarPanel": {},
+        "NuclearBattery": {},
+        "PowerConditioningUnit": {},
+        "BusPowerDistribution": {}
+      },
+      "CommunicationSystem": {
+        "DataLink": {
+          "TwoWayDataLink": {},
+          "OneWayUplink": {},
+          "BidirectionalLink": {}
+        },
+        "RF_DataLink": {
+          "UHF_DataLink": {},
+          "VHF_DataLink": {},
+          "SHF_DataLink": {}
+        },
+        "FiberOpticLink": {},
+        "WireLink": {},
+        "Encryption": {
+          "COMSEC_Module": {},
+          "KGV_Module": {}
+        },
+        "Telemetry": {
+          "FlightTelemetry": {},
+          "PCM_Encoder": {},
+          "TelemetryTransmitter": {}
+        },
+        "IFF_Transponder": {},
+        "SatelliteLink": {}
+      },
+      "FlightControlSystem": {
+        "ActuationSystem": {
+          "ElectricActuator": {
+            "EA_BrushlessMotor": {},
+            "EA_Gearbox": {}
+          },
+          "HydraulicActuator": {
+            "HA_Pump": {},
+            "HA_Servo": {}
+          },
+          "PneumaticActuator": {},
+          "ShapeMemoryAlloyActuator": {}
+        },
+        "ControlSurface": {
+          "CS_Elevon": {},
+          "CS_Rudder": {},
+          "CS_Elevator": {},
+          "CS_Aileron": {},
+          "CS_CanardSurface": {},
+          "CS_TailFin": {}
+        },
+        "FlightControlLaw": {
+          "FCL_PID": {},
+          "FCL_StateFeedback": {},
+          "FCL_Adaptive": {},
+          "FCL_Nonlinear": {}
+        },
+        "StrapdownSensorFusion": {}
+      },
+      "SafetySystem": {
+        "SelfDestructMechanism": {},
+        "FlightTerminationSystem": {},
+        "ArmingInterlock": {},
+        "SafetyAndArm": {},
+        "LaunchInterlock": {},
+        "DudPrevention": {}
+      },
+      "ThermalManagement": {
+        "ActiveCooling": {
+          "AC_CryogenicCooler": {},
+          "AC_JouleThomsonCooler": {},
+          "AC_StirlingCooler": {}
+        },
+        "PassiveCooling": {
+          "PC_ThermalMass": {},
+          "PC_HeatPipe": {},
+          "PC_Ablative": {}
+        },
+        "ThermalInsulation": {},
+        "ThermalProtectionSystem": {}
+      },
+      "SensorSystem": {
+        "PressureSensor": {},
+        "TemperatureSensor": {},
+        "AccelerationSensor": {},
+        "AngleOfAttackSensor": {},
+        "SideslipSensor": {},
+        "VibrationSensor": {},
+        "BatteryVoltageSensor": {}
+      }
+    }
+  }
+}

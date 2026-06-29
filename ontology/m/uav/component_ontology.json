@@ -1,0 +1,824 @@
+{
+  "ontology": "PhysWorld Military Ontology (PWMO)",
+  "module": "UAV",
+  "file": "component_ontology.json",
+  "version": "1.0.0",
+  "description": "Complete engineering component ontology for military UAVs. All subsystems expanded recursively.",
+  "components": {
+    "Airframe": {
+      "id": "C_Airframe",
+      "label": "Airframe",
+      "definition": "Structural body of the UAV excluding propulsion and avionics",
+      "subcomponents": {
+        "Nose": {
+          "id": "C_Nose",
+          "label": "Nose Section",
+          "subcomponents": {
+            "NoseCone": { "id": "C_NoseCone", "label": "Nose Cone" },
+            "RadomeFairing": { "id": "C_Radome", "label": "Radome / Sensor Fairing" },
+            "NoseMountedInlet": { "id": "C_NoseInlet", "label": "Nose-Mounted Air Inlet" }
+          }
+        },
+        "Fuselage": {
+          "id": "C_Fuselage",
+          "label": "Fuselage",
+          "subcomponents": {
+            "ForwardFuselage": { "id": "C_FusFwd", "label": "Forward Fuselage" },
+            "CenterFuselage": { "id": "C_FusCenter", "label": "Center Fuselage" },
+            "AftFuselage": { "id": "C_FusAft", "label": "Aft Fuselage" },
+            "PayloadBay": { "id": "C_PayBay", "label": "Payload Bay" },
+            "WeaponBay": { "id": "C_WepBay", "label": "Internal Weapon Bay" },
+            "EquipmentBay": { "id": "C_EqBay", "label": "Electronics/Equipment Bay" },
+            "FuelBay": { "id": "C_FuelBay", "label": "Fuel Bay" },
+            "BatteryCompartment": { "id": "C_BatComp", "label": "Battery Compartment" }
+          }
+        },
+        "Wing": {
+          "id": "C_Wing",
+          "label": "Wing Assembly",
+          "subcomponents": {
+            "WingRoot": { "id": "C_WingRoot", "label": "Wing Root" },
+            "WingTip": { "id": "C_WingTip", "label": "Wing Tip" },
+            "Winglet": { "id": "C_Winglet", "label": "Winglet" },
+            "LeadingEdge": { "id": "C_LE", "label": "Leading Edge" },
+            "TrailingEdge": { "id": "C_TE", "label": "Trailing Edge" },
+            "Aileron": { "id": "C_Aileron", "label": "Aileron" },
+            "Flap": { "id": "C_Flap", "label": "Flap" },
+            "Slat": { "id": "C_Slat", "label": "Slat" },
+            "Spoiler": { "id": "C_Spoiler", "label": "Spoiler" },
+            "FoldingWingMechanism": { "id": "C_FoldWing", "label": "Folding Wing Mechanism" },
+            "VariableSweepMechanism": { "id": "C_VarSweep", "label": "Variable Sweep Mechanism" },
+            "WingSpar": { "id": "C_WingSpar", "label": "Wing Spar" },
+            "WingRib": { "id": "C_WingRib", "label": "Wing Rib" },
+            "WingSkin": { "id": "C_WingSkin", "label": "Wing Skin / Panel" },
+            "HardpointPylon": { "id": "C_Pylon", "label": "Hardpoint Pylon" }
+          }
+        },
+        "TailAssembly": {
+          "id": "C_Tail",
+          "label": "Tail Assembly (Empennage)",
+          "subcomponents": {
+            "TailBoom": { "id": "C_TailBoom", "label": "Tail Boom" },
+            "VerticalStabilizer": { "id": "C_VS", "label": "Vertical Stabilizer (Fin)" },
+            "HorizontalStabilizer": { "id": "C_HS", "label": "Horizontal Stabilizer" },
+            "Rudder": { "id": "C_Rudder", "label": "Rudder" },
+            "Elevator": { "id": "C_Elevator", "label": "Elevator" },
+            "VTailSurface": { "id": "C_VTail", "label": "V-Tail Surface" },
+            "TwinTailFin": { "id": "C_TwinFin", "label": "Twin Tail Fin" },
+            "YawVane": { "id": "C_YawVane", "label": "Yaw Vane" }
+          }
+        },
+        "LandingGear": {
+          "id": "C_LandGear",
+          "label": "Landing Gear",
+          "subcomponents": {
+            "MainGear": { "id": "C_MainGear", "label": "Main Landing Gear" },
+            "NoseGear": { "id": "C_NoseGear", "label": "Nose Gear" },
+            "TailGear": { "id": "C_TailGear", "label": "Tail Gear" },
+            "Skid": { "id": "C_Skid", "label": "Skid Landing Gear" },
+            "RetractableLandingGear": { "id": "C_RetGear", "label": "Retractable Landing Gear" },
+            "TricycleLandingGear": { "id": "C_TricycleGear", "label": "Tricycle Landing Gear" },
+            "FloatLandingGear": { "id": "C_Float", "label": "Float / Pontoon Gear" },
+            "SkiLandingGear": { "id": "C_Ski", "label": "Ski Landing Gear" }
+          }
+        },
+        "RotorArm": { "id": "C_RotorArm", "label": "Rotor Arm (Multirotor)" },
+        "PropellerGuard": { "id": "C_PropGuard", "label": "Propeller Guard" },
+        "HeatShield": { "id": "C_HeatShield", "label": "Heat Shield / Thermal Protection" },
+        "AirIntake": { "id": "C_AirIntake", "label": "Air Intake" },
+        "ExhaustSystem": {
+          "id": "C_Exhaust",
+          "label": "Exhaust System",
+          "subcomponents": {
+            "ExhaustNozzle": { "id": "C_ExNozzle", "label": "Exhaust Nozzle" },
+            "IRSuppressor": { "id": "C_IRSup", "label": "IR Suppressor / Exhaust Mixer" }
+          }
+        },
+        "StructuralMaterial": {
+          "id": "C_Material",
+          "label": "Structural Materials",
+          "subcomponents": {
+            "CarbonFiber": { "id": "C_CFRP", "label": "Carbon Fiber Reinforced Polymer (CFRP)" },
+            "Aluminum": { "id": "C_Al", "label": "Aluminum Alloy" },
+            "Titanium": { "id": "C_Ti", "label": "Titanium Alloy" },
+            "RAMCoating": { "id": "C_RAM", "label": "Radar Absorbing Material (RAM) Coating" },
+            "Kevlar": { "id": "C_Kevlar", "label": "Kevlar / Aramid Composite" },
+            "FiberglassComposite": { "id": "C_Glass", "label": "Fiberglass Composite" }
+          }
+        }
+      }
+    },
+    "Propulsion": {
+      "id": "C_Propulsion",
+      "label": "Propulsion System",
+      "subcomponents": {
+        "ElectricPropulsion": {
+          "id": "C_ElecProp",
+          "label": "Electric Propulsion",
+          "subcomponents": {
+            "BrushlessMotor": { "id": "C_BLDC", "label": "Brushless DC Motor (BLDC)" },
+            "BrushedMotor": { "id": "C_BrushedMotor", "label": "Brushed DC Motor" },
+            "ESC": { "id": "C_ESC", "label": "Electronic Speed Controller (ESC)" },
+            "Propeller": {
+              "id": "C_Propeller",
+              "label": "Propeller",
+              "subcomponents": {
+                "FixedPitchPropeller": { "id": "C_FPProp", "label": "Fixed Pitch Propeller" },
+                "VariablePitchPropeller": { "id": "C_VPProp", "label": "Variable Pitch Propeller" },
+                "FoldingPropeller": { "id": "C_FoldProp", "label": "Folding Propeller" },
+                "DualBladePropeller": { "id": "C_2BProp", "label": "Dual-Blade Propeller" },
+                "TriBladePropeller": { "id": "C_3BProp", "label": "Tri-Blade Propeller" },
+                "QuadBladePropeller": { "id": "C_4BProp", "label": "Quad-Blade Propeller" },
+                "CarbonFiberPropeller": { "id": "C_CFProp", "label": "Carbon Fiber Propeller" }
+              }
+            },
+            "Rotor": {
+              "id": "C_Rotor",
+              "label": "Rotor",
+              "subcomponents": {
+                "MainRotor": { "id": "C_MainRotor", "label": "Main Rotor" },
+                "TailRotor": { "id": "C_TailRotor", "label": "Tail Rotor" },
+                "RotorBlade": { "id": "C_RotorBlade", "label": "Rotor Blade" },
+                "RotorHub": { "id": "C_RotorHub", "label": "Rotor Hub" },
+                "SwashPlate": { "id": "C_Swash", "label": "Swash Plate" }
+              }
+            }
+          }
+        },
+        "ICE_Propulsion": {
+          "id": "C_ICE",
+          "label": "Internal Combustion Engine",
+          "subcomponents": {
+            "GasolineEngine": { "id": "C_GasEng", "label": "Gasoline Piston Engine" },
+            "HeavyFuelEngine": { "id": "C_HFEng", "label": "Heavy Fuel Engine (JP-8/Diesel)" },
+            "WankelEngine": { "id": "C_Wankel", "label": "Wankel Rotary Engine" },
+            "DieselEngine": { "id": "C_DieselEng", "label": "Diesel Piston Engine" },
+            "Carburetor": { "id": "C_Carb", "label": "Carburetor" },
+            "FuelInjection": { "id": "C_FuelInj", "label": "Fuel Injection System" },
+            "Ignition": { "id": "C_Ignition", "label": "Ignition System" },
+            "Muffler": { "id": "C_Muffler", "label": "Muffler / Exhaust Silencer" }
+          }
+        },
+        "TurbineEngine": {
+          "id": "C_Turbine",
+          "label": "Turbine Engine",
+          "subcomponents": {
+            "MicroTurbojet": { "id": "C_MicroTJ", "label": "Micro Turbojet" },
+            "Turbojet": { "id": "C_TJ", "label": "Turbojet Engine" },
+            "Turbofan": { "id": "C_TF", "label": "Turbofan Engine" },
+            "Turboprop": { "id": "C_TP", "label": "Turboprop Engine" },
+            "Turboshaft": { "id": "C_TS", "label": "Turboshaft Engine" },
+            "Compressor": { "id": "C_Compressor", "label": "Compressor Stage" },
+            "CombustionChamber": { "id": "C_CombChamber", "label": "Combustion Chamber" },
+            "Turbine": { "id": "C_TurbineStage", "label": "Turbine Stage" },
+            "AfterBurner": { "id": "C_Afterburn", "label": "Afterburner / Reheat" },
+            "ThrustVectorNozzle": { "id": "C_ThrustVec", "label": "Thrust Vectoring Nozzle" },
+            "FADEC": { "id": "C_FADEC", "label": "Full Authority Digital Engine Control (FADEC)" }
+          }
+        },
+        "HybridPropulsion": {
+          "id": "C_HybridProp",
+          "label": "Hybrid Propulsion System",
+          "subcomponents": {
+            "HybridController": { "id": "C_HybridCtrl", "label": "Hybrid Power Controller" },
+            "Generator": { "id": "C_Generator", "label": "Onboard Generator" },
+            "HybridBattery": { "id": "C_HybridBat", "label": "Hybrid Battery Pack" }
+          }
+        },
+        "FuelCell": {
+          "id": "C_FuelCell",
+          "label": "Fuel Cell System",
+          "subcomponents": {
+            "PEMFuelCell": { "id": "C_PEM", "label": "PEM Fuel Cell" },
+            "SOFuelCell": { "id": "C_SOFC", "label": "Solid Oxide Fuel Cell (SOFC)" },
+            "H2Storage": { "id": "C_H2Tank", "label": "Hydrogen Storage Tank" }
+          }
+        },
+        "SolarPropulsion": {
+          "id": "C_SolarProp",
+          "label": "Solar Propulsion System",
+          "subcomponents": {
+            "SolarArray": { "id": "C_SolarArray", "label": "Solar Cell Array" },
+            "MPPT": { "id": "C_MPPT", "label": "Maximum Power Point Tracker (MPPT)" },
+            "EnergyStorageBank": { "id": "C_ESBank", "label": "Energy Storage Battery Bank" }
+          }
+        },
+        "FuelSystem": {
+          "id": "C_FuelSys",
+          "label": "Fuel System",
+          "subcomponents": {
+            "FuelTank": { "id": "C_FuelTank", "label": "Fuel Tank" },
+            "FuelPump": { "id": "C_FuelPump", "label": "Fuel Pump" },
+            "FuelFilter": { "id": "C_FuelFilter", "label": "Fuel Filter" },
+            "FuelGauge": { "id": "C_FuelGauge", "label": "Fuel Level Sensor" },
+            "CrashResistantFuelSystem": { "id": "C_CRFS", "label": "Crash-Resistant Fuel System (CRFS)" }
+          }
+        },
+        "ThermalManagement": {
+          "id": "C_ThermalMgmt",
+          "label": "Thermal Management System",
+          "subcomponents": {
+            "AirCooling": { "id": "C_AirCool", "label": "Air Cooling" },
+            "LiquidCooling": { "id": "C_LiqCool", "label": "Liquid Cooling" },
+            "HeatExchanger": { "id": "C_HeatEx", "label": "Heat Exchanger" },
+            "ThermalCoating": { "id": "C_ThermalCoat", "label": "Thermal Insulation Coating" }
+          }
+        }
+      }
+    },
+    "FlightControl": {
+      "id": "C_FlightCtrl",
+      "label": "Flight Control System",
+      "subcomponents": {
+        "FlightController": {
+          "id": "C_FC",
+          "label": "Flight Controller",
+          "subcomponents": {
+            "PIDController": { "id": "C_PID", "label": "PID Controller" },
+            "AdaptiveController": { "id": "C_AdaptCtrl", "label": "Adaptive Controller" },
+            "ModelPredictiveControl": { "id": "C_MPC", "label": "Model Predictive Controller (MPC)" },
+            "NeuralController": { "id": "C_NeuralCtrl", "label": "Neural Network Controller" }
+          }
+        },
+        "Autopilot": {
+          "id": "C_Autopilot",
+          "label": "Autopilot System",
+          "subcomponents": {
+            "AttitudeControl": { "id": "C_AttCtrl", "label": "Attitude Control" },
+            "HeadingControl": { "id": "C_HdgCtrl", "label": "Heading Control" },
+            "AltitudeControl": { "id": "C_AltCtrl", "label": "Altitude Control" },
+            "SpeedControl": { "id": "C_SpdCtrl", "label": "Speed / Throttle Control" },
+            "WaypointManager": { "id": "C_WPMgr", "label": "Waypoint Manager" }
+          }
+        },
+        "MissionComputer": {
+          "id": "C_MissionComp",
+          "label": "Mission Computer",
+          "subcomponents": {
+            "MissionPlanner": { "id": "C_MissionPlan", "label": "Mission Planning Module" },
+            "TaskManager": { "id": "C_TaskMgr", "label": "Task Manager" },
+            "RuleEngine": { "id": "C_RuleEng", "label": "Rule Engine" },
+            "DataFusionEngine": { "id": "C_DataFusion", "label": "Data Fusion Engine" }
+          }
+        },
+        "NavigationComputer": { "id": "C_NavComp", "label": "Navigation Computer" },
+        "AIComputer": {
+          "id": "C_AIComp",
+          "label": "AI Processing Computer",
+          "subcomponents": {
+            "GPU": { "id": "C_GPU", "label": "Graphics Processing Unit (GPU)" },
+            "FPGA": { "id": "C_FPGA", "label": "Field-Programmable Gate Array (FPGA)" },
+            "NPU": { "id": "C_NPU", "label": "Neural Processing Unit (NPU)" },
+            "EmbeddedCPU": { "id": "C_EmbCPU", "label": "Embedded CPU" },
+            "TPU": { "id": "C_TPU", "label": "Tensor Processing Unit (TPU)" }
+          }
+        },
+        "ActuatorSystem": {
+          "id": "C_Actuators",
+          "label": "Actuator System",
+          "subcomponents": {
+            "ServoMotor": { "id": "C_Servo", "label": "Servo Motor" },
+            "ElectricActuator": { "id": "C_ElecAct", "label": "Electric Actuator" },
+            "HydraulicActuator": { "id": "C_HydAct", "label": "Hydraulic Actuator" },
+            "PneumaticActuator": { "id": "C_PneumAct", "label": "Pneumatic Actuator" }
+          }
+        },
+        "FlightSoftware": {
+          "id": "C_FlightSW",
+          "label": "Flight Software",
+          "subcomponents": {
+            "RTOS": { "id": "C_RTOS", "label": "Real-Time Operating System (RTOS)" },
+            "FlightControlLaw": { "id": "C_FCLaw", "label": "Flight Control Law" },
+            "SafetyMonitor": { "id": "C_SafeMon", "label": "Safety Monitor Software" },
+            "Middleware": { "id": "C_Middleware", "label": "Middleware / ROS / DDS" }
+          }
+        },
+        "DataBus": {
+          "id": "C_DataBus",
+          "label": "Avionics Data Bus",
+          "subcomponents": {
+            "MIL_STD_1553": { "id": "C_1553", "label": "MIL-STD-1553 Bus" },
+            "ARINC429": { "id": "C_ARINC", "label": "ARINC 429 Bus" },
+            "CAN_Bus": { "id": "C_CAN", "label": "CAN Bus" },
+            "SpaceWire": { "id": "C_SpaceWire", "label": "SpaceWire" },
+            "Ethernet_Avionics": { "id": "C_AvioEth", "label": "Avionics Ethernet (AFDX/ARINC 664)" }
+          }
+        }
+      }
+    },
+    "Navigation": {
+      "id": "C_Navigation",
+      "label": "Navigation System",
+      "subcomponents": {
+        "GNSS": {
+          "id": "C_GNSS",
+          "label": "Global Navigation Satellite System (GNSS)",
+          "subcomponents": {
+            "GPS": { "id": "C_GPS", "label": "GPS (USA)" },
+            "GLONASS": { "id": "C_GLONASS", "label": "GLONASS (Russia)" },
+            "Galileo": { "id": "C_Galileo", "label": "Galileo (EU)" },
+            "BeiDou": { "id": "C_BeiDou", "label": "BeiDou / BDS (China)" },
+            "NavIC": { "id": "C_NavIC", "label": "NavIC / IRNSS (India)" },
+            "QZSS": { "id": "C_QZSS", "label": "QZSS (Japan)" },
+            "DualFrequencyGNSS": { "id": "C_DFGNSS", "label": "Dual-Frequency GNSS Receiver" },
+            "AntiJamGNSS": { "id": "C_AJGNSS", "label": "Anti-Jam GNSS Receiver" },
+            "SpoofingDetector": { "id": "C_SpoofDet", "label": "GNSS Spoofing Detector" }
+          }
+        },
+        "INS": {
+          "id": "C_INS",
+          "label": "Inertial Navigation System (INS)",
+          "subcomponents": {
+            "IMU": {
+              "id": "C_IMU",
+              "label": "Inertial Measurement Unit (IMU)",
+              "subcomponents": {
+                "MEMS_IMU": { "id": "C_MEMS_IMU", "label": "MEMS IMU" },
+                "FOG_IMU": { "id": "C_FOG", "label": "Fiber Optic Gyroscope IMU" },
+                "RLG_IMU": { "id": "C_RLG", "label": "Ring Laser Gyroscope IMU" },
+                "HemisphericalResonatorGyro": { "id": "C_HRG", "label": "Hemispherical Resonator Gyroscope" }
+              }
+            },
+            "Gyroscope": { "id": "C_Gyro", "label": "Gyroscope" },
+            "Accelerometer": { "id": "C_Accel", "label": "Accelerometer" },
+            "GPS_INS_Integration": { "id": "C_GPS_INS", "label": "GPS/INS Integration (Tightly Coupled)" }
+          }
+        },
+        "Magnetometer": { "id": "C_Mag", "label": "Magnetometer / Electronic Compass" },
+        "Barometer": { "id": "C_Baro", "label": "Barometric Pressure Sensor" },
+        "PitotTube": { "id": "C_Pitot", "label": "Pitot Tube (Airspeed)" },
+        "RadarAltimeter": { "id": "C_RadarAlt", "label": "Radar Altimeter" },
+        "LaserAltimeter": { "id": "C_LaserAlt", "label": "Laser Altimeter" },
+        "TerrainNavigation": {
+          "id": "C_TerrainNav",
+          "label": "Terrain Navigation System",
+          "subcomponents": {
+            "TERCOM": { "id": "C_TERCOM", "label": "Terrain Contour Matching (TERCOM)" },
+            "DTED": { "id": "C_DTED", "label": "Digital Terrain Elevation Data (DTED)" }
+          }
+        },
+        "VisualNavigation": {
+          "id": "C_VisNav",
+          "label": "Visual Navigation System",
+          "subcomponents": {
+            "OpticalFlow": { "id": "C_OptFlow", "label": "Optical Flow Sensor" },
+            "VisualOdometry": { "id": "C_VisOdom", "label": "Visual Odometry" },
+            "SLAM_Nav": { "id": "C_SLAM", "label": "Simultaneous Localization and Mapping (SLAM)" },
+            "StarTracker": { "id": "C_StarTrack", "label": "Star Tracker (High-Alt)" }
+          }
+        },
+        "RadioNavigation": {
+          "id": "C_RadioNav",
+          "label": "Radio Navigation System",
+          "subcomponents": {
+            "TACAN": { "id": "C_TACAN", "label": "TACAN" },
+            "VOR": { "id": "C_VOR", "label": "VOR" },
+            "DME": { "id": "C_DME", "label": "DME" }
+          }
+        }
+      }
+    },
+    "Sensors": {
+      "id": "C_Sensors",
+      "label": "Sensor Suite",
+      "subcomponents": {
+        "OpticalSensors": {
+          "id": "C_OptSens",
+          "label": "Optical / Electro-Optical Sensors",
+          "subcomponents": {
+            "EOCamera": { "id": "C_EOCam", "label": "Electro-Optical (EO) Camera" },
+            "WFOV_Camera": { "id": "C_WFOV", "label": "Wide-Field-of-View Camera" },
+            "NFOV_Camera": { "id": "C_NFOV", "label": "Narrow-Field-of-View / Zoom Camera" },
+            "FullMotionVideo": { "id": "C_FMV", "label": "Full-Motion Video (FMV) Camera" },
+            "StaringArrayCamera": { "id": "C_StaringArray", "label": "Staring Array (Wide Area Persistence)" },
+            "LowLightCamera": { "id": "C_LLLTV", "label": "Low-Light TV Camera (LLLTV)" },
+            "ColorCamera": { "id": "C_ColorCam", "label": "Color Camera" },
+            "MonochromeCam": { "id": "C_MonoCam", "label": "Monochrome Camera" },
+            "CameraGimbal": { "id": "C_Gimbal", "label": "Camera Stabilizing Gimbal" }
+          }
+        },
+        "InfraredSensors": {
+          "id": "C_IRSens",
+          "label": "Infrared Sensors",
+          "subcomponents": {
+            "ThermalCamera": { "id": "C_ThermCam", "label": "Thermal Imaging Camera" },
+            "SWIR": { "id": "C_SWIR", "label": "Short-Wave IR (SWIR) Sensor" },
+            "MWIR": { "id": "C_MWIR", "label": "Mid-Wave IR (MWIR) Sensor" },
+            "LWIR": { "id": "C_LWIR", "label": "Long-Wave IR (LWIR) Sensor" },
+            "IRLineScanner": { "id": "C_IRLS", "label": "IR Line Scanner" },
+            "FLIRSystem": { "id": "C_FLIR", "label": "Forward Looking IR (FLIR) System" }
+          }
+        },
+        "Radar": {
+          "id": "C_Radar",
+          "label": "Radar Sensor",
+          "subcomponents": {
+            "SAR": {
+              "id": "C_SAR",
+              "label": "Synthetic Aperture Radar (SAR)",
+              "subcomponents": {
+                "SpotlightSAR": { "id": "C_SAR_Spotlight", "label": "Spotlight SAR Mode" },
+                "StripSAR": { "id": "C_SAR_Strip", "label": "Strip SAR Mode" },
+                "ScanSAR": { "id": "C_SAR_Scan", "label": "ScanSAR Mode" },
+                "ISAR": { "id": "C_ISAR", "label": "Inverse SAR (ISAR)" },
+                "InSAR": { "id": "C_InSAR", "label": "Interferometric SAR (InSAR)" },
+                "PolSAR": { "id": "C_PolSAR", "label": "Polarimetric SAR (PolSAR)" },
+                "CSAR": { "id": "C_CSAR", "label": "Circular SAR (CSAR)" }
+              }
+            },
+            "GMTI": { "id": "C_GMTI", "label": "Ground Moving Target Indicator (GMTI)" },
+            "AESA": { "id": "C_AESA", "label": "Active Electronically Scanned Array (AESA)" },
+            "PESA": { "id": "C_PESA", "label": "Passive Electronically Scanned Array (PESA)" },
+            "WeatherRadar": { "id": "C_WxRadar", "label": "Weather Radar" },
+            "CollisionAvoidanceRadar": { "id": "C_CARadar", "label": "Collision Avoidance Radar" },
+            "TerrainAvoidanceRadar": { "id": "C_TARadar", "label": "Terrain Avoidance Radar" },
+            "ForwardLookingRadar": { "id": "C_FLR", "label": "Forward-Looking Radar" },
+            "MultiModeRadar": { "id": "C_MMRadar", "label": "Multi-Mode Radar" }
+          }
+        },
+        "LiDAR": {
+          "id": "C_LiDAR",
+          "label": "LiDAR Sensor",
+          "subcomponents": {
+            "MechanicalLiDAR": { "id": "C_MechLiDAR", "label": "Mechanical Scanning LiDAR" },
+            "SolidStateLiDAR": { "id": "C_SSLiDAR", "label": "Solid-State LiDAR" },
+            "FlashLiDAR": { "id": "C_FlashLiDAR", "label": "Flash LiDAR" },
+            "GeigermodeAPD": { "id": "C_GeigerLiDAR", "label": "Geiger-Mode APD LiDAR" }
+          }
+        },
+        "LaserSensors": {
+          "id": "C_Laser",
+          "label": "Laser Sensors",
+          "subcomponents": {
+            "LaserRangefinder": { "id": "C_LRF", "label": "Laser Rangefinder (LRF)" },
+            "LaserDesignator": { "id": "C_LD", "label": "Laser Designator" },
+            "LaserIlluminator": { "id": "C_LI", "label": "Laser Illuminator / Pointer" },
+            "DualModeLaserSpot": { "id": "C_DMLS", "label": "Dual-Mode Laser Spot Tracker" }
+          }
+        },
+        "Multispectral": {
+          "id": "C_MS",
+          "label": "Multispectral Sensor",
+          "subcomponents": {
+            "MultispectralCamera": { "id": "C_MSCam", "label": "Multispectral Camera" },
+            "HyperspectralCamera": { "id": "C_HSCam", "label": "Hyperspectral Camera" },
+            "ColorIR": { "id": "C_CIR", "label": "Color-Infrared (CIR) Sensor" }
+          }
+        },
+        "SIGINT_Sensors": {
+          "id": "C_SIGINT",
+          "label": "Signals Intelligence Sensors",
+          "subcomponents": {
+            "ELINT_Receiver": { "id": "C_ELINT", "label": "ELINT Receiver" },
+            "COMINT_Receiver": { "id": "C_COMINT", "label": "COMINT Receiver" },
+            "RFScanner": { "id": "C_RFScan", "label": "RF Scanner / Spectrum Analyzer" },
+            "DirectionFinder": { "id": "C_DF", "label": "Direction Finder (DF)" },
+            "MASINT_Sensor": { "id": "C_MASINT", "label": "MASINT Sensor" }
+          }
+        },
+        "AIS_Receiver": { "id": "C_AIS", "label": "Automatic Identification System (AIS) Receiver" },
+        "ADS_B_Receiver": { "id": "C_ADSB", "label": "ADS-B Receiver" },
+        "AcousticSensor": { "id": "C_Acoustic", "label": "Acoustic Sensor / Microphone Array" },
+        "ChemicalSensor": { "id": "C_ChemSens", "label": "Chemical / CBRN Sensor" },
+        "BiologicalSensor": { "id": "C_BioSens", "label": "Biological Agent Sensor" },
+        "RadiationSensor": { "id": "C_RadSens", "label": "Radiation / Nuclear Sensor" },
+        "MagneticAnomalyDetector": { "id": "C_MAD", "label": "Magnetic Anomaly Detector (MAD)" },
+        "SeismicSensor": { "id": "C_Seismic", "label": "Seismic Sensor" },
+        "WeatherSensor": {
+          "id": "C_WxSens",
+          "label": "Weather Sensor Package",
+          "subcomponents": {
+            "TemperatureSensor": { "id": "C_TempSens", "label": "Temperature Sensor" },
+            "HumiditySensor": { "id": "C_HumSens", "label": "Humidity Sensor" },
+            "WindSensor": { "id": "C_WindSens", "label": "Wind Speed / Direction Sensor" },
+            "PressureSensor": { "id": "C_PressSens", "label": "Atmospheric Pressure Sensor" }
+          }
+        },
+        "Sonobuoy": { "id": "C_Sonobuoy", "label": "Sonobuoy Dispenser / Receiver (ASW)" }
+      }
+    },
+    "Communication": {
+      "id": "C_Comm",
+      "label": "Communication System",
+      "subcomponents": {
+        "DataLink": {
+          "id": "C_DataLink",
+          "label": "Data Link System",
+          "subcomponents": {
+            "LineOfSightLink": {
+              "id": "C_LOS",
+              "label": "Line-of-Sight (LOS) Data Link",
+              "subcomponents": {
+                "RFLink": { "id": "C_RFLink", "label": "RF Data Link" },
+                "VideoDownlink": { "id": "C_VidDown", "label": "Video Downlink" },
+                "TelemetryLink": { "id": "C_TelLink", "label": "Telemetry Link" },
+                "CommandUplink": { "id": "C_CmdUp", "label": "Command Uplink" }
+              }
+            },
+            "BeyondLOS": {
+              "id": "C_BLOS",
+              "label": "Beyond-Line-of-Sight (BLOS) Data Link",
+              "subcomponents": {
+                "SATCOM": {
+                  "id": "C_SATCOM",
+                  "label": "Satellite Communications (SATCOM)",
+                  "subcomponents": {
+                    "Ku_Band_SATCOM": { "id": "C_KuSAT", "label": "Ku-Band SATCOM" },
+                    "Ka_Band_SATCOM": { "id": "C_KaSAT", "label": "Ka-Band SATCOM" },
+                    "X_Band_SATCOM": { "id": "C_XSat", "label": "X-Band SATCOM" },
+                    "UHF_SATCOM": { "id": "C_UHFSAT", "label": "UHF SATCOM" },
+                    "MILSTAR_Link": { "id": "C_MILSTAR", "label": "MILSTAR Link" },
+                    "MUOS_Link": { "id": "C_MUOS", "label": "MUOS Link" }
+                  }
+                }
+              }
+            },
+            "TacticalDataLink": {
+              "id": "C_TDL",
+              "label": "Tactical Data Link",
+              "subcomponents": {
+                "Link16": { "id": "C_L16", "label": "Link 16 (JTIDS/MIDS)" },
+                "Link22": { "id": "C_L22", "label": "Link 22 (NILE)" },
+                "Link11": { "id": "C_L11", "label": "Link 11 (TADIL-A)" },
+                "MADL": { "id": "C_MADL", "label": "Multifunction Advanced Data Link (MADL)" },
+                "CDL": { "id": "C_CDL", "label": "Common Data Link (CDL)" },
+                "TTNT": { "id": "C_TTNT", "label": "Tactical Targeting Network Technology (TTNT)" }
+              }
+            }
+          }
+        },
+        "MeshNetwork": {
+          "id": "C_Mesh",
+          "label": "Mesh Network Communication",
+          "subcomponents": {
+            "MANET": { "id": "C_MANET", "label": "Mobile Ad-hoc Network (MANET)" },
+            "SwarmMesh": { "id": "C_SwarmMesh", "label": "Swarm Mesh Protocol" }
+          }
+        },
+        "CellularLink": {
+          "id": "C_Cellular",
+          "label": "Cellular Communication",
+          "subcomponents": {
+            "LTE_Link": { "id": "C_LTE", "label": "LTE (4G) Link" },
+            "5G_Link": { "id": "C_5G", "label": "5G Link" },
+            "6G_Link": { "id": "C_6G", "label": "6G Link (Emerging)" }
+          }
+        },
+        "IFF": {
+          "id": "C_IFF",
+          "label": "Identification Friend or Foe (IFF)",
+          "subcomponents": {
+            "Mode_S": { "id": "C_IFF_ModeS", "label": "Mode S" },
+            "Mode_5": { "id": "C_IFF_Mode5", "label": "Mode 5 (Crypto)" },
+            "Mode_C": { "id": "C_IFF_ModeC", "label": "Mode C (Altitude Encoding)" }
+          }
+        },
+        "Antenna": {
+          "id": "C_Antenna",
+          "label": "Antenna System",
+          "subcomponents": {
+            "OmniAntenna": { "id": "C_OmniAnt", "label": "Omnidirectional Antenna" },
+            "DirectionalAntenna": { "id": "C_DirAnt", "label": "Directional / Yagi Antenna" },
+            "PhasedArrayAntenna": { "id": "C_PAA", "label": "Phased Array Antenna" },
+            "SatcomAntenna": { "id": "C_SatAnt", "label": "SATCOM Antenna" },
+            "LowProfileAntenna": { "id": "C_LPAnt", "label": "Low-Profile / Conformal Antenna" }
+          }
+        },
+        "EncryptionModule": {
+          "id": "C_Encrypt",
+          "label": "Encryption Module",
+          "subcomponents": {
+            "Type1Encryption": { "id": "C_T1Enc", "label": "Type 1 Encryption (NSA Certified)" },
+            "AES_Encryption": { "id": "C_AES", "label": "AES-256 Encryption" },
+            "KGV_Crypto": { "id": "C_KGV", "label": "KGV / KY Crypto Unit" }
+          }
+        },
+        "VoiceComm": { "id": "C_VoiceComm", "label": "Voice Communication Module" },
+        "CyberSecurity": {
+          "id": "C_Cyber",
+          "label": "Cybersecurity Module",
+          "subcomponents": {
+            "AntiSpoofingModule": { "id": "C_AntiSpoof", "label": "Anti-Spoofing Module" },
+            "IntrusionDetection": { "id": "C_IDS", "label": "Intrusion Detection System (IDS)" },
+            "SecureBoot": { "id": "C_SecBoot", "label": "Secure Boot" },
+            "ZeroTrustArch": { "id": "C_ZeroTrust", "label": "Zero-Trust Architecture" }
+          }
+        }
+      }
+    },
+    "Payload": {
+      "id": "C_Payload",
+      "label": "Payload System",
+      "subcomponents": {
+        "EOIRPayload": {
+          "id": "C_EOIR",
+          "label": "EO/IR Payload",
+          "subcomponents": {
+            "TripleSensorPayload": { "id": "C_TriPay", "label": "Triple Sensor (EO/IR/LRF) Payload" },
+            "QuadSensorPayload": { "id": "C_QuadPay", "label": "Quad Sensor Payload" }
+          }
+        },
+        "RadarPayload": {
+          "id": "C_RadarPay",
+          "label": "Radar Payload",
+          "subcomponents": {
+            "SARPod": { "id": "C_SARPod", "label": "SAR Radar Pod" },
+            "GMTIPod": { "id": "C_GMTIPod", "label": "GMTI Radar Pod" }
+          }
+        },
+        "SIGINT_Pod": { "id": "C_SIGINTPod", "label": "SIGINT Pod" },
+        "EW_Pod": { "id": "C_EWPod", "label": "Electronic Warfare Pod" },
+        "MappingPayload": { "id": "C_MapPay", "label": "Mapping / Survey Payload" },
+        "CargoModule": {
+          "id": "C_CargoMod",
+          "label": "Cargo Module",
+          "subcomponents": {
+            "HardCargoContainer": { "id": "C_HardCargo", "label": "Hard Cargo Container" },
+            "SoftCargoBag": { "id": "C_SoftCargo", "label": "Soft Cargo Bag" },
+            "MedicalPayload": { "id": "C_MedPay", "label": "Medical Supply Payload" },
+            "BloodProductPayload": { "id": "C_BloodPay", "label": "Blood Product Payload" }
+          }
+        },
+        "ScientificPayload": { "id": "C_SciPay", "label": "Scientific Research Payload" },
+        "PsychologicalOpsPayload": { "id": "C_PSYOPpay", "label": "Psychological Operations Payload (Speaker/Leaflet)" },
+        "SonobuoyDispenser": { "id": "C_SBDisp", "label": "Sonobuoy Dispenser (ASW)" },
+        "LiDARPayload": { "id": "C_LiDARPay", "label": "LiDAR Mapping Payload" }
+      }
+    },
+    "WeaponSystem": {
+      "id": "C_Weapon",
+      "label": "Weapon System",
+      "subcomponents": {
+        "Hardpoints": {
+          "id": "C_Hardpoints",
+          "label": "External Weapon Hardpoints",
+          "subcomponents": {
+            "WingHardpoint": { "id": "C_WingHP", "label": "Wing Hardpoint" },
+            "CenterlineHardpoint": { "id": "C_CLHardpoint", "label": "Centerline Hardpoint" },
+            "UniversalPylon": { "id": "C_UniPylon", "label": "Universal Pylon" }
+          }
+        },
+        "InternalWeaponBay": { "id": "C_IntWepBay", "label": "Internal Weapon Bay" },
+        "AirToGroundMissile": {
+          "id": "C_AGM",
+          "label": "Air-to-Ground Missile",
+          "examples": ["AGM-114 Hellfire", "Brimstone", "JAGM", "Hermes 900"]
+        },
+        "AirToAirMissile": {
+          "id": "C_AAM",
+          "label": "Air-to-Air Missile",
+          "examples": ["AIM-9X", "MBDA Mistral", "PL-10"]
+        },
+        "AntiTankMissile": { "id": "C_ATM", "label": "Anti-Tank Missile" },
+        "AntiShipMissile": { "id": "C_ASuM", "label": "Anti-Ship Missile" },
+        "AntiRadiationMissile": { "id": "C_ARM", "label": "Anti-Radiation Missile" },
+        "GuidedBomb": {
+          "id": "C_GuidedBomb",
+          "label": "Guided Bomb",
+          "subcomponents": {
+            "GPS_GuidedBomb": { "id": "C_JDAMBomb", "label": "GPS-Guided Bomb (JDAM)" },
+            "LaserGuidedBomb": { "id": "C_LGB", "label": "Laser-Guided Bomb (LGB)" },
+            "SmallDiameterBomb": { "id": "C_SDB", "label": "Small Diameter Bomb (SDB)" }
+          }
+        },
+        "RocketPod": { "id": "C_RocketPod", "label": "Rocket Pod" },
+        "MachineGunPod": { "id": "C_MGPod", "label": "Machine Gun Pod" },
+        "LoiteringWarhead": { "id": "C_LWH", "label": "Loitering Munition Warhead" },
+        "ClusterMunition": { "id": "C_Cluster", "label": "Cluster Munition Dispenser" },
+        "Torpedo": { "id": "C_Torpedo", "label": "Lightweight Torpedo (ASW)" },
+        "DepthCharge": { "id": "C_DepthCharge", "label": "Depth Charge (ASW)" },
+        "MineLaying": { "id": "C_MineLay", "label": "Naval Mine Layer" }
+      }
+    },
+    "ElectronicWarfare": {
+      "id": "C_EW",
+      "label": "Electronic Warfare System",
+      "subcomponents": {
+        "ElectronicAttack": {
+          "id": "C_EA",
+          "label": "Electronic Attack (EA)",
+          "subcomponents": {
+            "RadarJammer": { "id": "C_RJammer", "label": "Radar Jammer" },
+            "CommJammer": { "id": "C_CJammer", "label": "Communications Jammer" },
+            "GPS_Jammer": { "id": "C_GPSJam", "label": "GPS Jammer" },
+            "DRFM_Jammer": { "id": "C_DRFM", "label": "Digital RF Memory (DRFM) Jammer" },
+            "HighPowerMicrowave": { "id": "C_HPM", "label": "High-Power Microwave (HPM) Emitter" },
+            "DirectedEnergyEA": { "id": "C_DE_EA", "label": "Directed Energy EA" }
+          }
+        },
+        "ElectronicSupport": {
+          "id": "C_ES",
+          "label": "Electronic Support (ES)",
+          "subcomponents": {
+            "RadarWarningReceiver": { "id": "C_RWR", "label": "Radar Warning Receiver (RWR)" },
+            "MissileWarningSystem": { "id": "C_MWS", "label": "Missile Warning System (MWS)" },
+            "ESM_Suite": { "id": "C_ESM", "label": "Electronic Support Measures (ESM)" },
+            "SIGINT_ES": { "id": "C_SIGINT_ES", "label": "SIGINT Receiver (Passive ES)" }
+          }
+        },
+        "ElectronicProtection": {
+          "id": "C_EP",
+          "label": "Electronic Protection (EP)",
+          "subcomponents": {
+            "ChaffDispenser": { "id": "C_Chaff", "label": "Chaff Dispenser" },
+            "FlareDispenser": { "id": "C_Flare", "label": "Flare Dispenser" },
+            "DIRCM_System": { "id": "C_DIRCM", "label": "Directed Infrared Countermeasure (DIRCM)" },
+            "SelfProtectionSuite": { "id": "C_SPS", "label": "Integrated Self-Protection Suite" }
+          }
+        }
+      }
+    },
+    "PowerSystem": {
+      "id": "C_Power",
+      "label": "Power System",
+      "subcomponents": {
+        "Battery": {
+          "id": "C_Battery",
+          "label": "Battery",
+          "subcomponents": {
+            "LiPoBattery": { "id": "C_LiPo", "label": "Lithium Polymer (LiPo) Battery" },
+            "LiIon": { "id": "C_LiIon", "label": "Lithium-Ion (Li-Ion) Battery" },
+            "LiFe": { "id": "C_LiFe", "label": "Lithium Iron Phosphate (LiFePO4)" },
+            "SolidStateBattery": { "id": "C_SolidBat", "label": "Solid-State Battery" },
+            "BMS": { "id": "C_BMS", "label": "Battery Management System (BMS)" }
+          }
+        },
+        "PowerDistribution": {
+          "id": "C_PDB",
+          "label": "Power Distribution",
+          "subcomponents": {
+            "PowerDistributionBoard": { "id": "C_PowerDB", "label": "Power Distribution Board (PDB)" },
+            "VoltageRegulator": { "id": "C_VReg", "label": "Voltage Regulator" },
+            "PowerConditioner": { "id": "C_PowerCond", "label": "Power Conditioner" },
+            "CircuitBreaker": { "id": "C_CB", "label": "Circuit Breaker" }
+          }
+        },
+        "SolarPanels": { "id": "C_SolarPan", "label": "Solar Panels / Photovoltaic Cells" },
+        "Generator_Power": { "id": "C_Gen", "label": "Onboard Generator" },
+        "FuelCell_Power": { "id": "C_FC_Power", "label": "Fuel Cell Power Unit" }
+      }
+    },
+    "GroundSegment": {
+      "id": "C_GCS",
+      "label": "Ground Control Segment",
+      "subcomponents": {
+        "GroundControlStation": {
+          "id": "C_GCS_Station",
+          "label": "Ground Control Station (GCS)",
+          "subcomponents": {
+            "PortableGCS": { "id": "C_PGCS", "label": "Portable / Man-Pack GCS" },
+            "VehicleGCS": { "id": "C_VGCS", "label": "Vehicle-Mounted GCS" },
+            "ShipborneGCS": { "id": "C_SGCS", "label": "Shipborne GCS" },
+            "FixedGCS": { "id": "C_FGCS", "label": "Fixed / Shelter GCS" },
+            "RemoteCockpit": { "id": "C_RemCockpit", "label": "Remote Cockpit / Full-Motion Simulator" }
+          }
+        },
+        "MissionPlanningSystem": {
+          "id": "C_MPS",
+          "label": "Mission Planning System (MPS)",
+          "subcomponents": {
+            "RouteEditor": { "id": "C_RouteEd", "label": "Route Editor" },
+            "ThreatPlanning": { "id": "C_ThreatPlan", "label": "Threat Avoidance Planning" },
+            "IntelligenceFusion": { "id": "C_IntFusion", "label": "Intelligence Fusion Module" }
+          }
+        },
+        "RemotePilotConsole": { "id": "C_RPC", "label": "Remote Pilot Console" },
+        "LaunchSystem": {
+          "id": "C_LaunchSys",
+          "label": "Launch System",
+          "subcomponents": {
+            "CatapultLauncher": { "id": "C_CatLaunch", "label": "Catapult Launcher" },
+            "PneumaticLauncher_GS": { "id": "C_PneumLaunch", "label": "Pneumatic Launcher" },
+            "RailLauncher": { "id": "C_RailLaunch", "label": "Rail Launcher" }
+          }
+        },
+        "RecoverySystem": {
+          "id": "C_RecoverySys",
+          "label": "Recovery System",
+          "subcomponents": {
+            "RecoveryNet": { "id": "C_RecNet", "label": "Recovery Net" },
+            "ParachuteRecoverySystem": { "id": "C_PRS", "label": "Parachute Recovery System" },
+            "SkyhookArm": { "id": "C_SkyhookArm", "label": "Skyhook Recovery Arm" }
+          }
+        },
+        "TrackingAntenna": { "id": "C_TrackAnt", "label": "Tracking / Gimbal Antenna" },
+        "TelemetryStation": { "id": "C_TelStation", "label": "Telemetry Station" },
+        "ControlSoftware": { "id": "C_CtrlSW", "label": "Ground Control Software" },
+        "VideoDisplaySystem": { "id": "C_VDS", "label": "Video Display / Processing System" },
+        "DataRecorder": { "id": "C_DataRec", "label": "Mission Data Recorder" },
+        "SatelliteTerminal": { "id": "C_SatTerm", "label": "Satellite Ground Terminal" }
+      }
+    },
+    "HealthMonitoring": {
+      "id": "C_Health",
+      "label": "Health and Usage Monitoring System (HUMS)",
+      "subcomponents": {
+        "EngineHealthMonitor": { "id": "C_EHM", "label": "Engine Health Monitor" },
+        "BatteryHealthMonitor": { "id": "C_BHM", "label": "Battery Health Monitor" },
+        "StructuralHealthMonitor": { "id": "C_SHM", "label": "Structural Health Monitor" },
+        "FaultDetectionIsolation": { "id": "C_FDI", "label": "Fault Detection and Isolation (FDI)" },
+        "PrognosticsModule": { "id": "C_PHM", "label": "Prognostics and Health Management (PHM)" }
+      }
+    }
+  }
+}

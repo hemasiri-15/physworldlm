@@ -1,0 +1,1299 @@
+{
+  "$comment": "Companion illustrative examples for weather.schema.json (PW-WSF-700). Each top-level key is a complete, schema-conformant weather document. Not all optional fields are populated in every example \u2014 only those relevant to the scenario, to keep examples legible.",
+  "example_01_clear_summer_day": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z",
+      "generator": "PhysWorldLM-NL2Weather/2.3"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000001",
+      "weather_id": "WX-2026-CLEAR-001",
+      "name": "Clear Summer Day",
+      "description": "Cloudless, warm, low-humidity summer afternoon over a temperate coastal city.",
+      "weather_type": "clear",
+      "creator": "procedural_generator",
+      "version": "1.0.0",
+      "created": "2026-06-28T12:00:00Z",
+      "tags": [
+        "clear",
+        "summer",
+        "baseline"
+      ]
+    },
+    "classification": {
+      "primary_type": "clear",
+      "climate_zone": "mediterranean",
+      "koppen_classification": "Csa",
+      "season": "summer",
+      "meteorological_regime": "anticyclonic",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "local",
+      "center": {
+        "latitude": 36.78,
+        "longitude": -119.42,
+        "altitude_m": 90
+      }
+    },
+    "atmosphere": {
+      "pressure_pa": {
+        "value": 101800,
+        "unit": "Pa",
+        "quality": "modeled"
+      },
+      "air_temperature_k": {
+        "value": 303.15,
+        "unit": "K"
+      },
+      "dew_point_k": {
+        "value": 286.5,
+        "unit": "K"
+      },
+      "relative_humidity_pct": {
+        "value": 28,
+        "unit": "%"
+      },
+      "air_density_kg_per_m3": {
+        "value": 1.165,
+        "unit": "kg/m^3"
+      },
+      "visibility_m": {
+        "value": 40000,
+        "unit": "m"
+      },
+      "stability": {
+        "stability_class": "neutral"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 2.5,
+          "unit": "m/s"
+        },
+        "direction_deg": {
+          "value": 270,
+          "unit": "deg"
+        }
+      }
+    },
+    "clouds": {
+      "total_coverage_fraction": {
+        "value": 0.02,
+        "unit": "fraction"
+      }
+    },
+    "precipitation": {
+      "type": "none",
+      "intensity_class": "none"
+    },
+    "solar": {
+      "solar_irradiance_w_per_m2": {
+        "value": 950,
+        "unit": "W/m^2"
+      },
+      "uv_index": {
+        "value": 8,
+        "unit": "index"
+      },
+      "solar_elevation_deg": {
+        "value": 72,
+        "unit": "deg"
+      },
+      "sunrise": "2026-06-28T05:48:00-07:00",
+      "sunset": "2026-06-28T20:21:00-07:00"
+    },
+    "human_effects": {
+      "heat_stress_level": "caution",
+      "uv_exposure_index": {
+        "value": 8,
+        "unit": "index"
+      }
+    }
+  },
+  "example_02_heavy_rain": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000002",
+      "weather_id": "WX-2026-RAIN-002",
+      "name": "Sustained Heavy Rain",
+      "weather_type": "rain",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "rain",
+      "climate_zone": "temperate",
+      "meteorological_regime": "frontal",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "regional",
+      "center": {
+        "latitude": 51.5,
+        "longitude": -0.12,
+        "altitude_m": 20
+      }
+    },
+    "atmosphere": {
+      "pressure_pa": {
+        "value": 99500,
+        "unit": "Pa"
+      },
+      "air_temperature_k": {
+        "value": 285.5,
+        "unit": "K"
+      },
+      "relative_humidity_pct": {
+        "value": 96,
+        "unit": "%"
+      },
+      "visibility_m": {
+        "value": 3000,
+        "unit": "m"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 8.0,
+          "unit": "m/s"
+        },
+        "direction_deg": {
+          "value": 220,
+          "unit": "deg"
+        }
+      }
+    },
+    "clouds": {
+      "total_coverage_fraction": {
+        "value": 1.0,
+        "unit": "fraction"
+      },
+      "ceiling_m": {
+        "value": 600,
+        "unit": "m"
+      }
+    },
+    "precipitation": {
+      "type": "rain",
+      "intensity_class": "heavy",
+      "rainfall_rate_mm_per_hr": {
+        "value": 18,
+        "unit": "mm/hr"
+      },
+      "accumulation_mm": {
+        "value": 42,
+        "unit": "mm"
+      },
+      "duration_s": 7200
+    },
+    "hydrology": {
+      "runoff_rate_mm_per_hr": {
+        "value": 6,
+        "unit": "mm/hr"
+      },
+      "flood_probability": 0.35
+    },
+    "vehicle_effects": {
+      "ground_vehicle": {
+        "road_wetness_fraction": {
+          "value": 0.9,
+          "unit": "fraction"
+        },
+        "hydroplaning_risk": "moderate",
+        "traction_coefficient": {
+          "value": 0.55,
+          "unit": "dimensionless"
+        }
+      }
+    },
+    "sensor_effects": {
+      "models": [
+        {
+          "sensor_modality": "camera_eo",
+          "attenuation_coefficient_per_m": {
+            "value": 0.0008,
+            "unit": "1/m"
+          },
+          "visibility_reduction_pct": {
+            "value": 40,
+            "unit": "%"
+          },
+          "primary_cause": "rain"
+        }
+      ]
+    }
+  },
+  "example_03_thunderstorm": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000003",
+      "weather_id": "WX-2026-TSTORM-003",
+      "name": "Severe Thunderstorm",
+      "weather_type": "thunderstorm",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "thunderstorm",
+      "meteorological_regime": "convective",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "local",
+      "center": {
+        "latitude": 35.2,
+        "longitude": -97.4,
+        "altitude_m": 360
+      }
+    },
+    "atmosphere": {
+      "air_temperature_k": {
+        "value": 297,
+        "unit": "K"
+      },
+      "pressure_pa": {
+        "value": 98700,
+        "unit": "Pa"
+      },
+      "stability": {
+        "cape_j_per_kg": {
+          "value": 3200,
+          "unit": "J/kg"
+        },
+        "cin_j_per_kg": {
+          "value": -25,
+          "unit": "J/kg"
+        },
+        "lifted_index": {
+          "value": -6,
+          "unit": "K"
+        },
+        "stability_class": "very_unstable"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 12,
+          "unit": "m/s"
+        },
+        "gust_speed_mps": {
+          "value": 28,
+          "unit": "m/s"
+        }
+      },
+      "wind_shear": {
+        "low_level_shear_alert": true
+      },
+      "microburst": {
+        "active": true,
+        "peak_speed_mps": {
+          "value": 32,
+          "unit": "m/s"
+        },
+        "diameter_m": 3000
+      }
+    },
+    "clouds": {
+      "layers": [
+        {
+          "cloud_type": "cumulonimbus",
+          "base_altitude_m": {
+            "value": 900,
+            "unit": "m"
+          },
+          "top_altitude_m": {
+            "value": 12000,
+            "unit": "m"
+          },
+          "coverage_fraction": {
+            "value": 0.7,
+            "unit": "fraction"
+          }
+        }
+      ]
+    },
+    "precipitation": {
+      "type": "hail",
+      "intensity_class": "heavy",
+      "hail_size_mm": {
+        "value": 25,
+        "unit": "mm"
+      }
+    },
+    "lightning": {
+      "flash_frequency_per_min": {
+        "value": 18,
+        "unit": "flashes/min"
+      },
+      "cloud_to_ground_fraction": {
+        "value": 0.3,
+        "unit": "fraction"
+      },
+      "peak_current_ka": {
+        "value": 35,
+        "unit": "kA"
+      }
+    },
+    "storm_systems": [
+      {
+        "storm_id": "8a1f0c10-2222-4a2b-9c3d-000000000003",
+        "storm_type": "supercell",
+        "category": "EF2-capable",
+        "movement": {
+          "forward_speed_mps": {
+            "value": 15,
+            "unit": "m/s"
+          },
+          "heading_deg": {
+            "value": 65,
+            "unit": "deg"
+          }
+        },
+        "severity_index": 0.78
+      }
+    ]
+  },
+  "example_04_hurricane": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000004",
+      "weather_id": "WX-2026-HURR-004",
+      "name": "Hurricane Helios",
+      "weather_type": "hurricane",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "hurricane",
+      "meteorological_regime": "tropical",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "regional",
+      "center": {
+        "latitude": 24.1,
+        "longitude": -78.3,
+        "altitude_m": 0
+      }
+    },
+    "atmosphere": {
+      "pressure_pa": {
+        "value": 94200,
+        "unit": "Pa"
+      },
+      "air_temperature_k": {
+        "value": 301,
+        "unit": "K"
+      },
+      "relative_humidity_pct": {
+        "value": 92,
+        "unit": "%"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 55,
+          "unit": "m/s"
+        },
+        "gust_speed_mps": {
+          "value": 70,
+          "unit": "m/s"
+        }
+      }
+    },
+    "precipitation": {
+      "type": "rain",
+      "intensity_class": "violent",
+      "rainfall_rate_mm_per_hr": {
+        "value": 60,
+        "unit": "mm/hr"
+      }
+    },
+    "storm_systems": [
+      {
+        "storm_id": "8a1f0c10-2222-4a2b-9c3d-000000000004",
+        "storm_type": "hurricane",
+        "category": "Category 4",
+        "name": "Hurricane Helios",
+        "eye_location": {
+          "latitude": 24.1,
+          "longitude": -78.3
+        },
+        "central_pressure_pa": {
+          "value": 94200,
+          "unit": "Pa"
+        },
+        "radius_m": {
+          "value": 250000,
+          "unit": "m"
+        },
+        "eye_radius_m": {
+          "value": 18000,
+          "unit": "m"
+        },
+        "movement": {
+          "forward_speed_mps": {
+            "value": 6,
+            "unit": "m/s"
+          },
+          "heading_deg": {
+            "value": 310,
+            "unit": "deg"
+          }
+        },
+        "maximum_sustained_wind_mps": {
+          "value": 58,
+          "unit": "m/s"
+        },
+        "storm_surge_m": {
+          "value": 4.5,
+          "unit": "m"
+        },
+        "landfall_prediction": {
+          "location": {
+            "latitude": 25.7,
+            "longitude": -80.2
+          },
+          "eta": "2026-06-30T06:00:00Z",
+          "probability": 0.7
+        },
+        "severity_index": 0.91
+      }
+    ],
+    "ocean": {
+      "sea_state_code": 8,
+      "wave_height_m": {
+        "value": 9,
+        "unit": "m"
+      },
+      "storm_surge_m": {
+        "value": 4.5,
+        "unit": "m"
+      }
+    },
+    "vehicle_effects": {
+      "ship": {
+        "sea_state_code": 8,
+        "visibility_m": {
+          "value": 800,
+          "unit": "m"
+        }
+      },
+      "aircraft": {
+        "lift_degradation_factor": {
+          "value": 0.6,
+          "unit": "dimensionless"
+        },
+        "turbulence_severity": "severe"
+      }
+    }
+  },
+  "example_05_blizzard": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000005",
+      "weather_id": "WX-2026-BLIZZ-005",
+      "name": "Northern Plains Blizzard",
+      "weather_type": "blizzard",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "blizzard",
+      "climate_zone": "continental",
+      "meteorological_regime": "cyclonic",
+      "season": "winter",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "regional",
+      "center": {
+        "latitude": 47.9,
+        "longitude": -97.0,
+        "altitude_m": 280
+      }
+    },
+    "atmosphere": {
+      "air_temperature_k": {
+        "value": 250,
+        "unit": "K"
+      },
+      "pressure_pa": {
+        "value": 99800,
+        "unit": "Pa"
+      },
+      "visibility_m": {
+        "value": 150,
+        "unit": "m"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 18,
+          "unit": "m/s"
+        },
+        "gust_speed_mps": {
+          "value": 26,
+          "unit": "m/s"
+        }
+      }
+    },
+    "precipitation": {
+      "type": "snow",
+      "intensity_class": "heavy",
+      "snowfall_rate_mm_per_hr": {
+        "value": 10,
+        "unit": "mm/hr"
+      },
+      "snow_water_equivalent_mm": {
+        "value": 30,
+        "unit": "mm"
+      }
+    },
+    "visibility": {
+      "horizontal_visibility_m": {
+        "value": 150,
+        "unit": "m"
+      }
+    },
+    "cryosphere": {
+      "snow_depth_m": {
+        "value": 0.6,
+        "unit": "m"
+      },
+      "snow_density_kg_per_m3": {
+        "value": 220,
+        "unit": "kg/m^3"
+      },
+      "black_ice_risk": "high"
+    },
+    "vehicle_effects": {
+      "ground_vehicle": {
+        "snow_traction_factor": {
+          "value": 0.25,
+          "unit": "dimensionless"
+        }
+      },
+      "aircraft": {
+        "icing": {
+          "severity": "severe"
+        }
+      }
+    },
+    "human_effects": {
+      "wind_chill_k": {
+        "value": 238,
+        "unit": "K"
+      },
+      "cold_stress_level": "extreme_danger"
+    }
+  },
+  "example_06_desert_sandstorm": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000006",
+      "weather_id": "WX-2026-SAND-006",
+      "name": "Saharan Sandstorm",
+      "weather_type": "sandstorm",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "sandstorm",
+      "climate_zone": "arid",
+      "meteorological_regime": "desert",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "regional",
+      "center": {
+        "latitude": 23.4,
+        "longitude": 11.2,
+        "altitude_m": 450
+      }
+    },
+    "atmosphere": {
+      "air_temperature_k": {
+        "value": 312,
+        "unit": "K"
+      },
+      "relative_humidity_pct": {
+        "value": 8,
+        "unit": "%"
+      },
+      "visibility_m": {
+        "value": 400,
+        "unit": "m"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 16,
+          "unit": "m/s"
+        },
+        "gust_speed_mps": {
+          "value": 24,
+          "unit": "m/s"
+        }
+      }
+    },
+    "visibility": {
+      "horizontal_visibility_m": {
+        "value": 400,
+        "unit": "m"
+      },
+      "dust_density": {
+        "value": 0.85,
+        "unit": "fraction"
+      },
+      "optical_attenuation_coefficient_per_m": {
+        "value": 0.004,
+        "unit": "1/m"
+      }
+    },
+    "sensor_effects": {
+      "models": [
+        {
+          "sensor_modality": "camera_eo",
+          "attenuation_coefficient_per_m": {
+            "value": 0.004,
+            "unit": "1/m"
+          },
+          "visibility_reduction_pct": {
+            "value": 90,
+            "unit": "%"
+          },
+          "primary_cause": "dust"
+        },
+        {
+          "sensor_modality": "gps",
+          "noise_increase_factor": {
+            "value": 1.05,
+            "unit": "dimensionless"
+          },
+          "primary_cause": "dust"
+        }
+      ]
+    },
+    "vehicle_effects": {
+      "ground_vehicle": {
+        "dust_ingestion_risk": "high",
+        "sand_mobility_factor": {
+          "value": 0.5,
+          "unit": "dimensionless"
+        }
+      }
+    }
+  },
+  "example_07_dense_fog": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000007",
+      "weather_id": "WX-2026-FOG-007",
+      "name": "Coastal Radiation Fog",
+      "weather_type": "fog",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "fog",
+      "climate_zone": "oceanic",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "local",
+      "center": {
+        "latitude": 37.77,
+        "longitude": -122.42,
+        "altitude_m": 15
+      }
+    },
+    "atmosphere": {
+      "air_temperature_k": {
+        "value": 284,
+        "unit": "K"
+      },
+      "dew_point_k": {
+        "value": 283.8,
+        "unit": "K"
+      },
+      "relative_humidity_pct": {
+        "value": 99,
+        "unit": "%"
+      },
+      "visibility_m": {
+        "value": 80,
+        "unit": "m"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 1.0,
+          "unit": "m/s"
+        }
+      }
+    },
+    "visibility": {
+      "horizontal_visibility_m": {
+        "value": 80,
+        "unit": "m"
+      },
+      "fog_density": {
+        "value": 0.95,
+        "unit": "fraction"
+      },
+      "runway_visual_range_m": {
+        "value": 90,
+        "unit": "m"
+      }
+    },
+    "clouds": {
+      "layers": [
+        {
+          "cloud_type": "fog_layer",
+          "base_altitude_m": {
+            "value": 0,
+            "unit": "m"
+          },
+          "top_altitude_m": {
+            "value": 120,
+            "unit": "m"
+          }
+        }
+      ]
+    },
+    "vehicle_effects": {
+      "aircraft": {
+        "visibility_m": {
+          "value": 80,
+          "unit": "m"
+        }
+      }
+    },
+    "sensor_effects": {
+      "models": [
+        {
+          "sensor_modality": "lidar",
+          "attenuation_coefficient_per_m": {
+            "value": 0.05,
+            "unit": "1/m"
+          },
+          "primary_cause": "fog"
+        }
+      ]
+    }
+  },
+  "example_08_arctic_winter": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000008",
+      "weather_id": "WX-2026-ARCTIC-008",
+      "name": "Arctic Polar Night",
+      "weather_type": "cold_wave",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "cold_wave",
+      "climate_zone": "polar",
+      "season": "winter",
+      "meteorological_regime": "polar",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "regional",
+      "center": {
+        "latitude": 78.2,
+        "longitude": 15.6,
+        "altitude_m": 10
+      }
+    },
+    "atmosphere": {
+      "air_temperature_k": {
+        "value": 233,
+        "unit": "K"
+      },
+      "pressure_pa": {
+        "value": 102500,
+        "unit": "Pa"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 6,
+          "unit": "m/s"
+        }
+      }
+    },
+    "solar": {
+      "solar_elevation_deg": {
+        "value": -8,
+        "unit": "deg"
+      }
+    },
+    "lunar": {
+      "moon_phase_fraction": {
+        "value": 0.6,
+        "unit": "fraction"
+      },
+      "illumination_pct": {
+        "value": 55,
+        "unit": "%"
+      }
+    },
+    "cryosphere": {
+      "snow_depth_m": {
+        "value": 1.2,
+        "unit": "m"
+      },
+      "ice_thickness_m": {
+        "value": 0.9,
+        "unit": "m"
+      },
+      "sea_ice_concentration_pct": {
+        "value": 95,
+        "unit": "%"
+      },
+      "permafrost_depth_m": {
+        "value": 250,
+        "unit": "m"
+      }
+    },
+    "human_effects": {
+      "wind_chill_k": {
+        "value": 224,
+        "unit": "K"
+      },
+      "cold_stress_level": "extreme_danger"
+    }
+  },
+  "example_09_tropical_monsoon": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000009",
+      "weather_id": "WX-2026-MONSOON-009",
+      "name": "Southwest Monsoon Onset",
+      "weather_type": "monsoon",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "monsoon",
+      "climate_zone": "tropical",
+      "koppen_classification": "Am",
+      "season": "monsoon_season",
+      "meteorological_regime": "tropical",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "regional",
+      "center": {
+        "latitude": 19.08,
+        "longitude": 72.88,
+        "altitude_m": 8
+      }
+    },
+    "atmosphere": {
+      "air_temperature_k": {
+        "value": 301,
+        "unit": "K"
+      },
+      "relative_humidity_pct": {
+        "value": 88,
+        "unit": "%"
+      },
+      "pressure_pa": {
+        "value": 100200,
+        "unit": "Pa"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 9,
+          "unit": "m/s"
+        },
+        "direction_deg": {
+          "value": 240,
+          "unit": "deg"
+        }
+      }
+    },
+    "precipitation": {
+      "type": "rain",
+      "intensity_class": "heavy",
+      "rainfall_rate_mm_per_hr": {
+        "value": 35,
+        "unit": "mm/hr"
+      },
+      "accumulation_mm": {
+        "value": 180,
+        "unit": "mm"
+      }
+    },
+    "climate": {
+      "monsoon_index": {
+        "value": 0.82,
+        "unit": "index"
+      },
+      "indian_ocean_dipole_index": {
+        "value": 0.3,
+        "unit": "index"
+      }
+    },
+    "hydrology": {
+      "flood_probability": 0.55,
+      "runoff_rate_mm_per_hr": {
+        "value": 22,
+        "unit": "mm/hr"
+      }
+    },
+    "vehicle_effects": {
+      "ground_vehicle": {
+        "flooding_depth_m": {
+          "value": 0.3,
+          "unit": "m"
+        },
+        "road_wetness_fraction": {
+          "value": 1.0,
+          "unit": "fraction"
+        }
+      }
+    }
+  },
+  "example_10_martian_dust_storm": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000010",
+      "weather_id": "WX-2026-MARS-010",
+      "name": "Martian Global Dust Storm",
+      "weather_type": "dust",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "dust",
+      "climate_zone": "extraterrestrial",
+      "domain": "mars"
+    },
+    "geographic_scope": {
+      "scale": "global",
+      "center": {
+        "latitude": -14.5,
+        "longitude": 175.4,
+        "altitude_m": -1400
+      }
+    },
+    "atmosphere": {
+      "pressure_pa": {
+        "value": 650,
+        "unit": "Pa",
+        "notes": "Mean Martian surface pressure, ~0.6% of Earth sea level."
+      },
+      "air_temperature_k": {
+        "value": 220,
+        "unit": "K"
+      },
+      "air_density_kg_per_m3": {
+        "value": 0.015,
+        "unit": "kg/m^3"
+      },
+      "composition": {
+        "co2_ppm": {
+          "value": 960000,
+          "unit": "ppm",
+          "notes": "CO2-dominant atmosphere (~96% by volume)."
+        },
+        "nitrogen_fraction": {
+          "value": 0.019,
+          "unit": "fraction"
+        },
+        "argon_fraction": {
+          "value": 0.019,
+          "unit": "fraction"
+        }
+      },
+      "visibility_m": {
+        "value": 500,
+        "unit": "m"
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 25,
+          "unit": "m/s"
+        },
+        "gust_speed_mps": {
+          "value": 35,
+          "unit": "m/s"
+        }
+      }
+    },
+    "visibility": {
+      "dust_density": {
+        "value": 0.92,
+        "unit": "fraction"
+      },
+      "optical_attenuation_coefficient_per_m": {
+        "value": 0.003,
+        "unit": "1/m"
+      }
+    },
+    "solar": {
+      "solar_irradiance_w_per_m2": {
+        "value": 90,
+        "unit": "W/m^2",
+        "notes": "Heavily attenuated by suspended dust; clear-sky Mars value is ~590 W/m^2 at top of atmosphere."
+      }
+    },
+    "radiation": {
+      "cosmic_radiation_sv_per_hr": {
+        "value": 7e-05,
+        "unit": "Sv/hr",
+        "notes": "Elevated relative to Earth surface due to thin atmosphere/no global magnetic field."
+      }
+    },
+    "vehicle_effects": {
+      "spacecraft": {
+        "solar_panel_output_factor": {
+          "value": 0.15,
+          "unit": "dimensionless"
+        }
+      }
+    },
+    "sensor_effects": {
+      "models": [
+        {
+          "sensor_modality": "camera_eo",
+          "visibility_reduction_pct": {
+            "value": 85,
+            "unit": "%"
+          },
+          "primary_cause": "dust"
+        }
+      ]
+    }
+  },
+  "example_11_lunar_vacuum": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000011",
+      "weather_id": "WX-2026-LUNA-011",
+      "name": "Lunar Surface Vacuum Environment",
+      "weather_type": "extraterrestrial_ambient",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "extraterrestrial_ambient",
+      "climate_zone": "extraterrestrial",
+      "domain": "moon"
+    },
+    "geographic_scope": {
+      "scale": "local",
+      "center": {
+        "latitude": -89.9,
+        "longitude": 0.0,
+        "altitude_m": 0,
+        "datum": "MOON_2000"
+      }
+    },
+    "atmosphere": {
+      "pressure_pa": {
+        "value": 3e-07,
+        "unit": "Pa",
+        "notes": "Effectively vacuum; trace exosphere only."
+      },
+      "air_temperature_k": {
+        "value": 100,
+        "unit": "K",
+        "notes": "Permanently shadowed polar crater; surface temperature, not air temperature, dominates thermal regime."
+      },
+      "air_density_kg_per_m3": {
+        "value": 1e-13,
+        "unit": "kg/m^3"
+      },
+      "visibility_m": {
+        "value": 1000000,
+        "unit": "m",
+        "notes": "No atmospheric scattering; visibility limited only by terrain and lighting geometry."
+      }
+    },
+    "wind": {
+      "surface_wind": {
+        "speed_mps": {
+          "value": 0,
+          "unit": "m/s",
+          "notes": "No atmosphere to support wind."
+        }
+      }
+    },
+    "radiation": {
+      "cosmic_radiation_sv_per_hr": {
+        "value": 0.0003,
+        "unit": "Sv/hr",
+        "notes": "No magnetosphere or appreciable atmosphere for shielding."
+      },
+      "uv_w_per_m2": {
+        "value": 110,
+        "unit": "W/m^2"
+      }
+    },
+    "solar": {
+      "solar_irradiance_w_per_m2": {
+        "value": 1361,
+        "unit": "W/m^2",
+        "notes": "Unattenuated solar constant; no atmosphere."
+      }
+    },
+    "space_weather": {
+      "solar_wind": {
+        "speed_km_per_s": {
+          "value": 400,
+          "unit": "km/s"
+        }
+      }
+    },
+    "human_effects": {
+      "breathing_hazard_level": "unsurvivable_unprotected"
+    }
+  },
+  "example_12_solar_geomagnetic_storm": {
+    "metadata": {
+      "schema_version": "1.0.0",
+      "generated_at": "2026-06-28T12:00:00Z"
+    },
+    "identity": {
+      "id": "8a1f0c10-1111-4a2b-9c3d-000000000012",
+      "weather_id": "WX-2026-SPACEWX-012",
+      "name": "Severe Geomagnetic Storm",
+      "weather_type": "space_weather",
+      "version": "1.0.0"
+    },
+    "classification": {
+      "primary_type": "space_weather",
+      "domain": "earth"
+    },
+    "geographic_scope": {
+      "scale": "global"
+    },
+    "atmosphere": {
+      "pressure_pa": {
+        "value": 101325,
+        "unit": "Pa",
+        "notes": "Ambient terrestrial atmosphere; space weather acts on the ionosphere/magnetosphere above it, not on tropospheric state."
+      },
+      "air_temperature_k": {
+        "value": 288,
+        "unit": "K"
+      }
+    },
+    "space_weather": {
+      "solar_flare": {
+        "active": true,
+        "class": "X",
+        "peak_time": "2026-06-27T18:42:00Z"
+      },
+      "geomagnetic_storm": {
+        "active": true,
+        "kp_index": {
+          "value": 8,
+          "unit": "index"
+        },
+        "g_scale": "G4"
+      },
+      "solar_wind": {
+        "speed_km_per_s": {
+          "value": 720,
+          "unit": "km/s"
+        },
+        "density_per_cm3": {
+          "value": 12,
+          "unit": "1/cm^3"
+        },
+        "magnetic_field_nt": {
+          "value": 25,
+          "unit": "nT"
+        }
+      },
+      "coronal_mass_ejection": {
+        "detected": true,
+        "eta_earth": "2026-06-29T03:00:00Z",
+        "speed_km_per_s": {
+          "value": 1100,
+          "unit": "km/s"
+        }
+      },
+      "auroral_activity": {
+        "visible": true,
+        "boundary_latitude_deg": {
+          "value": 42,
+          "unit": "deg"
+        }
+      },
+      "magnetosphere_state": "severe_storm",
+      "ionosphere": {
+        "total_electron_content_tecu": {
+          "value": 85,
+          "unit": "TECU"
+        },
+        "gps_disturbance_level": "severe"
+      }
+    },
+    "electromagnetic_effects": {
+      "gps_accuracy_degradation_m": {
+        "value": 15,
+        "unit": "m"
+      },
+      "ionospheric_delay_ns": {
+        "value": 40,
+        "unit": "ns"
+      },
+      "scintillation_index": {
+        "value": 0.8,
+        "unit": "index"
+      },
+      "solar_geomagnetic_disturbance_level": "severe_storm"
+    },
+    "vehicle_effects": {
+      "spacecraft": {
+        "radiation_exposure_sv_per_hr": {
+          "value": 0.01,
+          "unit": "Sv/hr"
+        },
+        "communication_blackout_risk": "high"
+      }
+    }
+  }
+}

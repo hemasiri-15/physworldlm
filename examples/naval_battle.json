@@ -1,0 +1,1317 @@
+{
+  "metadata": {
+    "worldspec_version": "1.0.0",
+    "scene_name": "Operation Trident Shield",
+    "uuid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "author": "PhysWorldLM Example Generator",
+    "organization": "PhysWorldLM",
+    "created_at": "2026-06-28T00:00:00Z",
+    "modified_at": "2026-06-28T00:00:00Z",
+    "simulation_engine_hint": "omniverse",
+    "ontology_version": "1.0.0",
+    "coordinate_system": "NED",
+    "units": {
+      "length": "meters",
+      "mass": "kg",
+      "time": "seconds",
+      "angle": "degrees",
+      "temperature": "celsius"
+    },
+    "description": "Blue Carrier Strike Group escorts a logistics convoy in the Indian Ocean. Red naval task force attempts interdiction using submarines, anti-ship missiles, and maritime patrol aircraft. Blue responds with destroyers, frigates, carrier aircraft, ASW helicopters, UAVs, and electronic warfare. Scenario exercises every PhysWorldLM subsystem.",
+    "tags": ["naval", "maritime", "multi-domain", "ASW", "EW", "flagship-example"],
+    "classification_level": "unclassified",
+    "domain": "military",
+    "scenario_type": "wargame"
+  },
+
+  "world": {
+    "physics_config": {
+      "gravity": { "x": 0, "y": 0, "z": -9.81 },
+      "air_density_kg_m3": 1.225,
+      "speed_of_sound_mps": 343.0,
+      "physics_step_s": 0.01,
+      "substeps": 4,
+      "solver": "rk4",
+      "collision_detection": "continuous",
+      "enable_fluid": true,
+      "enable_soft_body": false,
+      "enable_cloth": false,
+      "enable_particles": true
+    },
+    "simulation_config": {
+      "duration_s": 2400,
+      "time_scale": 1.0,
+      "random_seed": 42,
+      "deterministic": true,
+      "tick_rate_hz": 60,
+      "render_rate_hz": 30,
+      "sensor_rate_hz": 10,
+      "log_level": "info",
+      "enable_replay": true
+    },
+    "reference_frame": {
+      "origin_geo": { "latitude": 12.5, "longitude": 68.0, "altitude": 0 },
+      "up_axis": "Z",
+      "planet": "Earth"
+    }
+  },
+
+  "environment": {
+    "setting": "ocean",
+    "time_of_day": {
+      "simulation_start_utc": "2026-06-28T18:00:00Z",
+      "time_of_day_s": 64800,
+      "day_of_year": 179,
+      "year": 2026
+    },
+    "weather": {
+      "temperature_c": 28.0,
+      "humidity_pct": 75,
+      "pressure_hpa": 1012.0,
+      "wind": {
+        "speed_mps": 9.26,
+        "direction_deg": 225,
+        "gusts_mps": 13.0,
+        "shear_profile": [
+          { "altitude_m": 0,    "speed_mps": 9.26 },
+          { "altitude_m": 500,  "speed_mps": 11.0 },
+          { "altitude_m": 3000, "speed_mps": 15.0 }
+        ]
+      },
+      "precipitation": {
+        "type": "drizzle",
+        "intensity_mm_hr": 2.0
+      },
+      "fog": {
+        "enabled": false,
+        "density": 0.0,
+        "visibility_m": 15000
+      },
+      "cloud_cover_pct": 60,
+      "cloud_base_m": 800,
+      "cloud_ceiling_m": 3000,
+      "visibility_km": 15,
+      "solar_irradiance_wm2": 120,
+      "sea_state": 4,
+      "wave_height_m": 2.5,
+      "dust_density": 0.0
+    },
+    "terrain": {
+      "dem_ref": "assets/bathymetry/indian_ocean_region.tif",
+      "tile_source": "https://tiles.physworldlm.org/ocean/indian_ocean",
+      "bounds": {
+        "southwest": { "latitude": 9.0,  "longitude": 65.0 },
+        "northeast": { "latitude": 16.0, "longitude": 72.0 }
+      },
+      "features": [
+        { "feature_type": "lake", "geometry_ref": "assets/features/indian_ocean.geojson", "properties": { "name": "Indian Ocean AO", "depth_m": 3800 } }
+      ]
+    }
+  },
+
+  "organizations": [
+    {
+      "id": "org-blue-csf-00000000-0000-0000-0000-000000000001",
+      "name": "Blue Carrier Strike Force",
+      "org_type": "naval_fleet",
+      "faction": "blue",
+      "callsign": "TRIDENT",
+      "country_code": "US",
+      "commander_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001",
+      "child_org_ids": [
+        "org-blue-csg-00000000-0000-0000-0000-000000000002",
+        "org-blue-asw-00000000-0000-0000-0000-000000000003"
+      ],
+      "entity_ids": []
+    },
+    {
+      "id": "org-blue-csg-00000000-0000-0000-0000-000000000002",
+      "name": "Blue Carrier Strike Group Alpha",
+      "org_type": "squadron",
+      "faction": "blue",
+      "parent_org_id": "org-blue-csf-00000000-0000-0000-0000-000000000001",
+      "callsign": "TRIDENT ALPHA",
+      "country_code": "US",
+      "entity_ids": [
+        "ent-blue-carrier-00000000-0000-0000-0000-000000000001",
+        "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002",
+        "ent-blue-ddg-b-000000000000-0000-0000-0000-000000000003",
+        "ent-blue-ffg-0-000000000000-0000-0000-0000-000000000004",
+        "ent-blue-supply-0000000000-0000-0000-0000-000000000005"
+      ]
+    },
+    {
+      "id": "org-blue-asw-00000000-0000-0000-0000-000000000003",
+      "name": "Blue ASW & UAV Element",
+      "org_type": "flight",
+      "faction": "blue",
+      "parent_org_id": "org-blue-csf-00000000-0000-0000-0000-000000000001",
+      "callsign": "TRIDENT BRAVO",
+      "country_code": "US",
+      "entity_ids": [
+        "ent-blue-sub-0-000000000000-0000-0000-0000-000000000006",
+        "ent-blue-helo-000000000000-0000-0000-0000-000000000007",
+        "ent-blue-uav-0-000000000000-0000-0000-0000-000000000008",
+        "ent-blue-fa18-000000000000-0000-0000-0000-000000000009"
+      ]
+    },
+    {
+      "id": "org-red-ntg-000000000000-0000-0000-0000-000000000010",
+      "name": "Red Naval Task Group",
+      "org_type": "naval_fleet",
+      "faction": "red",
+      "callsign": "STORM",
+      "country_code": "XX",
+      "entity_ids": [
+        "ent-red-dd-00000000000000-0000-0000-0000-000000000011",
+        "ent-red-ffg-0000000000000-0000-0000-0000-000000000012",
+        "ent-red-sub-0000000000000-0000-0000-0000-000000000013",
+        "ent-red-mpa-0000000000000-0000-0000-0000-000000000014",
+        "ent-red-mbm-0000000000000-0000-0000-0000-000000000015",
+        "ent-red-uav-0000000000000-0000-0000-0000-000000000016"
+      ]
+    }
+  ],
+
+  "entities": [
+
+    {
+      "id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001",
+      "name": "USS Constellation (CVN-99)",
+      "label": "TRIDENT-1",
+      "description": "Nimitz-class aircraft carrier, Blue fleet flagship.",
+      "entity_type": "naval_vessel",
+      "subtype": "CVN",
+      "tags": ["blue", "carrier", "flagship"],
+      "owner_faction": "blue",
+      "callsign": "CONSTELLATION",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.5, "longitude": 68.0, "altitude": 0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 333, "y": 77, "z": 30 },
+        "asset_ref": "assets/ships/cvn_nimitz.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 104000000,
+        "linear_velocity": { "x": 7.7, "y": 0, "z": 0 },
+        "angular_velocity": { "x": 0, "y": 0, "z": 0 },
+        "drag_coefficient": 0.18,
+        "buoyancy": true,
+        "gravity_scale": 1.0,
+        "collision_enabled": true
+      },
+      "materials": [
+        {
+          "id": "mat-carrier-hull-00000000-0000-0000-0000-000000000001",
+          "name": "Naval Steel Hull",
+          "type": "metal",
+          "density": 7850,
+          "hardness": 8.0,
+          "radar_cross_section": 85000,
+          "ir_signature": 0.72,
+          "color": { "r": 0.3, "g": 0.3, "b": 0.3 },
+          "roughness": 0.7,
+          "metallic": 0.9
+        }
+      ],
+      "health": {
+        "hp_max": 10000,
+        "hp_current": 10000,
+        "armor_rating": 80,
+        "damage_model": "component_based",
+        "damaged_components": [],
+        "is_destroyed": false
+      },
+      "power": {
+        "source_type": "nuclear",
+        "capacity_kwh": 9999999,
+        "current_charge_pct": 100,
+        "output_kw": 280000,
+        "consumption_kw": 60000,
+        "fuel_type": "enriched_uranium",
+        "range_km": 999999,
+        "endurance_hours": 8760
+      },
+      "propulsion": {
+        "propulsion_type": "screw",
+        "max_speed_mps": 15.4,
+        "acceleration_mps2": 0.05,
+        "thrust_n": 200000000,
+        "engine_count": 4
+      },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/carrier/carrier_ops.bt",
+        "current_state": "escort_cruise",
+        "current_task": "escort_convoy",
+        "goals": [
+          { "goal_type": "escort_convoy", "priority": 1 },
+          { "goal_type": "air_superiority", "priority": 2 },
+          { "goal_type": "self_defense", "priority": 3 }
+        ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_tight",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        {
+          "id": "sen-carrier-ars-00000000-0000-0000-0000-000000000001",
+          "name": "AN/SPS-48G Air Search Radar",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 360, "min_range_m": 500, "max_range_m": 450000 },
+          "frame_rate_hz": 0.1,
+          "enabled": true
+        },
+        {
+          "id": "sen-carrier-srs-00000000-0000-0000-0000-000000000002",
+          "name": "AN/SPS-67 Surface Search Radar",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 360, "min_range_m": 100, "max_range_m": 60000 },
+          "frame_rate_hz": 0.2,
+          "enabled": true
+        },
+        {
+          "id": "sen-carrier-esm-00000000-0000-0000-0000-000000000003",
+          "name": "AN/SLQ-32 ESM Suite",
+          "sensor_type": "elint",
+          "field_of_view": { "horizontal_deg": 360 },
+          "enabled": true
+        },
+        {
+          "id": "sen-carrier-cam-00000000-0000-0000-0000-000000000004",
+          "name": "Bridge EO Camera",
+          "sensor_type": "camera_eo",
+          "field_of_view": { "horizontal_deg": 45, "vertical_deg": 30 },
+          "resolution": { "width": 4096, "height": 2160 },
+          "frame_rate_hz": 30,
+          "enabled": true
+        },
+        {
+          "id": "sen-carrier-wx-000000000000-0000-0000-0000-000000000005",
+          "name": "Weather Radar",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 360, "max_range_m": 300000 },
+          "enabled": true,
+          "custom_properties": { "mode": "weather" }
+        }
+      ],
+      "weapons": [
+        {
+          "id": "wpn-carrier-ciws-0000000000-0000-0000-0000-000000000001",
+          "name": "Phalanx Block 1B CIWS (Port)",
+          "weapon_type": "cannon",
+          "ammunition_count": 1550,
+          "rate_of_fire_rpm": 4500,
+          "muzzle_velocity_mps": 1100,
+          "effective_range_m": 1500,
+          "max_range_m": 3600,
+          "guidance_type": "radar_guided",
+          "state": "ready",
+          "enabled": true
+        },
+        {
+          "id": "wpn-carrier-ciws-0000000000-0000-0000-0000-000000000002",
+          "name": "Phalanx Block 1B CIWS (Starboard)",
+          "weapon_type": "cannon",
+          "ammunition_count": 1550,
+          "rate_of_fire_rpm": 4500,
+          "muzzle_velocity_mps": 1100,
+          "effective_range_m": 1500,
+          "max_range_m": 3600,
+          "guidance_type": "radar_guided",
+          "state": "ready",
+          "enabled": true
+        },
+        {
+          "id": "wpn-carrier-essm-0000000000-0000-0000-0000-000000000003",
+          "name": "RIM-162 ESSM Launcher (VLS)",
+          "weapon_type": "missile",
+          "ammunition_count": 32,
+          "effective_range_m": 50000,
+          "max_range_m": 50000,
+          "warhead_type": "blast_fragmentation",
+          "guidance_type": "active_radar",
+          "state": "ready",
+          "enabled": true
+        }
+      ],
+      "communications": [
+        {
+          "id": "com-carrier-link16-000000000-0000-0000-0000-000000000001",
+          "name": "Link 16 JTIDS",
+          "comm_type": "link16",
+          "frequency_mhz": 969,
+          "bandwidth_khz": 3000,
+          "range_km": 500,
+          "data_rate_kbps": 238,
+          "encryption": true,
+          "encryption_standard": "AES-256",
+          "enabled": true
+        },
+        {
+          "id": "com-carrier-satcom-0000000000-0000-0000-0000-000000000002",
+          "name": "SATCOM AEHF",
+          "comm_type": "radio_satcom",
+          "range_km": 99999,
+          "data_rate_kbps": 8000,
+          "encryption": true,
+          "enabled": true
+        }
+      ],
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible",
+        "is_active": true,
+        "is_collidable": true,
+        "flight_ops_state": "aircraft_cycling",
+        "speed_kts": 15
+      },
+      "child_ids": [
+        "ent-blue-helo-000000000000-0000-0000-0000-000000000007",
+        "ent-blue-uav-0-000000000000-0000-0000-0000-000000000008",
+        "ent-blue-fa18-000000000000-0000-0000-0000-000000000009"
+      ],
+      "relationships": [
+        { "relation_type": "commandedBy", "target_id": "org-blue-csg-00000000-0000-0000-0000-000000000002" },
+        { "relation_type": "escorting",   "target_id": "ent-blue-supply-0000000000-0000-0000-0000-000000000005" }
+      ]
+    },
+
+    {
+      "id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002",
+      "name": "USS Ramage (DDG-61)",
+      "label": "TRIDENT-2",
+      "entity_type": "naval_vessel",
+      "subtype": "DDG-51",
+      "tags": ["blue", "destroyer", "AAW", "ASW"],
+      "owner_faction": "blue",
+      "callsign": "RAMAGE",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.52, "longitude": 67.93, "altitude": 0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 154, "y": 20, "z": 12 },
+        "asset_ref": "assets/ships/ddg51_arleigh_burke.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 9200000,
+        "linear_velocity": { "x": 7.7, "y": 0, "z": 0 },
+        "drag_coefficient": 0.22,
+        "buoyancy": true
+      },
+      "health": { "hp_max": 3000, "hp_current": 3000, "armor_rating": 30, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 75000, "fuel_type": "F-76", "fuel_capacity_liters": 1200000, "fuel_remaining_liters": 1200000, "endurance_hours": 96 },
+      "propulsion": { "propulsion_type": "screw", "max_speed_mps": 16.0, "thrust_n": 60000000, "engine_count": 2 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/destroyer/aaw_asw.bt",
+        "current_state": "patrol",
+        "goals": [
+          { "goal_type": "radar_search", "priority": 1 },
+          { "goal_type": "air_defense", "priority": 2 },
+          { "goal_type": "asw_patrol",  "priority": 3 }
+        ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_tight",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        {
+          "id": "sen-ddga-aesa-000000000000-0000-0000-0000-000000000001",
+          "name": "AN/SPY-1D AESA Radar",
+          "sensor_type": "radar",
+          "field_of_view": { "horizontal_deg": 360, "min_range_m": 200, "max_range_m": 400000 },
+          "frame_rate_hz": 0.5,
+          "enabled": true
+        },
+        {
+          "id": "sen-ddga-sonar-00000000000-0000-0000-0000-000000000002",
+          "name": "AN/SQS-53C Hull Sonar",
+          "sensor_type": "sonar",
+          "field_of_view": { "horizontal_deg": 360, "min_range_m": 50, "max_range_m": 18000 },
+          "enabled": true
+        },
+        {
+          "id": "sen-ddga-towed-00000000000-0000-0000-0000-000000000003",
+          "name": "AN/SQR-19 Towed Array",
+          "sensor_type": "sonar",
+          "field_of_view": { "horizontal_deg": 180, "min_range_m": 5000, "max_range_m": 100000 },
+          "enabled": true,
+          "custom_properties": { "mode": "passive" }
+        },
+        {
+          "id": "sen-ddga-irst-000000000000-0000-0000-0000-000000000004",
+          "name": "AN/SAY-1 IRST",
+          "sensor_type": "camera_ir",
+          "field_of_view": { "horizontal_deg": 360, "vertical_deg": 60 },
+          "enabled": true
+        },
+        {
+          "id": "sen-ddga-esm-0000000000000-0000-0000-0000-000000000005",
+          "name": "AN/SLQ-32 ESM",
+          "sensor_type": "elint",
+          "field_of_view": { "horizontal_deg": 360 },
+          "enabled": true
+        }
+      ],
+      "weapons": [
+        {
+          "id": "wpn-ddga-sm2-0000000000000-0000-0000-0000-000000000001",
+          "name": "SM-2MR VLS Cell",
+          "weapon_type": "missile",
+          "ammunition_count": 48,
+          "effective_range_m": 166000,
+          "max_range_m": 166000,
+          "warhead_type": "blast_fragmentation",
+          "guidance_type": "active_radar",
+          "state": "ready",
+          "enabled": true
+        },
+        {
+          "id": "wpn-ddga-essm-000000000000-0000-0000-0000-000000000002",
+          "name": "ESSM Block II VLS",
+          "weapon_type": "missile",
+          "ammunition_count": 32,
+          "effective_range_m": 50000,
+          "max_range_m": 50000,
+          "guidance_type": "active_radar",
+          "state": "ready",
+          "enabled": true
+        },
+        {
+          "id": "wpn-ddga-gun-0000000000000-0000-0000-0000-000000000003",
+          "name": "Mk 45 5-inch/62 Naval Gun",
+          "weapon_type": "cannon",
+          "ammunition_count": 600,
+          "rate_of_fire_rpm": 16,
+          "muzzle_velocity_mps": 808,
+          "effective_range_m": 24000,
+          "max_range_m": 37000,
+          "guidance_type": "gps_inertial",
+          "state": "ready",
+          "enabled": true
+        },
+        {
+          "id": "wpn-ddga-torp-000000000000-0000-0000-0000-000000000004",
+          "name": "Mk 46 Torpedo (ASROC)",
+          "weapon_type": "torpedo",
+          "ammunition_count": 8,
+          "effective_range_m": 11000,
+          "max_range_m": 11000,
+          "guidance_type": "active_radar",
+          "state": "ready",
+          "enabled": true
+        },
+        {
+          "id": "wpn-ddga-ciws-000000000000-0000-0000-0000-000000000005",
+          "name": "Phalanx CIWS",
+          "weapon_type": "cannon",
+          "ammunition_count": 1550,
+          "rate_of_fire_rpm": 4500,
+          "muzzle_velocity_mps": 1100,
+          "effective_range_m": 1500,
+          "guidance_type": "radar_guided",
+          "state": "ready",
+          "enabled": true
+        }
+      ],
+      "communications": [
+        { "id": "com-ddga-link16-0000000000-0000-0000-0000-000000000001", "name": "Link 16", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "relationships": [
+        { "relation_type": "escorting", "target_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001" }
+      ]
+    },
+
+    {
+      "id": "ent-blue-ddg-b-000000000000-0000-0000-0000-000000000003",
+      "name": "USS Mitscher (DDG-57)",
+      "label": "TRIDENT-3",
+      "entity_type": "naval_vessel",
+      "subtype": "DDG-51",
+      "tags": ["blue", "destroyer", "AAW"],
+      "owner_faction": "blue",
+      "callsign": "MITSCHER",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.48, "longitude": 68.07, "altitude": 0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 154, "y": 20, "z": 12 },
+        "asset_ref": "assets/ships/ddg51_arleigh_burke.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": { "body_type": "dynamic", "mass": 9200000, "linear_velocity": { "x": 7.7, "y": 0, "z": 0 }, "buoyancy": true },
+      "health": { "hp_max": 3000, "hp_current": 3000, "armor_rating": 30, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 75000, "fuel_type": "F-76", "fuel_capacity_liters": 1200000, "fuel_remaining_liters": 1200000, "endurance_hours": 96 },
+      "propulsion": { "propulsion_type": "screw", "max_speed_mps": 16.0, "engine_count": 2 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/destroyer/aaw_asw.bt",
+        "current_state": "patrol",
+        "goals": [ { "goal_type": "air_defense", "priority": 1 }, { "goal_type": "radar_search", "priority": 2 } ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_tight",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-ddgb-aesa-000000000000-0000-0000-0000-000000000001", "name": "AN/SPY-1D AESA Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 400000 }, "enabled": true },
+        { "id": "sen-ddgb-sonar-00000000000-0000-0000-0000-000000000002", "name": "Hull Sonar SQS-53C", "sensor_type": "sonar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 18000 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-ddgb-sm2-0000000000000-0000-0000-0000-000000000001", "name": "SM-2MR VLS", "weapon_type": "missile", "ammunition_count": 48, "effective_range_m": 166000, "guidance_type": "active_radar", "state": "ready", "enabled": true },
+        { "id": "wpn-ddgb-ciws-000000000000-0000-0000-0000-000000000002", "name": "Phalanx CIWS", "weapon_type": "cannon", "ammunition_count": 1550, "rate_of_fire_rpm": 4500, "effective_range_m": 1500, "guidance_type": "radar_guided", "state": "ready", "enabled": true },
+        { "id": "wpn-ddgb-gun-0000000000000-0000-0000-0000-000000000003", "name": "Mk 45 Naval Gun", "weapon_type": "cannon", "ammunition_count": 600, "rate_of_fire_rpm": 16, "muzzle_velocity_mps": 808, "effective_range_m": 24000, "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-ddgb-link16-0000000000-0000-0000-0000-000000000001", "name": "Link 16", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "relationships": [
+        { "relation_type": "escorting", "target_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001" }
+      ]
+    },
+
+    {
+      "id": "ent-blue-ffg-0-000000000000-0000-0000-0000-000000000004",
+      "name": "USS Constellation (FFG-62)",
+      "label": "TRIDENT-4",
+      "entity_type": "naval_vessel",
+      "subtype": "FFG-62",
+      "tags": ["blue", "frigate", "ASW"],
+      "owner_faction": "blue",
+      "callsign": "GUARDIAN",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.45, "longitude": 68.02, "altitude": 0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 151, "y": 19, "z": 10 }, "asset_ref": "assets/ships/ffg62_constellation.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 7300000, "linear_velocity": { "x": 7.7, "y": 0, "z": 0 }, "buoyancy": true },
+      "health": { "hp_max": 2000, "hp_current": 2000, "armor_rating": 20, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 35000, "fuel_type": "F-76", "fuel_capacity_liters": 600000, "fuel_remaining_liters": 600000, "endurance_hours": 120 },
+      "propulsion": { "propulsion_type": "screw", "max_speed_mps": 14.0, "engine_count": 2 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/frigate/asw_patrol.bt",
+        "current_state": "asw_patrol",
+        "goals": [ { "goal_type": "asw_patrol", "priority": 1 }, { "goal_type": "self_defense", "priority": 2 } ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_tight",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-ffg-radar-0000000000000-0000-0000-0000-000000000001", "name": "AN/SPY-6 Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 370000 }, "enabled": true },
+        { "id": "sen-ffg-sonar-0000000000000-0000-0000-0000-000000000002", "name": "Variable Depth Sonar", "sensor_type": "sonar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 30000 }, "enabled": true, "custom_properties": { "mode": "active_passive" } }
+      ],
+      "weapons": [
+        { "id": "wpn-ffg-essm-00000000000000-0000-0000-0000-000000000001", "name": "ESSM VLS", "weapon_type": "missile", "ammunition_count": 16, "effective_range_m": 50000, "guidance_type": "active_radar", "state": "ready", "enabled": true },
+        { "id": "wpn-ffg-torp-00000000000000-0000-0000-0000-000000000002", "name": "Mk 54 Torpedo Tubes", "weapon_type": "torpedo", "ammunition_count": 6, "effective_range_m": 14000, "guidance_type": "active_radar", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-ffg-link16-000000000000-0000-0000-0000-000000000001", "name": "Link 16", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "relationships": [
+        { "relation_type": "escorting", "target_id": "ent-blue-supply-0000000000-0000-0000-0000-000000000005" }
+      ]
+    },
+
+    {
+      "id": "ent-blue-supply-0000000000-0000-0000-0000-000000000005",
+      "name": "USNS Rainier (T-AOE-7)",
+      "label": "TRIDENT-5",
+      "entity_type": "naval_vessel",
+      "subtype": "AOE",
+      "tags": ["blue", "supply", "convoy", "high-value"],
+      "owner_faction": "blue",
+      "callsign": "RAINIER",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.50, "longitude": 68.05, "altitude": 0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 230, "y": 32, "z": 20 }, "asset_ref": "assets/ships/aoe_supply.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 49000000, "linear_velocity": { "x": 7.7, "y": 0, "z": 0 }, "buoyancy": true },
+      "health": { "hp_max": 2500, "hp_current": 2500, "armor_rating": 5, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 50000, "fuel_type": "F-76", "fuel_capacity_liters": 8000000, "fuel_remaining_liters": 8000000, "endurance_hours": 168 },
+      "propulsion": { "propulsion_type": "screw", "max_speed_mps": 12.3, "engine_count": 2 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "convoy_cruise",
+        "goals": [ { "goal_type": "maintain_course", "priority": 1 }, { "goal_type": "evade_threat", "priority": 2 } ],
+        "faction": "blue",
+        "autonomous_level": "assisted"
+      },
+      "sensors": [
+        { "id": "sen-supply-nav-000000000000-0000-0000-0000-000000000001", "name": "Navigation Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 48000 }, "enabled": true }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-supply-uhf-000000000000-0000-0000-0000-000000000001", "name": "UHF Radio", "comm_type": "radio_uhf", "range_km": 200, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-blue-sub-0-000000000000-0000-0000-0000-000000000006",
+      "name": "USS Providence (SSN-719)",
+      "label": "TRIDENT-SUB",
+      "entity_type": "submarine",
+      "subtype": "SSN-688",
+      "tags": ["blue", "submarine", "SSN", "ASW"],
+      "owner_faction": "blue",
+      "callsign": "PROVIDENCE",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.40, "longitude": 68.10, "altitude": -200 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "dimensions": { "x": 110, "y": 10, "z": 10 }, "asset_ref": "assets/ships/ssn_losangeles.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 7000000, "linear_velocity": { "x": 5.0, "y": 0, "z": 0 }, "drag_coefficient": 0.04, "buoyancy": true },
+      "health": { "hp_max": 2000, "hp_current": 2000, "armor_rating": 25, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "nuclear", "output_kw": 35000, "range_km": 999999, "endurance_hours": 3360 },
+      "propulsion": { "propulsion_type": "screw", "max_speed_mps": 17.0, "max_depth_m": 450, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/submarine/asw_hunter.bt",
+        "current_state": "silent_running",
+        "goals": [
+          { "goal_type": "detect_enemy_sub", "priority": 1 },
+          { "goal_type": "torpedo_attack",   "priority": 2 },
+          { "goal_type": "evade",            "priority": 3 }
+        ],
+        "faction": "blue",
+        "rules_of_engagement": "weapons_free_sub",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-sub-passive-00000000000-0000-0000-0000-000000000001", "name": "AN/BQQ-10 Passive Sonar", "sensor_type": "sonar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 120000 }, "enabled": true, "custom_properties": { "mode": "passive", "towed_array": true } },
+        { "id": "sen-sub-active-000000000000-0000-0000-0000-000000000002", "name": "AN/BQS-15 Active Sonar", "sensor_type": "sonar", "field_of_view": { "horizontal_deg": 60, "max_range_m": 15000 }, "enabled": false, "custom_properties": { "mode": "active" } },
+        { "id": "sen-sub-periscope-0000000000-0000-0000-0000-000000000003", "name": "Photonics Mast EO", "sensor_type": "camera_eo", "resolution": { "width": 1920, "height": 1080 }, "frame_rate_hz": 30, "enabled": true },
+        { "id": "sen-sub-esm-0000000000000-0000-0000-0000-000000000004", "name": "AN/BRD-7 ESM Mast", "sensor_type": "elint", "field_of_view": { "horizontal_deg": 360 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-sub-torp-000000000000000-0000-0000-0000-000000000001", "name": "Mk 48 ADCAP Torpedo", "weapon_type": "torpedo", "ammunition_count": 12, "effective_range_m": 38000, "max_range_m": 38000, "warhead_type": "shaped_charge", "guidance_type": "wire_guided", "state": "ready", "enabled": true },
+        { "id": "wpn-sub-tlam-000000000000000-0000-0000-0000-000000000002", "name": "BGM-109 Tomahawk (VPT)", "weapon_type": "missile", "ammunition_count": 12, "effective_range_m": 1600000, "guidance_type": "gps_inertial", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-sub-vlf-0000000000000000-0000-0000-0000-000000000001", "name": "VLF Receiver", "comm_type": "radio_hf", "frequency_mhz": 0.015, "range_km": 5000, "enabled": true },
+        { "id": "com-sub-uw-00000000000000000-0000-0000-0000-000000000002", "name": "Underwater Acoustic Comms", "comm_type": "acoustic_uw", "range_km": 50, "data_rate_kbps": 10, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "stealth", "is_active": true, "is_collidable": true, "depth_m": 200, "silent_running": true }
+    },
+
+    {
+      "id": "ent-blue-helo-000000000000-0000-0000-0000-000000000007",
+      "name": "HSC-25 MH-60R Seahawk",
+      "label": "TRIDENT HELO-1",
+      "entity_type": "rotorcraft",
+      "subtype": "MH-60R",
+      "tags": ["blue", "helicopter", "ASW", "airbornne"],
+      "owner_faction": "blue",
+      "callsign": "SEAHAWK-11",
+      "parent_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.50, "longitude": 68.00, "altitude": 150 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 19.8, "y": 3.0, "z": 5.1 }, "asset_ref": "assets/aircraft/mh60r_seahawk.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 10600, "linear_velocity": { "x": 0, "y": 0, "z": 0 }, "drag_coefficient": 0.35, "buoyancy": false },
+      "health": { "hp_max": 500, "hp_current": 500, "armor_rating": 5, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 2000, "fuel_type": "JP-8", "fuel_capacity_liters": 1360, "fuel_remaining_liters": 1360, "endurance_hours": 4 },
+      "propulsion": { "propulsion_type": "rotary_wing", "max_speed_mps": 83, "max_altitude_m": 5800, "acceleration_mps2": 4.0, "engine_count": 2 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/helicopter/asw_dipping.bt",
+        "current_state": "on_deck",
+        "goals": [
+          { "goal_type": "launch_on_cue",    "priority": 1 },
+          { "goal_type": "deploy_dipping_sonar", "priority": 2 },
+          { "goal_type": "torpedo_attack",   "priority": 3 },
+          { "goal_type": "rtb",              "priority": 4 }
+        ],
+        "faction": "blue",
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-helo-dip-sonar-0000000-0000-0000-0000-000000000001", "name": "AQS-22 Dipping Sonar", "sensor_type": "sonar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 6000 }, "enabled": true, "custom_properties": { "deployable": true, "mode": "active_passive" } },
+        { "id": "sen-helo-eo-0000000000000-0000-0000-0000-000000000002", "name": "MTS-B Multi-Spectral Targeting", "sensor_type": "camera_eo", "resolution": { "width": 1920, "height": 1080 }, "frame_rate_hz": 30, "enabled": true },
+        { "id": "sen-helo-ir-0000000000000-0000-0000-0000-000000000003", "name": "FLIR", "sensor_type": "camera_ir", "field_of_view": { "horizontal_deg": 20, "vertical_deg": 15 }, "frame_rate_hz": 30, "enabled": true },
+        { "id": "sen-helo-radar-000000000000-0000-0000-0000-000000000004", "name": "APS-153 Multi-Mode Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 250000 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-helo-torp-0000000000000-0000-0000-0000-000000000001", "name": "Mk 54 Mod 0 Torpedo", "weapon_type": "torpedo", "ammunition_count": 2, "effective_range_m": 14000, "guidance_type": "active_radar", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-helo-data-0000000000000-0000-0000-0000-000000000001", "name": "Link 16 MIDS-LVT", "comm_type": "link16", "range_km": 300, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "inactive", "visibility": "visible", "is_active": false, "is_collidable": true, "on_deck": true }
+    },
+
+    {
+      "id": "ent-blue-uav-0-000000000000-0000-0000-0000-000000000008",
+      "name": "MQ-9B SeaGuardian UAV",
+      "label": "TRIDENT UAV-1",
+      "entity_type": "uav",
+      "subtype": "MQ-9B",
+      "tags": ["blue", "uav", "isr", "maritime"],
+      "owner_faction": "blue",
+      "callsign": "GUARDIAN-01",
+      "parent_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.50, "longitude": 68.00, "altitude": 8000 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 11.7, "y": 24.0, "z": 3.8 }, "asset_ref": "assets/aircraft/mq9b_seaguardian.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 5670, "linear_velocity": { "x": 0, "y": 0, "z": 0 }, "drag_coefficient": 0.04, "buoyancy": false },
+      "health": { "hp_max": 100, "hp_current": 100, "armor_rating": 0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "JP-8", "fuel_capacity_liters": 2000, "fuel_remaining_liters": 2000, "endurance_hours": 27 },
+      "propulsion": { "propulsion_type": "fixed_wing", "max_speed_mps": 118, "max_altitude_m": 12500, "acceleration_mps2": 2.0, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/uav/maritime_isr.bt",
+        "current_state": "on_deck",
+        "goals": [
+          { "goal_type": "patrol_area", "priority": 1 },
+          { "goal_type": "track_contacts", "priority": 2 },
+          { "goal_type": "target_designation", "priority": 3 },
+          { "goal_type": "rtb", "priority": 4 }
+        ],
+        "faction": "blue",
+        "autonomous_level": "semi_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-uav-eo-0000000000000000-0000-0000-0000-000000000001", "name": "MTS-B EO Ball", "sensor_type": "camera_eo", "resolution": { "width": 4096, "height": 2160 }, "frame_rate_hz": 30, "enabled": true },
+        { "id": "sen-uav-ir-0000000000000000-0000-0000-0000-000000000002", "name": "FLIR IR", "sensor_type": "camera_ir", "resolution": { "width": 1920, "height": 1080 }, "frame_rate_hz": 30, "enabled": true },
+        { "id": "sen-uav-sar-000000000000000-0000-0000-0000-000000000003", "name": "AN/APY-8 Lynx SAR", "sensor_type": "sar", "field_of_view": { "horizontal_deg": 90, "max_range_m": 100000 }, "enabled": true },
+        { "id": "sen-uav-ld-0000000000000000-0000-0000-0000-000000000004", "name": "Laser Designator", "sensor_type": "custom", "enabled": true }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-uav-satcom-000000000000-0000-0000-0000-000000000001", "name": "SATCOM Uplink", "comm_type": "radio_satcom", "range_km": 99999, "data_rate_kbps": 4000, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "inactive", "visibility": "visible", "is_active": false, "is_collidable": true, "on_deck": true }
+    },
+
+    {
+      "id": "ent-blue-fa18-000000000000-0000-0000-0000-000000000009",
+      "name": "VFA-143 F/A-18E Super Hornet",
+      "label": "PUKIN DOGS 1",
+      "entity_type": "aircraft",
+      "subtype": "F/A-18E",
+      "tags": ["blue", "fighter", "strike", "multirole"],
+      "owner_faction": "blue",
+      "callsign": "PUKIN-01",
+      "parent_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.50, "longitude": 68.00, "altitude": 50 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 18.3, "y": 13.6, "z": 4.9 }, "asset_ref": "assets/aircraft/fa18e_superhornet.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 21320, "linear_velocity": { "x": 0, "y": 0, "z": 0 }, "drag_coefficient": 0.022, "lift_coefficient": 1.8, "buoyancy": false },
+      "health": { "hp_max": 500, "hp_current": 500, "armor_rating": 5, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "JP-8", "fuel_capacity_liters": 6530, "fuel_remaining_liters": 6530, "endurance_hours": 2 },
+      "propulsion": { "propulsion_type": "jet", "max_speed_mps": 580, "max_altitude_m": 15200, "acceleration_mps2": 15.0, "engine_count": 2 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/fighter/cas_strike.bt",
+        "current_state": "on_deck",
+        "goals": [
+          { "goal_type": "launch_on_order", "priority": 1 },
+          { "goal_type": "intercept_missile", "priority": 2 },
+          { "goal_type": "strike_surface", "priority": 3 },
+          { "goal_type": "rtb", "priority": 4 }
+        ],
+        "faction": "blue",
+        "autonomous_level": "assisted"
+      },
+      "sensors": [
+        { "id": "sen-fa18-radar-000000000000-0000-0000-0000-000000000001", "name": "AN/APG-79 AESA Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 120, "vertical_deg": 60, "max_range_m": 160000 }, "enabled": true },
+        { "id": "sen-fa18-irst-000000000000-0000-0000-0000-000000000002", "name": "ATFLIR Pod", "sensor_type": "camera_ir", "field_of_view": { "horizontal_deg": 30 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-fa18-aim120-0000000000-0000-0000-0000-000000000001", "name": "AIM-120D AMRAAM", "weapon_type": "missile", "ammunition_count": 4, "effective_range_m": 180000, "guidance_type": "active_radar", "state": "ready", "enabled": true },
+        { "id": "wpn-fa18-aim9x-00000000000-0000-0000-0000-000000000002", "name": "AIM-9X Sidewinder", "weapon_type": "missile", "ammunition_count": 2, "effective_range_m": 26000, "guidance_type": "ir_homing", "state": "ready", "enabled": true },
+        { "id": "wpn-fa18-agm84-0000000000-0000-0000-0000-000000000003", "name": "AGM-84L Harpoon", "weapon_type": "missile", "ammunition_count": 2, "effective_range_m": 280000, "guidance_type": "active_radar", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-fa18-link16-000000000000-0000-0000-0000-000000000001", "name": "Link 16 MIDS", "comm_type": "link16", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "inactive", "visibility": "visible", "is_active": false, "is_collidable": true, "on_deck": true }
+    },
+
+    {
+      "id": "ent-red-dd-00000000000000-0000-0000-0000-000000000011",
+      "name": "PLAN Destroyer Hangzhou (DDG-136)",
+      "label": "STORM-1",
+      "entity_type": "naval_vessel",
+      "subtype": "Sovremenny-class",
+      "tags": ["red", "destroyer", "anti-ship"],
+      "owner_faction": "red",
+      "callsign": "STORM-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 13.5, "longitude": 69.0, "altitude": 0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 156, "y": 17, "z": 12 }, "asset_ref": "assets/ships/sovremenny_class.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 7940000, "linear_velocity": { "x": -7.0, "y": 0, "z": 0 }, "buoyancy": true },
+      "health": { "hp_max": 2800, "hp_current": 2800, "armor_rating": 35, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 80000, "fuel_type": "heavy_oil", "fuel_capacity_liters": 1800000, "fuel_remaining_liters": 1800000, "endurance_hours": 90 },
+      "propulsion": { "propulsion_type": "screw", "max_speed_mps": 17.0, "engine_count": 4 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/red_destroyer/anti_ship.bt",
+        "current_state": "approach",
+        "goals": [
+          { "goal_type": "close_range", "priority": 1 },
+          { "goal_type": "launch_anti_ship_missiles", "priority": 2 },
+          { "goal_type": "destroy_carrier", "priority": 3 }
+        ],
+        "faction": "red",
+        "rules_of_engagement": "weapons_free",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-red-dd-radar-00000000000-0000-0000-0000-000000000001", "name": "Top Plate 3D Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 300000 }, "enabled": true },
+        { "id": "sen-red-dd-esm-000000000000-0000-0000-0000-000000000002", "name": "EW Suite Foot Ball ESM", "sensor_type": "elint", "field_of_view": { "horizontal_deg": 360 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-red-dd-yj18-0000000000-0000-0000-0000-000000000001", "name": "YJ-18 Anti-Ship Missile (x8)", "weapon_type": "missile", "ammunition_count": 8, "effective_range_m": 540000, "warhead_type": "semi_armour_piercing", "guidance_type": "active_radar", "state": "ready", "enabled": true },
+        { "id": "wpn-red-dd-gun-00000000000-0000-0000-0000-000000000002", "name": "AK-130 130mm Naval Gun", "weapon_type": "cannon", "ammunition_count": 2000, "rate_of_fire_rpm": 45, "muzzle_velocity_mps": 850, "effective_range_m": 23000, "state": "ready", "enabled": true },
+        { "id": "wpn-red-dd-ciws-0000000000-0000-0000-0000-000000000003", "name": "AK-630 CIWS", "weapon_type": "cannon", "ammunition_count": 3000, "rate_of_fire_rpm": 5000, "effective_range_m": 4000, "guidance_type": "radar_guided", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-red-dd-datalink-00000000-0000-0000-0000-000000000001", "name": "CEC Data Link", "comm_type": "data_link", "range_km": 300, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-red-ffg-0000000000000-0000-0000-0000-000000000012",
+      "name": "PLAN Frigate Huanggang (FF-564)",
+      "label": "STORM-2",
+      "entity_type": "naval_vessel",
+      "subtype": "Jianghu-class",
+      "tags": ["red", "frigate"],
+      "owner_faction": "red",
+      "callsign": "STORM-2",
+      "transform": {
+        "geo_coordinate": { "latitude": 13.45, "longitude": 69.05, "altitude": 0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 103, "y": 11, "z": 9 }, "asset_ref": "assets/ships/jianghu_class.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 1700000, "linear_velocity": { "x": -7.0, "y": 0, "z": 0 }, "buoyancy": true },
+      "health": { "hp_max": 1200, "hp_current": 1200, "armor_rating": 15, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "output_kw": 15000, "fuel_type": "heavy_oil", "fuel_capacity_liters": 400000, "fuel_remaining_liters": 400000, "endurance_hours": 72 },
+      "propulsion": { "propulsion_type": "screw", "max_speed_mps": 13.0, "engine_count": 2 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "approach",
+        "goals": [ { "goal_type": "flank_convoy", "priority": 1 }, { "goal_type": "launch_missiles", "priority": 2 } ],
+        "faction": "red",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "assisted"
+      },
+      "sensors": [
+        { "id": "sen-red-ffg-radar-0000000000-0000-0000-0000-000000000001", "name": "Eye Shield Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 150000 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-red-ffg-ssm-00000000000-0000-0000-0000-000000000001", "name": "YJ-83 Anti-Ship Missile (x4)", "weapon_type": "missile", "ammunition_count": 4, "effective_range_m": 200000, "guidance_type": "active_radar", "state": "ready", "enabled": true },
+        { "id": "wpn-red-ffg-gun-0000000000-0000-0000-0000-000000000002",  "name": "100mm Naval Gun", "weapon_type": "cannon", "ammunition_count": 400, "rate_of_fire_rpm": 15, "effective_range_m": 17000, "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-red-ffg-radio-0000000000-0000-0000-0000-000000000001", "name": "VHF Radio", "comm_type": "radio_vhf", "range_km": 100, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013",
+      "name": "PLAN Submarine Type 039B",
+      "label": "STORM-SUB",
+      "entity_type": "submarine",
+      "subtype": "Type-039B",
+      "tags": ["red", "submarine", "AIP", "diesel-electric"],
+      "owner_faction": "red",
+      "callsign": "STORM-SUB",
+      "transform": {
+        "geo_coordinate": { "latitude": 12.60, "longitude": 68.50, "altitude": -120 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "dimensions": { "x": 75, "y": 8, "z": 8 }, "asset_ref": "assets/ships/type039b_sub.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 3600000, "linear_velocity": { "x": -2.0, "y": 0, "z": 0 }, "drag_coefficient": 0.05, "buoyancy": true },
+      "health": { "hp_max": 1500, "hp_current": 1500, "armor_rating": 20, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "hybrid", "fuel_type": "diesel_aip", "fuel_capacity_liters": 300000, "fuel_remaining_liters": 300000, "endurance_hours": 336 },
+      "propulsion": { "propulsion_type": "screw", "max_speed_mps": 10.0, "max_depth_m": 300, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/red_sub/ambush.bt",
+        "current_state": "silent_running",
+        "goals": [
+          { "goal_type": "track_convoy",    "priority": 1 },
+          { "goal_type": "torpedo_attack",   "priority": 2 },
+          { "goal_type": "deploy_decoy",     "priority": 3 },
+          { "goal_type": "evade",            "priority": 4 }
+        ],
+        "faction": "red",
+        "rules_of_engagement": "weapons_free",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-red-sub-passive-0000000-0000-0000-0000-000000000001", "name": "Type 2010 Passive Sonar", "sensor_type": "sonar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 80000 }, "enabled": true, "custom_properties": { "mode": "passive" } },
+        { "id": "sen-red-sub-active-00000000-0000-0000-0000-000000000002", "name": "Type 2010 Active Sonar",  "sensor_type": "sonar", "field_of_view": { "horizontal_deg": 60,  "max_range_m": 12000 }, "enabled": false },
+        { "id": "sen-red-sub-esm-0000000000-0000-0000-0000-000000000003", "name": "ESM Mast", "sensor_type": "elint", "field_of_view": { "horizontal_deg": 360 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-red-sub-torp-000000000000-0000-0000-0000-000000000001", "name": "Yu-6 Heavy Torpedo (x12)", "weapon_type": "torpedo", "ammunition_count": 12, "effective_range_m": 45000, "warhead_type": "shaped_charge", "guidance_type": "wire_guided", "state": "ready", "enabled": true },
+        { "id": "wpn-red-sub-decoy-00000000000-0000-0000-0000-000000000002", "name": "Acoustic Decoy (x6)", "weapon_type": "custom", "ammunition_count": 6, "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-red-sub-uw-000000000000-0000-0000-0000-000000000001", "name": "UQC Underwater Comms", "comm_type": "acoustic_uw", "range_km": 30, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "stealth", "is_active": true, "is_collidable": true, "depth_m": 120, "silent_running": true }
+    },
+
+    {
+      "id": "ent-red-mpa-0000000000000-0000-0000-0000-000000000014",
+      "name": "PLAN Y-8X Maritime Patrol Aircraft",
+      "label": "STORM-MPA",
+      "entity_type": "aircraft",
+      "subtype": "Y-8X",
+      "tags": ["red", "mpa", "isr", "maritime"],
+      "owner_faction": "red",
+      "callsign": "STORM-MPA",
+      "transform": {
+        "geo_coordinate": { "latitude": 14.0, "longitude": 69.5, "altitude": 3000 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 35.5, "y": 38.0, "z": 11.2 }, "asset_ref": "assets/aircraft/y8x_mpa.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 61000, "linear_velocity": { "x": 0, "y": -100, "z": 0 }, "drag_coefficient": 0.032, "buoyancy": false },
+      "health": { "hp_max": 300, "hp_current": 300, "armor_rating": 0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "Jet-A", "fuel_capacity_liters": 22000, "fuel_remaining_liters": 22000, "endurance_hours": 12 },
+      "propulsion": { "propulsion_type": "fixed_wing", "max_speed_mps": 185, "max_altitude_m": 10000, "engine_count": 4 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "patrol",
+        "goals": [ { "goal_type": "isr_patrol", "priority": 1 }, { "goal_type": "cue_submarine", "priority": 2 } ],
+        "faction": "red",
+        "autonomous_level": "assisted"
+      },
+      "sensors": [
+        { "id": "sen-red-mpa-radar-0000000000-0000-0000-0000-000000000001", "name": "Surface Search Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 350000 }, "enabled": true },
+        { "id": "sen-red-mpa-eo-00000000000-0000-0000-0000-000000000002", "name": "EO Ball", "sensor_type": "camera_eo", "resolution": { "width": 1920, "height": 1080 }, "frame_rate_hz": 30, "enabled": true },
+        { "id": "sen-red-mpa-mag-0000000000-0000-0000-0000-000000000003", "name": "MAD Boom", "sensor_type": "acoustic", "field_of_view": { "horizontal_deg": 30, "max_range_m": 200 }, "enabled": true }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-red-mpa-datalink-0000000-0000-0000-0000-000000000001", "name": "Data Link", "comm_type": "data_link", "range_km": 500, "encryption": true, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-red-mbm-0000000000000-0000-0000-0000-000000000015",
+      "name": "PLAN Type 022 Missile Boat",
+      "label": "STORM-3",
+      "entity_type": "naval_vessel",
+      "subtype": "Type-022",
+      "tags": ["red", "missile_boat", "fast_attack"],
+      "owner_faction": "red",
+      "callsign": "STORM-3",
+      "transform": {
+        "geo_coordinate": { "latitude": 13.3, "longitude": 68.8, "altitude": 0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 42, "y": 12, "z": 4 }, "asset_ref": "assets/ships/type022_missile_boat.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 225000, "linear_velocity": { "x": -10.0, "y": 0, "z": 0 }, "buoyancy": true },
+      "health": { "hp_max": 400, "hp_current": 400, "armor_rating": 5, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "diesel", "fuel_capacity_liters": 50000, "fuel_remaining_liters": 50000, "endurance_hours": 24 },
+      "propulsion": { "propulsion_type": "waterjet", "max_speed_mps": 22.0, "engine_count": 2 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "sprint_approach",
+        "goals": [ { "goal_type": "launch_missiles_and_evade", "priority": 1 } ],
+        "faction": "red",
+        "rules_of_engagement": "weapons_free",
+        "autonomous_level": "semi_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-red-mbm-radar-00000000000-0000-0000-0000-000000000001", "name": "Navigation Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360, "max_range_m": 60000 }, "enabled": true }
+      ],
+      "weapons": [
+        { "id": "wpn-red-mbm-yj12-00000000000-0000-0000-0000-000000000001", "name": "YJ-12 Anti-Ship Missile (x8)", "weapon_type": "missile", "ammunition_count": 8, "effective_range_m": 400000, "warhead_type": "semi_armour_piercing", "guidance_type": "active_radar", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "com-red-mbm-radio-0000000000-0000-0000-0000-000000000001", "name": "UHF Radio", "comm_type": "radio_uhf", "range_km": 50, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    },
+
+    {
+      "id": "ent-red-uav-0000000000000-0000-0000-0000-000000000016",
+      "name": "PLAN Wing Loong II Recon UAV",
+      "label": "STORM-UAV",
+      "entity_type": "uav",
+      "subtype": "Wing Loong II",
+      "tags": ["red", "uav", "recon"],
+      "owner_faction": "red",
+      "callsign": "STORM-UAV",
+      "transform": {
+        "geo_coordinate": { "latitude": 13.8, "longitude": 69.0, "altitude": 6000 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "custom", "dimensions": { "x": 11.0, "y": 20.5, "z": 3.8 }, "asset_ref": "assets/aircraft/wing_loong_ii.usd" },
+      "physics_body": { "body_type": "dynamic", "mass": 4200, "linear_velocity": { "x": 0, "y": -60, "z": 0 }, "buoyancy": false },
+      "health": { "hp_max": 80, "hp_current": 80, "armor_rating": 0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "Jet-A", "fuel_capacity_liters": 1500, "fuel_remaining_liters": 1500, "endurance_hours": 20 },
+      "propulsion": { "propulsion_type": "fixed_wing", "max_speed_mps": 100, "max_altitude_m": 9000, "engine_count": 1 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "patrol",
+        "goals": [ { "goal_type": "isr_patrol", "priority": 1 }, { "goal_type": "cue_strike", "priority": 2 } ],
+        "faction": "red",
+        "autonomous_level": "semi_autonomous"
+      },
+      "sensors": [
+        { "id": "sen-red-uav-eo-000000000000-0000-0000-0000-000000000001", "name": "EO Camera", "sensor_type": "camera_eo", "resolution": { "width": 1920, "height": 1080 }, "frame_rate_hz": 30, "enabled": true },
+        { "id": "sen-red-uav-ir-000000000000-0000-0000-0000-000000000002", "name": "IR Camera", "sensor_type": "camera_ir", "resolution": { "width": 1280, "height": 720 }, "frame_rate_hz": 30, "enabled": true }
+      ],
+      "weapons": [],
+      "communications": [
+        { "id": "com-red-uav-satcom-00000000-0000-0000-0000-000000000001", "name": "C2 Data Link", "comm_type": "radio_satcom", "range_km": 99999, "encryption": false, "enabled": true }
+      ],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true }
+    }
+
+  ],
+
+  "missions": [
+    {
+      "id": "msn-blue-escort-000000000000-0000-0000-0000-000000000001",
+      "name": "Escort Logistics Convoy",
+      "mission_type": "escort",
+      "assigned_entity_ids": [
+        "ent-blue-carrier-00000000-0000-0000-0000-000000000001",
+        "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002",
+        "ent-blue-ddg-b-000000000000-0000-0000-0000-000000000003",
+        "ent-blue-ffg-0-000000000000-0000-0000-0000-000000000004"
+      ],
+      "primary_objective": "Protect USNS Rainier and deliver cargo safely to port.",
+      "secondary_objectives": [
+        "Maintain air superiority over convoy corridor",
+        "Destroy or deter Red naval forces",
+        "Prosecute submarine contacts"
+      ],
+      "area_of_operation": {
+        "center": { "latitude": 12.5, "longitude": 68.0 },
+        "radius_km": 200
+      },
+      "roe": "weapons_tight",
+      "status": "active",
+      "priority": 1
+    },
+    {
+      "id": "msn-blue-asw-0000000000000-0000-0000-0000-000000000002",
+      "name": "Anti-Submarine Warfare Screen",
+      "mission_type": "anti_submarine",
+      "assigned_entity_ids": [
+        "ent-blue-sub-0-000000000000-0000-0000-0000-000000000006",
+        "ent-blue-helo-000000000000-0000-0000-0000-000000000007",
+        "ent-blue-ffg-0-000000000000-0000-0000-0000-000000000004"
+      ],
+      "primary_objective": "Detect, track, and neutralize Red submarine threat.",
+      "area_of_operation": {
+        "center": { "latitude": 12.5, "longitude": 68.0 },
+        "radius_km": 100
+      },
+      "roe": "weapons_free_sub",
+      "status": "active",
+      "priority": 2
+    },
+    {
+      "id": "msn-blue-isr-0000000000000-0000-0000-0000-000000000003",
+      "name": "Maritime ISR Patrol",
+      "mission_type": "isr",
+      "assigned_entity_ids": [
+        "ent-blue-uav-0-000000000000-0000-0000-0000-000000000008"
+      ],
+      "primary_objective": "Establish wide-area maritime picture; track Red surface and air contacts.",
+      "area_of_operation": {
+        "center": { "latitude": 13.0, "longitude": 68.5 },
+        "radius_km": 400
+      },
+      "roe": "observe_only",
+      "status": "planned",
+      "priority": 3
+    },
+    {
+      "id": "msn-red-strike-000000000000-0000-0000-0000-000000000004",
+      "name": "Sink Blue Carrier Strike Group",
+      "mission_type": "strike",
+      "assigned_entity_ids": [
+        "ent-red-dd-00000000000000-0000-0000-0000-000000000011",
+        "ent-red-ffg-0000000000000-0000-0000-0000-000000000012",
+        "ent-red-sub-0000000000000-0000-0000-0000-000000000013",
+        "ent-red-mbm-0000000000000-0000-0000-0000-000000000015"
+      ],
+      "primary_objective": "Destroy CVN flagship and supply ship.",
+      "secondary_objectives": [ "Saturate Blue SAM envelope", "Use coordinated missile salvo" ],
+      "roe": "weapons_free",
+      "status": "active",
+      "priority": 1
+    }
+  ],
+
+  "timeline": [
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000001", "time_s": 0,    "action_type": "trigger_event", "label": "Fleet cruising, begin simulation", "parameters": { "event": "sim_start" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000002", "time_s": 60,   "action_type": "spawn_entity",   "label": "Launch MQ-9B UAV", "entity_id": "ent-blue-uav-0-000000000000-0000-0000-0000-000000000008" },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000003", "time_s": 300,  "action_type": "trigger_event",  "label": "Red sub detects convoy on passive sonar", "parameters": { "source": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "event_type": "detection" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000004", "time_s": 600,  "action_type": "trigger_event",  "label": "Blue DDG-A sonar contact — possible submarine", "parameters": { "source": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "event_type": "detection" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000005", "time_s": 720,  "action_type": "spawn_entity",   "label": "Launch MH-60R Seahawk for ASW", "entity_id": "ent-blue-helo-000000000000-0000-0000-0000-000000000007" },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000006", "time_s": 900,  "action_type": "trigger_event",  "label": "Red destroyer launches YJ-18 salvo", "parameters": { "source": "ent-red-dd-00000000000000-0000-0000-0000-000000000011", "event_type": "missile_launch", "count": 4 } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000007", "time_s": 914,  "action_type": "trigger_event",  "label": "Blue ESM detects missile launch signature", "parameters": { "source": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "event_type": "detection" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000008", "time_s": 920,  "action_type": "spawn_entity",   "label": "Launch F/A-18E CAP sorties", "entity_id": "ent-blue-fa18-000000000000-0000-0000-0000-000000000009" },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000009", "time_s": 960,  "action_type": "trigger_event",  "label": "Chaff deployed by carrier", "parameters": { "source": "ent-blue-carrier-00000000-0000-0000-0000-000000000001", "event_type": "custom", "custom_event": "chaff_deployed" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000010", "time_s": 975,  "action_type": "trigger_event",  "label": "SM-2 intercept of incoming YJ-18", "parameters": { "event_type": "missile_impact", "result": "intercept", "intercepted_count": 3 } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000011", "time_s": 985,  "action_type": "trigger_event",  "label": "One YJ-18 leaker hits DDG-A", "parameters": { "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "event_type": "damage_received", "hp_delta": -800 } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000012", "time_s": 985,  "action_type": "set_state",      "label": "DDG-A damaged state", "entity_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "parameters": { "lifecycle": "damaged" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000013", "time_s": 1080, "action_type": "trigger_event",  "label": "Red missile boat launches YJ-12 salvo", "parameters": { "source": "ent-red-mbm-0000000000000-0000-0000-0000-000000000015", "event_type": "missile_launch", "count": 8 } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000014", "time_s": 1100, "action_type": "trigger_event",  "label": "EW jamming activated — DRFM jammer on", "parameters": { "faction": "red", "event_type": "custom", "custom_event": "ew_jamming_start" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000015", "time_s": 1140, "action_type": "trigger_event",  "label": "Red sub launches two Yu-6 torpedoes at supply ship", "parameters": { "source": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "event_type": "fire", "target": "ent-blue-supply-0000000000-0000-0000-0000-000000000005", "count": 2 } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000016", "time_s": 1150, "action_type": "trigger_event",  "label": "Red sub deploys acoustic decoys after launch", "parameters": { "source": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "event_type": "custom", "custom_event": "acoustic_decoy_deployed" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000017", "time_s": 1200, "action_type": "trigger_event",  "label": "Seahawk dipping sonar acquires sub contact", "parameters": { "source": "ent-blue-helo-000000000000-0000-0000-0000-000000000007", "event_type": "detection" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000018", "time_s": 1260, "action_type": "trigger_event",  "label": "Seahawk drops Mk54 torpedo on sub", "parameters": { "source": "ent-blue-helo-000000000000-0000-0000-0000-000000000007", "event_type": "fire", "target": "ent-red-sub-0000000000000-0000-0000-0000-000000000013" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000019", "time_s": 1320, "action_type": "trigger_event",  "label": "Red submarine destroyed", "parameters": { "target": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "event_type": "destruction" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000020", "time_s": 1320, "action_type": "set_state",      "label": "Red sub destroyed", "entity_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "parameters": { "lifecycle": "destroyed" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000021", "time_s": 1440, "action_type": "trigger_event",  "label": "F/A-18E strikes Red destroyer with Harpoon", "parameters": { "source": "ent-blue-fa18-000000000000-0000-0000-0000-000000000009", "event_type": "missile_launch", "target": "ent-red-dd-00000000000000-0000-0000-0000-000000000011" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000022", "time_s": 1500, "action_type": "trigger_event",  "label": "Red forces retreat", "parameters": { "faction": "red", "event_type": "custom", "custom_event": "fleet_retreat" } },
+    { "id": "tl-00000000000000000000-0000-0000-0000-000000000023", "time_s": 2400, "action_type": "trigger_event",  "label": "Mission complete — convoy escort successful", "parameters": { "event_type": "mission_complete" } }
+  ],
+
+  "events": [
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000001", "event_type": "spawn",           "timestamp": 0,    "source_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001", "notes": "All Blue entities spawn at sim start" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000002", "event_type": "detection",       "timestamp": 300,  "source_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "target_id": "ent-blue-supply-0000000000-0000-0000-0000-000000000005", "notes": "Red sub passive sonar detects convoy engine noise" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000003", "event_type": "detection",       "timestamp": 600,  "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "notes": "Blue DDG-A towed array — probable sub contact" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000004", "event_type": "radar_lock",      "timestamp": 850,  "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "target_id": "ent-red-dd-00000000000000-0000-0000-0000-000000000011", "notes": "Blue DDG-A SPY-1D radar locks Red destroyer" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000005", "event_type": "missile_launch",  "timestamp": 900,  "source_id": "ent-red-dd-00000000000000-0000-0000-0000-000000000011", "notes": "Red DD launches 4x YJ-18 ASM at Blue CSG" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000006", "event_type": "detection",       "timestamp": 914,  "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "notes": "ESM detects YJ-18 seeker activation — launch warning" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000007", "event_type": "missile_launch",  "timestamp": 930,  "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "notes": "Blue DDG-A fires 6x SM-2 in response" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000008", "event_type": "missile_impact",  "timestamp": 975,  "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "target_id": "ent-red-dd-00000000000000-0000-0000-0000-000000000011", "notes": "SM-2 kills 3 of 4 YJ-18; one leaker continues" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000009", "event_type": "explosion",       "timestamp": 985,  "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "position": { "x": 0, "y": 0, "z": 0 }, "effects": [{ "effect_type": "blast", "magnitude": 500, "radius_m": 30, "duration_s": 2 }, { "effect_type": "fire", "magnitude": 200, "radius_m": 15, "duration_s": 300 }], "notes": "YJ-18 leaker impacts DDG-A amidships" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000010", "event_type": "damage_received", "timestamp": 985,  "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "notes": "DDG-A damaged: engine room flooding, speed reduced" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000011", "event_type": "missile_launch",  "timestamp": 1080, "source_id": "ent-red-mbm-0000000000000-0000-0000-0000-000000000015", "notes": "Red missile boat fires 8x YJ-12 saturating salvo" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000012", "event_type": "communication_sent", "timestamp": 1100, "source_id": "ent-red-dd-00000000000000-0000-0000-0000-000000000011", "notes": "Red activates DRFM jamming to confuse Blue SAM seekers" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000013", "event_type": "fire",            "timestamp": 1140, "source_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "target_id": "ent-blue-supply-0000000000-0000-0000-0000-000000000005", "notes": "Red sub fires 2x Yu-6 heavyweight torpedoes" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000014", "event_type": "detection",       "timestamp": 1200, "source_id": "ent-blue-helo-000000000000-0000-0000-0000-000000000007", "target_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "notes": "MH-60R dipping sonar acquires sub 4000m below, locks firing solution" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000015", "event_type": "fire",            "timestamp": 1260, "source_id": "ent-blue-helo-000000000000-0000-0000-0000-000000000007", "target_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "notes": "Seahawk drops Mk 54 torpedo" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000016", "event_type": "explosion",       "timestamp": 1320, "source_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "effects": [{ "effect_type": "blast", "magnitude": 600, "radius_m": 50, "duration_s": 3 }, { "effect_type": "flooding", "magnitude": 1000, "duration_s": 120 }], "notes": "Mk 54 detonates beneath Red sub — kills submarine" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000017", "event_type": "destruction",     "timestamp": 1320, "source_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "notes": "Red submarine sunk" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000018", "event_type": "missile_launch",  "timestamp": 1440, "source_id": "ent-blue-fa18-000000000000-0000-0000-0000-000000000009", "target_id": "ent-red-dd-00000000000000-0000-0000-0000-000000000011", "notes": "F/A-18E launches 2x AGM-84 Harpoon at Red destroyer" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000019", "event_type": "missile_impact",  "timestamp": 1460, "source_id": "ent-red-dd-00000000000000-0000-0000-0000-000000000011", "notes": "Harpoon strikes Red destroyer amidships — severe damage" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000020", "event_type": "retreat",         "timestamp": 1500, "notes": "Remaining Red forces retreat at best speed" },
+    { "id": "evt-000000000000000000000-0000-0000-0000-000000000021", "event_type": "mission_complete","timestamp": 2400, "source_id": "ent-blue-supply-0000000000-0000-0000-0000-000000000005", "notes": "Convoy delivered. Operation Trident Shield concluded." }
+  ],
+
+  "relationships": [
+    { "id": "rel-00000000000000000001", "source_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001", "relation_type": "owns", "target_id": "ent-blue-helo-000000000000-0000-0000-0000-000000000007" },
+    { "id": "rel-00000000000000000002", "source_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001", "relation_type": "owns", "target_id": "ent-blue-uav-0-000000000000-0000-0000-0000-000000000008" },
+    { "id": "rel-00000000000000000003", "source_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001", "relation_type": "owns", "target_id": "ent-blue-fa18-000000000000-0000-0000-0000-000000000009" },
+    { "id": "rel-00000000000000000004", "source_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002", "relation_type": "allyOf", "target_id": "ent-blue-ddg-b-000000000000-0000-0000-0000-000000000003", "bidirectional": true },
+    { "id": "rel-00000000000000000005", "source_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001", "relation_type": "enemyOf", "target_id": "ent-red-dd-00000000000000-0000-0000-0000-000000000011" },
+    { "id": "rel-00000000000000000006", "source_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013", "relation_type": "targets", "target_id": "ent-blue-supply-0000000000-0000-0000-0000-000000000005" },
+    { "id": "rel-00000000000000000007", "source_id": "ent-blue-helo-000000000000-0000-0000-0000-000000000007", "relation_type": "targets", "target_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013" },
+    { "id": "rel-00000000000000000008", "source_id": "ent-red-mpa-0000000000000-0000-0000-0000-000000000014", "relation_type": "providesDataTo", "target_id": "ent-red-sub-0000000000000-0000-0000-0000-000000000013" },
+    { "id": "rel-00000000000000000009", "source_id": "ent-blue-uav-0-000000000000-0000-0000-0000-000000000008", "relation_type": "providesDataTo", "target_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001" }
+  ],
+
+  "assets": {
+    "base_url": "assets/",
+    "entries": [
+      { "id": "ast-00000000-0000-0000-0000-000000000001", "name": "Nimitz CVN",             "path": "ships/cvn_nimitz.usd",            "format": "usd", "tags": ["ship", "carrier", "blue"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000002", "name": "Arleigh Burke DDG",      "path": "ships/ddg51_arleigh_burke.usd",   "format": "usd", "tags": ["ship", "destroyer", "blue"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000003", "name": "FFG-62 Constellation",   "path": "ships/ffg62_constellation.usd",   "format": "usd", "tags": ["ship", "frigate", "blue"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000004", "name": "AOE Supply Ship",        "path": "ships/aoe_supply.usd",            "format": "usd", "tags": ["ship", "supply", "blue"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000005", "name": "Los Angeles SSN",        "path": "ships/ssn_losangeles.usd",        "format": "usd", "tags": ["submarine", "blue"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000006", "name": "MH-60R Seahawk",         "path": "aircraft/mh60r_seahawk.usd",      "format": "usd", "tags": ["rotorcraft", "blue", "asw"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000007", "name": "MQ-9B SeaGuardian",      "path": "aircraft/mq9b_seaguardian.usd",   "format": "usd", "tags": ["uav", "blue", "isr"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000008", "name": "F/A-18E Super Hornet",   "path": "aircraft/fa18e_superhornet.usd",  "format": "usd", "tags": ["aircraft", "blue", "strike"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000009", "name": "Sovremenny Destroyer",   "path": "ships/sovremenny_class.usd",      "format": "usd", "tags": ["ship", "destroyer", "red"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000010", "name": "Jianghu Frigate",        "path": "ships/jianghu_class.usd",         "format": "usd", "tags": ["ship", "frigate", "red"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000011", "name": "Type 039B Submarine",    "path": "ships/type039b_sub.usd",          "format": "usd", "tags": ["submarine", "red"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000012", "name": "Y-8X MPA",               "path": "aircraft/y8x_mpa.usd",           "format": "usd", "tags": ["aircraft", "red", "mpa"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000013", "name": "Type 022 Missile Boat",  "path": "ships/type022_missile_boat.usd",  "format": "usd", "tags": ["ship", "missile_boat", "red"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000014", "name": "Wing Loong II UAV",      "path": "aircraft/wing_loong_ii.usd",      "format": "usd", "tags": ["uav", "red", "recon"] },
+      { "id": "ast-00000000-0000-0000-0000-000000000015", "name": "Indian Ocean Bathymetry","path": "bathymetry/indian_ocean_region.tif","format": "custom","tags": ["terrain", "ocean"] }
+    ]
+  },
+
+  "outputs": {
+    "formats": [
+      "json_telemetry",
+      "csv_telemetry",
+      "rtx_render",
+      "physics_log",
+      "sensor_frames",
+      "video_mp4",
+      "ground_truth",
+      "ros_bag",
+      "onnx_observations"
+    ],
+    "output_path": "outputs/naval_battle/",
+    "record_physics": true,
+    "record_sensors": true,
+    "record_events": true,
+    "render_config": {
+      "views": [
+        { "name": "tactical_top_down", "type": "orthographic", "altitude_m": 50000, "fov_km": 150 },
+        { "name": "bridge_camera_carrier", "type": "perspective", "entity_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001", "mount_offset": { "x": 0, "y": 0, "z": 30 } },
+        { "name": "helicopter_camera", "type": "perspective", "entity_id": "ent-blue-helo-000000000000-0000-0000-0000-000000000007" },
+        { "name": "satellite_view", "type": "orthographic", "altitude_m": 500000 },
+        { "name": "radar_ppi_ddga", "type": "radar_ppi", "entity_id": "ent-blue-ddg-a-000000000000-0000-0000-0000-000000000002" },
+        { "name": "sonar_display_sub", "type": "sonar_waterfall", "entity_id": "ent-blue-sub-0-000000000000-0000-0000-0000-000000000006" },
+        { "name": "thermal_uav", "type": "ir_camera", "entity_id": "ent-blue-uav-0-000000000000-0000-0000-0000-000000000008" },
+        { "name": "rgb_depth_buffer", "type": "depth_buffer", "entity_id": "ent-blue-carrier-00000000-0000-0000-0000-000000000001" },
+        { "name": "semantic_segmentation", "type": "semantic_seg" }
+      ],
+      "rtx_settings": {
+        "ray_tracing": true,
+        "denoiser": "dlss",
+        "ocean_simulation": true,
+        "volumetric_clouds": true,
+        "volumetric_rain": true,
+        "ship_wake_simulation": true,
+        "explosion_vfx": true,
+        "fire_simulation": true,
+        "underwater_caustics": true
+      },
+      "dataset_export": {
+        "coco_labels": true,
+        "kitti_labels": true,
+        "ai_training_split": { "train": 0.7, "val": 0.15, "test": 0.15 }
+      }
+    }
+  },
+
+  "validation": {
+    "require_unique_ids": true,
+    "require_valid_transforms": true,
+    "require_physics_on_dynamic": false,
+    "max_entities": 500
+  }
+}

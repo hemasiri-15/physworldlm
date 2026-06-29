@@ -1,0 +1,3915 @@
+{
+  "metadata": {
+    "worldspec_version": "1.0.0",
+    "scene_name": "Operation Iron Shield",
+    "uuid": "c3f8a1e2-7d4b-4f9e-b2a6-1e5c9d3f0a87",
+    "author": "PhysWorldLM Benchmark Suite",
+    "organization": "Mahindra University / PhysWorldLM Project",
+    "created_at": "2025-01-01T00:00:00Z",
+    "modified_at": "2025-01-01T00:00:00Z",
+    "simulation_engine_hint": "omniverse",
+    "ontology_version": "1.0.0",
+    "coordinate_system": "ENU",
+    "units": {
+      "length": "meters",
+      "mass": "kg",
+      "time": "seconds",
+      "angle": "degrees",
+      "temperature": "celsius"
+    },
+    "description": "Flagship urban warfare benchmark for PhysWorldLM. A Blue SOF task force executes a hostage rescue and HVT capture inside a dense residential district. Exercises CQB, UAV ISR, electronic warfare, IED defeat, sniper overwatch, and civilian protection simultaneously. Tests all schema subsystems.",
+    "tags": [
+      "urban",
+      "CQB",
+      "hostage-rescue",
+      "HVT",
+      "EW",
+      "UAV",
+      "benchmark",
+      "flagship"
+    ],
+    "classification_level": "unclassified",
+    "domain": "military",
+    "scenario_type": "exercise"
+  },
+  "world": {
+    "physics_config": {
+      "gravity": {
+        "x": 0,
+        "y": 0,
+        "z": -9.81
+      },
+      "air_density_kg_m3": 1.225,
+      "speed_of_sound_mps": 343.0,
+      "physics_step_s": 0.005,
+      "substeps": 8,
+      "solver": "pbd",
+      "collision_detection": "continuous",
+      "enable_fluid": false,
+      "enable_soft_body": true,
+      "enable_cloth": false,
+      "enable_particles": true
+    },
+    "simulation_config": {
+      "duration_s": 3600,
+      "time_scale": 1.0,
+      "random_seed": 2025,
+      "deterministic": true,
+      "tick_rate_hz": 120,
+      "render_rate_hz": 60,
+      "sensor_rate_hz": 20,
+      "log_level": "info",
+      "enable_replay": true
+    },
+    "reference_frame": {
+      "origin_geo": {
+        "latitude": 33.3128,
+        "longitude": 44.3615,
+        "altitude": 32.0
+      },
+      "origin_cartesian": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "up_axis": "Z",
+      "planet": "Earth"
+    }
+  },
+  "environment": {
+    "setting": "urban",
+    "time_of_day": {
+      "simulation_start_utc": "2025-06-15T01:30:00Z",
+      "time_of_day_s": 5400,
+      "day_of_year": 166,
+      "year": 2025
+    },
+    "weather": {
+      "temperature_c": 24.0,
+      "humidity_pct": 72,
+      "pressure_hpa": 1012,
+      "wind": {
+        "speed_mps": 3.2,
+        "direction_deg": 215,
+        "gusts_mps": 6.0,
+        "shear_profile": [
+          {
+            "altitude_m": 0,
+            "speed_mps": 3.2
+          },
+          {
+            "altitude_m": 50,
+            "speed_mps": 4.5
+          },
+          {
+            "altitude_m": 150,
+            "speed_mps": 6.8
+          }
+        ]
+      },
+      "precipitation": {
+        "type": "drizzle",
+        "intensity_mm_hr": 1.2
+      },
+      "fog": {
+        "enabled": true,
+        "density": 0.15,
+        "visibility_m": 800
+      },
+      "cloud_cover_pct": 85,
+      "cloud_base_m": 600,
+      "cloud_ceiling_m": 1200,
+      "visibility_km": 5.0,
+      "solar_irradiance_wm2": 0.0,
+      "dust_density": 0.05
+    },
+    "terrain": {
+      "dem_ref": "assets/terrain/urban_district_dem.tif",
+      "tile_source": "assets/terrain/urban_tiles/{z}/{x}/{y}.png",
+      "bounds": {
+        "southwest": {
+          "latitude": 33.305,
+          "longitude": 44.35
+        },
+        "northeast": {
+          "latitude": 33.325,
+          "longitude": 44.375
+        }
+      },
+      "features": [
+        {
+          "feature_type": "road",
+          "geometry_ref": "assets/geo/roads.geojson",
+          "properties": {
+            "lanes": 2,
+            "surface": "asphalt"
+          }
+        },
+        {
+          "feature_type": "building",
+          "geometry_ref": "assets/geo/buildings.geojson",
+          "properties": {
+            "avg_floors": 5,
+            "style": "residential"
+          }
+        },
+        {
+          "feature_type": "bridge",
+          "geometry_ref": "assets/geo/bridges.geojson",
+          "properties": {
+            "material": "reinforced_concrete"
+          }
+        },
+        {
+          "feature_type": "urban_block",
+          "geometry_ref": "assets/geo/urban_blocks.geojson",
+          "properties": {
+            "density": "high"
+          }
+        },
+        {
+          "feature_type": "custom",
+          "geometry_ref": "assets/geo/sewers.geojson",
+          "properties": {
+            "type": "underground_tunnel",
+            "depth_m": 5
+          }
+        }
+      ]
+    }
+  },
+  "organizations": [
+    {
+      "id": "11111111-0001-0001-0001-000000000001",
+      "name": "Joint Special Operations Task Force",
+      "org_type": "team",
+      "faction": "blue",
+      "callsign": "IRON HQ",
+      "country_code": "USA",
+      "child_org_ids": [
+        "11111111-0001-0002-0001-000000000001",
+        "11111111-0001-0003-0001-000000000001",
+        "11111111-0001-0004-0001-000000000001",
+        "11111111-0001-0005-0001-000000000001",
+        "11111111-0001-0006-0001-000000000001",
+        "11111111-0001-0007-0001-000000000001"
+      ],
+      "entity_ids": [
+        "ent-cmd-vehicle-01"
+      ]
+    },
+    {
+      "id": "11111111-0001-0002-0001-000000000001",
+      "name": "Special Forces Assault Team Alpha",
+      "org_type": "team",
+      "faction": "blue",
+      "parent_org_id": "11111111-0001-0001-0001-000000000001",
+      "callsign": "ALPHA",
+      "entity_ids": [
+        "ent-sf-01",
+        "ent-sf-02",
+        "ent-sf-03"
+      ]
+    },
+    {
+      "id": "11111111-0001-0003-0001-000000000001",
+      "name": "SWAT Perimeter Team Bravo",
+      "org_type": "squad",
+      "faction": "blue",
+      "parent_org_id": "11111111-0001-0001-0001-000000000001",
+      "callsign": "BRAVO",
+      "entity_ids": [
+        "ent-swat-01",
+        "ent-swat-truck-01"
+      ]
+    },
+    {
+      "id": "11111111-0001-0004-0001-000000000001",
+      "name": "Sniper Team Charlie",
+      "org_type": "team",
+      "faction": "blue",
+      "parent_org_id": "11111111-0001-0001-0001-000000000001",
+      "callsign": "CHARLIE",
+      "entity_ids": [
+        "ent-sniper-01",
+        "ent-sniper-02"
+      ]
+    },
+    {
+      "id": "11111111-0001-0005-0001-000000000001",
+      "name": "UAV Recon Team Delta",
+      "org_type": "team",
+      "faction": "blue",
+      "parent_org_id": "11111111-0001-0001-0001-000000000001",
+      "callsign": "DELTA",
+      "entity_ids": [
+        "ent-recon-uav-01",
+        "ent-attack-uav-01"
+      ]
+    },
+    {
+      "id": "11111111-0001-0006-0001-000000000001",
+      "name": "EOD Team Echo",
+      "org_type": "team",
+      "faction": "blue",
+      "parent_org_id": "11111111-0001-0001-0001-000000000001",
+      "callsign": "ECHO",
+      "entity_ids": [
+        "ent-eod-robot-01",
+        "ent-eod-operator-01"
+      ]
+    },
+    {
+      "id": "11111111-0001-0007-0001-000000000001",
+      "name": "Medical Team Foxtrot",
+      "org_type": "team",
+      "faction": "blue",
+      "parent_org_id": "11111111-0001-0001-0001-000000000001",
+      "callsign": "FOXTROT",
+      "entity_ids": [
+        "ent-medic-01",
+        "ent-ambulance-01"
+      ]
+    },
+    {
+      "id": "22222222-0002-0001-0002-000000000002",
+      "name": "Insurgent Cell Kilo",
+      "org_type": "custom",
+      "faction": "red",
+      "callsign": "KILO",
+      "child_org_ids": [
+        "22222222-0002-0002-0002-000000000002",
+        "22222222-0002-0003-0002-000000000002"
+      ],
+      "entity_ids": [
+        "ent-ins-leader-01",
+        "ent-safehouse-01"
+      ]
+    },
+    {
+      "id": "22222222-0002-0002-0002-000000000002",
+      "name": "Red Guard Element",
+      "org_type": "squad",
+      "faction": "red",
+      "parent_org_id": "22222222-0002-0001-0002-000000000002",
+      "entity_ids": [
+        "ent-ins-guard-01",
+        "ent-ins-guard-02",
+        "ent-ins-guard-03",
+        "ent-ins-mg-01"
+      ]
+    },
+    {
+      "id": "22222222-0002-0003-0002-000000000002",
+      "name": "Red Support Element",
+      "org_type": "squad",
+      "faction": "red",
+      "parent_org_id": "22222222-0002-0001-0002-000000000002",
+      "entity_ids": [
+        "ent-ins-sniper-01",
+        "ent-ins-drone-01",
+        "ent-ied-01",
+        "ent-ied-02"
+      ]
+    },
+    {
+      "id": "33333333-0003-0001-0003-000000000003",
+      "name": "Civilian Population",
+      "org_type": "civilian",
+      "faction": "neutral",
+      "entity_ids": [
+        "ent-hostage-01",
+        "ent-hostage-02",
+        "ent-civilian-01",
+        "ent-civilian-02",
+        "ent-civilian-03",
+        "ent-ambulance-neutral-01"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "id": "ent-cmd-vehicle-01",
+      "name": "Command Vehicle IRON",
+      "entity_type": "ground_vehicle",
+      "subtype": "MRAP_CMD",
+      "callsign": "IRON ACTUAL",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0001-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -320,
+          "y": -150,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0.707,
+          "w": 0.707
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 6.0,
+          "y": 2.5,
+          "z": 2.8
+        },
+        "asset_ref": "assets/vehicles/mrap_command.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 14000,
+        "linear_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "angular_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "collision_enabled": true,
+        "collision_group": "blue_vehicles"
+      },
+      "health": {
+        "hp_max": 500,
+        "hp_current": 500,
+        "armor_rating": 6,
+        "damage_model": "component_based",
+        "is_destroyed": false
+      },
+      "power": {
+        "source_type": "diesel",
+        "fuel_capacity_liters": 200,
+        "fuel_remaining_liters": 190,
+        "range_km": 600
+      },
+      "propulsion": {
+        "propulsion_type": "wheeled",
+        "max_speed_mps": 22,
+        "acceleration_mps2": 3.0
+      },
+      "sensors": [
+        {
+          "id": "sens-cmd-radar-01",
+          "name": "Ground Surveillance Radar",
+          "sensor_type": "radar",
+          "field_of_view": {
+            "horizontal_deg": 360,
+            "min_range_m": 10,
+            "max_range_m": 5000
+          },
+          "frame_rate_hz": 1,
+          "output_topic": "/blue/cmd/radar"
+        }
+      ],
+      "communications": [
+        {
+          "id": "comm-cmd-01",
+          "name": "Secure Tactical Radio",
+          "comm_type": "radio_uhf",
+          "frequency_mhz": 450.0,
+          "range_km": 50,
+          "data_rate_kbps": 9600,
+          "encryption": true,
+          "encryption_standard": "AES-256",
+          "enabled": true
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "llm_agent",
+        "faction": "blue",
+        "team_id": "11111111-0001-0001-0001-000000000001",
+        "rules_of_engagement": "ROE_ESCALATION_OF_FORCE",
+        "autonomous_level": "supervised_autonomous",
+        "current_state": "command_post",
+        "current_task": "monitor_and_coordinate"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-recon-uav-01",
+      "name": "Recon UAV Raven-1",
+      "entity_type": "uav",
+      "subtype": "AeroVironment_RQ-11B",
+      "callsign": "RAVEN-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0005-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -280,
+          "y": -100,
+          "z": 120
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "custom",
+        "dimensions": {
+          "x": 1.4,
+          "y": 0.3,
+          "z": 0.15
+        },
+        "asset_ref": "assets/aircraft/rq11b.usd",
+        "collision_geometry": "bounding_box"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 1.9,
+        "linear_velocity": {
+          "x": 15,
+          "y": 0,
+          "z": 0
+        },
+        "angular_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "drag_coefficient": 0.03,
+        "lift_coefficient": 0.85,
+        "gravity_scale": 1.0,
+        "continuous_collision_detection": true
+      },
+      "health": {
+        "hp_max": 20,
+        "hp_current": 20,
+        "armor_rating": 0,
+        "damage_model": "simple_hp",
+        "is_destroyed": false
+      },
+      "power": {
+        "source_type": "electric_battery",
+        "capacity_kwh": 0.3,
+        "current_charge_pct": 100,
+        "endurance_hours": 1.5
+      },
+      "propulsion": {
+        "propulsion_type": "fixed_wing",
+        "max_speed_mps": 28,
+        "max_altitude_m": 5000,
+        "acceleration_mps2": 2.0,
+        "max_climb_rate_mps": 5,
+        "engine_count": 1
+      },
+      "sensors": [
+        {
+          "id": "sens-raven-eo-01",
+          "name": "EO Camera",
+          "sensor_type": "camera_eo",
+          "field_of_view": {
+            "horizontal_deg": 45,
+            "vertical_deg": 34,
+            "min_range_m": 5,
+            "max_range_m": 2000
+          },
+          "resolution": {
+            "width": 1920,
+            "height": 1080
+          },
+          "frame_rate_hz": 30,
+          "output_topic": "/blue/raven1/eo",
+          "enabled": true
+        },
+        {
+          "id": "sens-raven-ir-01",
+          "name": "IR Camera",
+          "sensor_type": "camera_ir",
+          "field_of_view": {
+            "horizontal_deg": 30,
+            "vertical_deg": 22,
+            "min_range_m": 5,
+            "max_range_m": 1500
+          },
+          "resolution": {
+            "width": 640,
+            "height": 480
+          },
+          "frame_rate_hz": 30,
+          "spectral_band": "LWIR_8-12um",
+          "output_topic": "/blue/raven1/ir",
+          "enabled": true
+        },
+        {
+          "id": "sens-raven-gps-01",
+          "name": "GPS/INS",
+          "sensor_type": "gps",
+          "output_topic": "/blue/raven1/gps",
+          "enabled": true,
+          "custom_properties": {
+            "anti_jam": true,
+            "beidou_fallback": true
+          }
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/uav_isr_orbit.bt",
+        "faction": "blue",
+        "autonomous_level": "supervised_autonomous",
+        "current_state": "orbit_isr",
+        "current_task": "persistent_surveillance",
+        "goals": [
+          {
+            "goal_type": "surveil",
+            "priority": 1,
+            "target_position": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "parameters": {
+              "orbit_radius_m": 300,
+              "orbit_alt_m": 120
+            }
+          }
+        ],
+        "perception_radius_m": 1500
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-attack-uav-01",
+      "name": "Attack UAV Switchblade-1",
+      "entity_type": "ucav",
+      "subtype": "AeroVironment_Switchblade300",
+      "callsign": "SWITCH-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0005-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -300,
+          "y": -200,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "custom",
+        "dimensions": {
+          "x": 0.6,
+          "y": 0.4,
+          "z": 0.1
+        },
+        "asset_ref": "assets/aircraft/switchblade300.usd",
+        "collision_geometry": "bounding_box"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 2.7,
+        "gravity_scale": 1.0,
+        "continuous_collision_detection": true
+      },
+      "health": {
+        "hp_max": 10,
+        "hp_current": 10,
+        "armor_rating": 0,
+        "damage_model": "simple_hp",
+        "is_destroyed": false
+      },
+      "power": {
+        "source_type": "electric_battery",
+        "capacity_kwh": 0.15,
+        "current_charge_pct": 100,
+        "endurance_hours": 0.25
+      },
+      "propulsion": {
+        "propulsion_type": "fixed_wing",
+        "max_speed_mps": 55,
+        "max_altitude_m": 3000,
+        "engine_count": 1
+      },
+      "weapons": [
+        {
+          "id": "wpn-switch-warhead-01",
+          "name": "Anti-Personnel Warhead",
+          "weapon_type": "loitering_munition",
+          "warhead_type": "anti_personnel_fragmentation",
+          "guidance_type": "gps_inertial",
+          "effective_range_m": 10000,
+          "ammunition_count": 1,
+          "state": "ready"
+        }
+      ],
+      "sensors": [
+        {
+          "id": "sens-switch-eo-01",
+          "name": "Terminal EO Seeker",
+          "sensor_type": "camera_eo",
+          "field_of_view": {
+            "horizontal_deg": 60,
+            "vertical_deg": 45,
+            "min_range_m": 1,
+            "max_range_m": 500
+          },
+          "resolution": {
+            "width": 640,
+            "height": 480
+          },
+          "frame_rate_hz": 30,
+          "output_topic": "/blue/switch1/eo"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "hybrid",
+        "faction": "blue",
+        "autonomous_level": "supervised_autonomous",
+        "rules_of_engagement": "ROE_POSITIVE_ID_REQUIRED",
+        "current_state": "standby",
+        "current_task": "await_tasking"
+      },
+      "state": {
+        "lifecycle": "inactive",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-eod-robot-01",
+      "name": "EOD Ground Robot TALON",
+      "entity_type": "ugv",
+      "subtype": "QinetiQ_TALON",
+      "callsign": "TALON-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0006-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -60,
+          "y": 20,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 0.9,
+          "y": 0.5,
+          "z": 0.35
+        },
+        "asset_ref": "assets/robots/talon_eod.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 52,
+        "linear_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "angular_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 1,
+        "damage_model": "component_based",
+        "is_destroyed": false
+      },
+      "power": {
+        "source_type": "electric_battery",
+        "capacity_kwh": 2.0,
+        "current_charge_pct": 95,
+        "endurance_hours": 3
+      },
+      "propulsion": {
+        "propulsion_type": "tracked",
+        "max_speed_mps": 1.6,
+        "acceleration_mps2": 0.5
+      },
+      "sensors": [
+        {
+          "id": "sens-talon-eo-01",
+          "name": "Pan-Tilt EO Camera",
+          "sensor_type": "camera_eo",
+          "field_of_view": {
+            "horizontal_deg": 90,
+            "vertical_deg": 60,
+            "min_range_m": 0.1,
+            "max_range_m": 50
+          },
+          "resolution": {
+            "width": 1280,
+            "height": 720
+          },
+          "frame_rate_hz": 30,
+          "output_topic": "/blue/talon1/eo"
+        },
+        {
+          "id": "sens-talon-ir-01",
+          "name": "IR Camera",
+          "sensor_type": "camera_ir",
+          "field_of_view": {
+            "horizontal_deg": 60,
+            "vertical_deg": 45,
+            "min_range_m": 0.1,
+            "max_range_m": 30
+          },
+          "resolution": {
+            "width": 320,
+            "height": 240
+          },
+          "frame_rate_hz": 15,
+          "output_topic": "/blue/talon1/ir"
+        },
+        {
+          "id": "sens-talon-chem-01",
+          "name": "Chemical Detector",
+          "sensor_type": "chemical",
+          "output_topic": "/blue/talon1/chem",
+          "enabled": true
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "state_machine",
+        "state_machine_ref": "sm/eod_robot.sm",
+        "faction": "blue",
+        "autonomous_level": "semi_autonomous",
+        "current_state": "standby",
+        "current_task": "await_ied_tasking",
+        "perception_radius_m": 15
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-sf-01",
+      "name": "Special Forces Operator Alpha-1",
+      "entity_type": "infantry",
+      "subtype": "SOF_Assaulter",
+      "callsign": "ALPHA-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0002-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -35,
+          "y": 10,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.8,
+        "asset_ref": "assets/characters/sf_operator.usd",
+        "collision_geometry": "capsule"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 95,
+        "collision_enabled": true,
+        "collision_group": "blue_infantry"
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 4,
+        "damage_model": "component_based",
+        "is_destroyed": false
+      },
+      "weapons": [
+        {
+          "id": "wpn-sf01-m4-01",
+          "name": "HK416 Assault Rifle",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 900,
+          "rate_of_fire_rpm": 700,
+          "effective_range_m": 500,
+          "max_range_m": 3000,
+          "ammunition_count": 210,
+          "guidance_type": "unguided",
+          "state": "ready"
+        },
+        {
+          "id": "wpn-sf01-flashbang-01",
+          "name": "M84 Flashbang",
+          "weapon_type": "grenade",
+          "warhead_type": "stun",
+          "ammunition_count": 4,
+          "state": "ready"
+        },
+        {
+          "id": "wpn-sf01-smoke-01",
+          "name": "M18 Smoke Grenade",
+          "weapon_type": "grenade",
+          "warhead_type": "smoke",
+          "ammunition_count": 2,
+          "state": "ready"
+        }
+      ],
+      "sensors": [
+        {
+          "id": "sens-sf01-helmetcam-01",
+          "name": "Helmet Camera",
+          "sensor_type": "camera_eo",
+          "field_of_view": {
+            "horizontal_deg": 110,
+            "vertical_deg": 80
+          },
+          "resolution": {
+            "width": 1920,
+            "height": 1080
+          },
+          "frame_rate_hz": 30,
+          "output_topic": "/blue/alpha1/helmetcam"
+        },
+        {
+          "id": "sens-sf01-nvg-01",
+          "name": "PVS-31 NVG",
+          "sensor_type": "camera_eo",
+          "spectral_band": "NIR_0.7-1.0um",
+          "field_of_view": {
+            "horizontal_deg": 40,
+            "vertical_deg": 30
+          },
+          "resolution": {
+            "width": 1280,
+            "height": 960
+          },
+          "frame_rate_hz": 30,
+          "output_topic": "/blue/alpha1/nvg"
+        }
+      ],
+      "communications": [
+        {
+          "id": "comm-sf01-radio",
+          "name": "AN/PRC-163 Radio",
+          "comm_type": "radio_uhf",
+          "frequency_mhz": 450.5,
+          "range_km": 5,
+          "encryption": true,
+          "encryption_standard": "HAVE_QUICK",
+          "enabled": true
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/sf_cqb_assaulter.bt",
+        "faction": "blue",
+        "team_id": "11111111-0001-0002-0001-000000000001",
+        "rules_of_engagement": "ROE_HOSTILE_IDENTIFIED",
+        "autonomous_level": "assisted",
+        "current_state": "stack_at_door",
+        "current_task": "breach_prep",
+        "perception_radius_m": 50,
+        "threat_awareness": true
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      },
+      "semantic_labels": [
+        "combatant",
+        "friendly",
+        "infantry",
+        "sof"
+      ]
+    },
+    {
+      "id": "ent-sf-02",
+      "name": "Special Forces Operator Alpha-2 (Breacher)",
+      "entity_type": "infantry",
+      "subtype": "SOF_Breacher",
+      "callsign": "ALPHA-2",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0002-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -34,
+          "y": 8,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.8,
+        "asset_ref": "assets/characters/sf_breacher.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 105,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 4,
+        "damage_model": "component_based"
+      },
+      "weapons": [
+        {
+          "id": "wpn-sf02-shotgun-01",
+          "name": "Remington 870 Breaching Shotgun",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 430,
+          "effective_range_m": 20,
+          "ammunition_count": 30,
+          "state": "ready"
+        },
+        {
+          "id": "wpn-sf02-breachingcharge-01",
+          "name": "Explosive Breaching Charge",
+          "weapon_type": "bomb",
+          "warhead_type": "shaped_charge",
+          "ammunition_count": 3,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/sf_cqb_breacher.bt",
+        "faction": "blue",
+        "autonomous_level": "assisted",
+        "current_state": "stack_at_door",
+        "current_task": "breach_door"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-sf-03",
+      "name": "Special Forces Operator Alpha-3 (Medic)",
+      "entity_type": "infantry",
+      "subtype": "SOF_Medic",
+      "callsign": "ALPHA-3",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0002-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -36,
+          "y": 12,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.8,
+        "asset_ref": "assets/characters/sf_medic.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 90,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 4,
+        "damage_model": "component_based"
+      },
+      "weapons": [
+        {
+          "id": "wpn-sf03-m4-01",
+          "name": "HK416 Assault Rifle",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 900,
+          "rate_of_fire_rpm": 700,
+          "effective_range_m": 500,
+          "ammunition_count": 150,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/sf_cqb_medic.bt",
+        "faction": "blue",
+        "autonomous_level": "assisted",
+        "current_state": "follow_team",
+        "current_task": "provide_medical_coverage"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-sniper-01",
+      "name": "Blue Sniper Alpha",
+      "entity_type": "infantry",
+      "subtype": "SOF_Sniper",
+      "callsign": "CHARLIE-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0004-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": 80,
+          "y": -30,
+          "z": 18
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": -0.383,
+          "w": 0.924
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.8,
+        "asset_ref": "assets/characters/sf_sniper.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 88,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 2,
+        "damage_model": "component_based"
+      },
+      "weapons": [
+        {
+          "id": "wpn-sniper01-m110-01",
+          "name": "Barrett MRAD .338",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 900,
+          "rate_of_fire_rpm": 40,
+          "effective_range_m": 1200,
+          "max_range_m": 2500,
+          "ammunition_count": 60,
+          "guidance_type": "unguided",
+          "state": "ready"
+        }
+      ],
+      "sensors": [
+        {
+          "id": "sens-sniper01-scope-01",
+          "name": "Schmidt & Bender 5-25x Scope",
+          "sensor_type": "camera_eo",
+          "field_of_view": {
+            "horizontal_deg": 5,
+            "vertical_deg": 3.75,
+            "min_range_m": 50,
+            "max_range_m": 2500
+          },
+          "resolution": {
+            "width": 1920,
+            "height": 1080
+          },
+          "frame_rate_hz": 30,
+          "output_topic": "/blue/charlie1/scope"
+        },
+        {
+          "id": "sens-sniper01-range-01",
+          "name": "Vectronix Laser Rangefinder",
+          "sensor_type": "lidar",
+          "field_of_view": {
+            "horizontal_deg": 2,
+            "vertical_deg": 1.5,
+            "min_range_m": 10,
+            "max_range_m": 2000
+          },
+          "output_topic": "/blue/charlie1/lrf"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/sniper_overwatch.bt",
+        "faction": "blue",
+        "autonomous_level": "assisted",
+        "rules_of_engagement": "ROE_POSITIVE_ID_REQUIRED",
+        "current_state": "overwatch_position",
+        "current_task": "provide_overwatch",
+        "perception_radius_m": 1200,
+        "threat_awareness": true
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-sniper-02",
+      "name": "Blue Sniper Beta (Spotter)",
+      "entity_type": "infantry",
+      "subtype": "SOF_Spotter",
+      "callsign": "CHARLIE-2",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0004-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": 81,
+          "y": -31,
+          "z": 18
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": -0.383,
+          "w": 0.924
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.8,
+        "asset_ref": "assets/characters/sf_sniper.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 90,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 2,
+        "damage_model": "component_based"
+      },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/sniper_spotter.bt",
+        "faction": "blue",
+        "autonomous_level": "assisted",
+        "current_state": "observing",
+        "current_task": "spot_and_call"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-swat-01",
+      "name": "SWAT Officer Bravo-1",
+      "entity_type": "infantry",
+      "subtype": "SWAT_Officer",
+      "callsign": "BRAVO-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0003-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -80,
+          "y": 60,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.8,
+        "asset_ref": "assets/characters/swat_officer.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 92,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 3,
+        "damage_model": "component_based"
+      },
+      "weapons": [
+        {
+          "id": "wpn-swat01-m4-01",
+          "name": "M4A1 Carbine",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 880,
+          "rate_of_fire_rpm": 800,
+          "effective_range_m": 500,
+          "ammunition_count": 120,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/swat_perimeter.bt",
+        "faction": "blue",
+        "autonomous_level": "assisted",
+        "rules_of_engagement": "ROE_ESCALATION_OF_FORCE",
+        "current_state": "cordon_position",
+        "current_task": "maintain_perimeter"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-swat-truck-01",
+      "name": "SWAT Armored Truck",
+      "entity_type": "ground_vehicle",
+      "subtype": "LENCO_BearCat",
+      "callsign": "BRAVO-VEH",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0003-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -120,
+          "y": 55,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0.707,
+          "w": 0.707
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 5.5,
+          "y": 2.4,
+          "z": 2.5
+        },
+        "asset_ref": "assets/vehicles/lenco_bearcat.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 10000,
+        "linear_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "angular_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "health": {
+        "hp_max": 400,
+        "hp_current": 400,
+        "armor_rating": 5,
+        "damage_model": "component_based"
+      },
+      "power": {
+        "source_type": "diesel",
+        "fuel_remaining_liters": 180
+      },
+      "propulsion": {
+        "propulsion_type": "wheeled",
+        "max_speed_mps": 25
+      },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "faction": "blue",
+        "autonomous_level": "manual",
+        "current_state": "parked",
+        "current_task": "support_cordon"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-eod-operator-01",
+      "name": "EOD Operator Echo-1",
+      "entity_type": "infantry",
+      "subtype": "EOD_Technician",
+      "callsign": "ECHO-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0006-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -70,
+          "y": 18,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.4,
+        "height": 1.85,
+        "asset_ref": "assets/characters/eod_operator.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 110,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 5,
+        "damage_model": "component_based"
+      },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/eod_operator.bt",
+        "faction": "blue",
+        "autonomous_level": "assisted",
+        "current_state": "remote_operating_robot",
+        "current_task": "control_talon"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-medic-01",
+      "name": "Combat Medic Foxtrot-1",
+      "entity_type": "infantry",
+      "subtype": "Combat_Medic",
+      "callsign": "FOXTROT-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0007-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -200,
+          "y": -80,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.78,
+        "asset_ref": "assets/characters/combat_medic.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 85,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 3,
+        "damage_model": "component_based"
+      },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/combat_medic.bt",
+        "faction": "blue",
+        "autonomous_level": "assisted",
+        "current_state": "casualty_collection_point",
+        "current_task": "standby_medevac"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-ambulance-01",
+      "name": "Blue Ambulance",
+      "entity_type": "ground_vehicle",
+      "subtype": "M997_HMMWV_Ambulance",
+      "callsign": "MEDEVAC-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0007-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -210,
+          "y": -90,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 4.8,
+          "y": 2.1,
+          "z": 2.2
+        },
+        "asset_ref": "assets/vehicles/hmmwv_ambulance.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 4500,
+        "linear_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "angular_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "health": {
+        "hp_max": 200,
+        "hp_current": 200,
+        "armor_rating": 1,
+        "damage_model": "simple_hp"
+      },
+      "power": {
+        "source_type": "diesel",
+        "fuel_remaining_liters": 90
+      },
+      "propulsion": {
+        "propulsion_type": "wheeled",
+        "max_speed_mps": 28
+      },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "faction": "blue",
+        "autonomous_level": "manual",
+        "current_state": "parked",
+        "current_task": "standby_medevac"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-ins-leader-01",
+      "name": "Insurgent Cell Leader",
+      "entity_type": "infantry",
+      "subtype": "HVT_Leader",
+      "callsign": "KILO ACTUAL",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0001-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": 5,
+          "y": 8,
+          "z": 3
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.75,
+        "asset_ref": "assets/characters/insurgent_leader.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 80,
+        "collision_enabled": true,
+        "collision_group": "red_infantry"
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "weapons": [
+        {
+          "id": "wpn-leader-pistol-01",
+          "name": "Glock 17",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 375,
+          "effective_range_m": 50,
+          "ammunition_count": 34,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/hvt_survival.bt",
+        "faction": "red",
+        "autonomous_level": "supervised_autonomous",
+        "current_state": "hiding_in_safehouse",
+        "current_task": "evade_and_escape",
+        "goals": [
+          {
+            "goal_type": "survive",
+            "priority": 1
+          },
+          {
+            "goal_type": "escape",
+            "priority": 2
+          },
+          {
+            "goal_type": "destroy_evidence",
+            "priority": 3
+          }
+        ],
+        "threat_awareness": true
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      },
+      "semantic_labels": [
+        "combatant",
+        "hostile",
+        "HVT",
+        "infantry"
+      ]
+    },
+    {
+      "id": "ent-ins-guard-01",
+      "name": "Insurgent Guard 1",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_Rifleman",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0002-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": 0,
+          "y": 5,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0.924,
+          "w": -0.383
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.75,
+        "asset_ref": "assets/characters/insurgent.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 75,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "weapons": [
+        {
+          "id": "wpn-ins1-ak-01",
+          "name": "AK-74M",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 900,
+          "rate_of_fire_rpm": 600,
+          "effective_range_m": 400,
+          "ammunition_count": 120,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/insurgent_guard.bt",
+        "faction": "red",
+        "autonomous_level": "semi_autonomous",
+        "current_state": "guard_post",
+        "current_task": "protect_leader",
+        "perception_radius_m": 80
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-ins-guard-02",
+      "name": "Insurgent Guard 2",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_Rifleman",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0002-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": 2,
+          "y": -3,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.75,
+        "asset_ref": "assets/characters/insurgent.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 78,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "weapons": [
+        {
+          "id": "wpn-ins2-ak-01",
+          "name": "AK-74M",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 900,
+          "rate_of_fire_rpm": 600,
+          "effective_range_m": 400,
+          "ammunition_count": 120,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/insurgent_guard.bt",
+        "faction": "red",
+        "autonomous_level": "semi_autonomous",
+        "current_state": "patrol_interior",
+        "current_task": "maintain_security",
+        "perception_radius_m": 60
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-ins-guard-03",
+      "name": "Insurgent Hostage Guard",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_Hostage_Guard",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0002-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": 6,
+          "y": 10,
+          "z": 3
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.75,
+        "asset_ref": "assets/characters/insurgent.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 82,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "weapons": [
+        {
+          "id": "wpn-ins3-ak-01",
+          "name": "AK-74M",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 900,
+          "rate_of_fire_rpm": 600,
+          "effective_range_m": 400,
+          "ammunition_count": 90,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/insurgent_hostage_guard.bt",
+        "faction": "red",
+        "autonomous_level": "semi_autonomous",
+        "current_state": "guarding_hostages",
+        "current_task": "hold_hostages"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-ins-mg-01",
+      "name": "Insurgent Machine Gunner",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_MG",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0002-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": 10,
+          "y": -8,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0.924,
+          "w": 0.383
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.4,
+        "height": 1.78,
+        "asset_ref": "assets/characters/insurgent_mg.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 90,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "weapons": [
+        {
+          "id": "wpn-ins-pkm-01",
+          "name": "PKM Machine Gun",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 825,
+          "rate_of_fire_rpm": 650,
+          "effective_range_m": 1000,
+          "ammunition_count": 500,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/insurgent_mg_position.bt",
+        "faction": "red",
+        "autonomous_level": "semi_autonomous",
+        "current_state": "entrenched_position",
+        "current_task": "suppress_approach"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-ins-sniper-01",
+      "name": "Insurgent Sniper",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_Sniper",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0003-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": 120,
+          "y": 50,
+          "z": 22
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0.924,
+          "w": 0.383
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.35,
+        "height": 1.76,
+        "asset_ref": "assets/characters/insurgent_sniper.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 80,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "weapons": [
+        {
+          "id": "wpn-ins-svd-01",
+          "name": "Dragunov SVD",
+          "weapon_type": "gun",
+          "muzzle_velocity_mps": 828,
+          "rate_of_fire_rpm": 30,
+          "effective_range_m": 800,
+          "ammunition_count": 60,
+          "state": "ready"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/insurgent_sniper.bt",
+        "faction": "red",
+        "autonomous_level": "assisted",
+        "current_state": "concealed_overwatch",
+        "current_task": "engage_blue_personnel",
+        "perception_radius_m": 800
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-ins-drone-01",
+      "name": "Insurgent Commercial Drone",
+      "entity_type": "uav",
+      "subtype": "DJI_Mavic3_Modified",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0003-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": 15,
+          "y": 15,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "custom",
+        "dimensions": {
+          "x": 0.35,
+          "y": 0.35,
+          "z": 0.1
+        },
+        "asset_ref": "assets/aircraft/dji_mavic_mod.usd"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 0.9,
+        "gravity_scale": 1.0
+      },
+      "health": {
+        "hp_max": 10,
+        "hp_current": 10,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "power": {
+        "source_type": "electric_battery",
+        "capacity_kwh": 0.08,
+        "current_charge_pct": 100,
+        "endurance_hours": 0.5
+      },
+      "propulsion": {
+        "propulsion_type": "rotary_wing",
+        "max_speed_mps": 19,
+        "max_altitude_m": 500,
+        "engine_count": 4
+      },
+      "weapons": [
+        {
+          "id": "wpn-ins-dronegrenade-01",
+          "name": "Improvised Grenade Drop",
+          "weapon_type": "bomb",
+          "warhead_type": "fragmentation",
+          "ammunition_count": 2,
+          "state": "ready"
+        }
+      ],
+      "sensors": [
+        {
+          "id": "sens-insdrone-eo-01",
+          "name": "Commercial EO Camera",
+          "sensor_type": "camera_eo",
+          "field_of_view": {
+            "horizontal_deg": 84,
+            "vertical_deg": 56
+          },
+          "resolution": {
+            "width": 1920,
+            "height": 1080
+          },
+          "frame_rate_hz": 30,
+          "output_topic": "/red/drone1/eo"
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "state_machine",
+        "faction": "red",
+        "autonomous_level": "semi_autonomous",
+        "current_state": "stored_in_safehouse",
+        "current_task": "await_launch_order"
+      },
+      "state": {
+        "lifecycle": "inactive",
+        "visibility": "hidden"
+      }
+    },
+    {
+      "id": "ent-ied-01",
+      "name": "IED Alpha \u2014 Street Junction",
+      "entity_type": "custom",
+      "subtype": "IED_VBIED",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0003-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": -25,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 0.4,
+          "y": 0.3,
+          "z": 0.2
+        },
+        "asset_ref": "assets/props/ied_roadside.usd",
+        "collision_geometry": "bounding_box"
+      },
+      "physics_body": {
+        "body_type": "static",
+        "mass": 5,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 10,
+        "hp_current": 10,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      },
+      "custom_extensions": {
+        "device_type": "pressure_plate",
+        "net_explosive_weight_kg": 3.5,
+        "fragmentation_radius_m": 15,
+        "lethal_radius_m": 5,
+        "armed": true,
+        "detonation_condition": "proximity_or_remote",
+        "concealment": "buried_under_debris"
+      }
+    },
+    {
+      "id": "ent-ied-02",
+      "name": "IED Bravo \u2014 Building Entrance",
+      "entity_type": "custom",
+      "subtype": "IED_SIED",
+      "owner_faction": "red",
+      "owner_organization": "22222222-0002-0003-0002-000000000002",
+      "transform": {
+        "position": {
+          "x": 1,
+          "y": -1,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 0.3,
+          "y": 0.2,
+          "z": 0.15
+        },
+        "asset_ref": "assets/props/ied_sied.usd"
+      },
+      "physics_body": {
+        "body_type": "static",
+        "mass": 2
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      },
+      "custom_extensions": {
+        "device_type": "command_wire",
+        "net_explosive_weight_kg": 1.5,
+        "fragmentation_radius_m": 8,
+        "lethal_radius_m": 3,
+        "armed": true,
+        "detonation_condition": "remote"
+      }
+    },
+    {
+      "id": "ent-safehouse-01",
+      "name": "Insurgent Safe House \u2014 Al-Rashid Apartments Building C",
+      "entity_type": "building",
+      "subtype": "Residential_MultiStory",
+      "owner_faction": "red",
+      "transform": {
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 20,
+          "y": 15,
+          "z": 18
+        },
+        "asset_ref": "assets/buildings/apartment_block_c.usd",
+        "collision_geometry": "trimesh"
+      },
+      "physics_body": {
+        "body_type": "static",
+        "mass": 500000,
+        "collision_enabled": true
+      },
+      "materials": [
+        {
+          "id": "mat-concrete-01",
+          "name": "Reinforced Concrete",
+          "type": "concrete",
+          "density": 2400,
+          "hardness": 8.5,
+          "friction": 0.7,
+          "radar_cross_section": 150.0,
+          "ir_signature": 0.3,
+          "color": {
+            "r": 0.7,
+            "g": 0.68,
+            "b": 0.65
+          },
+          "albedo": 0.4,
+          "roughness": 0.9
+        }
+      ],
+      "health": {
+        "hp_max": 5000,
+        "hp_current": 5000,
+        "armor_rating": 8,
+        "damage_model": "component_based",
+        "is_destroyed": false,
+        "destruction_effect": "building_collapse_urban"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      },
+      "custom_extensions": {
+        "floors": 6,
+        "rooms_per_floor": 4,
+        "has_basement": true,
+        "tunnel_entrance": true,
+        "structural_integrity_pct": 100,
+        "entry_points": [
+          "main_door_north",
+          "service_door_south",
+          "window_east_ground",
+          "rooftop_stairwell"
+        ],
+        "intel_cache_room": "floor_2_room_3"
+      }
+    },
+    {
+      "id": "ent-hostage-01",
+      "name": "Hostage Alpha",
+      "entity_type": "infantry",
+      "subtype": "Civilian_Hostage",
+      "owner_faction": "neutral",
+      "owner_organization": "33333333-0003-0001-0003-000000000003",
+      "transform": {
+        "position": {
+          "x": 7,
+          "y": 9,
+          "z": 3
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.3,
+        "height": 1.65,
+        "asset_ref": "assets/characters/civilian_f_01.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 60,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 85,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "ai_behavior": {
+        "controller_type": "state_machine",
+        "state_machine_ref": "sm/hostage.sm",
+        "faction": "neutral",
+        "autonomous_level": "manual",
+        "current_state": "captive",
+        "goals": [
+          {
+            "goal_type": "survive",
+            "priority": 1
+          },
+          {
+            "goal_type": "follow_rescuers",
+            "priority": 2
+          }
+        ]
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      },
+      "semantic_labels": [
+        "civilian",
+        "hostage",
+        "protected_person"
+      ]
+    },
+    {
+      "id": "ent-hostage-02",
+      "name": "Hostage Bravo",
+      "entity_type": "infantry",
+      "subtype": "Civilian_Hostage",
+      "owner_faction": "neutral",
+      "owner_organization": "33333333-0003-0001-0003-000000000003",
+      "transform": {
+        "position": {
+          "x": 7,
+          "y": 11,
+          "z": 3
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.32,
+        "height": 1.75,
+        "asset_ref": "assets/characters/civilian_m_01.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 75,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 70,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "ai_behavior": {
+        "controller_type": "state_machine",
+        "state_machine_ref": "sm/hostage.sm",
+        "faction": "neutral",
+        "autonomous_level": "manual",
+        "current_state": "captive"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "hidden"
+      },
+      "semantic_labels": [
+        "civilian",
+        "hostage",
+        "protected_person"
+      ]
+    },
+    {
+      "id": "ent-civilian-01",
+      "name": "Bystander \u2014 Street",
+      "entity_type": "infantry",
+      "subtype": "Civilian_Adult",
+      "owner_faction": "neutral",
+      "owner_organization": "33333333-0003-0001-0003-000000000003",
+      "transform": {
+        "position": {
+          "x": -50,
+          "y": 30,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.3,
+        "height": 1.72,
+        "asset_ref": "assets/characters/civilian_m_02.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 70,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/civilian_panic_evacuate.bt",
+        "faction": "neutral",
+        "autonomous_level": "fully_autonomous",
+        "current_state": "aware_of_threat",
+        "current_task": "seek_shelter"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      },
+      "semantic_labels": [
+        "civilian",
+        "non_combatant",
+        "protected_person"
+      ]
+    },
+    {
+      "id": "ent-civilian-02",
+      "name": "Bystander \u2014 Window Observer",
+      "entity_type": "infantry",
+      "subtype": "Civilian_Adult",
+      "owner_faction": "neutral",
+      "owner_organization": "33333333-0003-0001-0003-000000000003",
+      "transform": {
+        "position": {
+          "x": -30,
+          "y": 40,
+          "z": 6
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "capsule",
+        "radius": 0.3,
+        "height": 1.65,
+        "asset_ref": "assets/characters/civilian_f_02.usd"
+      },
+      "physics_body": {
+        "body_type": "kinematic",
+        "mass": 58,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 100,
+        "hp_current": 100,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "bt/civilian_shelter.bt",
+        "faction": "neutral",
+        "autonomous_level": "fully_autonomous",
+        "current_state": "sheltering_in_place"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-civilian-03",
+      "name": "Civilian Vehicle \u2014 Sedan",
+      "entity_type": "ground_vehicle",
+      "subtype": "Civilian_Sedan",
+      "owner_faction": "neutral",
+      "transform": {
+        "position": {
+          "x": -90,
+          "y": 10,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 4.5,
+          "y": 1.8,
+          "z": 1.5
+        },
+        "asset_ref": "assets/vehicles/sedan_generic.usd"
+      },
+      "physics_body": {
+        "body_type": "static",
+        "mass": 1200,
+        "collision_enabled": true
+      },
+      "health": {
+        "hp_max": 80,
+        "hp_current": 80,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "ai_behavior": {
+        "controller_type": "none",
+        "autonomous_level": "manual",
+        "current_state": "parked"
+      },
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      },
+      "semantic_labels": [
+        "vehicle",
+        "civilian"
+      ]
+    },
+    {
+      "id": "ent-ambulance-neutral-01",
+      "name": "Civilian Ambulance",
+      "entity_type": "ground_vehicle",
+      "subtype": "Civilian_Ambulance",
+      "owner_faction": "neutral",
+      "owner_organization": "33333333-0003-0001-0003-000000000003",
+      "transform": {
+        "position": {
+          "x": -300,
+          "y": 100,
+          "z": 0
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 5.2,
+          "y": 2.2,
+          "z": 2.3
+        },
+        "asset_ref": "assets/vehicles/ambulance_civilian.usd"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 3500,
+        "linear_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "angular_velocity": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        }
+      },
+      "health": {
+        "hp_max": 150,
+        "hp_current": 150,
+        "armor_rating": 0,
+        "damage_model": "simple_hp"
+      },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "faction": "neutral",
+        "autonomous_level": "manual",
+        "current_state": "parked",
+        "current_task": "await_casualty_call"
+      },
+      "state": {
+        "lifecycle": "inactive",
+        "visibility": "visible"
+      }
+    },
+    {
+      "id": "ent-ew-jammer-01",
+      "name": "Blue Drone Jammer System",
+      "entity_type": "sensor_platform",
+      "subtype": "Drone_Jammer_COTS",
+      "callsign": "EW-1",
+      "owner_faction": "blue",
+      "owner_organization": "11111111-0001-0001-0001-000000000001",
+      "transform": {
+        "position": {
+          "x": -100,
+          "y": -40,
+          "z": 3
+        },
+        "rotation": {
+          "x": 0,
+          "y": 0,
+          "z": 0,
+          "w": 1
+        },
+        "scale": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "reference_frame": "world"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": {
+          "x": 0.6,
+          "y": 0.4,
+          "z": 0.3
+        },
+        "asset_ref": "assets/equipment/drone_jammer.usd"
+      },
+      "physics_body": {
+        "body_type": "static",
+        "mass": 15
+      },
+      "sensors": [
+        {
+          "id": "sens-ew-rf-01",
+          "name": "RF Scanner 2.4/5.8GHz",
+          "sensor_type": "sigint",
+          "field_of_view": {
+            "horizontal_deg": 360,
+            "min_range_m": 0,
+            "max_range_m": 1500
+          },
+          "output_topic": "/blue/ew1/rf_scan",
+          "enabled": true
+        }
+      ],
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible"
+      },
+      "custom_extensions": {
+        "jam_frequencies_ghz": [
+          2.4,
+          5.8,
+          915,
+          433
+        ],
+        "effective_range_m": 1000,
+        "active": false,
+        "activation_event": "ins_drone_detected"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel-sf01-supports-sf02",
+      "source_id": "ent-sf-01",
+      "relation_type": "escorting",
+      "target_id": "ent-sf-02",
+      "weight": 1.0,
+      "bidirectional": false
+    },
+    {
+      "id": "rel-ins-guard03-holds-hostage01",
+      "source_id": "ent-ins-guard-03",
+      "relation_type": "contains",
+      "target_id": "ent-hostage-01",
+      "weight": 1.0,
+      "bidirectional": false
+    },
+    {
+      "id": "rel-ins-guard03-holds-hostage02",
+      "source_id": "ent-ins-guard-03",
+      "relation_type": "contains",
+      "target_id": "ent-hostage-02",
+      "weight": 1.0,
+      "bidirectional": false
+    },
+    {
+      "id": "rel-leader-inside-safehouse",
+      "source_id": "ent-ins-leader-01",
+      "relation_type": "inside",
+      "target_id": "ent-safehouse-01",
+      "weight": 1.0,
+      "bidirectional": false
+    },
+    {
+      "id": "rel-talon-controlledby-echo1",
+      "source_id": "ent-eod-robot-01",
+      "relation_type": "controlledBy",
+      "target_id": "ent-eod-operator-01",
+      "weight": 1.0,
+      "bidirectional": false
+    },
+    {
+      "id": "rel-raven1-provides-data-cmd",
+      "source_id": "ent-recon-uav-01",
+      "relation_type": "providesDataTo",
+      "target_id": "ent-cmd-vehicle-01",
+      "weight": 1.0,
+      "bidirectional": false
+    },
+    {
+      "id": "rel-sf01-tracks-ins-leader",
+      "source_id": "ent-sf-01",
+      "relation_type": "targets",
+      "target_id": "ent-ins-leader-01",
+      "weight": 0.0,
+      "bidirectional": false
+    },
+    {
+      "id": "rel-blue-enemy-red",
+      "source_id": "ent-sf-01",
+      "relation_type": "enemyOf",
+      "target_id": "ent-ins-leader-01",
+      "weight": 1.0,
+      "bidirectional": true
+    }
+  ],
+  "missions": [
+    {
+      "id": "msn-ironshield-blue-01",
+      "name": "Operation Iron Shield \u2014 Hostage Rescue and HVT Capture",
+      "mission_type": "search_and_rescue",
+      "assigned_entity_ids": [
+        "ent-sf-01",
+        "ent-sf-02",
+        "ent-sf-03",
+        "ent-sniper-01",
+        "ent-sniper-02",
+        "ent-recon-uav-01",
+        "ent-attack-uav-01",
+        "ent-eod-robot-01",
+        "ent-eod-operator-01",
+        "ent-swat-01",
+        "ent-swat-02",
+        "ent-swat-03",
+        "ent-cmd-vehicle-01"
+      ],
+      "primary_objective": "Rescue two hostages held in Al-Rashid Apartments Building C",
+      "secondary_objectives": [
+        "Capture insurgent cell leader (KILO ACTUAL) alive",
+        "Neutralize all armed insurgents",
+        "Disarm two IEDs on the approach route",
+        "Collect intelligence materials from second-floor room",
+        "Minimize civilian casualties \u2014 threshold 0",
+        "Minimize structural damage to non-target buildings"
+      ],
+      "area_of_operation": {
+        "center": {
+          "latitude": 33.3128,
+          "longitude": 44.3615
+        },
+        "radius_km": 0.8
+      },
+      "waypoints": [
+        {
+          "id": "wp-01",
+          "position": {
+            "latitude": 33.312,
+            "longitude": 44.36
+          },
+          "action": "staging_area",
+          "altitude_m": 0,
+          "speed_mps": 0
+        },
+        {
+          "id": "wp-02",
+          "position": {
+            "latitude": 33.3122,
+            "longitude": 44.3608
+          },
+          "action": "ied_neutralize",
+          "altitude_m": 0,
+          "speed_mps": 1.5
+        },
+        {
+          "id": "wp-03",
+          "position": {
+            "latitude": 33.3126,
+            "longitude": 44.3613
+          },
+          "action": "breach_building",
+          "altitude_m": 0,
+          "speed_mps": 4
+        },
+        {
+          "id": "wp-04",
+          "position": {
+            "latitude": 33.3128,
+            "longitude": 44.3615
+          },
+          "action": "clear_rooms",
+          "altitude_m": 0,
+          "speed_mps": 2
+        },
+        {
+          "id": "wp-05",
+          "position": {
+            "latitude": 33.313,
+            "longitude": 44.3617
+          },
+          "action": "extract_hostages",
+          "altitude_m": 0,
+          "speed_mps": 5
+        }
+      ],
+      "roe": "ROE_HOSTILE_IDENTIFIED \u2014 positive ID required before engagement; protect civilians at all times",
+      "start_condition": "simulation_time_s >= 0",
+      "end_condition": "hostages_rescued AND (leader_captured OR leader_kia)",
+      "status": "planned",
+      "priority": 1
+    },
+    {
+      "id": "msn-ironshield-red-01",
+      "name": "Operation Iron Shield \u2014 Red Resistance",
+      "mission_type": "defend",
+      "assigned_entity_ids": [
+        "ent-ins-leader-01",
+        "ent-ins-guard-01",
+        "ent-ins-guard-02",
+        "ent-ins-guard-03",
+        "ent-ins-mg-01",
+        "ent-ins-sniper-01",
+        "ent-ins-drone-01"
+      ],
+      "primary_objective": "Protect cell leader; enable escape",
+      "secondary_objectives": [
+        "Delay Blue assault by minimum 15 minutes",
+        "Destroy intelligence materials",
+        "Cause Blue casualties",
+        "Detonate IEDs on Blue approach"
+      ],
+      "roe": "UNRESTRICTED \u2014 engage all Blue personnel on sight",
+      "status": "planned",
+      "priority": 1
+    }
+  ],
+  "timeline": [
+    {
+      "id": "tl-01",
+      "time_s": 0,
+      "action_type": "trigger_event",
+      "label": "Mission Start \u2014 Operation Iron Shield",
+      "parameters": {
+        "event_type": "mission_start",
+        "entity_id": "ent-cmd-vehicle-01"
+      }
+    },
+    {
+      "id": "tl-02",
+      "time_s": 5,
+      "action_type": "spawn_entity",
+      "label": "Recon UAV Raven-1 Launched",
+      "entity_id": "ent-recon-uav-01",
+      "parameters": {
+        "altitude_m": 120,
+        "orbit_target": "ent-safehouse-01"
+      }
+    },
+    {
+      "id": "tl-03",
+      "time_s": 30,
+      "action_type": "set_state",
+      "label": "Safe House Positively Identified by UAV",
+      "entity_id": "ent-safehouse-01",
+      "parameters": {
+        "intel_confidence": 0.95,
+        "civilian_detected": true,
+        "hostile_count_estimate": 4
+      }
+    },
+    {
+      "id": "tl-04",
+      "time_s": 60,
+      "action_type": "set_objective",
+      "label": "Sniper Overwatch Established \u2014 CHARLIE Team",
+      "entity_id": "ent-sniper-01",
+      "parameters": {
+        "overwatch_sector": "north_and_east_approaches"
+      }
+    },
+    {
+      "id": "tl-05",
+      "time_s": 90,
+      "action_type": "set_objective",
+      "label": "Outer Perimeter Secured \u2014 SWAT BRAVO",
+      "entity_id": "ent-swat-01",
+      "parameters": {
+        "perimeter_radius_m": 200
+      }
+    },
+    {
+      "id": "tl-06",
+      "time_s": 108,
+      "action_type": "spawn_entity",
+      "label": "EOD Robot TALON Deployed toward IED Alpha",
+      "entity_id": "ent-eod-robot-01",
+      "parameters": {
+        "target_ied": "ent-ied-01"
+      }
+    },
+    {
+      "id": "tl-07",
+      "time_s": 120,
+      "action_type": "trigger_event",
+      "label": "IED Alpha Discovered by TALON",
+      "entity_id": "ent-ied-01",
+      "parameters": {
+        "event_type": "detection",
+        "detector_id": "ent-eod-robot-01"
+      }
+    },
+    {
+      "id": "tl-08",
+      "time_s": 144,
+      "action_type": "trigger_event",
+      "label": "IED Alpha Neutralized",
+      "entity_id": "ent-ied-01",
+      "parameters": {
+        "event_type": "custom",
+        "sub_type": "IEDDisarmed",
+        "method": "render_safe"
+      }
+    },
+    {
+      "id": "tl-09",
+      "time_s": 162,
+      "action_type": "trigger_event",
+      "label": "Electronic Jamming Activated \u2014 EW-1",
+      "entity_id": "ent-ew-jammer-01",
+      "parameters": {
+        "event_type": "custom",
+        "sub_type": "EWJammerActivated",
+        "target_freq_ghz": [
+          2.4,
+          5.8
+        ]
+      }
+    },
+    {
+      "id": "tl-10",
+      "time_s": 180,
+      "action_type": "trigger_event",
+      "label": "Building Breach \u2014 Main Door North",
+      "entity_id": "ent-sf-02",
+      "parameters": {
+        "event_type": "custom",
+        "sub_type": "DoorBreached",
+        "target_building": "ent-safehouse-01",
+        "entry_point": "main_door_north",
+        "method": "explosive_charge"
+      }
+    },
+    {
+      "id": "tl-11",
+      "time_s": 185,
+      "action_type": "trigger_event",
+      "label": "Flashbang Deployed \u2014 Stairwell",
+      "entity_id": "ent-sf-01",
+      "parameters": {
+        "event_type": "explosion",
+        "warhead": "stun",
+        "radius_m": 5
+      }
+    },
+    {
+      "id": "tl-12",
+      "time_s": 190,
+      "action_type": "trigger_event",
+      "label": "Ground Floor Cleared",
+      "entity_id": "ent-sf-01",
+      "parameters": {
+        "event_type": "custom",
+        "sub_type": "RoomCleared",
+        "floor": 1
+      }
+    },
+    {
+      "id": "tl-13",
+      "time_s": 198,
+      "action_type": "trigger_event",
+      "label": "Hostages Located \u2014 Floor 2",
+      "entity_id": "ent-hostage-01",
+      "parameters": {
+        "event_type": "detection",
+        "detector_id": "ent-sf-01",
+        "hostage_count": 2,
+        "condition": "alive_injured"
+      }
+    },
+    {
+      "id": "tl-14",
+      "time_s": 200,
+      "action_type": "spawn_entity",
+      "label": "Insurgent Drone Launched from Rooftop",
+      "entity_id": "ent-ins-drone-01",
+      "parameters": {
+        "launch_point": {
+          "x": 10,
+          "y": 5,
+          "z": 18
+        },
+        "target_entity": "ent-sf-01"
+      }
+    },
+    {
+      "id": "tl-15",
+      "time_s": 204,
+      "action_type": "trigger_event",
+      "label": "Insurgent Drone Detected and Jammed",
+      "entity_id": "ent-ins-drone-01",
+      "parameters": {
+        "event_type": "custom",
+        "sub_type": "DroneJammed",
+        "jammer_id": "ent-ew-jammer-01"
+      }
+    },
+    {
+      "id": "tl-16",
+      "time_s": 216,
+      "action_type": "trigger_event",
+      "label": "Leader Attempts Escape via Tunnel",
+      "entity_id": "ent-ins-leader-01",
+      "parameters": {
+        "event_type": "move",
+        "escape_route": "basement_tunnel"
+      }
+    },
+    {
+      "id": "tl-17",
+      "time_s": 228,
+      "action_type": "trigger_event",
+      "label": "Sniper Engagement \u2014 Escape Vehicle Disabled",
+      "entity_id": "ent-sniper-01",
+      "parameters": {
+        "event_type": "fire",
+        "target_id": "ent-civilian-03",
+        "sub_type": "VehicleDisabled"
+      }
+    },
+    {
+      "id": "tl-18",
+      "time_s": 240,
+      "action_type": "trigger_event",
+      "label": "Leader Captured",
+      "entity_id": "ent-ins-leader-01",
+      "parameters": {
+        "event_type": "surrender",
+        "captured_by": "ent-sf-01"
+      }
+    },
+    {
+      "id": "tl-19",
+      "time_s": 252,
+      "action_type": "trigger_event",
+      "label": "Hostages Rescued and Extracted",
+      "entity_id": "ent-hostage-01",
+      "parameters": {
+        "event_type": "custom",
+        "sub_type": "HostageRescued",
+        "medical_status": "minor_injuries"
+      }
+    },
+    {
+      "id": "tl-20",
+      "time_s": 270,
+      "action_type": "trigger_event",
+      "label": "Enemy Reinforcement Arrives",
+      "parameters": {
+        "event_type": "reinforcement",
+        "faction": "red",
+        "unit_count": 4,
+        "entry_point": {
+          "x": 200,
+          "y": -80,
+          "z": 0
+        }
+      }
+    },
+    {
+      "id": "tl-21",
+      "time_s": 282,
+      "action_type": "set_objective",
+      "label": "CAS Requested from Attack Helicopter",
+      "parameters": {
+        "asset": "attack_helicopter_standby",
+        "target_area": {
+          "x": 200,
+          "y": -80,
+          "z": 0
+        },
+        "weapon": "hellfire_missile"
+      }
+    },
+    {
+      "id": "tl-22",
+      "time_s": 300,
+      "action_type": "trigger_event",
+      "label": "Medical Evacuation Initiated",
+      "entity_id": "ent-medic-01",
+      "parameters": {
+        "event_type": "custom",
+        "sub_type": "MedicalEvacuation",
+        "casualty_count": 1
+      }
+    },
+    {
+      "id": "tl-23",
+      "time_s": 330,
+      "action_type": "trigger_event",
+      "label": "Evidence Collected \u2014 Intel Cache Secured",
+      "entity_id": "ent-sf-01",
+      "parameters": {
+        "event_type": "custom",
+        "sub_type": "EvidenceCollected",
+        "room": "floor_2_room_3"
+      }
+    },
+    {
+      "id": "tl-24",
+      "time_s": 360,
+      "action_type": "trigger_event",
+      "label": "Mission Complete",
+      "parameters": {
+        "event_type": "mission_complete",
+        "outcome": "blue_success",
+        "hostages_rescued": 2,
+        "leader_captured": true,
+        "civilian_casualties": 0
+      }
+    }
+  ],
+  "events": [
+    {
+      "id": "evt-mission-start-01",
+      "event_type": "mission_start",
+      "timestamp": 0,
+      "source_id": "ent-cmd-vehicle-01",
+      "notes": "Operation Iron Shield commences. All elements in staging positions."
+    },
+    {
+      "id": "evt-uav-launch-01",
+      "event_type": "spawn",
+      "timestamp": 5,
+      "source_id": "ent-recon-uav-01",
+      "notes": "Raven-1 UAV launched for ISR orbit at 120m AGL over objective area."
+    },
+    {
+      "id": "evt-ied-detected-01",
+      "event_type": "detection",
+      "timestamp": 120,
+      "source_id": "ent-eod-robot-01",
+      "target_id": "ent-ied-01",
+      "position": {
+        "x": -25,
+        "y": 0,
+        "z": 0
+      },
+      "parameters": {
+        "detection_method": "thermal_imaging",
+        "confidence": 0.92,
+        "device_type": "pressure_plate"
+      }
+    },
+    {
+      "id": "evt-ied-neutralized-01",
+      "event_type": "custom",
+      "timestamp": 144,
+      "source_id": "ent-eod-robot-01",
+      "target_id": "ent-ied-01",
+      "position": {
+        "x": -25,
+        "y": 0,
+        "z": 0
+      },
+      "parameters": {
+        "method": "render_safe",
+        "duration_s": 24
+      },
+      "notes": "IED Alpha rendered safe by TALON robot using manipulation arm."
+    },
+    {
+      "id": "evt-breach-01",
+      "event_type": "explosion",
+      "timestamp": 180,
+      "source_id": "ent-sf-02",
+      "target_id": "ent-safehouse-01",
+      "position": {
+        "x": -1,
+        "y": 0,
+        "z": 0
+      },
+      "parameters": {
+        "entry_point": "main_door_north",
+        "charge_type": "shaped_breaching"
+      },
+      "effects": [
+        {
+          "effect_type": "door_breach",
+          "magnitude": 10,
+          "radius_m": 1.5,
+          "duration_s": 0.1
+        },
+        {
+          "effect_type": "smoke",
+          "magnitude": 0.5,
+          "radius_m": 3,
+          "duration_s": 8
+        },
+        {
+          "effect_type": "debris",
+          "magnitude": 0.3,
+          "radius_m": 5,
+          "duration_s": 2
+        }
+      ]
+    },
+    {
+      "id": "evt-flashbang-01",
+      "event_type": "explosion",
+      "timestamp": 185,
+      "source_id": "ent-sf-01",
+      "position": {
+        "x": 0,
+        "y": 5,
+        "z": 0
+      },
+      "parameters": {
+        "warhead_type": "stun",
+        "effect": "flash_bang"
+      },
+      "effects": [
+        {
+          "effect_type": "flash_suppression",
+          "magnitude": 1.0,
+          "radius_m": 5,
+          "duration_s": 5
+        },
+        {
+          "effect_type": "acoustic_suppression",
+          "magnitude": 0.9,
+          "radius_m": 8,
+          "duration_s": 3
+        }
+      ]
+    },
+    {
+      "id": "evt-hostage-detected-01",
+      "event_type": "detection",
+      "timestamp": 198,
+      "source_id": "ent-sf-01",
+      "target_id": "ent-hostage-01",
+      "position": {
+        "x": 7,
+        "y": 9,
+        "z": 3
+      },
+      "parameters": {
+        "detection_sensor": "helmet_camera_plus_eyesight",
+        "confidence": 1.0,
+        "hostage_condition": "alive_minor_injuries"
+      }
+    },
+    {
+      "id": "evt-ins-drone-launch-01",
+      "event_type": "spawn",
+      "timestamp": 200,
+      "source_id": "ent-ins-drone-01",
+      "position": {
+        "x": 10,
+        "y": 5,
+        "z": 18
+      },
+      "notes": "Insurgent commercial drone launched from rooftop with improvised grenade payload."
+    },
+    {
+      "id": "evt-ins-drone-jammed-01",
+      "event_type": "custom",
+      "timestamp": 204,
+      "source_id": "ent-ew-jammer-01",
+      "target_id": "ent-ins-drone-01",
+      "position": {
+        "x": -100,
+        "y": -40,
+        "z": 3
+      },
+      "parameters": {
+        "jam_type": "gps_and_rf_control",
+        "effect": "drone_returns_to_home_or_falls"
+      },
+      "notes": "Blue EW-1 drone jammer activates; insurgent drone loses control link and falls to ground."
+    },
+    {
+      "id": "evt-leader-captured-01",
+      "event_type": "surrender",
+      "timestamp": 240,
+      "source_id": "ent-ins-leader-01",
+      "target_id": "ent-sf-01",
+      "position": {
+        "x": -10,
+        "y": -5,
+        "z": 0
+      },
+      "parameters": {
+        "capture_method": "ground_interdiction",
+        "injuries": "none",
+        "intel_value": "high"
+      }
+    },
+    {
+      "id": "evt-hostage-rescued-01",
+      "event_type": "custom",
+      "timestamp": 252,
+      "source_id": "ent-sf-03",
+      "target_id": "ent-hostage-01",
+      "position": {
+        "x": -50,
+        "y": -20,
+        "z": 0
+      },
+      "parameters": {
+        "hostages_rescued": 2,
+        "medical_status": [
+          "minor_injuries",
+          "dehydration"
+        ],
+        "escort_to": "casualty_collection_point"
+      }
+    },
+    {
+      "id": "evt-medevac-01",
+      "event_type": "custom",
+      "timestamp": 300,
+      "source_id": "ent-medic-01",
+      "position": {
+        "x": -200,
+        "y": -80,
+        "z": 0
+      },
+      "parameters": {
+        "casualty_type": "gunshot_wound_non_fatal",
+        "patient_id": "ent-sf-01",
+        "treatment": "tourniquet_and_transport"
+      }
+    },
+    {
+      "id": "evt-evidence-01",
+      "event_type": "custom",
+      "timestamp": 330,
+      "source_id": "ent-sf-01",
+      "target_id": "ent-safehouse-01",
+      "position": {
+        "x": 6,
+        "y": 9,
+        "z": 6
+      },
+      "parameters": {
+        "evidence_type": [
+          "laptops",
+          "cell_phones",
+          "documents",
+          "weapons_cache"
+        ],
+        "room": "floor_2_room_3",
+        "intel_value": "critical"
+      }
+    },
+    {
+      "id": "evt-mission-complete-01",
+      "event_type": "mission_complete",
+      "timestamp": 360,
+      "parameters": {
+        "outcome": "blue_success",
+        "hostages_rescued": 2,
+        "leader_captured": true,
+        "civilian_casualties": 0,
+        "blue_casualties": 1,
+        "red_casualties": 4,
+        "ieds_neutralized": 1,
+        "structures_destroyed": 0,
+        "mission_duration_s": 360
+      }
+    }
+  ],
+  "assets": {
+    "base_url": "assets/",
+    "entries": [
+      {
+        "id": "asset-sf-operator",
+        "name": "SF Operator",
+        "path": "characters/sf_operator.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "blue",
+          "infantry"
+        ]
+      },
+      {
+        "id": "asset-sf-breacher",
+        "name": "SF Breacher",
+        "path": "characters/sf_breacher.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "blue",
+          "infantry"
+        ]
+      },
+      {
+        "id": "asset-sf-medic",
+        "name": "SF Medic",
+        "path": "characters/sf_medic.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "blue",
+          "infantry"
+        ]
+      },
+      {
+        "id": "asset-sf-sniper",
+        "name": "SF Sniper",
+        "path": "characters/sf_sniper.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "blue",
+          "infantry"
+        ]
+      },
+      {
+        "id": "asset-swat-officer",
+        "name": "SWAT Officer",
+        "path": "characters/swat_officer.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "blue",
+          "swat"
+        ]
+      },
+      {
+        "id": "asset-eod-operator",
+        "name": "EOD Operator",
+        "path": "characters/eod_operator.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "blue",
+          "eod"
+        ]
+      },
+      {
+        "id": "asset-combat-medic",
+        "name": "Combat Medic",
+        "path": "characters/combat_medic.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "blue",
+          "medical"
+        ]
+      },
+      {
+        "id": "asset-insurgent",
+        "name": "Insurgent",
+        "path": "characters/insurgent.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "red",
+          "infantry"
+        ]
+      },
+      {
+        "id": "asset-ins-sniper",
+        "name": "Insurgent Sniper",
+        "path": "characters/insurgent_sniper.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "red",
+          "sniper"
+        ]
+      },
+      {
+        "id": "asset-ins-leader",
+        "name": "Insurgent Leader",
+        "path": "characters/insurgent_leader.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "red",
+          "HVT"
+        ]
+      },
+      {
+        "id": "asset-civilian-fm-01",
+        "name": "Civilian Female 01",
+        "path": "characters/civilian_f_01.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "neutral",
+          "civilian"
+        ]
+      },
+      {
+        "id": "asset-civilian-m-01",
+        "name": "Civilian Male 01",
+        "path": "characters/civilian_m_01.usd",
+        "format": "usd",
+        "tags": [
+          "character",
+          "neutral",
+          "civilian"
+        ]
+      },
+      {
+        "id": "asset-mrap-cmd",
+        "name": "MRAP Command",
+        "path": "vehicles/mrap_command.usd",
+        "format": "usd",
+        "tags": [
+          "vehicle",
+          "blue",
+          "ground"
+        ]
+      },
+      {
+        "id": "asset-bearcat",
+        "name": "LENCO BearCat",
+        "path": "vehicles/lenco_bearcat.usd",
+        "format": "usd",
+        "tags": [
+          "vehicle",
+          "blue",
+          "swat"
+        ]
+      },
+      {
+        "id": "asset-hmmwv-amb",
+        "name": "HMMWV Ambulance",
+        "path": "vehicles/hmmwv_ambulance.usd",
+        "format": "usd",
+        "tags": [
+          "vehicle",
+          "blue",
+          "medical"
+        ]
+      },
+      {
+        "id": "asset-rq11b",
+        "name": "RQ-11B Raven UAV",
+        "path": "aircraft/rq11b.usd",
+        "format": "usd",
+        "tags": [
+          "uav",
+          "blue",
+          "isr"
+        ]
+      },
+      {
+        "id": "asset-switchblade300",
+        "name": "Switchblade 300",
+        "path": "aircraft/switchblade300.usd",
+        "format": "usd",
+        "tags": [
+          "ucav",
+          "blue",
+          "loitering_munition"
+        ]
+      },
+      {
+        "id": "asset-talon-eod",
+        "name": "TALON EOD Robot",
+        "path": "robots/talon_eod.usd",
+        "format": "usd",
+        "tags": [
+          "ugv",
+          "blue",
+          "eod"
+        ]
+      },
+      {
+        "id": "asset-dji-mavic-mod",
+        "name": "Modified DJI Mavic 3",
+        "path": "aircraft/dji_mavic_mod.usd",
+        "format": "usd",
+        "tags": [
+          "uav",
+          "red",
+          "commercial"
+        ]
+      },
+      {
+        "id": "asset-apartment-c",
+        "name": "Apartment Block C",
+        "path": "buildings/apartment_block_c.usd",
+        "format": "usd",
+        "tags": [
+          "building",
+          "urban",
+          "safehouse"
+        ]
+      },
+      {
+        "id": "asset-sedan",
+        "name": "Generic Sedan",
+        "path": "vehicles/sedan_generic.usd",
+        "format": "usd",
+        "tags": [
+          "vehicle",
+          "neutral",
+          "civilian"
+        ]
+      },
+      {
+        "id": "asset-ied-roadside",
+        "name": "IED Roadside",
+        "path": "props/ied_roadside.usd",
+        "format": "usd",
+        "tags": [
+          "ied",
+          "red",
+          "explosive"
+        ]
+      },
+      {
+        "id": "asset-ied-sied",
+        "name": "Suicide IED Device",
+        "path": "props/ied_sied.usd",
+        "format": "usd",
+        "tags": [
+          "ied",
+          "red",
+          "explosive"
+        ]
+      },
+      {
+        "id": "asset-drone-jammer",
+        "name": "Drone Jammer",
+        "path": "equipment/drone_jammer.usd",
+        "format": "usd",
+        "tags": [
+          "ew",
+          "blue",
+          "counter_uas"
+        ]
+      },
+      {
+        "id": "asset-terrain-dem",
+        "name": "Urban District DEM",
+        "path": "terrain/urban_district_dem.tif",
+        "format": "custom",
+        "tags": [
+          "terrain",
+          "dem"
+        ]
+      }
+    ]
+  },
+  "outputs": {
+    "formats": [
+      "json_telemetry",
+      "csv_telemetry",
+      "rtx_render",
+      "physics_log",
+      "sensor_frames",
+      "video_mp4",
+      "ground_truth",
+      "ros_bag",
+      "onnx_observations"
+    ],
+    "output_path": "outputs/urban_operation/",
+    "record_physics": true,
+    "record_sensors": true,
+    "record_events": true,
+    "render_config": {
+      "cameras": [
+        {
+          "name": "commander_overview",
+          "type": "camera_eo",
+          "target_entity": "ent-cmd-vehicle-01",
+          "mode": "top_down_follow"
+        },
+        {
+          "name": "alpha1_helmet",
+          "type": "camera_eo",
+          "source_sensor": "sens-sf01-helmetcam-01"
+        },
+        {
+          "name": "alpha1_nvg",
+          "type": "camera_eo",
+          "source_sensor": "sens-sf01-nvg-01"
+        },
+        {
+          "name": "raven1_eo",
+          "type": "camera_eo",
+          "source_sensor": "sens-raven-eo-01"
+        },
+        {
+          "name": "raven1_ir",
+          "type": "camera_ir",
+          "source_sensor": "sens-raven-ir-01"
+        },
+        {
+          "name": "talon_eo",
+          "type": "camera_eo",
+          "source_sensor": "sens-talon-eo-01"
+        },
+        {
+          "name": "sniper_scope",
+          "type": "camera_eo",
+          "source_sensor": "sens-sniper01-scope-01"
+        },
+        {
+          "name": "switchblade_eo",
+          "type": "camera_eo",
+          "source_sensor": "sens-switch-eo-01"
+        },
+        {
+          "name": "tactical_map_2d",
+          "type": "custom",
+          "mode": "tactical_map",
+          "bounds_m": 600
+        },
+        {
+          "name": "building_cutaway",
+          "type": "custom",
+          "mode": "building_interior_xray",
+          "target_entity": "ent-safehouse-01"
+        },
+        {
+          "name": "free_cinematic",
+          "type": "custom",
+          "mode": "free_camera"
+        }
+      ],
+      "render_passes": [
+        "rgb",
+        "thermal",
+        "night_vision",
+        "semantic_segmentation",
+        "instance_segmentation",
+        "depth",
+        "optical_flow"
+      ],
+      "resolution": {
+        "width": 1920,
+        "height": 1080
+      },
+      "frame_rate_hz": 60,
+      "enable_rtx": true,
+      "enable_ray_tracing": true,
+      "annotations": [
+        "coco",
+        "openlabel"
+      ]
+    }
+  },
+  "validation": {
+    "require_unique_ids": true,
+    "require_valid_transforms": true,
+    "require_physics_on_dynamic": true,
+    "max_entities": 500,
+    "custom_validators": [
+      "validators/check_faction_consistency.py",
+      "validators/check_roe_compliance.py",
+      "validators/check_hostage_protection_zone.py",
+      "validators/check_civilian_exclusion_zones.py"
+    ]
+  }
+}

@@ -1,0 +1,418 @@
+{
+  "@context": { "pwmo": "https://physworld.ai/ontology/radar#" },
+  "@id": "pwmo:Relationships_Logistics_Physics",
+
+  "RelationshipTypeOntology": {
+    "@id": "pwmo:RelationshipTypes",
+    "rdfs:label": "PWMO Complete Relationship Type Registry",
+    "description": "All typed relationships used in the PWMO radar knowledge graph. Every relationship is explicitly directional, typed, and carries metadata.",
+
+    "StructuralRelationships": {
+      "partOf": { "domain": "pwmo:RadarComponent", "range": "pwmo:RadarSystem", "inverse": "hasPart", "description": "Component is a physical part of a radar system" },
+      "hasSubsystem": { "domain": "pwmo:RadarSystem", "range": "pwmo:RadarSubsystem", "inverse": "subsystemOf" },
+      "subsystemOf": { "domain": "pwmo:RadarSubsystem", "range": "pwmo:RadarSystem" },
+      "mountedOn": { "domain": "pwmo:RadarSystem", "range": "pwmo:Platform", "description": "Radar is installed/mounted on platform" },
+      "integratedWith": { "domain": "pwmo:RadarSystem", "range": "pwmo:WeaponSystem", "description": "Radar is integrated in weapon system" },
+      "interfacesWith": { "domain": "pwmo:RadarComponent", "range": "pwmo:RadarComponent", "description": "Physical or data interface between components" },
+      "poweredBy": { "domain": "pwmo:RadarSystem", "range": "pwmo:PowerSource" },
+      "cooledBy": { "domain": "pwmo:RadarComponent", "range": "pwmo:CoolingSystem" }
+    },
+
+    "TaxonomicRelationships": {
+      "isA": { "equivalent": "rdfs:subClassOf", "description": "Ontological type hierarchy" },
+      "instanceOf": { "equivalent": "rdf:type", "description": "Specific radar is instance of class" },
+      "variantOf": { "domain": "pwmo:RadarSystem", "range": "pwmo:RadarSystem", "description": "Radar is variant of another system" },
+      "derivedFrom": { "domain": "pwmo:RadarSystem", "range": "pwmo:RadarSystem", "description": "Technology lineage" },
+      "successorOf": { "domain": "pwmo:RadarSystem", "range": "pwmo:RadarSystem" },
+      "predecessorOf": { "domain": "pwmo:RadarSystem", "range": "pwmo:RadarSystem" },
+      "familyMemberOf": { "domain": "pwmo:RadarSystem", "range": "pwmo:RadarFamily" }
+    },
+
+    "OperationalRelationships": {
+      "detects": { "domain": "pwmo:RadarSystem", "range": "pwmo:TargetClass", "description": "Radar is capable of detecting this target class" },
+      "tracks": { "domain": "pwmo:RadarSystem", "range": "pwmo:TargetClass" },
+      "classifies": { "domain": "pwmo:RadarSystem", "range": "pwmo:TargetClass", "description": "Radar can classify (identify type of) this target" },
+      "identifies": { "domain": "pwmo:RadarSystem", "range": "pwmo:TargetClass", "description": "NCTR-level identification" },
+      "guides": { "domain": "pwmo:RadarSystem", "range": "pwmo:MissileSystem", "description": "Radar provides guidance for missile" },
+      "illuminates": { "domain": "pwmo:RadarSystem", "range": "pwmo:MissileSystem", "description": "CW or pulsed illumination for semi-active homing" },
+      "supports": { "domain": "pwmo:RadarSystem", "range": "pwmo:MissionType", "description": "Radar supports this mission type" },
+      "operates_in": { "domain": "pwmo:RadarSystem", "range": "pwmo:FrequencyBand" },
+      "scans": { "domain": "pwmo:RadarSystem", "range": "pwmo:Volume", "description": "Spatial coverage of radar" },
+      "provides_cueing_to": { "domain": "pwmo:RadarSystem", "range": "pwmo:RadarSystem", "description": "EWR provides cueing data to FCR" },
+      "fuses_with": { "domain": "pwmo:RadarSystem", "range": "pwmo:SensorSystem", "description": "Data fusion between sensors" },
+      "networks_with": { "domain": "pwmo:RadarSystem", "range": "pwmo:C2System", "description": "Connected to C2 via datalink" }
+    },
+
+    "ManufacturingRelationships": {
+      "manufacturedBy": { "domain": "pwmo:RadarSystem", "range": "pwmo:Manufacturer" },
+      "developedBy": { "domain": "pwmo:RadarSystem", "range": "pwmo:DefenseOrganization" },
+      "programmedBy": { "domain": "pwmo:RadarSoftware", "range": "pwmo:Organization" },
+      "usesComponent": { "domain": "pwmo:RadarSystem", "range": "pwmo:Component" },
+      "usesTechnology": { "domain": "pwmo:RadarSystem", "range": "pwmo:Technology" },
+      "requiresMaterial": { "domain": "pwmo:RadarComponent", "range": "pwmo:Material" },
+      "suppliedBy": { "domain": "pwmo:RadarComponent", "range": "pwmo:Supplier" }
+    },
+
+    "EWRelationships": {
+      "counteredBy": { "domain": "pwmo:RadarSystem", "range": "pwmo:ECM_System", "description": "Radar is threatened/countered by this ECM" },
+      "vulnerableTo": { "domain": "pwmo:RadarSystem", "range": "pwmo:Threat" },
+      "resistant_to": { "domain": "pwmo:RadarSystem", "range": "pwmo:ECM_Type", "description": "ECCM capability" },
+      "counters": { "domain": "pwmo:RadarSystem", "range": "pwmo:ThreatClass", "description": "Radar defeats/detects this threat" },
+      "neutralizes": { "domain": "pwmo:WeaponSystem", "range": "pwmo:TargetClass" },
+      "exploits_emission_of": { "domain": "pwmo:PassiveRadar", "range": "pwmo:EmitterType" }
+    },
+
+    "ProvenanceRelationships": {
+      "deployedBy": { "domain": "pwmo:RadarSystem", "range": "pwmo:MilitaryOrganization" },
+      "operatedBy": { "domain": "pwmo:RadarSystem", "range": "pwmo:MilitaryOrganization" },
+      "exportedTo": { "domain": "pwmo:RadarSystem", "range": "pwmo:Country" },
+      "licenseProducedIn": { "domain": "pwmo:RadarSystem", "range": "pwmo:Country" },
+      "maintainedBy": { "domain": "pwmo:RadarSystem", "range": "pwmo:Organization" },
+      "controlledBy": { "domain": "pwmo:RadarSystem", "range": "pwmo:C2_Node" },
+      "usedInConflict": { "domain": "pwmo:RadarSystem", "range": "pwmo:Conflict" },
+      "retiredIn": { "domain": "pwmo:RadarSystem", "range": "xsd:integer" }
+    }
+  },
+
+  "LogisticsOntology": {
+    "@id": "pwmo:Logistics",
+    "rdfs:label": "Radar Logistics and Sustainment Ontology",
+
+    "MaintenanceHierarchy": {
+      "Organizational_Level_O": {
+        "description": "Unit-level maintenance; operators and organic technicians",
+        "actions": ["Visual inspection", "Filter cleaning", "BIT execution", "External cleaning", "Consumable replacement (fuses, oils)", "LRU swap if BIT indicates fault"],
+        "typicalTimeToRepair_hours": [0.5, 4],
+        "personnel": ["Radar operator", "Unit maintainer (MOS-specific)"]
+      },
+      "Direct_Support_Level_DS": {
+        "description": "Brigade/Division level; shop repair of LRUs returned from O-level",
+        "actions": ["LRU repair", "Module-level fault isolation", "Circuit card assembly (CCA) repair", "Calibration"],
+        "typicalTimeToRepair_hours": [4, 48]
+      },
+      "General_Support_Level_GS": {
+        "description": "Corps/Army level; heavy repair and major overhaul",
+        "actions": ["Antenna replacement", "Major structural repair", "Transmitter overhaul", "Complete system calibration"],
+        "typicalTimeToRepair_days": [1, 30]
+      },
+      "Depot_Level_Maintenance": {
+        "description": "Manufacturer or national depot; full rebuild, major upgrade",
+        "actions": ["Complete overhaul", "Software upgrades", "Technology insertion", "Full structural refurbishment"],
+        "location": "Fixed depot or manufacturer facility",
+        "interval_years": [5, 10]
+      }
+    },
+
+    "KeyReliabilityMetrics": {
+      "MTBF": {
+        "@id": "pwmo:MTBF",
+        "rdfs:label": "Mean Time Between Failures",
+        "unit": "hours",
+        "typicalValues": {
+          "AirborneFCR_AESA": [400, 1000],
+          "GroundSurveillanceRadar": [500, 2000],
+          "NavalRadar": [300, 1500],
+          "FixedEWR": [2000, 10000]
+        },
+        "note": "AESA graceful degradation means system MTBF much higher than component MTBF; system continues with degraded (but functional) performance"
+      },
+      "MTTR": {
+        "@id": "pwmo:MTTR",
+        "rdfs:label": "Mean Time To Repair",
+        "unit": "hours",
+        "typicalValues": {
+          "LRU_swap": [0.5, 2],
+          "ModuleLevel": [2, 8],
+          "Depot": [24, 720]
+        }
+      },
+      "Availability": {
+        "formula": "MTBF / (MTBF + MTTR)",
+        "targetMilitary": 0.90,
+        "typicalAchieved": [0.80, 0.95]
+      },
+      "MTBCF": {
+        "rdfs:label": "Mean Time Between Critical Failures",
+        "note": "Subset of failures causing mission abort; higher than MTBF for systems with graceful degradation"
+      }
+    },
+
+    "DeploymentConcepts": {
+      "Emplacement": {
+        "fixedSite": {
+          "description": "Permanent hardened installation; max power; best coverage; fixed target",
+          "examples": ["UEWR sites", "Voronezh-M sites", "PAVE PAWS (FPS-132)"]
+        },
+        "semiPermanent": {
+          "description": "Transportable but not routinely moved; concrete pad; may have some hardening",
+          "setupTime_weeks": [4, 26]
+        },
+        "mobile": {
+          "description": "Vehicle-mounted; routinely moves; shoot-and-scoot tactics",
+          "setupTime_minutes": [5, 60],
+          "examples": ["S-400 battery", "AN/TPY-2 (2 hr)", "Swathi WLR (30 min)"]
+        },
+        "manPortable": {
+          "description": "Carried and operated by small team; very short setup",
+          "maxMass_kg": 30,
+          "setupTime_minutes": [2, 10]
+        }
+      },
+
+      "Survivability": {
+        "mobility": "Shoot-and-scoot: emit, move, emit elsewhere",
+        "dispersion": "Network of radars; no single point of failure",
+        "hardening": "Blast protection for fixed sites",
+        "deception": "Decoy emitters to attract ARM",
+        "silentMode": "EMCON (Emission Control); use passive sensors while primary radar silent",
+        "redundancy": "Multiple overlapping radars",
+        "underground": "Protect antenna on surface; electronics underground"
+      }
+    },
+
+    "SupplyChain": {
+      "criticalComponents": [
+        "GaN wafers (semiconductor fab limited)",
+        "High-speed ADCs (few suppliers)",
+        "Waveguide assemblies",
+        "High-power connectors",
+        "Specialized cooling fluids",
+        "Ferrite circulators",
+        "TR modules (classified controlled)"
+      ],
+      "exportControlled": ["TR modules", "GaN MMICs", "Advanced signal processors", "Encryption modules (COMSEC)"],
+      "singlePointOfFailure_risk": "Many Western radars depend on TSMC or Samsung for advanced node chips; supply chain vulnerability",
+      "repairPartsStockage": {
+        "authorizedStockageLists": "ASL specifies which parts a unit holds; based on failure rates and MTTR",
+        "warbuild": "War Reserve Materiel (WRM); prepositioned spares for sustained conflict"
+      }
+    }
+  },
+
+  "PhysicsOntology": {
+    "@id": "pwmo:RadarPhysics",
+    "rdfs:label": "Radar Physics and Fundamental Equations",
+
+    "RadarEquation": {
+      "@id": "pwmo:RadarEquation",
+      "rdfs:label": "Radar Range Equation (Single Pulse)",
+      "formula": "P_r = (P_t * G_t * G_r * lambda^2 * sigma) / ((4*pi)^3 * R^4 * L_sys)",
+      "variables": {
+        "P_r": "Received power (W)",
+        "P_t": "Transmitted peak power (W)",
+        "G_t": "Transmit antenna gain",
+        "G_r": "Receive antenna gain (= G_t for monostatic)",
+        "lambda": "Wavelength (m) = c/f",
+        "sigma": "Target radar cross section (m²)",
+        "R": "Range to target (m)",
+        "L_sys": "Total system losses (dimensionless > 1)"
+      },
+      "solvedForRange": "R_max = ((P_t * G^2 * lambda^2 * sigma) / ((4*pi)^3 * S_min * L))^(1/4)",
+      "insight": "Range varies as 4th root of power; doubling power only increases range by 19%",
+
+      "SearchRadarEquation": {
+        "formula": "P_avg * A_e * T_S / (4 * pi * Omega_S) = S_min * R^4",
+        "description": "Radar search equation: average power times aperture times scan time / solid angle = min detectable signal times range^4",
+        "insight": "Search performance depends on P_avg * A_e product (power-aperture product)"
+      }
+    },
+
+    "DopplerShift": {
+      "formula": "f_d = 2 * v_r / lambda",
+      "variables": { "f_d": "Doppler frequency (Hz)", "v_r": "Radial velocity m/s", "lambda": "Wavelength m" },
+      "example_X_band": "At 10 GHz, 1 m/s radial velocity → 66.7 Hz Doppler shift"
+    },
+
+    "RadarCrossSection": {
+      "@id": "pwmo:RCS",
+      "rdfs:label": "Radar Cross Section (RCS)",
+      "definition": "Effective area of target intercepting and isotropically re-radiating incident wave: σ = lim(R→∞) 4πR² * |E_r|²/|E_i|²",
+      "scatteringRegimes": {
+        "Rayleigh": {
+          "condition": "Target size << wavelength (2a << λ)",
+          "RCS_varies_as": "f^4 (sharp frequency dependence)",
+          "examples": "Rain drops at X-band"
+        },
+        "Resonance_Mie": {
+          "condition": "Target size ≈ wavelength (2a ≈ λ)",
+          "behavior": "Oscillatory RCS vs frequency; RAM most difficult here",
+          "radarRelevance": "VHF/UHF radar exploits resonance region of stealth aircraft (~10m wingspan → resonance at ~30 MHz to 300 MHz)"
+        },
+        "Optical": {
+          "condition": "Target size >> wavelength (2a >> λ)",
+          "RCS_approximation": "σ ≈ (projected area) * (reflectivity) for simple shapes",
+          "examples": "Most aircraft targets at X-band"
+        }
+      },
+      "typicalRCS_dBsm": {
+        "LargeAircraft_B52": 100,
+        "FighterAircraft_F15": 25,
+        "StealthFighter_F22": 0.0001,
+        "StealthFighter_B2": 0.0001,
+        "CruiseMissile": 0.05,
+        "AntiradiationMissile": 0.01,
+        "UAV_small": 0.01,
+        "MicroDrone": 0.001,
+        "Helicopter": 3,
+        "Tank": 10,
+        "Ship_destroyer": 10000,
+        "Human": 1
+      },
+      "stealthDesignPrinciples": [
+        "Smooth external surfaces minimize diffraction",
+        "Angled surfaces deflect energy away from monostatic receiver",
+        "Radar Absorbing Material (RAM) converts RF to heat",
+        "Edge alignment reduces edge diffraction RCS",
+        "Cavity design for inlet, cockpit, exhaust",
+        "Internal weapon carriage eliminates store RCS"
+      ]
+    },
+
+    "PropagationEffects": {
+      "AtmosphericRefraction": {
+        "standardRefraction": "4/3 Earth radius effective model; increases radar horizon by ~15% vs geometric",
+        "superRefraction_ducting": "Temperature inversion; radar energy trapped near surface; anomalous propagation",
+        "subRefraction": "Elevated radar horizon; reduced coverage at low altitudes"
+      },
+      "AtmosphericAbsorption": {
+        "oxygenAbsorption": { "peak_GHz": [60, 120], "loss_dB_km": [10, 15] },
+        "waterVaporAbsorption": { "peak_GHz": 22, "loss_dB_km": 0.2 },
+        "rainAttenuation": {
+          "X_band_heavy_rain": { "loss_dB_km": [3, 10] },
+          "Ka_band_moderate_rain": { "loss_dB_km": [5, 20] },
+          "L_band": { "loss_dB_km": [0.01, 0.1], "practicallyNegligible": true }
+        }
+      },
+      "GroundClutter": {
+        "modelTypes": ["Weibull", "Log-Normal", "K-distribution", "Rayleigh (simplified)"],
+        "sigma0_dB": { "agricultural": [-30, -15], "urban": [-15, 0], "forest": [-25, -10], "sea_state3": [-35, -20] }
+      },
+      "Multipath": {
+        "description": "Two-ray propagation: direct path + reflected path from surface. Interference pattern creates lobing at low elevation angles.",
+        "effectOnLowAltitude": "Pattern propagation factor can cause 20-40 dB sensitivity loss at certain elevation angles",
+        "mitigation": ["Frequency diversity", "Adaptive receive processing", "Elevated antenna site"]
+      }
+    },
+
+    "AntennaPhysics": {
+      "GainFromAperture": {
+        "formula": "G = 4 * pi * eta_a * A_physical / lambda^2",
+        "insight": "Larger aperture = higher gain = narrower beam = better angular resolution"
+      },
+      "BeamwidthFromAperture": {
+        "formula_3dB_rad": "theta_3dB ≈ 0.886 * lambda / D  (uniform aperture; narrower with taper)",
+        "insight": "At X-band (3cm), 1m aperture → 1.5° beamwidth; 0.1m → 15° beamwidth"
+      },
+      "DiffractionLimit": "Angular resolution fundamentally limited by Rayleigh criterion: Δθ_min = 1.22 * λ / D"
+    },
+
+    "SignalProcessingPhysics": {
+      "NyquistSampling": "ADC must sample at ≥ 2x maximum signal frequency to avoid aliasing",
+      "PulseCompression_TimeBandwidthProduct": "TBP = B * tau; compression ratio = TBP; processing gain = 10*log10(TBP) dB",
+      "CoherentIntegration_SNR_gain": "N pulses coherently integrated → SNR gain = N (10*log10(N) dB)",
+      "NoncoherentIntegration": "N pulses noncoherently integrated → SNR gain ≈ sqrt(N); less efficient but tolerates phase instability",
+      "CFAR_threshold": "P_fa = (1 + T/N)^{-N} for CA-CFAR; threshold T set for desired P_fa",
+      "RangeResolution": "delta_R = c / (2B) where B is compressed bandwidth",
+      "VelocityResolution": "delta_v = lambda / (2 * T_CPI)"
+    }
+  },
+
+  "AIMetadataOntology": {
+    "@id": "pwmo:AIMetadata",
+    "rdfs:label": "AI Training Metadata, Semantic Tags, and Inference Support",
+
+    "SemanticActionPredicates": [
+      "detects", "tracks", "classifies", "identifies", "guides",
+      "supports", "belongs_to", "manufactured_by", "uses_component",
+      "uses_technology", "uses_frequency", "mounted_on", "powered_by",
+      "countered_by", "neutralizes", "communicates_with", "fused_with",
+      "controlled_by", "maintained_by", "deployed_by", "exported_to",
+      "replaced_by", "derived_from", "variant_of", "successor_of",
+      "predecessor_of", "part_of", "subsystem_of", "has_subsystem",
+      "illuminates", "provides_cueing_to", "networks_with", "operates_in",
+      "vulnerable_to", "resistant_to", "counters_threat", "guides_weapon",
+      "used_in_conflict", "licensed_from", "co_developed_with"
+    ],
+
+    "InferenceRules": {
+      "StealthDetection": "IF radar.frequency IN [VHF, UHF] AND target.wingspan_m > 5 THEN detection_probability SIGNIFICANTLY_HIGHER than X_band",
+      "ARMVulnerability": "IF radar.emitting=true AND threat.ARM_enabled=true AND radar.sidelobe_level > -35dB THEN ARM_acquisition_probability HIGH",
+      "BurnThrough": "IF jammer.power_W > radar.sensitivity_W * (4*pi*R²/lambda²/G) THEN radar.detection_impossible UNTIL R < burn_through_range",
+      "GracefulDegradation_AESA": "IF AESA.TR_module_failure_percent < 30 THEN system.capability_retained > 70_percent",
+      "PassiveDetection_VHF": "IF radar.band=VHF AND target.RCS_optical < 0.001 THEN target.RCS_VHF may_be 0.01_to_1 (resonance effect)"
+    },
+
+    "TrainingDataAnnotation": {
+      "sarImageLabels": {
+        "connectionToStructDiff": "PWMO defines target classes and physical properties that should inform SAR image annotation for StructDiff training",
+        "targetClasses": ["Aircraft", "Vehicle_Wheeled", "Vehicle_Tracked", "Ship", "Building", "Bridge", "Bunker", "Radar_Installation", "SAM_Launcher", "Artillery"],
+        "physicalProperties_for_SAR": ["RCS profile", "Material (metal vs composite)", "Size", "Shape", "Orientation", "Thermal signature (for IR fusion)", "Operational status"],
+        "despecklingRelevance": "Physical scattering models (surface, volume, double-bounce) inform what StructDiff should preserve vs remove during despeckling"
+      }
+    },
+
+    "KnowledgeGraphTriples_Examples": [
+      ["pwmo:AN_APG-81", "pwmo:mountedOn", "pwmo:F-35A"],
+      ["pwmo:AN_APG-81", "pwmo:manufacturedBy", "pwmo:NorthropGrumman"],
+      ["pwmo:AN_APG-81", "pwmo:usesFrequency", "pwmo:X_Band"],
+      ["pwmo:AN_APG-81", "pwmo:usesTechnology", "pwmo:AESARadar"],
+      ["pwmo:AN_APG-81", "pwmo:guidesWeapon", "pwmo:AIM-120D_AMRAAM"],
+      ["pwmo:AN_APG-81", "pwmo:detects", "pwmo:CruiseMissile"],
+      ["pwmo:AN_APG-81", "pwmo:counteredBy", "pwmo:DRFM_Jammer"],
+      ["pwmo:AN_APG-81", "pwmo:resistant_to", "pwmo:SpotJamming"],
+      ["pwmo:AN_APG-81", "pwmo:exportedTo", "pwmo:Country_Israel"],
+      ["pwmo:F-35A", "pwmo:deployedBy", "pwmo:USAF"],
+      ["pwmo:GaN_MMIC", "pwmo:suppliedBy", "pwmo:Wolfspeed"],
+      ["pwmo:ELM-2084", "pwmo:guidesWeapon", "pwmo:IronDome_Tamir"],
+      ["pwmo:ELM-2084", "pwmo:detects", "pwmo:Rocket_122mm"],
+      ["pwmo:Uttam_AESA", "pwmo:derivedFrom", "pwmo:IndigenousGaN_Program"],
+      ["pwmo:SPY-6", "pwmo:partOfSystem", "pwmo:AEGIS_BMD"],
+      ["pwmo:Voronezh_M", "pwmo:provides_cueing_to", "pwmo:S400_System"],
+      ["pwmo:VHF_Nebo_M", "pwmo:counters_threat", "pwmo:StealthAircraft"],
+      ["pwmo:AGM-88_HARM", "pwmo:countered_by", "pwmo:SilentMode_EMCON"]
+    ]
+  },
+
+  "CountryInventorySummary": {
+    "@id": "pwmo:CountryInventories",
+    "rdfs:label": "Estimated Country Radar Inventory Summary (Open Source)",
+
+    "USA": {
+      "airborneAESA_fighters": ["AN/APG-77 (F-22)", "AN/APG-81 (F-35)", "AN/APG-82 (F-15EX)", "AN/APG-79 (F/A-18E/F)", "AN/APG-73 (legacy)"],
+      "navalAESA": ["AN/SPY-6 (DDG-51 Flt III)", "AN/SPY-1D(V) (Aegis legacy)", "AN/SPY-3 (DDG-1000)", "AN/TPS-80 (amphibious)"],
+      "groundSurveillance": ["AN/TPS-75", "AN/TPS-78", "AN/FPS-117", "AN/FPS-132 UEWR", "AN/FPS-85 (Space)"],
+      "BMD": ["AN/TPY-2 (THAAD)", "AN/SPY-6 (AEGIS BMD)", "UEWR sites", "GBR-P (Upgraded)"],
+      "counterbattery": ["AN/TPQ-53 Firefinder"],
+      "special": ["JORN-equivalent (SBX Sea-Based X-band)", "Cobra Dane (AN/FPS-108)"]
+    },
+
+    "Russia": {
+      "airborneRadar": ["N035 Irbis-E (Su-35)", "N011M Bars (Su-30)", "Zhuk-AE AESA (MiG-35)", "N010 Zhuk-M (MiG-29)", "Byelka (Su-57 AESA)", "N012 (rear-facing Su-30MKI)"],
+      "groundEWR": ["Voronezh-M/DM/VP (9 sites+)", "Nebo-M counter-stealth", "P-18 Spoon Rest (VHF legacy)", "JY-27 equivalent P-18U"],
+      "SAM_radars": ["92N6 Grave Stone (S-400)", "9S32 Grill Pan (S-300V)", "96L6 Cheese Board", "91N6 Big Bird", "Kasta-2E2", "Gamma-C1E"],
+      "counterbattery": ["1L260 Zoopark-1M", "1L219 Zoo-1"],
+      "naval": ["Zaslon (Kirov)", "Fregat (multiple classes)", "Mineral-ME (Oscar)"]
+    },
+
+    "China": {
+      "airborneAESA": ["KLJ-7A (J-10C)", "Type 1475 (J-20)", "AESA for J-16", "AESA for J-15T"],
+      "naval": ["Type 346A (052D)", "Type 346B (055 DDG)", "Type 364 (054A FFG)", "Sea Eagle (export)"],
+      "groundEWR": ["YLC-2V", "YLC-8E (UHF anti-stealth)", "JY-27A (VHF)", "JL1A EWR", "DFL-2"],
+      "SAM": ["HQ-9 fire control", "HQ-16 Clam Shell/Iron Dome equivalent"],
+      "OTHR": ["Sky Wave OTHR (claimed, South China Sea coverage)"]
+    },
+
+    "India": {
+      "indigenous": ["Uttam AESA (development)", "Swathi WLR", "Rajendra MFAR", "Swordfish LRTR", "Indra (EWR)", "Rohini 3D radar"],
+      "imported": ["EL/M-2084 (4 units, IAF)", "Green Pine tech (Swordfish)", "Elta systems various"],
+      "future": ["AMCA AESA (under development)", "Tejas Mk2 with Uttam"]
+    },
+
+    "NATOEurope": {
+      "airborneAESA": ["CAPTOR-E (Typhoon, DE/ES/QA/KW)", "RBE2-AA (Rafale, FR/EG/QA/GR/HR/IN/UAE)", "SABR (Gripen E, Sweden/Brazil/Czech)"],
+      "navalAESA": ["APAR (NL/DE frigates)", "SMART-L (NL/DE/UK)", "SAMPSON (Type 45 RN)"],
+      "groundSurveillance": ["Ground Master 400 (Thales, 25+ nations)", "TRML-4D (Hensoldt)"],
+      "BMD": ["SMART-L EWC (NL/DE)", "Patriot PAC-3 (multiple NATO)"]
+    }
+  }
+}

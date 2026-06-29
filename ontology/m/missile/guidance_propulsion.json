@@ -1,0 +1,448 @@
+{
+  "MissileGuidancePropulsionOntology": {
+    "GuidanceAndNavigation": {
+      "GuidanceModes": {
+        "InertialNavigation": {
+          "StrapdownINS": {},
+          "GimbaledINS": {},
+          "INS_GPSCoupled": {},
+          "INS_ErrorPropagation": {},
+          "INS_Alignment": {
+            "StaticAlignment": {},
+            "InFlightAlignment": {}
+          }
+        },
+        "SatelliteNavigation": {
+          "GPS": {
+            "GPS_L1_CA": {},
+            "GPS_L2C": {},
+            "GPS_L5": {},
+            "GPS_SAASM": {},
+            "GPS_M_Code": {},
+            "GPS_AntiJamming": {
+              "CRPA": {},
+              "DRFM_Resistant": {},
+              "NullSteering": {}
+            }
+          },
+          "GLONASS": {
+            "GLONASS_L1": {},
+            "GLONASS_L2": {},
+            "GLONASS_L3": {}
+          },
+          "BeiDou": {
+            "BDS_B1I": {},
+            "BDS_B2a": {},
+            "BDS_B3I": {}
+          },
+          "Galileo": {
+            "GAL_E1": {},
+            "GAL_E5a": {},
+            "GAL_E5b": {},
+            "GAL_PRS": {}
+          },
+          "NavIC": {
+            "NavIC_L5": {},
+            "NavIC_S_Band": {}
+          },
+          "GNSS_MultiConstellation": {}
+        },
+        "TerrainReferenceNavigation": {
+          "TERCOM": {
+            "TERCOM_MapMatching": {},
+            "TERCOM_RadarAltimeterInput": {},
+            "TERCOM_DigitalElevationModel": {},
+            "TERCOM_MapCells": {}
+          },
+          "DSMAC": {
+            "DSMAC_SceneMatching": {},
+            "DSMAC_AreaCorrelator": {},
+            "DSMAC_ReferenceCrop": {},
+            "DSMAC_TVCamera": {}
+          },
+          "OpticalFlowNavigation": {}
+        },
+        "ActiveRadarHoming": {
+          "ARH_PulseDoppler": {},
+          "ARH_ContinuousWave": {},
+          "ARH_FMCW": {},
+          "ARH_MonopulsePrecision": {},
+          "ARH_SeaSurfaceClutter": {},
+          "ARH_ECCMCapability": {
+            "ARH_FrequencyAgile": {},
+            "ARH_PRFJitter": {},
+            "ARH_ECCM_HOJ": {}
+          }
+        },
+        "SemiActiveRadarHoming": {
+          "SARH_CWIlluminator": {},
+          "SARH_PulseIlluminator": {},
+          "SARH_MonopulseReceiver": {},
+          "SARH_TargetIlluminator": {}
+        },
+        "PassiveRadarHoming": {
+          "PRH_AntiRadiation": {},
+          "PRH_BroadbandESM": {},
+          "PRH_MemoryGuidance": {},
+          "PRH_HomeOnJam": {}
+        },
+        "InfraredHoming": {
+          "IRH_SpinScan": {},
+          "IRH_ConicalScan": {},
+          "IRH_RosetteScan": {},
+          "IRH_StrappedDown": {},
+          "IRH_AllAspectCooled": {},
+          "IRH_TwoColor": {
+            "IR_2C_MWIR_LWIR": {}
+          },
+          "IRH_ECCM": {
+            "IRH_FlareRejection": {},
+            "IRH_SpectralFiltering": {}
+          }
+        },
+        "ImagingInfraredGuidance": {
+          "IIR_Centroid": {},
+          "IIR_TemplateMatching": {},
+          "IIR_EdgeDetection": {},
+          "IIR_AIClassification": {},
+          "IIR_ManInLoop": {}
+        },
+        "ElectroOpticalGuidance": {
+          "EO_TVHoming": {},
+          "EO_ManInLoop": {},
+          "EO_AutonomousTracking": {},
+          "EO_ImageCorrelation": {}
+        },
+        "LaserGuidance": {
+          "LaserDesignator_SemiActive": {},
+          "LaserBeamRiding": {
+            "LBR_CodedBeam": {}
+          },
+          "LaserRangeGated": {},
+          "ActiveLaserHoming": {}
+        },
+        "CommandGuidance": {
+          "CommandToLinOfSight": {
+            "MCLOS": {},
+            "SACLOS": {}
+          },
+          "RadioCommand": {},
+          "WireGuidance": {
+            "WG_MCLOS": {},
+            "WG_SACLOS": {}
+          },
+          "FiberOpticGuidance": {
+            "FOG_BidirectionalData": {},
+            "FOG_VideoFeedback": {}
+          },
+          "UpLinkUpdate": {}
+        },
+        "MillimeterWaveGuidance": {
+          "MMW_ActiveSeeker": {},
+          "MMW_DualMode": {},
+          "MMW_AllWeather": {}
+        },
+        "MultiModeGuidance": {
+          "GPS_INS_Terminal": {},
+          "INS_ARH_Terminal": {},
+          "INS_IIR_Terminal": {},
+          "INS_MMW_Terminal": {},
+          "GPS_IIR_DualMode": {},
+          "ARH_IR_DualMode": {}
+        },
+        "AIGuidance": {
+          "AI_DeepLearningTarget": {},
+          "AI_ReinforcementGuidance": {},
+          "AI_SwarmCoordination": {},
+          "AI_CounterECM": {}
+        },
+        "BeamRiding": {
+          "RF_BeamRiding": {},
+          "Laser_BeamRiding": {}
+        },
+        "StarTrackerGuidance": {
+          "STG_CelestialNavigation": {},
+          "STG_StarCatalog": {}
+        }
+      },
+      "GuidanceLaws": {
+        "ProportionalNavigation": {
+          "PN_TruePN": {},
+          "PN_AugmentedPN": {},
+          "PN_OptimalPN": {}
+        },
+        "PurePursuit": {},
+        "LeadAnglePursuit": {},
+        "LineOfSightGuidance": {},
+        "ZeroEffortMiss": {},
+        "OptimalGuidanceLaw": {},
+        "PredicatedInterceptPoint": {},
+        "DifferentialGameGuidance": {},
+        "AIMLGuidanceLaw": {}
+      },
+      "TerminalGuidanceTechniques": {
+        "PopUp": {},
+        "Bunt": {},
+        "HelicrankAttack": {},
+        "DiveAttack": {},
+        "SeaSkim": {},
+        "TopAttack": {},
+        "LoiterSearch": {}
+      }
+    },
+    "PropulsionEngineering": {
+      "SolidPropellantChemistry": {
+        "Oxidizer": {
+          "AmmoniumPerchlorate": {},
+          "HMX": {},
+          "RDX": {},
+          "ADN": {},
+          "CL_20": {}
+        },
+        "Fuel": {
+          "AluminumPowder": {},
+          "HTPB_Binder": {},
+          "PBAN_Binder": {},
+          "Magnesium": {}
+        },
+        "Plasticizers": {},
+        "BurnRateModifiers": {},
+        "PropellantMixing": {}
+      },
+      "LiquidPropellantChemistry": {
+        "Hypergolics": {
+          "UDMH": {},
+          "MMH": {},
+          "N2O4": {},
+          "IRFNA": {}
+        },
+        "CryogenicPropellants": {
+          "LiquidOxygen": {},
+          "LiquidHydrogen": {},
+          "LiquidMethane": {}
+        },
+        "StorableFuels": {
+          "Kerosene_RP1": {},
+          "Hydrazine": {},
+          "Ethanol": {}
+        }
+      },
+      "PropulsionPerformanceParameters": {
+        "SpecificImpulse": {
+          "SI_Vacuum": {},
+          "SI_SeaLevel": {}
+        },
+        "BurnTime": {},
+        "Thrust": {
+          "Thrust_Vacuum": {},
+          "Thrust_SeaLevel": {},
+          "ThrustProfile": {
+            "RegularBurn": {},
+            "ProgressiveBurn": {},
+            "DegressiveBurn": {}
+          }
+        },
+        "MassFlowRate": {},
+        "ExhaustVelocity": {},
+        "CombustionPressure": {},
+        "NozzleExpansionRatio": {},
+        "PropellantMass": {},
+        "DryMass": {},
+        "MassRatio": {},
+        "MaximumMach": {},
+        "AltitudeCapability": {},
+        "OperatingTemperatureRange": {},
+        "TemperatureCoefficientOfBurnRate": {}
+      },
+      "RamjetPropulsionEngineering": {
+        "InletDesign": {
+          "PitotInlet": {},
+          "AxialInlet": {},
+          "ChinInlet": {},
+          "VentralInlet": {},
+          "SideInlet": {}
+        },
+        "DiffuserDesign": {},
+        "FlameHolder": {},
+        "FuelInjectionSystem": {
+          "Liquid_Hydrocarbon_Fuel": {},
+          "GelFuel": {},
+          "SolidFuelGasGenerator": {}
+        },
+        "AugmentedDeflagration": {},
+        "IntegratedRocketRamjet": {}
+      },
+      "ScramjetEngineering": {
+        "HypersonicInletCompression": {},
+        "SupersonicCombustion": {},
+        "FuelMixingChallenges": {},
+        "ThermalChoking": {},
+        "Isolator": {},
+        "CoolingSystem": {
+          "ActiveFuelCooling": {},
+          "RegenerativeCooling": {}
+        },
+        "IgnitionSystem": {}
+      },
+      "TurbojetTurbofanEngineering": {
+        "CompressorDesign": {
+          "AxialCompressor": {},
+          "CentrifugalCompressor": {}
+        },
+        "TurbineDesign": {},
+        "BurnerDesign": {},
+        "BypassRatio": {},
+        "OverallPressureRatio": {},
+        "TurbineInletTemperature": {},
+        "FuelControl": {
+          "FADEC": {},
+          "MechanicalFuelControl": {}
+        }
+      }
+    },
+    "FlightDynamics": {
+      "Aerodynamics": {
+        "LiftGeneration": {},
+        "DragComponents": {
+          "Drag_WaveForm": {},
+          "Drag_SkinFriction": {},
+          "Drag_BaseForm": {},
+          "Drag_Induced": {}
+        },
+        "LiftToDragRatio": {},
+        "AngleOfAttack": {},
+        "SideslipAngle": {},
+        "MachNumber": {},
+        "DynamicPressure": {},
+        "NormalForceCoefficient": {},
+        "AxialForceCoefficient": {},
+        "PitchingMomentCoefficient": {},
+        "YawingMomentCoefficient": {},
+        "RollingMomentCoefficient": {},
+        "AerodynamicCenterOfPressure": {},
+        "StaticMargin": {}
+      },
+      "PerformanceParameters": {
+        "Range": {
+          "Range_Maximum": {},
+          "Range_Effective": {},
+          "Range_CombatRadius": {}
+        },
+        "Speed": {
+          "MaximumSpeed": {},
+          "AverageFlightSpeed": {},
+          "TerminalVelocity": {}
+        },
+        "Altitude": {
+          "MaxAltitude": {},
+          "MinAltitude": {},
+          "CruiseAltitude": {}
+        },
+        "Maneuverability": {
+          "MaxG_Limit": {},
+          "TurnRadius": {},
+          "TurnRate": {}
+        },
+        "TimeOfFlight": {},
+        "BurnoutVelocity": {},
+        "ReentryVelocity": {},
+        "CEP": {},
+        "PKss": {}
+      },
+      "FlightPhases": {
+        "LaunchPhase": {
+          "PrelaunchArming": {},
+          "IgnitionSequence": {},
+          "EjectionFromLauncher": {},
+          "RailEjection": {},
+          "ColdLaunch": {},
+          "HotLaunch": {}
+        },
+        "BoostPhase": {
+          "Boost_InitialAcceleration": {},
+          "Boost_StageSeparation": {},
+          "Boost_PitchOver": {}
+        },
+        "MidcoursePhase": {
+          "Midcourse_InertialCoast": {},
+          "Midcourse_MidCoursCorrection": {},
+          "Midcourse_ThrustSustain": {},
+          "Midcourse_Glide": {}
+        },
+        "CruisePhase": {
+          "Cruise_ConstantAltitude": {},
+          "Cruise_TerrainFollowing": {},
+          "Cruise_SeaSkim": {}
+        },
+        "TerminalPhase": {
+          "Terminal_DiveAttack": {},
+          "Terminal_PopUp": {},
+          "Terminal_SeaKim": {},
+          "Terminal_TopAttack": {}
+        },
+        "ImpactPhase": {
+          "WarheadFuzing": {},
+          "Detonation": {}
+        },
+        "PostImpact": {
+          "BlastOverpressure": {},
+          "FragmentationPattern": {},
+          "CraterFormation": {}
+        }
+      },
+      "Signatures": {
+        "RadarCrossSection": {
+          "RCS_Nose_On": {},
+          "RCS_BroadSide": {},
+          "RCS_TailOn": {},
+          "RCS_Reduction": {}
+        },
+        "InfraredSignature": {
+          "IR_PlumeSig": {},
+          "IR_SkinSig": {},
+          "IR_Reduction": {}
+        },
+        "AcousticSignature": {},
+        "VisualSignature": {
+          "VS_ContrilTrail": {},
+          "VS_Smoke": {}
+        }
+      }
+    },
+    "ControlLaws": {
+      "AutopilotModes": {
+        "AttitudeControl": {},
+        "AngularRateControl": {},
+        "LateralAccelerationControl": {},
+        "AltitudeHold": {},
+        "SpeedControl": {}
+      },
+      "ControlAlgorithms": {
+        "PID_Control": {},
+        "LinearQuadraticRegulator": {},
+        "H_Infinity_Control": {},
+        "AdaptiveControl": {
+          "ModelReferenceAdaptive": {},
+          "SelfTuningRegulator": {}
+        },
+        "NonlinearControl": {
+          "SlidingModeControl": {},
+          "Backstepping": {},
+          "FeedbackLinearization": {}
+        },
+        "NeuralNetworkControl": {},
+        "FuzzyLogicControl": {}
+      },
+      "GainScheduling": {
+        "AlphaSweepSchedule": {},
+        "MachSchedule": {},
+        "AltitudeSchedule": {}
+      },
+      "EnvelopeProtection": {
+        "G_Limiter": {},
+        "AngleOfAttackLimiter": {},
+        "DynamicPressureLimiter": {}
+      }
+    }
+  }
+}

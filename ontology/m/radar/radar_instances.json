@@ -1,0 +1,3069 @@
+{
+  "@context": {
+    "pwmo": "https://physworld.ai/ontology/radar#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@id": "pwmo:RadarInstanceOntology",
+  "@type": "owl:Ontology",
+  "rdfs:label": "PhysWorldLM Radar Instance Ontology (PWMO-INST)",
+  "rdfs:comment": "Canonical worldwide radar instance database. Every entry is a real deployed or historically significant system, fully linked to PWMO taxonomy, component, RF signal-processing, and relationship ontologies.",
+  "owl:versionInfo": "1.0.0",
+  "pwmo:status": "ACTIVE",
+  "pwmo:classification": "UNCLASSIFIED // OPEN SOURCE AGGREGATION",
+  "pwmo:dependsOn": [
+    "pwmo:upper_taxonomy.json",
+    "pwmo:component_ontology.json",
+    "pwmo:rf_signal_processing.json",
+    "pwmo:relationship_ontology.json"
+  ],
+  "RadarInstances": {
+    "USA": {
+      "AN_APG-77": {
+        "@id": "pwmo:inst:AN_APG-77",
+        "rdfs:label": "AN/APG-77",
+        "officialDesignation": "AN/APG-77",
+        "commonName": "F-22 Raptor Fire Control Radar",
+        "aliases": [
+          "APG-77v1",
+          "APG-77v1.5"
+        ],
+        "manufacturer": "Raytheon / Northrop Grumman (joint)",
+        "country": "USA",
+        "operatorNations": [
+          "USA"
+        ],
+        "serviceBranch": "USAF",
+        "developmentHistory": "Developed under the Advanced Tactical Fighter (ATF) program. First flight 1997, IOC 2005 with F-22A Block 20.",
+        "introductionYear": 1997,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR",
+          "pwmo:AirborneEWR"
+        ],
+        "platform": [
+          "pwmo:F-22A_Raptor"
+        ],
+        "frequencyBand": "X-band (8-12 GHz)",
+        "waveformTypes": [
+          "LFM chirp",
+          "Frequency-hopped pulse",
+          "CW illumination",
+          "OFDM (v1.5)"
+        ],
+        "antennaType": "pwmo:AESA_Array",
+        "scanMechanism": "Electronic (AESA)",
+        "beamformingMethod": "Analog/Digital hybrid; Digital beamforming in v1.5",
+        "TR_modules": 2200,
+        "TR_technology": "GaAs MMIC (v1), GaN retrofit (v1.5)",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 200,
+          "stealth_RCS_0p01m2": 45
+        },
+        "trackCapacity_targets": 30,
+        "simultaneousEngagements": 6,
+        "ECCMfeatures": [
+          "Frequency hopping (pulse-to-pulse)",
+          "LPI waveforms",
+          "Adaptive nulling",
+          "Sidelobe blanking",
+          "HOJ",
+          "DRFM-resistant monopulse"
+        ],
+        "LPI_capability": true,
+        "powerRequirement_kW": 12,
+        "coolingMethod": "Liquid (PAO)",
+        "dimensions": {
+          "diameter_m": 0.97,
+          "depth_m": 0.71
+        },
+        "weight_kg": 220,
+        "mobility": "Airborne",
+        "ECM_EA_capability": true,
+        "supportedWeapons": [
+          "AIM-120D AMRAAM",
+          "AIM-9X",
+          "AIM-260 JATM"
+        ],
+        "integratedC2": [
+          "IFDL (Intra-Flight Data Link)",
+          "Link 16 (via gateway)"
+        ],
+        "communicationProtocols": [
+          "MIL-STD-1553B",
+          "IFDL"
+        ],
+        "modernizationVariants": [
+          "APG-77v1.5 (DBF upgrade, EA modes)"
+        ],
+        "strengths": [
+          "Extremely low RCS of own platform synergy",
+          "LPI/LPD capability",
+          "Multi-target simultaneous TWS+STT",
+          "Electronic attack"
+        ],
+        "limitations": [
+          "High cost",
+          "F-22 fleet only",
+          "Export restricted (FMS not offered)"
+        ],
+        "predecessorSystem": "pwmo:inst:AN_APG-63v1",
+        "references": [
+          "Jane's Avionics",
+          "Raytheon product brief",
+          "USAF SDD documentation"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar",
+          "hasComponents": [
+            "pwmo:AESA_Array",
+            "pwmo:SignalProcessor",
+            "pwmo:FrequencySynthesizer",
+            "pwmo:MissionComputer",
+            "pwmo:IFF_System"
+          ]
+        }
+      },
+      "AN_APG-81": {
+        "@id": "pwmo:inst:AN_APG-81",
+        "rdfs:label": "AN/APG-81",
+        "officialDesignation": "AN/APG-81",
+        "commonName": "F-35 Lightning II Fire Control Radar",
+        "manufacturer": "Northrop Grumman",
+        "country": "USA",
+        "operatorNations": [
+          "USA",
+          "UK",
+          "Australia",
+          "Netherlands",
+          "Norway",
+          "Denmark",
+          "Italy",
+          "Japan",
+          "South Korea",
+          "Israel",
+          "Belgium",
+          "Poland",
+          "Singapore",
+          "Canada (ordered)"
+        ],
+        "serviceBranch": [
+          "USAF",
+          "USN",
+          "USMC",
+          "Allied air forces"
+        ],
+        "introductionYear": 2015,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR",
+          "pwmo:AirborneSAR",
+          "pwmo:AirborneGMTI"
+        ],
+        "platform": [
+          "pwmo:F-35A",
+          "pwmo:F-35B",
+          "pwmo:F-35C"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 1200,
+        "TR_technology": "GaN MMIC",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 180,
+          "ground_mapping": 160
+        },
+        "trackCapacity_targets": 20,
+        "simultaneousEngagements": 4,
+        "modes": [
+          "Air-to-air TWS/STT",
+          "SAR ground mapping",
+          "GMTI",
+          "Air-to-ground ranging",
+          "Beacon",
+          "Sea surface search"
+        ],
+        "ECCMfeatures": [
+          "LPI waveform set",
+          "Frequency agility",
+          "Adaptive nulling",
+          "Interleaved modes"
+        ],
+        "LPI_capability": true,
+        "powerRequirement_kW": 10,
+        "coolingMethod": "Liquid (F-35 ECS integrated)",
+        "weight_kg": 180,
+        "supportedWeapons": [
+          "AIM-120D",
+          "AIM-9X",
+          "JSM",
+          "JDAM",
+          "SDB II",
+          "LRASM (future)"
+        ],
+        "integratedC2": [
+          "MADL",
+          "Link 16",
+          "MIDS-LVT"
+        ],
+        "strengths": [
+          "Multi-role (A/A + A/G + SAR + GMTI)",
+          "GaN high power density",
+          "Fusion with EO-DAS and EOTS",
+          "Large operator community"
+        ],
+        "limitations": [
+          "Fewer TRMs than APG-77",
+          "Single-seat processing load",
+          "ALIS/ODIN logistics dependency"
+        ],
+        "predecessorSystem": "pwmo:inst:AN_APG-65",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "AN_APG-82": {
+        "@id": "pwmo:inst:AN_APG-82",
+        "rdfs:label": "AN/APG-82(V)1",
+        "officialDesignation": "AN/APG-82(V)1",
+        "commonName": "F-15E/EX Strike Eagle Radar",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operatorNations": [
+          "USA",
+          "Saudi Arabia",
+          "Qatar (F-15QA)",
+          "Singapore (F-15SG upgrade planned)"
+        ],
+        "introductionYear": 2014,
+        "operationalStatus": "Active, production ongoing",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR",
+          "pwmo:AirborneSAR"
+        ],
+        "platform": [
+          "pwmo:F-15E_StrikeEagle",
+          "pwmo:F-15EX_Eagle_II"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 1500,
+        "TR_technology": "GaN MMIC",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 190
+        },
+        "trackCapacity_targets": 24,
+        "modes": [
+          "Air-to-air TWS/STT/VS",
+          "SAR/ISAR",
+          "GMTI",
+          "Air-to-ground weapon delivery modes"
+        ],
+        "LPI_capability": true,
+        "strengths": [
+          "High power (large F-15 aperture)",
+          "Software-defined open architecture",
+          "Backwards compatible with F-15 avionics"
+        ],
+        "predecessorSystem": "pwmo:inst:AN_APG-70",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "AN_APG-79": {
+        "@id": "pwmo:inst:AN_APG-79",
+        "rdfs:label": "AN/APG-79",
+        "officialDesignation": "AN/APG-79",
+        "commonName": "F/A-18E/F Super Hornet AESA Radar",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operatorNations": [
+          "USA",
+          "Australia"
+        ],
+        "introductionYear": 2006,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "platform": [
+          "pwmo:FA-18E_F_SuperHornet",
+          "pwmo:EA-18G_Growler"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 1100,
+        "TR_technology": "GaAs -> GaN retrofit ongoing",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 160
+        },
+        "strengths": [
+          "First production USN AESA FCR",
+          "EA-18G EW integration"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "AN_SPY-1": {
+        "@id": "pwmo:inst:AN_SPY-1",
+        "rdfs:label": "AN/SPY-1",
+        "officialDesignation": "AN/SPY-1",
+        "commonName": "Aegis Phased Array Radar",
+        "aliases": [
+          "SPY-1A",
+          "SPY-1B",
+          "SPY-1D",
+          "SPY-1D(V)",
+          "SPY-1F (FFG-7)"
+        ],
+        "manufacturer": "Lockheed Martin (formerly RCA / GE)",
+        "country": "USA",
+        "operatorNations": [
+          "USA",
+          "Japan",
+          "South Korea",
+          "Australia",
+          "Norway",
+          "Spain"
+        ],
+        "serviceBranch": [
+          "USN",
+          "Allied navies"
+        ],
+        "introductionYear": 1983,
+        "operationalStatus": "Active (SPY-1D/D(V)); being supplemented by SPY-6",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:NavalVolumeSurveillanceRadar",
+          "pwmo:NavalBallasticMissileDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:Ticonderoga_CG",
+          "pwmo:Arleigh_Burke_DDG",
+          "pwmo:Kongo_DDG",
+          "pwmo:Hobart_DDG"
+        ],
+        "frequencyBand": "S-band (2-4 GHz)",
+        "waveformTypes": [
+          "Frequency-agile pulse",
+          "CW illumination for SARH"
+        ],
+        "antennaType": "Four fixed-face PESA arrays (90-deg coverage each)",
+        "scanMechanism": "Electronic (PESA)",
+        "transmitter": "Klystron high-power (SPY-1A/B/D)",
+        "peakPower_kW": 6000,
+        "detectionRange_km": {
+          "aircraft_RCS_1m2": 450,
+          "ballistic_missile_RCS_0p1m2": 320
+        },
+        "trackCapacity_targets": 200,
+        "simultaneousEngagements": 18,
+        "integratedC2": [
+          "Aegis Weapon System Mk7",
+          "Link 16",
+          "Link 11",
+          "CEC (Cooperative Engagement Capability)"
+        ],
+        "supportedWeapons": [
+          "SM-2MR/ER",
+          "SM-3 (BMD)",
+          "SM-6",
+          "ESSM",
+          "Tomahawk (via VLS)"
+        ],
+        "ECCMfeatures": [
+          "Frequency agility",
+          "Pulse compression",
+          "Sidelobe blanking",
+          "Beam agility"
+        ],
+        "strengths": [
+          "360-degree simultaneous surveillance+tracking+guidance",
+          "Proven BMD capability",
+          "Cooperative engagement via CEC",
+          "Long service record"
+        ],
+        "limitations": [
+          "Single transmitter per array face (PESA vulnerability)",
+          "High maintenance (klystron)",
+          "Saturation by massed low-RCS threats"
+        ],
+        "successorSystem": "pwmo:inst:AN_SPY-6",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "AN_SPY-6": {
+        "@id": "pwmo:inst:AN_SPY-6",
+        "rdfs:label": "AN/SPY-6(V)",
+        "officialDesignation": "AN/SPY-6(V)",
+        "commonName": "Air and Missile Defense Radar (AMDR)",
+        "aliases": [
+          "AMDR",
+          "SPY-6(V)1 (DDG-51 Flt III)",
+          "SPY-6(V)2 (LPD)",
+          "SPY-6(V)3 (EASR small ship)",
+          "SPY-6(V)4 (EASR medium ship)"
+        ],
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operatorNations": [
+          "USA"
+        ],
+        "introductionYear": 2023,
+        "operationalStatus": "Active, in production",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:NavalVolumeSurveillanceRadar",
+          "pwmo:NavalBallasticMissileDefenseRadar",
+          "pwmo:NavalAirSearchRadar"
+        ],
+        "platform": [
+          "pwmo:DDG-51_FlightIII",
+          "pwmo:LPD-17_FlightII"
+        ],
+        "frequencyBand": "S-band",
+        "antennaType": "AESA (modular Radar Modular Assembly RMA tiles)",
+        "scanMechanism": "Electronic (AESA), four fixed faces",
+        "TR_technology": "GaN MMIC",
+        "detectionRange_km": {
+          "improvement_vs_SPY1": "30 dB sensitivity improvement (1000x)",
+          "ballistic_missile": 700
+        },
+        "trackCapacity_targets": 1000,
+        "sensitivityImprovement_dB": 30,
+        "integratedC2": [
+          "Aegis Baseline 10",
+          "CEC",
+          "Link 16",
+          "TTNT"
+        ],
+        "supportedWeapons": [
+          "SM-2",
+          "SM-3 Block IIA",
+          "SM-6 Blk I/IB",
+          "ESSM Blk2",
+          "Tomahawk"
+        ],
+        "ECCMfeatures": [
+          "Full AESA ECCM suite",
+          "Adaptive beamforming",
+          "Cognitive waveform management"
+        ],
+        "strengths": [
+          "30 dB over SPY-1 (generation leap)",
+          "Modular scalable architecture (RMA tiles)",
+          "Anti-hypersonic tracking capability",
+          "Simultaneous multi-mission"
+        ],
+        "predecessorSystem": "pwmo:inst:AN_SPY-1",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "AN_TPY-2": {
+        "@id": "pwmo:inst:AN_TPY-2",
+        "rdfs:label": "AN/TPY-2",
+        "officialDesignation": "AN/TPY-2",
+        "commonName": "THAAD Fire Control Radar / X-band BMD Radar",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operatorNations": [
+          "USA",
+          "Israel (Green Pine supplement)",
+          "Saudi Arabia",
+          "UAE",
+          "South Korea",
+          "Japan"
+        ],
+        "introductionYear": 2008,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:BallasticMissileDefenseRadar",
+          "pwmo:EarlyWarningRadar"
+        ],
+        "platform": [
+          "pwmo:GroundMobile_SemiTrailer"
+        ],
+        "frequencyBand": "X-band (8.55-10.0 GHz)",
+        "antennaType": "AESA planar array",
+        "TR_technology": "GaAs MMIC",
+        "aperture_m2": 9.2,
+        "detectionRange_km": {
+          "ICBM_RCS_0p01m2": 870,
+          "MRBM": 650
+        },
+        "modes": [
+          "Forward Based Mode (FBM) - early warning",
+          "Terminal Mode - THAAD fire control"
+        ],
+        "trackCapacity_targets": 100,
+        "deploymentTime_hours": 4,
+        "peakPower_kW": 2100,
+        "integratedC2": [
+          "THAAD Fire Control",
+          "BMDS Battle Manager",
+          "IFCN (Integrated Fire Control Network)"
+        ],
+        "supportedWeapons": [
+          "THAAD interceptor"
+        ],
+        "strengths": [
+          "Long range X-band precision tracking",
+          "Dual-role (EW + fire control)",
+          "Transportable by C-17",
+          "Proven THAAD intercept record"
+        ],
+        "limitations": [
+          "Single face (requires repositioning for coverage)",
+          "High signature (ARM vulnerability)",
+          "Export politically sensitive"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "AN_FPS-132": {
+        "@id": "pwmo:inst:AN_FPS-132",
+        "rdfs:label": "AN/FPS-132",
+        "officialDesignation": "AN/FPS-132 UEWR",
+        "commonName": "Upgraded Early Warning Radar",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operatorNations": [
+          "USA (operated at Fylingdales UK, Thule Greenland, Beale AFB CA, Cape Cod MA, Cavalier ND)"
+        ],
+        "introductionYear": 2002,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:BallasticMissileEarlyWarning",
+          "pwmo:SpaceSurveillanceRadar"
+        ],
+        "platform": [
+          "pwmo:FixedSite"
+        ],
+        "frequencyBand": "UHF (420-450 MHz)",
+        "transmitter": "Klystron multi-MW",
+        "peakPower_MW": 10,
+        "detectionRange_km": {
+          "ICBM": 5500
+        },
+        "antennaType": "Phased array (PESA) - massive fixed face",
+        "integratedC2": [
+          "NORAD",
+          "STRATCOM",
+          "BMDS",
+          "SPADOC"
+        ],
+        "strengths": [
+          "Extreme range (intercontinental)",
+          "Space track secondary mission",
+          "Hardened fixed site"
+        ],
+        "limitations": [
+          "Fixed site (high-value target)",
+          "UHF coarse resolution vs X-band"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "AN_MPQ-65": {
+        "@id": "pwmo:inst:AN_MPQ-65",
+        "rdfs:label": "AN/MPQ-65",
+        "officialDesignation": "AN/MPQ-65 Patriot Radar",
+        "commonName": "Patriot Fire Control Radar",
+        "aliases": [
+          "MPQ-53 (PAC-1/2)",
+          "MPQ-65 (PAC-3)"
+        ],
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operatorNations": [
+          "USA",
+          "Germany",
+          "Netherlands",
+          "Israel",
+          "Saudi Arabia",
+          "Kuwait",
+          "UAE",
+          "Egypt",
+          "Taiwan",
+          "Japan",
+          "South Korea",
+          "Poland",
+          "Romania",
+          "Sweden",
+          "Greece",
+          "Spain"
+        ],
+        "introductionYear": 1984,
+        "operationalStatus": "Active; MPQ-65A currently in service",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:FireControlRadar",
+          "pwmo:AirDefenseRadar",
+          "pwmo:BallasticMissileDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:SemiTrailer_Mobile"
+        ],
+        "frequencyBand": "C-band (4-8 GHz)",
+        "antennaType": "Phased array with electronic elevation scanning; mechanical azimuth rotation",
+        "scanMechanism": "Hybrid: electronic elevation + mechanical azimuth",
+        "detectionRange_km": {
+          "aircraft": 150,
+          "TBM_PAC3": 60
+        },
+        "trackCapacity_targets": 125,
+        "simultaneousEngagements": 9,
+        "modes": [
+          "Surveillance",
+          "Track while scan",
+          "Engagement",
+          "TBM (ATBM)",
+          "IFF"
+        ],
+        "integratedC2": [
+          "Patriot BCP",
+          "Link 16",
+          "IBCS (future)"
+        ],
+        "supportedWeapons": [
+          "PAC-2 GEM+",
+          "PAC-3",
+          "PAC-3 MSE"
+        ],
+        "strengths": [
+          "Combat proven (Gulf War, Ukraine, MBS intercepts)",
+          "Multi-mission air defense + BMD",
+          "Large operator community"
+        ],
+        "limitations": [
+          "Single radar per battery (vulnerability)",
+          "Limited azimuth coverage in any snapshot",
+          "Known saturation vulnerability in massed attack"
+        ],
+        "combatUsage": [
+          "Operation Desert Storm 1991",
+          "Iraq Freedom 2003",
+          "Saudi Arabia Houthi intercepts 2015-present",
+          "Ukraine 2023-present"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "AN_TPS-80": {
+        "@id": "pwmo:inst:AN_TPS-80",
+        "rdfs:label": "AN/TPS-80 G/ATOR",
+        "officialDesignation": "AN/TPS-80",
+        "commonName": "Ground/Air Task Oriented Radar",
+        "manufacturer": "Northrop Grumman",
+        "country": "USA",
+        "operatorNations": [
+          "USMC",
+          "Norway"
+        ],
+        "introductionYear": 2019,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar",
+          "pwmo:CounterUASRadar",
+          "pwmo:CounterBatteryRadar"
+        ],
+        "platform": [
+          "pwmo:HMMWV_Towable",
+          "pwmo:GroundFixed"
+        ],
+        "frequencyBand": "L-band (primary) + X-band (secondary mode)",
+        "scanMechanism": "Electronic (AESA) + mechanical rotation",
+        "detectionRange_km": {
+          "aircraft": 450,
+          "UAV_small": 15,
+          "mortar": 25
+        },
+        "modes": [
+          "Air surveillance",
+          "Counter-UAS",
+          "Weapon locating",
+          "Air traffic control"
+        ],
+        "strengths": [
+          "Multi-mission single radar replaces 4+ legacy systems",
+          "USMC expeditionary",
+          "Counter-UAS integrated"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "AN_TPQ-53": {
+        "@id": "pwmo:inst:AN_TPQ-53",
+        "rdfs:label": "AN/TPQ-53 Firefinder",
+        "officialDesignation": "AN/TPQ-53",
+        "commonName": "Firefinder Weapon Locating Radar",
+        "manufacturer": "Sentinel / Northrop Grumman",
+        "country": "USA",
+        "operatorNations": [
+          "USA",
+          "Ukraine",
+          "Iraq",
+          "Afghanistan",
+          "Saudi Arabia",
+          "Jordan",
+          "Latvia"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:CounterBatteryRadar",
+          "pwmo:WeaponLocatingRadar"
+        ],
+        "platform": [
+          "pwmo:LMTV_Truck"
+        ],
+        "frequencyBand": "X-band",
+        "antennaType": "Phased array (120-deg electronic sector)",
+        "scanMechanism": "Mechanical azimuth rotation with electronic sector scan",
+        "detectionRange_km": {
+          "mortar": 18,
+          "artillery": 50,
+          "rocket_MLRS": 60
+        },
+        "accuracyCEP_m": 15,
+        "deploymentTime_min": 15,
+        "strengths": [
+          "Rapid emplacement/displacement",
+          "360-degree coverage via rotation",
+          "Simultaneous multiple projectile tracking"
+        ],
+        "combatUsage": [
+          "Iraq 2003-2011",
+          "Afghanistan",
+          "Ukraine 2022-present"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "E3_AWACS": {
+        "@id": "pwmo:inst:E3_AWACS",
+        "rdfs:label": "E-3 Sentry AWACS Radar",
+        "officialDesignation": "AN/APY-1 / AN/APY-2",
+        "commonName": "AWACS Airborne Warning and Control System Radar",
+        "manufacturer": "Westinghouse / Northrop Grumman",
+        "country": "USA",
+        "operatorNations": [
+          "USA",
+          "NATO (14 nations)",
+          "UK",
+          "France",
+          "Saudi Arabia"
+        ],
+        "introductionYear": 1977,
+        "operationalStatus": "Active; being replaced by E-7A Wedgetail",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:AirborneAWACS",
+          "pwmo:LongRangeSurveillanceRadar"
+        ],
+        "platform": [
+          "pwmo:E-3B/C_Sentry"
+        ],
+        "frequencyBand": "S-band",
+        "antennaType": "Slotted waveguide array in rotating rotodome",
+        "scanMechanism": "Mechanical rotation (6 rpm)",
+        "rotodome_diameter_m": 9.1,
+        "detectionRange_km": {
+          "high_altitude_aircraft": 400,
+          "low_altitude": 200,
+          "sea_surface": 320
+        },
+        "trackCapacity_targets": 600,
+        "integratedC2": [
+          "Link 16",
+          "Link 11",
+          "JTIDS",
+          "VHF/UHF radios"
+        ],
+        "modes": [
+          "Pulse Doppler non-elevation scan (PDNES)",
+          "Beyond horizon (BTH)",
+          "Maritime"
+        ],
+        "strengths": [
+          "Proven 40+ year operational history",
+          "Large airborne picture",
+          "C2 capability on-board"
+        ],
+        "limitations": [
+          "Mechanical scan limits update rate",
+          "APY-2 technology aging",
+          "Being retired"
+        ],
+        "successorSystem": "pwmo:inst:E7_Wedgetail",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "AN_APY-7_JSTARS": {
+        "@id": "pwmo:inst:AN_APY-7",
+        "rdfs:label": "AN/APY-7 JSTARS",
+        "officialDesignation": "AN/APY-7",
+        "commonName": "Joint STARS Ground Surveillance Radar",
+        "manufacturer": "Northrop Grumman / Motorola",
+        "country": "USA",
+        "operatorNations": [
+          "USA"
+        ],
+        "introductionYear": 1991,
+        "operationalStatus": "Retired 2023",
+        "taxonomyClass": "pwmo:SARRadar",
+        "missionClass": [
+          "pwmo:AirborneGMTI",
+          "pwmo:BattlefieldSurveillanceRadar"
+        ],
+        "platform": [
+          "pwmo:E-8C_JSTARS"
+        ],
+        "frequencyBand": "X-band",
+        "antennaType": "Phased array (side-looking, 7.3m length)",
+        "modes": [
+          "Wide Area MTI (WAMI)",
+          "Synthetic Aperture Radar (SAR)"
+        ],
+        "MDV_ms": 1.4,
+        "detectionRange_km": {
+          "ground_vehicle": 250
+        },
+        "combatUsage": [
+          "Desert Storm 1991 (breakthrough)",
+          "Bosnia",
+          "Kosovo",
+          "Iraq OIF"
+        ],
+        "strengths": [
+          "Pioneered airborne GMTI",
+          "Decisive in Desert Storm ground picture"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:SARRadar"
+        }
+      }
+    },
+    "Russia": {
+      "Irbis-E": {
+        "@id": "pwmo:inst:Irbis-E",
+        "rdfs:label": "Irbis-E (N035)",
+        "officialDesignation": "N035 Irbis-E",
+        "NATODesignation": "Snow Leopard",
+        "commonName": "Su-35S Fire Control Radar",
+        "manufacturer": "Tikhomirov NIIP / Fazotron",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia",
+          "China (Su-35S)"
+        ],
+        "introductionYear": 2009,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:Su-35S"
+        ],
+        "frequencyBand": "X-band",
+        "antennaType": "PESA with electromechanical two-axis tilt (+/-60 az, +/-60 el)",
+        "scanMechanism": "PESA electronic + mechanical tilt (unique hybrid)",
+        "transmitter": "TWT (6 kW average)",
+        "peakPower_kW": 20,
+        "detectionRange_km": {
+          "fighter_RCS_3m2": 400,
+          "fighter_head-on_1m2": 200
+        },
+        "trackCapacity_targets": 30,
+        "simultaneousEngagements": 8,
+        "modes": [
+          "TWS",
+          "STT",
+          "SAR ground mapping",
+          "A/G modes"
+        ],
+        "strengths": [
+          "Exceptional range for PESA-class",
+          "Mechanical tilt extends FOV beyond typical +/-60 deg",
+          "Proven on Su-35"
+        ],
+        "limitations": [
+          "PESA single-point transmitter vulnerability",
+          "Narrower bandwidth vs AESA",
+          "High maintenance TWT"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "Zhuk-A": {
+        "@id": "pwmo:inst:Zhuk-A",
+        "rdfs:label": "Zhuk-A (N010M/Zhuk-AE)",
+        "officialDesignation": "Zhuk-AE",
+        "commonName": "MiG-35 / MiG-29SMT AESA Radar",
+        "manufacturer": "Fazotron-NIIR",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia (MiG-29 variants)"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Limited production",
+        "taxonomyClass": "pwmo:AESARadar",
+        "platform": [
+          "pwmo:MiG-35",
+          "pwmo:MiG-29SMT"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 688,
+        "TR_technology": "GaAs MMIC",
+        "detectionRange_km": {
+          "fighter_RCS_3m2": 160
+        },
+        "trackCapacity_targets": 30,
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "N036_Byelka": {
+        "@id": "pwmo:inst:N036_Byelka",
+        "rdfs:label": "N036 Byelka",
+        "commonName": "Su-57 AESA Radar Suite",
+        "manufacturer": "Tikhomirov NIIP",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia"
+        ],
+        "introductionYear": 2020,
+        "operationalStatus": "Active (limited Su-57 fleet)",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:Su-57_Felon"
+        ],
+        "frequencyBand": "X-band (main) + L-band (wing leading edge arrays)",
+        "description": "Multi-aperture AESA system comprising N036-1 (nose main array), N036L-1-01 (port wing LE), N036L-1-02 (starboard wing LE), N036B-1-01 (rear-facing). Provides near-360 deg coverage.",
+        "TR_technology": "GaN MMIC (claimed)",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 400,
+          "stealth_RCS_0p01m2": 90
+        },
+        "LbandArrays": {
+          "purpose": "Counter-stealth; L-band wavelength approaches resonance for stealth aircraft",
+          "capability": "Degrades RAM effectiveness on X-band-optimized stealth aircraft"
+        },
+        "strengths": [
+          "Multi-aperture near-360 deg coverage",
+          "L-band counter-stealth",
+          "Multi-function EA integration"
+        ],
+        "limitations": [
+          "Su-57 fleet very small (~20 airframes as of 2025)",
+          "Limited production capacity"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "Nebo_M": {
+        "@id": "pwmo:inst:Nebo_M",
+        "rdfs:label": "55Zh6M Nebo-M",
+        "NATODesignation": "Tall Rack",
+        "commonName": "Russian Multi-Band Early Warning Radar",
+        "manufacturer": "NNIIRT",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia"
+        ],
+        "introductionYear": 2014,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:EarlyWarningRadar",
+          "pwmo:LongRangeSurveillanceRadar"
+        ],
+        "platform": [
+          "pwmo:GroundMobile_MultiVehicle"
+        ],
+        "frequencyBand": "Multi-band: VHF (RLM-M), UHF (RLM-D), L-band (RLM-S), X-band (RLM-CE)",
+        "description": "Multi-band radar system combining four sub-radars (VHF+UHF+L+X) for counter-stealth, long-range detection, and high-resolution tracking.",
+        "detectionRange_km": {
+          "VHF_large_target": 650,
+          "UHF_stealth": 400,
+          "Xband_precision": 200
+        },
+        "counterStealthCapability": "VHF/UHF bands degrade effectiveness of X-band-optimized RAM; Nebo-M claimed to detect F-22/F-35 at tactically significant ranges",
+        "trackCapacity_targets": 200,
+        "vehicleCount": 4,
+        "deploymentTime_hours": 1,
+        "strengths": [
+          "Multi-band counter-stealth",
+          "Mobile strategic asset",
+          "Correlated multi-band track"
+        ],
+        "limitations": [
+          "Four-vehicle convoy (large footprint)",
+          "VHF poor angular resolution"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "Voronezh_M": {
+        "@id": "pwmo:inst:Voronezh_M",
+        "rdfs:label": "77Ya6 Voronezh-M",
+        "commonName": "Voronezh Over-The-Horizon Early Warning Radar",
+        "aliases": [
+          "Voronezh-M (L-band)",
+          "Voronezh-DM (Decimeter/UHF)",
+          "Voronezh-SM (S-band)",
+          "Voronezh-VP (VHF)"
+        ],
+        "manufacturer": "NNIIRT / RTI Systems",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia"
+        ],
+        "introductionYear": 2006,
+        "operationalStatus": "Active; 11 sites operational/building",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:BallasticMissileEarlyWarning",
+          "pwmo:EarlyWarningRadar"
+        ],
+        "platform": [
+          "pwmo:FixedSite_Prefabricated"
+        ],
+        "frequencyBand": "L-band (M variant) / UHF (DM) / S-band (SM) / VHF (VP)",
+        "detectionRange_km": {
+          "ICBM": 6000,
+          "aircraft": 4000
+        },
+        "constructionTime_months": 18,
+        "sites": [
+          "Lekhtusi (St Petersburg)",
+          "Armavir",
+          "Kaliningrad",
+          "Orsk",
+          "Barnaul",
+          "Irkutsk",
+          "Yeniseysk",
+          "Murmansk",
+          "Vorkuta",
+          "Mishelevka",
+          "Pechora (Daryal replacement)"
+        ],
+        "strengths": [
+          "Rapid construction (prefab modular)",
+          "Coverage of all ICBM threat azimuths",
+          "Replacing aging Daryal/Dnepr phased arrays"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "Don_2N": {
+        "@id": "pwmo:inst:Don_2N",
+        "rdfs:label": "5N20 Don-2N",
+        "NATODesignation": "Pill Box",
+        "commonName": "Moscow A-135 ABM Battle Management Radar",
+        "manufacturer": "RTI Systems",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia"
+        ],
+        "introductionYear": 1996,
+        "operationalStatus": "Active (Moscow ABM system)",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:BallasticMissileDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:FixedSite_Hardened"
+        ],
+        "frequencyBand": "X-band",
+        "peakPower_MW": 250,
+        "antennaType": "Four truncated-pyramid faces (phased array)",
+        "detectionRange_km": {
+          "ICBM_RV": 3700
+        },
+        "trackCapacity_targets": 100,
+        "description": "Sole operational battle-management radar for Russia's A-135 Moskva nuclear-tipped ABM system protecting Moscow. Truncated pyramid structure houses four PESA faces.",
+        "strengths": [
+          "Hardened nuclear survivability",
+          "360 deg coverage",
+          "Very high peak power"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "Rezonans_NE": {
+        "@id": "pwmo:inst:Rezonans_NE",
+        "rdfs:label": "Rezonans-NE",
+        "commonName": "Russian VHF Over-The-Horizon Counter-Stealth Radar",
+        "manufacturer": "NIIDAR",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia",
+          "Vietnam",
+          "Serbia (ordered)"
+        ],
+        "introductionYear": 2007,
+        "operationalStatus": "Active; export available",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:EarlyWarningRadar",
+          "pwmo:LongRangeSurveillanceRadar"
+        ],
+        "frequencyBand": "VHF (P-band, 150-500 MHz)",
+        "detectionRange_km": {
+          "large_aircraft": 1100,
+          "stealth_aircraft": 600
+        },
+        "counterStealthRationale": "Resonance-region wavelength (60-200 cm) matches wingspan of stealth aircraft, degrading Rayleigh-region RAM and surface shaping absorption",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "S400_92N6": {
+        "@id": "pwmo:inst:S400_92N6",
+        "rdfs:label": "92N6E Grave Stone",
+        "NATODesignation": "Grave Stone",
+        "commonName": "S-400 Triumph Engagement / Fire Control Radar",
+        "manufacturer": "Almaz-Antey / NNIIRT",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia",
+          "China",
+          "India",
+          "Turkey (S-400 system)"
+        ],
+        "introductionYear": 2007,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:FireControlRadar",
+          "pwmo:AirDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_8x8_Truck"
+        ],
+        "frequencyBand": "X-band",
+        "antennaType": "Phased array - electronic elevation, mechanical azimuth",
+        "detectionRange_km": {
+          "aircraft": 250,
+          "TBM": 100
+        },
+        "trackCapacity_targets": 300,
+        "simultaneousEngagements": 36,
+        "supportedWeapons": [
+          "40N6E (400km A2/AD)",
+          "48N6DM (250km)",
+          "9M96E2 (120km)",
+          "9M96E (40km)"
+        ],
+        "integratedC2": [
+          "55K6E Command Post",
+          "91N6E Big Bird acquisition radar"
+        ],
+        "strengths": [
+          "Multi-layer engagement envelope (40-400km)",
+          "High simultaneous track capacity",
+          "Proven export success"
+        ],
+        "limitations": [
+          "Turkey purchase created NATO/CAATSA controversy",
+          "Vulnerable to coordinated SEAD"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "Zoopark_1M": {
+        "@id": "pwmo:inst:Zoopark_1M",
+        "rdfs:label": "1L260 Zoopark-1M",
+        "commonName": "Russian Counter-Battery Radar",
+        "manufacturer": "NNIIRT",
+        "country": "Russia",
+        "operatorNations": [
+          "Russia"
+        ],
+        "introductionYear": 2014,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:CounterBatteryRadar",
+          "pwmo:WeaponLocatingRadar"
+        ],
+        "platform": [
+          "pwmo:MT-LBu_APC"
+        ],
+        "frequencyBand": "X-band",
+        "detectionRange_km": {
+          "mortar": 20,
+          "artillery_cannon": 40,
+          "MLRS": 70
+        },
+        "accuracyCEP_m": 30,
+        "combatUsage": [
+          "Ukraine 2022-present"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      }
+    },
+    "China": {
+      "Type_346A": {
+        "@id": "pwmo:inst:Type_346A",
+        "rdfs:label": "Type 346A",
+        "commonName": "Dragon Eye Active Phased Array Naval Radar",
+        "aliases": [
+          "H/LJQ-346A",
+          "Sea Eagle"
+        ],
+        "manufacturer": "CETC 14th Research Institute",
+        "country": "China",
+        "operatorNations": [
+          "PLAN"
+        ],
+        "introductionYear": 2015,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:NavalVolumeSurveillanceRadar",
+          "pwmo:NavalFireControlRadar",
+          "pwmo:NavalBallasticMissileDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:Type_055_Destroyer",
+          "pwmo:Type_052D_Destroyer"
+        ],
+        "frequencyBand": "S-band (primary) + X-band illuminators",
+        "antennaType": "Four-face fixed AESA arrays",
+        "description": "China's primary carrier battle group escort radar. Type 346A on Type 055 is larger than 346 on Type 052D.",
+        "detectionRange_km": {
+          "aircraft_RCS_1m2": 400,
+          "ballistic_missile": 500
+        },
+        "strengths": [
+          "Comparable to AN/SPY-1D in mission scope",
+          "Integrated with HHQ-9B SAM",
+          "Four-face 360 deg simultaneous coverage"
+        ],
+        "limitations": [
+          "Technical details classified; performance estimates uncertain"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "KLJ_7A": {
+        "@id": "pwmo:inst:KLJ_7A",
+        "rdfs:label": "KLJ-7A",
+        "commonName": "J-10C / J-16 AESA Fire Control Radar",
+        "manufacturer": "CETC 14th Research Institute",
+        "country": "China",
+        "operatorNations": [
+          "PLAAF"
+        ],
+        "introductionYear": 2016,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:J-10C",
+          "pwmo:J-16"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 1856,
+        "TR_technology": "GaN MMIC (claimed, indigenous CETC/GAAS Tech)",
+        "detectionRange_km": {
+          "fighter_RCS_3m2": 200
+        },
+        "trackCapacity_targets": 20,
+        "strengths": [
+          "First PLAAF production GaN AESA",
+          "Rapid development program"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "JY_27A": {
+        "@id": "pwmo:inst:JY_27A",
+        "rdfs:label": "JY-27A",
+        "commonName": "Chinese VHF Anti-Stealth Long Range Surveillance Radar",
+        "manufacturer": "CETC",
+        "country": "China",
+        "operatorNations": [
+          "PLA",
+          "Pakistan",
+          "Saudi Arabia"
+        ],
+        "introductionYear": 2014,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:EarlyWarningRadar",
+          "pwmo:LongRangeSurveillanceRadar"
+        ],
+        "frequencyBand": "VHF (P-band)",
+        "detectionRange_km": {
+          "aircraft": 500,
+          "stealth_claimed": 400
+        },
+        "exportDesignation": "YLC-8E (export)",
+        "strengths": [
+          "Counter-stealth VHF capability",
+          "Mobile (10 trucks)",
+          "Active export"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "YLC_8B": {
+        "@id": "pwmo:inst:YLC_8B",
+        "rdfs:label": "YLC-8B",
+        "commonName": "Chinese UHF Anti-Stealth Surveillance Radar",
+        "manufacturer": "CETC",
+        "country": "China",
+        "operatorNations": [
+          "PLA"
+        ],
+        "introductionYear": 2016,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:LongRangeSurveillanceRadar"
+        ],
+        "frequencyBand": "UHF",
+        "detectionRange_km": {
+          "aircraft": 600
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "Type_382": {
+        "@id": "pwmo:inst:Type_382",
+        "rdfs:label": "Type 382 (H/LJQ-382)",
+        "commonName": "PLAN Air/Surface Search Radar",
+        "manufacturer": "CETC",
+        "country": "China",
+        "operatorNations": [
+          "PLAN"
+        ],
+        "introductionYear": 2003,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:NavalAirSearchRadar",
+          "pwmo:NavalSurfaceSearchRadar"
+        ],
+        "platform": [
+          "pwmo:Type_052C_Destroyer"
+        ],
+        "frequencyBand": "S-band",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      }
+    },
+    "Europe": {
+      "CAPTOR_E": {
+        "@id": "pwmo:inst:CAPTOR_E",
+        "rdfs:label": "CAPTOR-E (E-Scan)",
+        "officialDesignation": "Euroradar CAPTOR-E",
+        "commonName": "Eurofighter Typhoon AESA Radar",
+        "aliases": [
+          "ECRS Mk0",
+          "ECRS Mk1 (future EA version)",
+          "CAESAR (beam steering unit name)"
+        ],
+        "manufacturer": "Leonardo (UK), Indra (Spain), Hensoldt (Germany), Leonardo (Italy) - Euroradar consortium",
+        "country": "Multinational (UK/Germany/Spain/Italy)",
+        "operatorNations": [
+          "UK (RAF)",
+          "Germany (Luftwaffe)",
+          "Spain (Ejercito del Aire)",
+          "Italy (AMI)",
+          "Saudi Arabia",
+          "Qatar",
+          "Kuwait (future)"
+        ],
+        "introductionYear": 2020,
+        "operationalStatus": "Active, production ongoing",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:Eurofighter_Typhoon_Tranche3"
+        ],
+        "frequencyBand": "X-band",
+        "antennaType": "AESA with beam-steerable CAESAR unit (+/-100 deg azimuth)",
+        "TR_modules": 1500,
+        "TR_technology": "GaN MMIC",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 200
+        },
+        "trackCapacity_targets": 20,
+        "specialFeature": "CAESAR mechanically rotated AESA sub-array provides +/-100 deg continuous coverage - wider than fixed-nose AESAs",
+        "ECCMfeatures": [
+          "LPI",
+          "Frequency agility",
+          "Adaptive nulling"
+        ],
+        "supportedWeapons": [
+          "Meteor BVRAAM",
+          "AMRAAM",
+          "ASRAAM",
+          "Brimstone",
+          "Storm Shadow"
+        ],
+        "strengths": [
+          "Wide angular coverage via rotating AESA",
+          "Multi-nation industrial base",
+          "Meteor integration"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "RBE2_AESA": {
+        "@id": "pwmo:inst:RBE2_AESA",
+        "rdfs:label": "RBE2 AESA",
+        "officialDesignation": "RBE2-AA (Radar a Balayage Electronique 2 - Active Array)",
+        "commonName": "Rafale AESA Fire Control Radar",
+        "manufacturer": "Thales",
+        "country": "France",
+        "operatorNations": [
+          "France",
+          "Egypt",
+          "Qatar",
+          "India (Rafale Marine/Air)",
+          "Greece",
+          "Croatia",
+          "UAE",
+          "Indonesia"
+        ],
+        "introductionYear": 2012,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:Rafale_C/B/M"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 838,
+        "TR_technology": "GaAs -> GaN upgrade program",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 200
+        },
+        "trackCapacity_targets": 40,
+        "modes": [
+          "Air-to-air TWS/STT",
+          "SAR",
+          "GMTI",
+          "Air-to-ground"
+        ],
+        "supportedWeapons": [
+          "Meteor",
+          "MICA EM",
+          "SCALP/Storm Shadow",
+          "AASM Hammer"
+        ],
+        "predecessorSystem": "pwmo:inst:RBE2_PESA",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "SeaFire_500": {
+        "@id": "pwmo:inst:SeaFire_500",
+        "rdfs:label": "Sea Fire 500",
+        "commonName": "FDI Frigate Multi-Function Naval AESA Radar",
+        "manufacturer": "Thales",
+        "country": "France",
+        "operatorNations": [
+          "France (FDI frigates)",
+          "Greece (FDI)"
+        ],
+        "introductionYear": 2023,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:NavalVolumeSurveillanceRadar",
+          "pwmo:NavalFireControlRadar"
+        ],
+        "platform": [
+          "pwmo:FDI_Frigate"
+        ],
+        "frequencyBand": "S-band (surveillance) + X-band (fire control)",
+        "antennaType": "Four fixed AESA faces",
+        "detectionRange_km": {
+          "fighter": 400,
+          "sea_skimmer_ASM": 30
+        },
+        "strengths": [
+          "Multi-function single radar",
+          "Four-face simultaneous 360 deg",
+          "Latest GaN technology"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "SMART_L": {
+        "@id": "pwmo:inst:SMART_L",
+        "rdfs:label": "SMART-L",
+        "commonName": "Thales Long Range Naval Air Search Radar",
+        "aliases": [
+          "SMART-L EWC (Early Warning Capability for BMD)",
+          "SMART-L MM (Multi-Mission)"
+        ],
+        "manufacturer": "Thales Netherlands",
+        "country": "Netherlands",
+        "operatorNations": [
+          "Netherlands",
+          "Germany",
+          "Denmark",
+          "Belgium",
+          "Norway"
+        ],
+        "introductionYear": 1999,
+        "operationalStatus": "Active (SMART-L EWC variant in production)",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:NavalAirSearchRadar",
+          "pwmo:NavalBallasticMissileDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:De_Zeven_Provincien_Frigate",
+          "pwmo:F125_Frigate"
+        ],
+        "frequencyBand": "D-band (L-band: 1-2 GHz)",
+        "antennaType": "Electronically scanned array on rotating mount",
+        "detectionRange_km": {
+          "aircraft_RCS_1m2": 400,
+          "ballistic_missile_EWC": 1000
+        },
+        "SMART_L_EWC": {
+          "purpose": "Horizon-extended BMD early warning using unique chirp compression and coherent integration"
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "APAR": {
+        "@id": "pwmo:inst:APAR",
+        "rdfs:label": "APAR",
+        "officialDesignation": "Active Phased Array Radar",
+        "commonName": "DE Zeven Provincien / F125 Multi-Function Naval AESA",
+        "manufacturer": "Thales Netherlands",
+        "country": "Netherlands",
+        "operatorNations": [
+          "Netherlands",
+          "Germany"
+        ],
+        "introductionYear": 2002,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:NavalFireControlRadar",
+          "pwmo:NavalVolumeSurveillanceRadar"
+        ],
+        "platform": [
+          "pwmo:De_Zeven_Provincien_AAW_Frigate",
+          "pwmo:F125_Frigate"
+        ],
+        "frequencyBand": "X-band",
+        "antennaType": "Four fixed AESA faces (32,000 TRMs total across four faces)",
+        "TR_modules_total": 32000,
+        "TR_technology": "GaAs MMIC",
+        "detectionRange_km": {
+          "sea_skimmer": 75,
+          "aircraft": 150
+        },
+        "simultaneousEngagements": 32,
+        "guidanceModes": [
+          "Active illumination for SM-2",
+          "ESSM guidance"
+        ],
+        "strengths": [
+          "First operational naval AESA worldwide",
+          "Simultaneous 32-target engagement",
+          "No mechanical rotating parts"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "SAMPSON": {
+        "@id": "pwmo:inst:SAMPSON",
+        "rdfs:label": "SAMPSON MFR",
+        "officialDesignation": "SAMPSON Multi-Function Radar",
+        "commonName": "Royal Navy Type 45 Destroyer Radar",
+        "manufacturer": "BAE Systems",
+        "country": "UK",
+        "operatorNations": [
+          "UK (Royal Navy)"
+        ],
+        "introductionYear": 2009,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:NavalVolumeSurveillanceRadar",
+          "pwmo:NavalFireControlRadar"
+        ],
+        "platform": [
+          "pwmo:Type_45_Destroyer"
+        ],
+        "frequencyBand": "E/F-band (S-band range)",
+        "antennaType": "Back-to-back rotating AESA pair (full 360 deg coverage via rotation)",
+        "scanMechanism": "AESA electronic + mechanical 360 deg rotation",
+        "rotationSpeed_rpm": 30,
+        "integratedC2": [
+          "Principal Anti-Air Missile System (PAAMS)",
+          "SYLVER A50 VLS"
+        ],
+        "supportedWeapons": [
+          "Aster 15",
+          "Aster 30"
+        ],
+        "detectionRange_km": {
+          "aircraft": 400,
+          "sea_skimmer": 30,
+          "fighter_maneuvering": 300
+        },
+        "strengths": [
+          "High update rate (rotating AESA)",
+          "Excellent discrimination against sea clutter",
+          "Proven against maneuvering targets"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "Giraffe_4A": {
+        "@id": "pwmo:inst:Giraffe_4A",
+        "rdfs:label": "Giraffe 4A",
+        "commonName": "Saab Medium Range Air Defense & Counter-UAS Radar",
+        "manufacturer": "Saab",
+        "country": "Sweden",
+        "operatorNations": [
+          "Sweden",
+          "UK",
+          "Norway",
+          "Finland",
+          "Estonia",
+          "Latvia",
+          "Brazil",
+          "Thailand"
+        ],
+        "introductionYear": 2012,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar",
+          "pwmo:CounterUASRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_Vehicle",
+          "pwmo:Fixed_Site"
+        ],
+        "frequencyBand": "C-band",
+        "antennaType": "AESA on rotating mast",
+        "detectionRange_km": {
+          "aircraft": 120,
+          "UAV_small": 20,
+          "helicopter": 100
+        },
+        "deploymentTime_min": 10,
+        "counterUAS": true,
+        "strengths": [
+          "Mast-mounted elevated position",
+          "Fast deployment",
+          "Counter-UAS proven"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "Ground_Master_400": {
+        "@id": "pwmo:inst:Ground_Master_400",
+        "rdfs:label": "Ground Master 400 (GM400)",
+        "commonName": "Thales Long-Range 3D Air Defense Radar",
+        "manufacturer": "Thales",
+        "country": "France",
+        "operatorNations": [
+          "France",
+          "Finland",
+          "Norway",
+          "Indonesia",
+          "Morocco",
+          "Ireland",
+          "Luxembourg"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:LongRangeSurveillanceRadar",
+          "pwmo:AirDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_Semi_Trailer"
+        ],
+        "frequencyBand": "UHF (D-band: 300-500 MHz) / S-band",
+        "scanMechanism": "Mechanical rotation + electronic elevation scanning",
+        "detectionRange_km": {
+          "aircraft_RCS_1m2": 470,
+          "UAV_small": 80
+        },
+        "deploymentTime_min": 30,
+        "trackCapacity_targets": 1600,
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "Kronos": {
+        "@id": "pwmo:inst:Kronos",
+        "rdfs:label": "Kronos",
+        "commonName": "Leonardo Multi-Function 3D Naval/Ground AESA Radar",
+        "aliases": [
+          "Kronos Naval",
+          "Kronos Grand Mobile",
+          "Kronos Ground Master"
+        ],
+        "manufacturer": "Leonardo (Italy)",
+        "country": "Italy",
+        "operatorNations": [
+          "Italy",
+          "Qatar",
+          "UAE",
+          "Other NATO"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:NavalVolumeSurveillanceRadar",
+          "pwmo:AirDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:FREMM_Frigate",
+          "pwmo:Mobile_Ground"
+        ],
+        "frequencyBand": "C-band",
+        "antennaType": "Rotating AESA",
+        "detectionRange_km": {
+          "aircraft": 250,
+          "sea_skimmer": 40
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "TRML_4D": {
+        "@id": "pwmo:inst:TRML_4D",
+        "rdfs:label": "TRML-4D",
+        "commonName": "Hensoldt Counter-UAS / Short Range Air Defense Radar",
+        "manufacturer": "Hensoldt",
+        "country": "Germany",
+        "operatorNations": [
+          "Germany",
+          "Ukraine (donated)",
+          "Other NATO"
+        ],
+        "introductionYear": 2018,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:CounterUASRadar",
+          "pwmo:ShortRangeSurveillanceRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_Trailer"
+        ],
+        "frequencyBand": "C-band",
+        "detectionRange_km": {
+          "aircraft": 100,
+          "UAV": 15,
+          "cruise_missile": 40
+        },
+        "counterUAS": true,
+        "combatUsage": [
+          "Ukraine 2023-present (IRIS-T battery radar)"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "Artisan_997": {
+        "@id": "pwmo:inst:Artisan_997",
+        "rdfs:label": "Type 997 Artisan",
+        "commonName": "Royal Navy 3D Medium Range Radar",
+        "manufacturer": "BAE Systems",
+        "country": "UK",
+        "operatorNations": [
+          "UK Royal Navy"
+        ],
+        "introductionYear": 2013,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:NavalAirSearchRadar"
+        ],
+        "platform": [
+          "pwmo:Type_23_Frigate",
+          "pwmo:Type_26_Frigate",
+          "pwmo:HMS_Queen_Elizabeth"
+        ],
+        "frequencyBand": "S-band (E/F-band)",
+        "scanMechanism": "Rotating antenna with electronic beam elevation",
+        "detectionRange_km": {
+          "aircraft": 200,
+          "UAV_small_Nike_size": 20
+        },
+        "strengths": [
+          "Exceptional small target detection",
+          "Tracking capability for cricket-ball-size objects"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "Erieye": {
+        "@id": "pwmo:inst:Erieye",
+        "rdfs:label": "FSR-890 Erieye",
+        "commonName": "Saab Airborne Early Warning Radar",
+        "manufacturer": "Saab",
+        "country": "Sweden",
+        "operatorNations": [
+          "Sweden",
+          "Brazil",
+          "Greece",
+          "Mexico",
+          "Thailand",
+          "UAE",
+          "Pakistan"
+        ],
+        "introductionYear": 1994,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:AirborneAWACS",
+          "pwmo:LongRangeSurveillanceRadar"
+        ],
+        "platform": [
+          "pwmo:Saab_2000",
+          "pwmo:EMB-145",
+          "pwmo:SAAB_340"
+        ],
+        "frequencyBand": "S-band",
+        "antennaType": "Fixed PESA arrays (side-looking, both directions from dorsal radome)",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 450
+        },
+        "coverageBlindspot_deg": "+/-30 deg nose/tail endfire due to fixed side-looking arrays",
+        "trackCapacity_targets": 300,
+        "integratedC2": [
+          "Link 16",
+          "National C2 systems"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      }
+    },
+    "Israel": {
+      "ELM_2052": {
+        "@id": "pwmo:inst:ELM_2052",
+        "rdfs:label": "EL/M-2052",
+        "commonName": "IAI Elta AESA Multi-Mode Airborne Radar",
+        "manufacturer": "IAI Elta Systems",
+        "country": "Israel",
+        "operatorNations": [
+          "Israel (F-16I, F-15I)",
+          "India (Tejas Mk1A consideration)",
+          "Various export"
+        ],
+        "introductionYear": 2003,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:F-16I_Sufa",
+          "pwmo:F-15I_Ra'am"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 1002,
+        "TR_technology": "GaAs MMIC",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 150
+        },
+        "trackCapacity_targets": 64,
+        "modes": [
+          "Air-to-air: TWS, VS, STT, ACM",
+          "Air-to-ground: SAR, GMTI, DBS, Doppler-beam sharpening"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "ELM_2084": {
+        "@id": "pwmo:inst:ELM_2084",
+        "rdfs:label": "EL/M-2084",
+        "commonName": "Elta Multi-Mission Radar (MMR) - Counter-Battery and Air Defense",
+        "manufacturer": "IAI Elta Systems",
+        "country": "Israel",
+        "operatorNations": [
+          "Israel (IDF)",
+          "India (10+ batteries)",
+          "Azerbaijan",
+          "Finland",
+          "Czech Republic",
+          "Germany (IRON DOME Germany)"
+        ],
+        "introductionYear": 2009,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:CounterBatteryRadar",
+          "pwmo:AirDefenseRadar",
+          "pwmo:CounterUASRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_Truck"
+        ],
+        "frequencyBand": "S-band",
+        "antennaType": "Rotating AESA",
+        "detectionRange_km": {
+          "mortar": 15,
+          "artillery": 40,
+          "rocket_MLRS": 100,
+          "aircraft": 474
+        },
+        "accuracyCEP_m": 10,
+        "modes": [
+          "Counter-rocket-artillery-mortar (C-RAM)",
+          "Air surveillance",
+          "Iron Dome fire control"
+        ],
+        "integratedC2": [
+          "Iron Dome Battle Management",
+          "David's Sling"
+        ],
+        "combatUsage": [
+          "Gaza operations 2012, 2014, 2021, 2023",
+          "Iron Dome radar"
+        ],
+        "strengths": [
+          "Dual-role C-RAM + air defense",
+          "Compact mobile",
+          "Proven in high-tempo combat"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "Green_Pine": {
+        "@id": "pwmo:inst:Green_Pine",
+        "rdfs:label": "EL/M-2080 Green Pine",
+        "commonName": "Arrow BMD Long-Range Tracking Radar",
+        "aliases": [
+          "Super Green Pine (EL/M-2080S)",
+          "Great Pine (upgraded)"
+        ],
+        "manufacturer": "IAI Elta Systems",
+        "country": "Israel",
+        "operatorNations": [
+          "Israel"
+        ],
+        "introductionYear": 1999,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:BallasticMissileDefenseRadar",
+          "pwmo:EarlyWarningRadar"
+        ],
+        "platform": [
+          "pwmo:FixedSite_Trailer"
+        ],
+        "frequencyBand": "L-band",
+        "detectionRange_km": {
+          "TBM_RCS_0p1m2": 500,
+          "ICBM_class": 800
+        },
+        "integratedC2": [
+          "Arrow-2 / Arrow-3 Battle Management"
+        ],
+        "strengths": [
+          "Optimized for exo/endo-atmospheric intercept",
+          "Proven in Arrow intercepts"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "MF_STAR": {
+        "@id": "pwmo:inst:MF_STAR",
+        "rdfs:label": "MF-STAR",
+        "commonName": "Israel Navy Multi-Function Surveillance and Tracking AESA Radar",
+        "manufacturer": "IAI Elta Systems",
+        "country": "Israel",
+        "operatorNations": [
+          "Israel Navy",
+          "India (INS Kolkata class)",
+          "Singapore"
+        ],
+        "introductionYear": 2004,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:NavalVolumeSurveillanceRadar",
+          "pwmo:NavalFireControlRadar"
+        ],
+        "platform": [
+          "pwmo:Sa'ar_5_Corvette",
+          "pwmo:INS_Kolkata_DDG",
+          "pwmo:Singapore_Formidable_Frigate"
+        ],
+        "frequencyBand": "S-band",
+        "antennaType": "Four fixed AESA faces",
+        "detectionRange_km": {
+          "aircraft": 250,
+          "sea_skimmer_ASM": 30
+        },
+        "simultaneousEngagements": 16,
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      }
+    },
+    "India": {
+      "Uttam_AESA": {
+        "@id": "pwmo:inst:Uttam_AESA",
+        "rdfs:label": "Uttam AESA",
+        "officialDesignation": "Uttam Active Electronically Scanned Array Radar",
+        "commonName": "Tejas Mk2 / LCA Navy Mk2 AESA Radar",
+        "manufacturer": "LRDE (DRDO) / Bharat Electronics Limited (BEL)",
+        "country": "India",
+        "operatorNations": [
+          "IAF (planned)",
+          "IN (planned)"
+        ],
+        "introductionYear": 2024,
+        "operationalStatus": "Development complete; production trials (2024-2026)",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:Tejas_Mk2",
+          "pwmo:LCA_Navy_Mk2"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 780,
+        "TR_technology": "GaN MMIC (indigenous GAETEC/SAMEER GaN process)",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 150
+        },
+        "trackCapacity_targets": 16,
+        "developmentHighlights": "First indigenous Indian AESA radar. GaN wafers developed at GAETEC Hyderabad and SAMEER Mumbai. Full design authority retained by DRDO.",
+        "modes": [
+          "Air-to-air: TWS, VS, STT",
+          "Air-to-ground: SAR, DBS",
+          "Sea search"
+        ],
+        "strengths": [
+          "100% indigenous",
+          "GaN technology milestone for India",
+          "Basis for future platforms"
+        ],
+        "limitations": [
+          "Fewer TRMs than global contemporaries",
+          "Production ramp-up ongoing"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "Swordfish_LRTR": {
+        "@id": "pwmo:inst:Swordfish_LRTR",
+        "rdfs:label": "Swordfish Long Range Tracking Radar",
+        "officialDesignation": "Swordfish LRTR",
+        "commonName": "India BMD Long-Range Tracking Radar",
+        "manufacturer": "DRDO / LRDE (based on Green Pine technology transfer)",
+        "country": "India",
+        "operatorNations": [
+          "DRDO / Indian Army Air Defense"
+        ],
+        "introductionYear": 2011,
+        "operationalStatus": "Development/Test; BMD Phase-I support",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:BallasticMissileDefenseRadar",
+          "pwmo:EarlyWarningRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_Trailer"
+        ],
+        "frequencyBand": "L-band",
+        "detectionRange_km": {
+          "TBM_RCS_0p1m2": 600
+        },
+        "integratedC2": [
+          "India BMD Phase-I (Prithvi Air Defense + Advanced Air Defense interceptors)"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "Rohini_3D_CAR": {
+        "@id": "pwmo:inst:Rohini",
+        "rdfs:label": "Rohini (3D Central Acquisition Radar)",
+        "commonName": "Indian Medium-Range 3D Air Defense Radar",
+        "manufacturer": "DRDO LRDE / BEL",
+        "country": "India",
+        "operatorNations": [
+          "IAF",
+          "Indian Army"
+        ],
+        "introductionYear": 2009,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar",
+          "pwmo:AirDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_Vehicle"
+        ],
+        "frequencyBand": "S-band",
+        "scanMechanism": "Mechanical rotation with electronic elevation",
+        "detectionRange_km": {
+          "aircraft_RCS_1m2": 180
+        },
+        "trackCapacity_targets": 80,
+        "integratedC2": [
+          "Akash SAM FCS"
+        ],
+        "strengths": [
+          "Indigenous design",
+          "3D tracking",
+          "Akash weapon integration"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "Revathi": {
+        "@id": "pwmo:inst:Revathi",
+        "rdfs:label": "Revathi",
+        "commonName": "Indian 3D Medium-Range Surveillance Radar (Coastal)",
+        "manufacturer": "BEL / DRDO",
+        "country": "India",
+        "operatorNations": [
+          "IAF",
+          "Indian Navy (coastal chain)"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar",
+          "pwmo:CoastalSurveillanceRadar"
+        ],
+        "frequencyBand": "S-band",
+        "detectionRange_km": {
+          "aircraft": 250
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "Ashwini": {
+        "@id": "pwmo:inst:Ashwini",
+        "rdfs:label": "Ashwini",
+        "commonName": "DRDO Low-Level Transportable Surveillance Radar",
+        "manufacturer": "DRDO LRDE / BEL",
+        "country": "India",
+        "operatorNations": [
+          "IAF"
+        ],
+        "introductionYear": 2004,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:LowLevelRadar",
+          "pwmo:AirDefenseRadar"
+        ],
+        "frequencyBand": "S-band",
+        "detectionRange_km": {
+          "low_altitude_aircraft": 80
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "Arudhra": {
+        "@id": "pwmo:inst:Arudhra",
+        "rdfs:label": "Arudhra",
+        "commonName": "IAF Medium Power Radar (MPR) - 3D medium range",
+        "manufacturer": "BEL / DRDO",
+        "country": "India",
+        "operatorNations": [
+          "IAF"
+        ],
+        "introductionYear": 2015,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar"
+        ],
+        "frequencyBand": "S-band",
+        "detectionRange_km": {
+          "aircraft": 450
+        },
+        "trackCapacity_targets": 200,
+        "strengths": [
+          "ECCM features",
+          "All-weather 3D",
+          "NTRO network integration"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "Swathi_WLR": {
+        "@id": "pwmo:inst:Swathi_WLR",
+        "rdfs:label": "Swathi Weapon Locating Radar",
+        "commonName": "Indian Counter-Battery Radar",
+        "manufacturer": "DRDO LRDE / BEL",
+        "country": "India",
+        "operatorNations": [
+          "Indian Army",
+          "Myanmar (export)"
+        ],
+        "introductionYear": 2016,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:CounterBatteryRadar",
+          "pwmo:WeaponLocatingRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_Truck_BEL"
+        ],
+        "frequencyBand": "C-band",
+        "detectionRange_km": {
+          "mortar": 18,
+          "artillery": 30
+        },
+        "accuracyCEP_m": 25,
+        "deploymentTime_min": 10,
+        "combatUsage": [
+          "India-Pakistan LoC monitoring (2016-present)"
+        ],
+        "strengths": [
+          "Fully indigenous",
+          "Compact vehicle-mounted",
+          "Proved in field trials under live fire"
+        ],
+        "export": [
+          "Myanmar (2021, 2 batteries)"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "Rajendra_FCR": {
+        "@id": "pwmo:inst:Rajendra_FCR",
+        "rdfs:label": "Rajendra",
+        "commonName": "Akash SAM Fire Control Radar",
+        "manufacturer": "BEL / DRDO",
+        "country": "India",
+        "operatorNations": [
+          "IAF",
+          "Indian Army"
+        ],
+        "introductionYear": 2009,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:FireControlRadar",
+          "pwmo:AirDefenseRadar"
+        ],
+        "platform": [
+          "pwmo:Mobile_Vehicle"
+        ],
+        "frequencyBand": "F-band (X-band range)",
+        "antennaType": "Phased array (passive)",
+        "detectionRange_km": {
+          "aircraft": 60
+        },
+        "trackCapacity_targets": 64,
+        "simultaneousEngagements": 4,
+        "supportedWeapons": [
+          "Akash Mk1 SAM",
+          "Akash-1S"
+        ],
+        "integratedC2": [
+          "Akash Battery Level Radar (BSFCR)",
+          "Squadron Control Centre"
+        ],
+        "guidanceModes": [
+          "Track Via Missile (TVM) - simultaneous guidance of 4 missiles"
+        ],
+        "strengths": [
+          "Simultaneous 4-missile TVM guidance",
+          "Indigenous design and production"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "Aslesha": {
+        "@id": "pwmo:inst:Aslesha",
+        "rdfs:label": "Aslesha",
+        "commonName": "Low Level Lightweight Radar (LLLR)",
+        "manufacturer": "BEL",
+        "country": "India",
+        "operatorNations": [
+          "IAF"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:LowLevelRadar"
+        ],
+        "frequencyBand": "S-band",
+        "detectionRange_km": {
+          "aircraft_low_level": 100
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "Bharani_MPR": {
+        "@id": "pwmo:inst:Bharani",
+        "rdfs:label": "Bharani",
+        "commonName": "Indian Medium Power Radar (earlier generation)",
+        "manufacturer": "BEL",
+        "country": "India",
+        "operatorNations": [
+          "IAF"
+        ],
+        "introductionYear": 2003,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar"
+        ],
+        "frequencyBand": "S-band",
+        "detectionRange_km": {
+          "aircraft": 300
+        },
+        "successorSystem": "pwmo:inst:Arudhra",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "Virupaksha_BFSR": {
+        "@id": "pwmo:inst:Virupaksha_BFSR",
+        "rdfs:label": "Virupaksha / BFSR-SR",
+        "commonName": "Indian Battlefield Surveillance Radar - Short Range",
+        "manufacturer": "DRDO DARE / BEL",
+        "country": "India",
+        "operatorNations": [
+          "Indian Army"
+        ],
+        "introductionYear": 2004,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:MechanicalScanRadar",
+        "missionClass": [
+          "pwmo:BattlefieldSurveillanceRadar",
+          "pwmo:GroundSurveillanceRadar"
+        ],
+        "frequencyBand": "Ku-band",
+        "detectionRange_km": {
+          "infantry": 8,
+          "vehicle": 12
+        },
+        "portability": "Man-portable / tripod-mounted",
+        "weight_kg": 25,
+        "strengths": [
+          "Man-portable",
+          "Infantry surveillance",
+          "Night/all-weather"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:MechanicalScanRadar"
+        }
+      },
+      "AEW_C_DRDO": {
+        "@id": "pwmo:inst:AEW_C_DRDO",
+        "rdfs:label": "DRDO AEW&C",
+        "commonName": "India Airborne Early Warning and Control System",
+        "manufacturer": "DRDO CABS (Centre for Airborne Systems)",
+        "country": "India",
+        "operatorNations": [
+          "IAF"
+        ],
+        "introductionYear": 2017,
+        "operationalStatus": "Active (Phase I: EMB-145 platform)",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneAWACS"
+        ],
+        "platform": [
+          "pwmo:EMB_145_AEW_C"
+        ],
+        "frequencyBand": "S-band (primary)",
+        "antennaType": "AESA arrays (fore and aft fuselage - spine mounted)",
+        "description": "Indigenous AEW&C with spine-mounted dual-face AESA. No rotating rotodome - dual fixed arrays provide 240 deg coverage.",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 370
+        },
+        "trackCapacity_targets": 150,
+        "integratedC2": [
+          "Link 16",
+          "Data link to IAF network"
+        ],
+        "strengths": [
+          "First indigenous Indian AEW&C",
+          "CABS full design authority",
+          "No rotodome drag"
+        ],
+        "limitations": [
+          "Coverage gap in 120 deg tail sector vs rotodome aircraft"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      }
+    },
+    "Japan": {
+      "J_APG_2": {
+        "@id": "pwmo:inst:J_APG_2",
+        "rdfs:label": "J/APG-2",
+        "commonName": "JASDF F-2 AESA Fire Control Radar",
+        "manufacturer": "Mitsubishi Electric",
+        "country": "Japan",
+        "operatorNations": [
+          "JASDF"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:F-2_Fighter"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 800,
+        "TR_technology": "GaAs MMIC (Mitsubishi Electric indigenous)",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 160
+        },
+        "strengths": [
+          "First operational AESA outside USA (2000 timeframe)",
+          "Mature indigenous Japanese MMIC"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "J_FPS_5": {
+        "@id": "pwmo:inst:J_FPS_5",
+        "rdfs:label": "J/FPS-5",
+        "commonName": "JASDF Ballistic Missile Defense Early Warning Radar",
+        "manufacturer": "Mitsubishi Electric",
+        "country": "Japan",
+        "operatorNations": [
+          "JASDF"
+        ],
+        "introductionYear": 2009,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:BallasticMissileEarlyWarning",
+          "pwmo:EarlyWarningRadar"
+        ],
+        "platform": [
+          "pwmo:FixedSite"
+        ],
+        "frequencyBand": "UHF + X-band",
+        "detectionRange_km": {
+          "MRBM": 1200,
+          "aircraft": 600
+        },
+        "sites": [
+          "Shariki (Aomori)",
+          "Kadena (Okinawa)",
+          "Gamagoori (Aichi)",
+          "Kyogamisaki (Kyoto)"
+        ],
+        "integratedC2": [
+          "Japan BMDS",
+          "US-Japan Aegis BMD coordination"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "FPS_3_Kai": {
+        "@id": "pwmo:inst:FPS_3_Kai",
+        "rdfs:label": "J/FPS-3 Kai",
+        "commonName": "JASDF 3D Air Surveillance Radar",
+        "manufacturer": "Mitsubishi Electric / NEC",
+        "country": "Japan",
+        "operatorNations": [
+          "JASDF"
+        ],
+        "introductionYear": 1999,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:LongRangeSurveillanceRadar"
+        ],
+        "frequencyBand": "L-band",
+        "detectionRange_km": {
+          "aircraft": 500
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      }
+    },
+    "SouthKorea": {
+      "KF21_AESA": {
+        "@id": "pwmo:inst:KF21_AESA",
+        "rdfs:label": "KF-21 AESA Radar",
+        "commonName": "KF-21 Boramae AESA Fire Control Radar",
+        "manufacturer": "Hanwha Systems",
+        "country": "South Korea",
+        "operatorNations": [
+          "ROKAF"
+        ],
+        "introductionYear": 2026,
+        "operationalStatus": "Development/Early production",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "platform": [
+          "pwmo:KF-21_Boramae"
+        ],
+        "frequencyBand": "X-band",
+        "TR_modules": 1088,
+        "TR_technology": "GaN MMIC (Hanwha Systems indigenous)",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 150
+        },
+        "developmentNote": "Indigenous KF-21 program with Israeli assistance (EL/M-2052 technology transfer elements). Full Korean AESA capability milestone.",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "TPS_830K": {
+        "@id": "pwmo:inst:TPS_830K",
+        "rdfs:label": "TPS-830K",
+        "commonName": "ROK Army 3D Medium-Range Radar",
+        "manufacturer": "LIG Nex1",
+        "country": "South Korea",
+        "operatorNations": [
+          "ROK Army"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar",
+          "pwmo:AirDefenseRadar"
+        ],
+        "frequencyBand": "X-band",
+        "detectionRange_km": {
+          "aircraft": 150,
+          "UAV": 30
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      }
+    },
+    "Australia": {
+      "Jindalee_OTHR": {
+        "@id": "pwmo:inst:Jindalee_OTHR",
+        "rdfs:label": "Jindalee OTHR (JORN)",
+        "officialDesignation": "Jindalee Operational Radar Network",
+        "commonName": "Australian Over-The-Horizon Radar Network",
+        "manufacturer": "BAE Systems Australia / DSTG",
+        "country": "Australia",
+        "operatorNations": [
+          "RAAF"
+        ],
+        "introductionYear": 1999,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:BistaticRadar",
+        "missionClass": [
+          "pwmo:Over_The_Horizon_Radar",
+          "pwmo:LongRangeSurveillanceRadar"
+        ],
+        "platform": [
+          "pwmo:FixedSite"
+        ],
+        "frequencyBand": "HF (5-32 MHz) - ionospheric bounce",
+        "detectionRange_km": {
+          "aircraft_OTHR": 3000,
+          "ship_OTHR": 2000
+        },
+        "sites": [
+          "Longreach QLD (transmit)",
+          "Laverton WA",
+          "Alice Springs NT"
+        ],
+        "coverageArea_km2": 37000000,
+        "description": "Over-the-horizon radar exploiting ionospheric skywave propagation. Covers Australia's northern approaches with 3 networked sites.",
+        "strengths": [
+          "Unique long range coverage of Australian EEZ and northern approaches",
+          "Detects surface and air contacts beyond any conventional radar"
+        ],
+        "limitations": [
+          "Low resolution",
+          "Ionospheric dependent (outages)",
+          "Cannot track low-RCS targets well"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:BistaticRadar"
+        }
+      },
+      "CEA_FAR": {
+        "@id": "pwmo:inst:CEA_FAR",
+        "rdfs:label": "CEA-FAR / CEAFAR",
+        "commonName": "CEA Technologies Naval AESA Radar (RAN Hobart / Hunter class)",
+        "manufacturer": "CEA Technologies",
+        "country": "Australia",
+        "operatorNations": [
+          "RAN"
+        ],
+        "introductionYear": 2017,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:NavalVolumeSurveillanceRadar",
+          "pwmo:NavalFireControlRadar"
+        ],
+        "platform": [
+          "pwmo:Hobart_DDG",
+          "pwmo:Hunter_Frigate (planned)"
+        ],
+        "frequencyBand": "S-band",
+        "antennaType": "Multiple fixed AESA panels",
+        "description": "Unique modular scalable AESA design. CEAFAR (fixed panels) pairs with CEAMOUNT (fire control tracker). Indigenous Australian technology.",
+        "strengths": [
+          "100% Australian design",
+          "Highly scalable modular architecture",
+          "Modern GaN technology"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      }
+    },
+    "OtherNations": {
+      "ASELSAN_GENIS": {
+        "@id": "pwmo:inst:ASELSAN_GENIS",
+        "rdfs:label": "ASELSAN GENIS BAND",
+        "commonName": "Turkish AESA Multi-Role Radar",
+        "manufacturer": "ASELSAN",
+        "country": "Turkey",
+        "operatorNations": [
+          "Turkey"
+        ],
+        "introductionYear": 2022,
+        "operationalStatus": "Development/Integration",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:AirborneFCR"
+        ],
+        "frequencyBand": "X-band",
+        "description": "Part of Turkey's MIFAR (Multi-Function AESA Radar) indigenous program. GaN-based, targeting TF-X Kaan 5th gen fighter integration.",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "KORAL_EW_Radar": {
+        "@id": "pwmo:inst:KORAL",
+        "rdfs:label": "KORAL",
+        "commonName": "Turkish Electronic Warfare / Surveillance System",
+        "manufacturer": "ASELSAN",
+        "country": "Turkey",
+        "operatorNations": [
+          "Turkey"
+        ],
+        "introductionYear": 2015,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PassiveRadar",
+        "missionClass": [
+          "pwmo:ElectronicWarfareSystem"
+        ],
+        "frequencyBand": "Multi-band (ESM: 0.5-18 GHz)",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PassiveRadar"
+        }
+      },
+      "Pakistan_ZDK_03": {
+        "@id": "pwmo:inst:ZDK_03",
+        "rdfs:label": "ZDK-03",
+        "commonName": "Pakistan AEW&C Radar (Karakoram Eagle)",
+        "manufacturer": "CETC (China) for PAF",
+        "country": "China/Pakistan",
+        "operatorNations": [
+          "Pakistan Air Force"
+        ],
+        "introductionYear": 2010,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:AirborneAWACS"
+        ],
+        "platform": [
+          "pwmo:Y-8F600_Transport"
+        ],
+        "frequencyBand": "L-band",
+        "detectionRange_km": {
+          "fighter_RCS_1m2": 350
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      },
+      "Ukraine_Kolchuga": {
+        "@id": "pwmo:inst:Kolchuga_M",
+        "rdfs:label": "Kolchuga-M",
+        "commonName": "Ukrainian Passive Electronic Surveillance / Coherent Location System",
+        "manufacturer": "Topaz (Ukraine)",
+        "country": "Ukraine",
+        "operatorNations": [
+          "Ukraine",
+          "Czech Republic (export)"
+        ],
+        "introductionYear": 1999,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PassiveRadar",
+        "missionClass": [
+          "pwmo:PassiveCoherentLocation"
+        ],
+        "frequencyBand": "Multi-band passive ESM (0.1-18 GHz)",
+        "operatingPrinciple": "Passive coherent location: detects and tracks aircraft by their own RF emissions (radar, comms, IFF) using TDOA geolocation across four receiver sites",
+        "detectionRange_km": {
+          "emitting_aircraft": 800
+        },
+        "LPI_resistance": "Detects stealth aircraft that must still emit (comms, IFF) - does not require active radar reflection",
+        "combatUsage": [
+          "Yugoslavia 1999 (claimed F-117 detection)",
+          "Ukraine 2022-present"
+        ],
+        "strengths": [
+          "Zero RF emission (immune to ARM)",
+          "Detects stealth via self-emission",
+          "Very long range on emitting targets"
+        ],
+        "limitations": [
+          "Cannot detect non-emitting targets",
+          "Resolution limited by baseline geometry",
+          "TDOA accuracy dependent on site separation"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PassiveRadar"
+        }
+      },
+      "Poland_PET_PCL": {
+        "@id": "pwmo:inst:PET_PCL",
+        "rdfs:label": "PET/PCL",
+        "commonName": "Polish Passive Radar System (Passive Coherent Location)",
+        "manufacturer": "PIT-RADWAR",
+        "country": "Poland",
+        "operatorNations": [
+          "Polish Air Force"
+        ],
+        "introductionYear": 2012,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PassiveRadar",
+        "missionClass": [
+          "pwmo:PassiveCoherentLocation"
+        ],
+        "frequencyBand": "FM radio / DVB-T illuminators",
+        "detectionRange_km": {
+          "aircraft_using_FM": 150
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PassiveRadar"
+        }
+      },
+      "Norway_GLOBUS_III": {
+        "@id": "pwmo:inst:GLOBUS_III",
+        "rdfs:label": "GLOBUS III",
+        "commonName": "Norwegian Space Surveillance Radar (Vardo)",
+        "manufacturer": "Raytheon (USA) / Norwegian Intelligence Service",
+        "country": "Norway/USA",
+        "operatorNations": [
+          "Norwegian Intelligence Service (NIS)"
+        ],
+        "introductionYear": 2020,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:SpaceSurveillanceRadar",
+          "pwmo:EarlyWarningRadar"
+        ],
+        "platform": [
+          "pwmo:FixedSite_Vardo_Norway"
+        ],
+        "frequencyBand": "X-band",
+        "description": "Large AESA dish radar at Vardo, Norway. Contributes to US Space Surveillance Network (SSN). Also provides early warning for Russian ICBM testing.",
+        "detectionRange_km": {
+          "satellite_LEO": 40000,
+          "ICBM_reentry": 2000
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "Singapore_LSTAR": {
+        "@id": "pwmo:inst:LSTAR",
+        "rdfs:label": "LSTAR",
+        "commonName": "Singapore Light Surveillance and Target Acquisition Radar",
+        "manufacturer": "ST Engineering",
+        "country": "Singapore",
+        "operatorNations": [
+          "SAF"
+        ],
+        "introductionYear": 2015,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:AESARadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar",
+          "pwmo:CounterBatteryRadar"
+        ],
+        "frequencyBand": "X-band",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:AESARadar"
+        }
+      },
+      "Brazil_SABER_M60": {
+        "@id": "pwmo:inst:SABER_M60",
+        "rdfs:label": "SABER M60",
+        "commonName": "SAVIS / Omnisys Brazilian 3D Air Defense Radar",
+        "manufacturer": "Omnisys / Savis (Brazil)",
+        "country": "Brazil",
+        "operatorNations": [
+          "Brazilian Air Force (FAB)"
+        ],
+        "introductionYear": 2004,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:HybridScanRadar",
+        "missionClass": [
+          "pwmo:MediumRangeSurveillanceRadar"
+        ],
+        "frequencyBand": "C-band",
+        "detectionRange_km": {
+          "aircraft": 180
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:HybridScanRadar"
+        }
+      },
+      "Iran_Bavar_373_Radar": {
+        "@id": "pwmo:inst:Bavar_373_Radar",
+        "rdfs:label": "Meraj-4 / Sayyad Radar",
+        "commonName": "Iranian Bavar-373 SAM System Radar",
+        "manufacturer": "Iran Electronics Industries (IEI)",
+        "country": "Iran",
+        "operatorNations": [
+          "IRGC / IRIAF"
+        ],
+        "introductionYear": 2019,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:PESARadar",
+        "missionClass": [
+          "pwmo:AirDefenseRadar",
+          "pwmo:FireControlRadar"
+        ],
+        "frequencyBand": "S-band (claimed)",
+        "detectionRange_km": {
+          "aircraft_claimed": 300
+        },
+        "description": "Indigenous Iranian long-range SAM radar analogous to S-300/S-400. Claims difficult to verify independently.",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:PESARadar"
+        }
+      }
+    },
+    "SpaceAndAdvanced": {
+      "Sentinel_1_SAR": {
+        "@id": "pwmo:inst:Sentinel_1",
+        "rdfs:label": "Sentinel-1 SAR",
+        "officialDesignation": "Sentinel-1A / 1B / 1C",
+        "commonName": "ESA Copernicus SAR Satellite",
+        "manufacturer": "Thales Alenia Space / Airbus Defence",
+        "country": "EU/ESA",
+        "operatorNations": [
+          "ESA (Copernicus programme)",
+          "Open access"
+        ],
+        "introductionYear": 2014,
+        "operationalStatus": "Active (1C launched 2024; 1B retired)",
+        "taxonomyClass": "pwmo:SpaceSAR",
+        "missionClass": [
+          "pwmo:SARRadar",
+          "pwmo:SpaceSAR"
+        ],
+        "platform": [
+          "pwmo:LEO_Satellite_693km"
+        ],
+        "frequencyBand": "C-band (5.405 GHz)",
+        "antennaType": "Slotted waveguide AESA (12.3 x 0.84 m)",
+        "imagingModes": [
+          "Stripmap (5m resolution)",
+          "Interferometric Wide Swath IW (10m, 250km swath)",
+          "Extra Wide EW (25m, 400km swath)",
+          "Wave mode"
+        ],
+        "polarization": [
+          "Single HH or VV",
+          "Dual HH+HV or VV+VH"
+        ],
+        "revisitTime_days_global": 6,
+        "applicationToStructDiff": "Sentinel-1 IW SLC products are standard benchmark data for SAR despeckling research including DDPM/DDIM-based approaches (USF/StructDiff framework). Speckle follows complex circular Gaussian statistics in SLC; log-intensity for multilooked data.",
+        "freeAccess": true,
+        "strengths": [
+          "Free and open data",
+          "Global systematic coverage",
+          "Longest operational SAR archive"
+        ],
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:SpaceSAR"
+        }
+      },
+      "TerraSAR_X": {
+        "@id": "pwmo:inst:TerraSAR_X",
+        "rdfs:label": "TerraSAR-X / TanDEM-X",
+        "commonName": "German High-Resolution Commercial SAR Satellite",
+        "manufacturer": "Airbus Defence and Space",
+        "country": "Germany",
+        "operatorNations": [
+          "DLR / Airbus (commercial)"
+        ],
+        "introductionYear": 2007,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:SpaceSAR",
+        "platform": [
+          "pwmo:LEO_Satellite_514km"
+        ],
+        "frequencyBand": "X-band (9.65 GHz)",
+        "imagingModes": [
+          "SpotLight (0.25m)",
+          "Staring SpotLight (0.25m)",
+          "Stripmap (3m)",
+          "ScanSAR (18m, 100km swath)"
+        ],
+        "resolution_m": {
+          "SpotLight": 0.25,
+          "Stripmap": 3.0
+        },
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:SpaceSAR"
+        }
+      },
+      "COSMO_SkyMed": {
+        "@id": "pwmo:inst:COSMO_SkyMed",
+        "rdfs:label": "COSMO-SkyMed Second Generation",
+        "commonName": "Italian Dual-Use Military/Civil SAR Constellation",
+        "manufacturer": "Thales Alenia Space",
+        "country": "Italy",
+        "operatorNations": [
+          "Italian Space Agency (ASI)",
+          "Italian MoD",
+          "International partners"
+        ],
+        "introductionYear": 2007,
+        "operationalStatus": "Active (Second Generation 2019-)",
+        "taxonomyClass": "pwmo:SpaceSAR",
+        "platform": [
+          "pwmo:LEO_Satellite_619km"
+        ],
+        "frequencyBand": "X-band",
+        "imagingModes": [
+          "Spotlight 1 (0.35m)",
+          "Stripmap (3m)",
+          "ScanSAR"
+        ],
+        "dualUseMilitary": true,
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:SpaceSAR"
+        }
+      },
+      "RISAT_2BR": {
+        "@id": "pwmo:inst:RISAT_2BR",
+        "rdfs:label": "RISAT-2BR1 / RISAT-2B",
+        "commonName": "India Reconnaissance SAR Satellite",
+        "manufacturer": "ISRO",
+        "country": "India",
+        "operatorNations": [
+          "ISRO / Government of India (NTRO)"
+        ],
+        "introductionYear": 2019,
+        "operationalStatus": "Active",
+        "taxonomyClass": "pwmo:SpaceSAR",
+        "platform": [
+          "pwmo:LEO_Satellite_576km"
+        ],
+        "frequencyBand": "X-band",
+        "imagingModes": [
+          "Spotlight (0.35m resolution)",
+          "Stripmap (1m)",
+          "ScanSAR (5m, 25km swath)"
+        ],
+        "resolution_m": {
+          "best": 0.35
+        },
+        "militaryApplication": "India's primary space-based ISR SAR for border monitoring (Pakistan/China LoC/LAC)",
+        "taxonomyLinks": {
+          "inheritsFrom": "pwmo:SpaceSAR"
+        }
+      }
+    }
+  },
+  "pwmo:instanceCount": 75,
+  "pwmo:regionCount": 11
+}

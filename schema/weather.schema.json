@@ -1,0 +1,1778 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/weather.schema.json",
+  "title": "PhysWorldLM Weather Schema (PW-WSF-700)",
+  "description": "Canonical, engine-independent specification for all time-varying atmospheric, meteorological, hydrological, cryospheric, oceanographic, and space-weather phenomena within a PhysWorldLM WorldSpec. Complements environment.schema.json (persistent context) by modeling dynamic conditions that evolve over time and propagate effects to sensors, vehicles, weapons, infrastructure, and biological systems.",
+  "committee": "PhysWorldLM Standards Working Group — Atmospheric & Environmental Systems",
+  "publication": "PW-WSF-700",
+  "revision": "700.1.0",
+  "version": "1.0.0",
+  "license": "CC-BY-4.0",
+  "status": "draft",
+  "type": "object",
+  "required": ["metadata", "identity", "classification", "atmosphere"],
+  "additionalProperties": false,
+
+  "properties": {
+    "metadata":        { "$ref": "#/$defs/SchemaMetadata" },
+    "identity":        { "$ref": "#/$defs/WeatherIdentity" },
+    "classification":  { "$ref": "#/$defs/WeatherClassification" },
+    "temporal":        { "$ref": "#/$defs/TemporalModel" },
+    "geographic_scope":{ "$ref": "#/$defs/GeographicScope" },
+    "atmosphere":      { "$ref": "#/$defs/AtmosphericState" },
+    "wind":            { "$ref": "#/$defs/WindField" },
+    "clouds":          { "$ref": "#/$defs/CloudField" },
+    "precipitation":   { "$ref": "#/$defs/Precipitation" },
+    "lightning":       { "$ref": "#/$defs/Lightning" },
+    "storm_systems":   { "type": "array", "items": { "$ref": "#/$defs/StormSystem" } },
+    "visibility":       { "$ref": "#/$defs/VisibilityConditions" },
+    "solar":           { "$ref": "#/$defs/SolarConditions" },
+    "lunar":           { "$ref": "#/$defs/LunarConditions" },
+    "radiation":       { "$ref": "#/$defs/RadiationField" },
+    "ocean":           { "$ref": "#/$defs/OceanWeather" },
+    "cryosphere":      { "$ref": "#/$defs/Cryosphere" },
+    "hydrology":       { "$ref": "#/$defs/Hydrology" },
+    "climate":         { "$ref": "#/$defs/ClimateContext" },
+    "space_weather":   { "$ref": "#/$defs/SpaceWeather" },
+    "atmospheric_layers": { "$ref": "#/$defs/AtmosphericLayers" },
+    "evolution":       { "$ref": "#/$defs/WeatherEvolution" },
+    "sensor_effects":  { "$ref": "#/$defs/SensorEffects" },
+    "vehicle_effects": { "$ref": "#/$defs/VehicleEffects" },
+    "weapon_effects":  { "$ref": "#/$defs/WeaponEffects" },
+    "ballistics_effects": { "$ref": "#/$defs/BallisticsEffects" },
+    "infrastructure_effects": { "$ref": "#/$defs/InfrastructureEffects" },
+    "human_effects":   { "$ref": "#/$defs/HumanEffects" },
+    "biological_effects": { "$ref": "#/$defs/BiologicalEffects" },
+    "fire_and_smoke":  { "$ref": "#/$defs/FireAndSmoke" },
+    "acoustic_effects":{ "$ref": "#/$defs/AcousticEffects" },
+    "electromagnetic_effects": { "$ref": "#/$defs/ElectromagneticEffects" },
+    "simulation_compat": { "$ref": "#/$defs/SimulationCompatibility" },
+    "rendering_metadata": { "$ref": "#/$defs/RenderingMetadata" },
+    "engine_compat":   { "$ref": "#/$defs/EngineCompatibility" },
+    "standards_refs":  { "type": "array", "items": { "$ref": "#/$defs/StandardReference" } },
+    "ai_metadata":      { "$ref": "#/$defs/AIMetadata" },
+    "schema_integration": { "$ref": "#/$defs/SchemaIntegration" },
+    "validation":      { "$ref": "#/$defs/ValidationRules" },
+    "extensions":      { "type": "object", "description": "Forward-compatible namespace for not-yet-modeled fields. Future-proofing escape hatch; consumers MUST NOT reject unknown keys here." }
+  },
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier (RFC 4122)."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 / RFC 3339 timestamp, UTC unless tz offset given."
+    },
+
+    "Version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. 1.0.0."
+    },
+
+    "ScalarSI": {
+      "type": "object",
+      "description": "A single physical measurement expressed in SI units, with optional uncertainty, measurement conditions, and provenance. This is the atomic numeric building block used throughout the schema in place of bare numbers wherever scientific traceability matters.",
+      "required": ["value", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "value":      { "type": "number" },
+        "unit":       { "type": "string", "description": "SI unit symbol, e.g. 'Pa', 'K', 'm/s', 'kg/m^3'." },
+        "uncertainty": { "$ref": "#/$defs/ConfidenceInterval" },
+        "quality":    { "$ref": "#/$defs/QualityFlag" },
+        "source":     { "$ref": "#/$defs/MeasurementSource" },
+        "valid_at":   { "$ref": "#/$defs/Timestamp" },
+        "notes":      { "type": "string" }
+      }
+    },
+
+    "Vector2": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "unit": { "type": "string" }
+      }
+    },
+
+    "Vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "unit": { "type": "string" }
+      }
+    },
+
+    "Vector4": {
+      "type": "object",
+      "required": ["x", "y", "z", "w"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "w": { "type": "number" }
+      }
+    },
+
+    "Matrix": {
+      "type": "object",
+      "description": "Generic row-major matrix for transforms, covariance, or rotation operators.",
+      "required": ["rows", "cols", "data"],
+      "additionalProperties": false,
+      "properties": {
+        "rows": { "type": "integer", "minimum": 1 },
+        "cols": { "type": "integer", "minimum": 1 },
+        "data": { "type": "array", "items": { "type": "number" } }
+      }
+    },
+
+    "TimeSeries": {
+      "type": "object",
+      "description": "A sequence of timestamped scalar or vector samples, used for historical replay, observation logs, and forecast trajectories.",
+      "required": ["samples"],
+      "additionalProperties": false,
+      "properties": {
+        "variable":   { "type": "string", "description": "Name of the sampled quantity, e.g. 'air_temperature'." },
+        "unit":       { "type": "string" },
+        "samples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["t", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "t":     { "$ref": "#/$defs/Timestamp" },
+              "value": { "type": ["number", "object"], "description": "Scalar number, or a Vector2/Vector3 object for vector series." },
+              "quality": { "$ref": "#/$defs/QualityFlag" }
+            }
+          }
+        },
+        "interpolation": { "$ref": "#/$defs/InterpolationMethod" },
+        "sample_rate_hz": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "SpatialField": {
+      "type": "object",
+      "description": "A scalar or vector field defined over a spatial Grid, e.g. a 3D temperature or wind field.",
+      "required": ["grid", "values"],
+      "additionalProperties": false,
+      "properties": {
+        "variable":  { "type": "string" },
+        "unit":      { "type": "string" },
+        "grid":      { "$ref": "#/$defs/Grid" },
+        "values": {
+          "type": "array",
+          "description": "Flattened row-major array of scalars or [x,y,z] components matching grid dimensions.",
+          "items": { "type": ["number", "array"] }
+        },
+        "interpolation": { "$ref": "#/$defs/InterpolationMethod" },
+        "valid_at":  { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+
+    "SpectralCurve": {
+      "type": "object",
+      "description": "A value as a function of wavelength or frequency, used for irradiance spectra, sensor attenuation curves, and radiative properties.",
+      "required": ["domain", "points"],
+      "additionalProperties": false,
+      "properties": {
+        "domain": { "type": "string", "enum": ["wavelength_nm", "frequency_hz", "wavenumber_cm-1"] },
+        "points": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["x", "y"],
+            "additionalProperties": false,
+            "properties": {
+              "x": { "type": "number" },
+              "y": { "type": "number" }
+            }
+          }
+        },
+        "unit_y": { "type": "string" }
+      }
+    },
+
+    "ProbabilityDistribution": {
+      "type": "object",
+      "description": "Parametric or empirical probability distribution, used for stochastic weather evolution, ensemble forecasts, and Markov transitions.",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["normal", "lognormal", "weibull", "gamma", "poisson", "uniform", "empirical", "categorical", "custom"]
+        },
+        "mean":     { "type": "number" },
+        "stddev":   { "type": "number", "minimum": 0 },
+        "shape":    { "type": "number" },
+        "scale":    { "type": "number" },
+        "min":      { "type": "number" },
+        "max":      { "type": "number" },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["label", "probability"],
+            "additionalProperties": false,
+            "properties": {
+              "label":       { "type": "string" },
+              "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          }
+        },
+        "empirical_samples": { "type": "array", "items": { "type": "number" } }
+      }
+    },
+
+    "Coordinate": {
+      "type": "object",
+      "description": "Generic coordinate, Cartesian or geographic, with explicit reference frame.",
+      "required": ["frame"],
+      "additionalProperties": false,
+      "properties": {
+        "frame": { "type": "string", "enum": ["ECEF", "ENU", "NED", "geo", "local", "body"] },
+        "cartesian": { "$ref": "#/$defs/Vector3" },
+        "geo":       { "$ref": "#/$defs/GeoCoordinate" }
+      }
+    },
+
+    "GeoCoordinate": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90 },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "altitude_m": { "type": "number", "description": "Meters above mean sea level (or datum altitude on non-Earth bodies)." },
+        "datum": { "type": "string", "description": "Reference datum, e.g. 'WGS84', 'IAU_MARS_2000'.", "default": "WGS84" }
+      }
+    },
+
+    "BoundingBox": {
+      "type": "object",
+      "required": ["min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "min": { "$ref": "#/$defs/Vector3" },
+        "max": { "$ref": "#/$defs/Vector3" }
+      }
+    },
+
+    "Polygon": {
+      "type": "object",
+      "description": "Closed 2D/3D polygon used for storm cells, weather fronts, sensor footprints, and coverage areas.",
+      "required": ["vertices"],
+      "additionalProperties": false,
+      "properties": {
+        "vertices": {
+          "type": "array",
+          "minItems": 3,
+          "items": { "$ref": "#/$defs/GeoCoordinate" }
+        },
+        "closed": { "type": "boolean", "default": true }
+      }
+    },
+
+    "Grid": {
+      "type": "object",
+      "description": "Regular or curvilinear spatial grid definition for fields, used for gridded weather data (e.g. GRIB2/NetCDF-style layouts).",
+      "required": ["dimensions"],
+      "additionalProperties": false,
+      "properties": {
+        "dimensions": {
+          "type": "object",
+          "required": ["nx", "ny"],
+          "additionalProperties": false,
+          "properties": {
+            "nx": { "type": "integer", "minimum": 1 },
+            "ny": { "type": "integer", "minimum": 1 },
+            "nz": { "type": "integer", "minimum": 1, "default": 1 }
+          }
+        },
+        "origin":      { "$ref": "#/$defs/GeoCoordinate" },
+        "resolution_m": { "$ref": "#/$defs/Vector3" },
+        "bounding_box": { "$ref": "#/$defs/BoundingBox" },
+        "projection":  { "type": "string", "description": "e.g. 'EPSG:4326', 'lambert_conformal_conic'." },
+        "vertical_levels_m": { "type": "array", "items": { "type": "number" } }
+      }
+    },
+
+    "QualityFlag": {
+      "type": "string",
+      "enum": ["measured", "estimated", "interpolated", "extrapolated", "modeled", "simulated", "procedural", "suspect", "missing", "corrected"],
+      "description": "Provenance/quality indicator for a value, following WMO quality-control conventions."
+    },
+
+    "ConfidenceInterval": {
+      "type": "object",
+      "description": "Statistical uncertainty bound on a measurement or forecast value.",
+      "additionalProperties": false,
+      "properties": {
+        "method":     { "type": "string", "enum": ["stddev", "ci_68", "ci_95", "ci_99", "min_max", "ensemble_spread", "rmse"] },
+        "lower":      { "type": "number" },
+        "upper":      { "type": "number" },
+        "stddev":     { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "InterpolationMethod": {
+      "type": "string",
+      "enum": ["nearest", "linear", "bilinear", "trilinear", "cubic", "spline", "kriging", "idw", "none"],
+      "description": "Interpolation strategy for resampling TimeSeries or SpatialField data."
+    },
+
+    "StatisticalSummary": {
+      "type": "object",
+      "description": "Summary statistics over a sample population, used for climate normals and historical aggregates.",
+      "additionalProperties": false,
+      "properties": {
+        "mean":   { "type": "number" },
+        "median": { "type": "number" },
+        "stddev": { "type": "number", "minimum": 0 },
+        "min":    { "type": "number" },
+        "max":    { "type": "number" },
+        "percentile_10": { "type": "number" },
+        "percentile_90": { "type": "number" },
+        "sample_count":  { "type": "integer", "minimum": 0 },
+        "period_start":  { "$ref": "#/$defs/Timestamp" },
+        "period_end":    { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+
+    "PhysicalRange": {
+      "type": "object",
+      "description": "Hard physical bounds used by validators to reject impossible values (e.g. relative humidity > 100%, negative absolute temperature).",
+      "required": ["min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "min":  { "type": "number" },
+        "max":  { "type": "number" },
+        "unit": { "type": "string" }
+      }
+    },
+
+    "MeasurementSource": {
+      "type": "object",
+      "description": "Provenance of a measurement, forecast, or procedurally generated value.",
+      "required": ["source_type"],
+      "additionalProperties": false,
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": ["in_situ_station", "satellite", "radar", "radiosonde", "buoy", "aircraft_report",
+                   "reanalysis", "nwp_model", "ensemble_model", "climatology", "procedural_generation",
+                   "human_observation", "crowd_sourced", "simulation", "custom"]
+        },
+        "name":        { "type": "string", "description": "e.g. 'GOES-18', 'ECMWF-IFS', 'NOAA METAR KSFO'." },
+        "id":          { "type": "string" },
+        "resolution":  { "type": "string", "description": "Spatial/temporal resolution descriptor, e.g. '0.25deg/hourly'." },
+        "url":         { "type": "string", "format": "uri" }
+      }
+    },
+
+    "Observation": {
+      "type": "object",
+      "description": "A single real or historical observed weather record, anchored in space and time.",
+      "required": ["timestamp", "location"],
+      "additionalProperties": false,
+      "properties": {
+        "id":        { "$ref": "#/$defs/UUID" },
+        "timestamp": { "$ref": "#/$defs/Timestamp" },
+        "location":  { "$ref": "#/$defs/GeoCoordinate" },
+        "source":    { "$ref": "#/$defs/MeasurementSource" },
+        "variables": {
+          "type": "object",
+          "description": "Map of variable name to ScalarSI value, e.g. {\"air_temperature\": {...}}.",
+          "additionalProperties": { "$ref": "#/$defs/ScalarSI" }
+        },
+        "quality":   { "$ref": "#/$defs/QualityFlag" }
+      }
+    },
+
+    "Forecast": {
+      "type": "object",
+      "description": "A predicted future weather state or time series, with issuance and validity metadata, optionally as an ensemble.",
+      "required": ["issued_at", "valid_at"],
+      "additionalProperties": false,
+      "properties": {
+        "id":              { "$ref": "#/$defs/UUID" },
+        "issued_at":       { "$ref": "#/$defs/Timestamp" },
+        "valid_at":        { "$ref": "#/$defs/Timestamp" },
+        "lead_time_s":     { "type": "number", "minimum": 0, "description": "Forecast horizon in seconds from issuance." },
+        "model":           { "$ref": "#/$defs/MeasurementSource" },
+        "variables": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/ScalarSI" }
+        },
+        "ensemble_members": {
+          "type": "array",
+          "description": "Optional ensemble of perturbed forecast realizations for probabilistic forecasting.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "member_id": { "type": "string" },
+              "variables": { "type": "object", "additionalProperties": { "$ref": "#/$defs/ScalarSI" } },
+              "weight":    { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          }
+        },
+        "confidence":      { "$ref": "#/$defs/ConfidenceInterval" },
+        "probability_of_occurrence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "WeatherLayer": {
+      "type": "object",
+      "description": "A single named atmospheric/vertical or geographic layer within a composited weather state (e.g. a cloud layer, a wind layer at altitude, a fog layer near ground).",
+      "required": ["layer_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/UUID" },
+        "layer_type":  { "type": "string", "description": "e.g. 'cloud', 'wind', 'fog', 'aerosol', 'thermal_inversion'." },
+        "altitude_base_m": { "type": "number" },
+        "altitude_top_m":  { "type": "number" },
+        "horizontal_extent": { "$ref": "#/$defs/Polygon" },
+        "field":       { "$ref": "#/$defs/SpatialField" },
+        "properties":  { "type": "object" }
+      }
+    },
+
+    "SensorReference": {
+      "type": "object",
+      "description": "Reference to a sensor instance defined in world.schema.json, used to anchor weather-induced sensor degradation.",
+      "required": ["sensor_id"],
+      "additionalProperties": false,
+      "properties": {
+        "sensor_id":   { "$ref": "#/$defs/UUID" },
+        "sensor_type": { "type": "string" },
+        "schema_ref":  { "type": "string", "default": "world.schema.json#/$defs/SensorSpec" }
+      }
+    },
+
+    "SimulationReference": {
+      "type": "object",
+      "description": "Reference to a target simulation/physics engine for which weather effects should be specialized.",
+      "required": ["engine"],
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "type": "string",
+          "enum": ["bullet", "physx", "mujoco", "gazebo", "ls_dyna", "openfoam", "ansys_fluent",
+                   "wrf", "openweather", "cesium", "ros2", "isaac_sim", "omniverse", "custom"]
+        },
+        "version":   { "type": "string" },
+        "parameters":{ "type": "object" }
+      }
+    },
+
+    "MaterialReference": {
+      "type": "object",
+      "description": "Reference to a material instance defined in world.schema.json, used for weather/surface interaction (e.g. road wetness, ice on a material).",
+      "required": ["material_id"],
+      "additionalProperties": false,
+      "properties": {
+        "material_id": { "$ref": "#/$defs/UUID" },
+        "schema_ref":  { "type": "string", "default": "world.schema.json#/$defs/Material" }
+      }
+    },
+
+    "EnvironmentReference": {
+      "type": "object",
+      "description": "Reference into environment.schema.json for persistent environmental context this weather state composes with (e.g. base climate, terrain biome).",
+      "additionalProperties": false,
+      "properties": {
+        "environment_id": { "$ref": "#/$defs/UUID" },
+        "schema_ref":      { "type": "string", "default": "environment.schema.json" }
+      }
+    },
+
+    "TerrainReference": {
+      "type": "object",
+      "description": "Reference into terrain.schema.json, used where weather effects depend on terrain (runoff, snow accumulation on slopes, road wetness).",
+      "additionalProperties": false,
+      "properties": {
+        "terrain_id":  { "$ref": "#/$defs/UUID" },
+        "feature_ref": { "type": "string" },
+        "schema_ref":  { "type": "string", "default": "terrain.schema.json" }
+      }
+    },
+
+    "SchemaMetadata": {
+      "type": "object",
+      "description": "Document-level metadata for this weather state document, distinct from the metadata.schema.json reference used for entity-level metadata.",
+      "required": ["schema_version"],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": { "$ref": "#/$defs/Version" },
+        "generated_at":    { "$ref": "#/$defs/Timestamp" },
+        "generator":       { "type": "string", "description": "Tool or model that produced this document, e.g. 'PhysWorldLM-NL2Weather/2.3'." },
+        "metadata_schema_ref": { "type": "string", "default": "metadata.schema.json", "description": "Entity-level metadata should conform to this external schema via $ref where embedded." }
+      }
+    },
+
+    "WeatherIdentity": {
+      "type": "object",
+      "description": "Canonical identity block for a weather state or dataset.",
+      "required": ["id", "weather_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":               { "$ref": "#/$defs/UUID" },
+        "weather_id":       { "type": "string", "description": "Human-readable stable identifier, e.g. 'WX-2026-HURRICANE-07'." },
+        "name":             { "type": "string" },
+        "display_name":     { "type": "string" },
+        "description":      { "type": "string" },
+        "weather_type":     { "$ref": "#/$defs/WeatherClassification/properties/primary_type" },
+        "creator":          { "type": "string" },
+        "source":           { "$ref": "#/$defs/MeasurementSource" },
+        "dataset":          { "type": "string" },
+        "weather_model":    { "type": "string", "description": "e.g. 'WRF-ARW', 'GFS', 'ECMWF-IFS', 'procedural-v2'." },
+        "forecast_source":  { "$ref": "#/$defs/MeasurementSource" },
+        "license":          { "type": "string" },
+        "version":          { "$ref": "#/$defs/Version" },
+        "revision":         { "type": "string" },
+        "created":          { "$ref": "#/$defs/Timestamp" },
+        "updated":          { "$ref": "#/$defs/Timestamp" },
+        "classification_marking": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret", "simulation_only"],
+          "default": "unclassified",
+          "description": "Handling marking for military/defense simulation contexts. Not a substitute for organizational classification policy."
+        },
+        "tags":             { "type": "array", "items": { "type": "string" } },
+        "ontology_uri":     { "type": "string", "format": "uri" },
+        "knowledge_graph_node": { "type": "string" },
+        "semantic_labels":  { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "WeatherClassification": {
+      "type": "object",
+      "description": "Classification of the weather state along phenomenological, regime, and synoptic-pattern axes.",
+      "required": ["primary_type"],
+      "additionalProperties": false,
+      "properties": {
+        "primary_type": {
+          "type": "string",
+          "enum": [
+            "clear", "sunny", "partly_cloudy", "cloudy", "overcast",
+            "fog", "mist", "haze", "smoke", "dust", "sandstorm",
+            "rain", "drizzle", "snow", "sleet", "hail", "graupel", "freezing_rain",
+            "thunderstorm", "supercell", "tornado", "waterspout",
+            "cyclone", "hurricane", "typhoon", "monsoon",
+            "blizzard", "ice_storm", "heat_wave", "cold_wave", "drought",
+            "wildfire_smoke", "volcanic_ash", "aurora", "space_weather",
+            "indoor_climate_controlled", "extraterrestrial_ambient", "custom"
+          ]
+        },
+        "secondary_types": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/WeatherClassification/properties/primary_type" }
+        },
+        "climate_zone": {
+          "type": "string",
+          "enum": ["tropical", "arid", "temperate", "continental", "polar", "alpine", "oceanic", "mediterranean", "extraterrestrial", "artificial", "unknown"]
+        },
+        "koppen_classification": { "type": "string", "description": "e.g. 'Af', 'BWh', 'Csa', 'Dfb', 'ET'." },
+        "season": {
+          "type": "string",
+          "enum": ["spring", "summer", "autumn", "winter", "dry_season", "wet_season", "monsoon_season", "none"]
+        },
+        "meteorological_regime": {
+          "type": "string",
+          "enum": ["convective", "cyclonic", "anticyclonic", "frontal", "orographic", "tropical", "polar", "desert", "maritime", "urban", "mountain", "stagnant", "custom"]
+        },
+        "synoptic_pattern": { "type": "string", "description": "Free-text or coded synoptic pattern label, e.g. 'zonal_flow', 'omega_block', 'cutoff_low'." },
+        "domain": {
+          "type": "string",
+          "enum": ["earth", "moon", "mars", "venus", "titan", "europa", "artificial_habitat", "indoor", "climate_chamber", "space_station", "exoplanet", "custom"],
+          "default": "earth",
+          "description": "Planetary/environmental domain, enabling non-Earth and indoor weather without schema modification."
+        }
+      }
+    },
+
+    "TemporalModel": {
+      "type": "object",
+      "description": "Temporal framing for the weather state: simulation clock, forecast horizon, historical/real-time/forecast data blending, and update cadence.",
+      "additionalProperties": false,
+      "properties": {
+        "simulation_time":   { "$ref": "#/$defs/Timestamp" },
+        "start_time":        { "$ref": "#/$defs/Timestamp" },
+        "end_time":          { "$ref": "#/$defs/Timestamp" },
+        "duration_s":        { "type": "number", "minimum": 0 },
+        "update_rate_hz":    { "type": "number", "minimum": 0, "description": "Rate at which weather state is recomputed/streamed." },
+        "interpolation":     { "$ref": "#/$defs/InterpolationMethod" },
+        "prediction_horizon_s": { "type": "number", "minimum": 0 },
+        "data_mode": {
+          "type": "string",
+          "enum": ["historical_replay", "real_time", "forecast", "procedural", "hybrid"],
+          "default": "procedural"
+        },
+        "historical_data":   { "type": "array", "items": { "$ref": "#/$defs/Observation" } },
+        "forecast_data":     { "type": "array", "items": { "$ref": "#/$defs/Forecast" } },
+        "real_time_feed":    { "$ref": "#/$defs/MeasurementSource" },
+        "state_transitions": {
+          "type": "array",
+          "description": "Discrete weather state changes over time, e.g. clear -> overcast -> thunderstorm.",
+          "items": {
+            "type": "object",
+            "required": ["at", "to_type"],
+            "additionalProperties": false,
+            "properties": {
+              "at":      { "$ref": "#/$defs/Timestamp" },
+              "from_type": { "$ref": "#/$defs/WeatherClassification/properties/primary_type" },
+              "to_type":   { "$ref": "#/$defs/WeatherClassification/properties/primary_type" },
+              "transition_duration_s": { "type": "number", "minimum": 0 }
+            }
+          }
+        },
+        "markov_transition_matrix": {
+          "$ref": "#/$defs/Matrix",
+          "description": "Optional stochastic transition matrix between classification states for procedural weather evolution."
+        }
+      }
+    },
+
+    "GeographicScope": {
+      "type": "object",
+      "description": "Spatial extent over which this weather state applies, from planetary to microclimate scale.",
+      "required": ["scale"],
+      "additionalProperties": false,
+      "properties": {
+        "scale": {
+          "type": "string",
+          "enum": ["global", "regional", "local", "microclimate", "point", "volume"]
+        },
+        "bounding_box":   { "$ref": "#/$defs/BoundingBox" },
+        "bounding_polygon": { "$ref": "#/$defs/Polygon" },
+        "center":         { "$ref": "#/$defs/GeoCoordinate" },
+        "radius_m":       { "type": "number", "minimum": 0 },
+        "altitude_band_m": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min": { "type": "number" },
+            "max": { "type": "number" }
+          }
+        },
+        "grid_cells":     { "$ref": "#/$defs/Grid" },
+        "weather_volumes": {
+          "type": "array",
+          "description": "Discrete 3D volumes with independent weather (e.g. a localized fog bank or a storm cell), each as a WeatherLayer.",
+          "items": { "$ref": "#/$defs/WeatherLayer" }
+        },
+        "environment_ref": { "$ref": "#/$defs/EnvironmentReference" },
+        "terrain_ref":      { "$ref": "#/$defs/TerrainReference" }
+      }
+    },
+
+    "AirComposition": {
+      "type": "object",
+      "description": "Atmospheric gas-phase composition as mole/mass fractions.",
+      "additionalProperties": false,
+      "properties": {
+        "nitrogen_fraction":   { "$ref": "#/$defs/ScalarSI" },
+        "oxygen_fraction":     { "$ref": "#/$defs/ScalarSI" },
+        "water_vapor_fraction":{ "$ref": "#/$defs/ScalarSI" },
+        "co2_ppm":             { "$ref": "#/$defs/ScalarSI" },
+        "ozone_dobson_units":  { "$ref": "#/$defs/ScalarSI" },
+        "methane_ppb":         { "$ref": "#/$defs/ScalarSI" },
+        "argon_fraction":      { "$ref": "#/$defs/ScalarSI" },
+        "other_trace_gases": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/ScalarSI" }
+        },
+        "mean_molar_mass_kg_per_mol": { "type": "number" }
+      }
+    },
+
+    "AirQuality": {
+      "type": "object",
+      "description": "Particulate and gaseous pollutant concentrations and derived air-quality indices.",
+      "additionalProperties": false,
+      "properties": {
+        "aqi":             { "$ref": "#/$defs/ScalarSI" },
+        "pm2_5_ug_m3":     { "$ref": "#/$defs/ScalarSI" },
+        "pm10_ug_m3":      { "$ref": "#/$defs/ScalarSI" },
+        "nox_ppb":         { "$ref": "#/$defs/ScalarSI" },
+        "so2_ppb":         { "$ref": "#/$defs/ScalarSI" },
+        "co_ppm":          { "$ref": "#/$defs/ScalarSI" },
+        "voc_ppb":         { "$ref": "#/$defs/ScalarSI" },
+        "ozone_surface_ppb": { "$ref": "#/$defs/ScalarSI" },
+        "breathing_hazard_level": {
+          "type": "string",
+          "enum": ["none", "low", "moderate", "high", "hazardous", "unsurvivable_unprotected"]
+        }
+      }
+    },
+
+    "AtmosphericStabilityIndices": {
+      "type": "object",
+      "description": "Derived thermodynamic stability and convective potential indices used in severe-weather and aviation forecasting.",
+      "additionalProperties": false,
+      "properties": {
+        "lapse_rate_k_per_km":         { "$ref": "#/$defs/ScalarSI" },
+        "cape_j_per_kg":               { "$ref": "#/$defs/ScalarSI", "description": "Convective Available Potential Energy." },
+        "cin_j_per_kg":                { "$ref": "#/$defs/ScalarSI", "description": "Convective Inhibition." },
+        "lifted_index":                { "$ref": "#/$defs/ScalarSI" },
+        "richardson_number":           { "$ref": "#/$defs/ScalarSI" },
+        "planetary_boundary_layer_height_m": { "$ref": "#/$defs/ScalarSI" },
+        "stability_class": {
+          "type": "string",
+          "enum": ["very_unstable", "unstable", "slightly_unstable", "neutral", "slightly_stable", "stable", "very_stable"]
+        }
+      }
+    },
+
+    "AtmosphericState": {
+      "type": "object",
+      "description": "The complete thermodynamic, compositional, and stability state of the atmosphere at the specified geographic scope and time.",
+      "additionalProperties": false,
+      "properties": {
+        "pressure_pa":          { "$ref": "#/$defs/ScalarSI" },
+        "pressure_sea_level_pa":{ "$ref": "#/$defs/ScalarSI" },
+        "air_temperature_k":    { "$ref": "#/$defs/ScalarSI" },
+        "dry_bulb_temperature_k": { "$ref": "#/$defs/ScalarSI" },
+        "wet_bulb_temperature_k": { "$ref": "#/$defs/ScalarSI" },
+        "dew_point_k":          { "$ref": "#/$defs/ScalarSI" },
+        "relative_humidity_pct":{ "$ref": "#/$defs/ScalarSI" },
+        "mixing_ratio_g_per_kg":{ "$ref": "#/$defs/ScalarSI" },
+        "potential_temperature_k": { "$ref": "#/$defs/ScalarSI" },
+        "equivalent_potential_temperature_k": { "$ref": "#/$defs/ScalarSI" },
+        "air_density_kg_per_m3":{ "$ref": "#/$defs/ScalarSI" },
+        "composition":          { "$ref": "#/$defs/AirComposition" },
+        "air_quality":          { "$ref": "#/$defs/AirQuality" },
+        "stability":            { "$ref": "#/$defs/AtmosphericStabilityIndices" },
+        "visibility_m":         { "$ref": "#/$defs/ScalarSI" },
+        "vertical_profile": {
+          "type": "array",
+          "description": "Optional vertical soundings (radiosonde-style) of atmospheric variables by altitude.",
+          "items": {
+            "type": "object",
+            "required": ["altitude_m"],
+            "additionalProperties": false,
+            "properties": {
+              "altitude_m":        { "type": "number" },
+              "pressure_pa":       { "$ref": "#/$defs/ScalarSI" },
+              "temperature_k":     { "$ref": "#/$defs/ScalarSI" },
+              "humidity_pct":      { "$ref": "#/$defs/ScalarSI" },
+              "wind":              { "$ref": "#/$defs/Vector3" }
+            }
+          }
+        },
+        "spatial_field":        { "$ref": "#/$defs/SpatialField" },
+        "physical_ranges": {
+          "type": "object",
+          "description": "Validator-facing physical bounds for the fields above.",
+          "additionalProperties": { "$ref": "#/$defs/PhysicalRange" }
+        }
+      }
+    },
+
+    "WindLayer": {
+      "type": "object",
+      "description": "Wind state at a specific altitude band, used to build vertical wind profiles.",
+      "additionalProperties": false,
+      "properties": {
+        "altitude_m":     { "type": "number" },
+        "speed_mps":      { "$ref": "#/$defs/ScalarSI" },
+        "direction_deg":  { "$ref": "#/$defs/ScalarSI" },
+        "vector":         { "$ref": "#/$defs/Vector3" }
+      }
+    },
+
+    "WindField": {
+      "type": "object",
+      "description": "Complete surface and upper-air wind state including gusts, shear, turbulence, and special phenomena.",
+      "additionalProperties": false,
+      "properties": {
+        "surface_wind": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "speed_mps":     { "$ref": "#/$defs/ScalarSI" },
+            "direction_deg": { "$ref": "#/$defs/ScalarSI" },
+            "heading_deg":   { "$ref": "#/$defs/ScalarSI" },
+            "vector":        { "$ref": "#/$defs/Vector3" },
+            "gust_speed_mps":{ "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "upper_air_wind_profile": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/WindLayer" }
+        },
+        "wind_shear": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "horizontal_shear_s-1": { "$ref": "#/$defs/ScalarSI" },
+            "vertical_shear_s-1":   { "$ref": "#/$defs/ScalarSI" },
+            "low_level_shear_alert": { "type": "boolean", "default": false }
+          }
+        },
+        "turbulence": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "intensity": {
+              "type": "string",
+              "enum": ["none", "light", "moderate", "severe", "extreme"]
+            },
+            "eddy_dissipation_rate": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "crosswind_mps":   { "$ref": "#/$defs/ScalarSI" },
+        "tailwind_mps":    { "$ref": "#/$defs/ScalarSI" },
+        "headwind_mps":    { "$ref": "#/$defs/ScalarSI" },
+        "vertical_wind": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "updraft_mps":   { "$ref": "#/$defs/ScalarSI" },
+            "downdraft_mps": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "microburst": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "active":       { "type": "boolean", "default": false },
+            "peak_speed_mps": { "$ref": "#/$defs/ScalarSI" },
+            "diameter_m":   { "type": "number" },
+            "location":     { "$ref": "#/$defs/GeoCoordinate" }
+          }
+        },
+        "jet_stream": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "present":      { "type": "boolean", "default": false },
+            "core_altitude_m": { "type": "number" },
+            "core_speed_mps":  { "$ref": "#/$defs/ScalarSI" },
+            "axis":         { "$ref": "#/$defs/Polygon" }
+          }
+        },
+        "vorticity_s-1":       { "$ref": "#/$defs/ScalarSI" },
+        "helicity_m2_per_s2":  { "$ref": "#/$defs/ScalarSI" },
+        "pressure_gradient_pa_per_m": { "$ref": "#/$defs/ScalarSI" },
+        "spatial_field":       { "$ref": "#/$defs/SpatialField" }
+      }
+    },
+
+    "CloudLayer": {
+      "type": "object",
+      "description": "A single cloud layer with type, vertical extent, and microphysical properties.",
+      "additionalProperties": false,
+      "properties": {
+        "id":              { "$ref": "#/$defs/UUID" },
+        "cloud_type": {
+          "type": "string",
+          "enum": ["cirrus", "cirrocumulus", "cirrostratus", "cumulus", "stratus", "altostratus",
+                   "nimbostratus", "cumulonimbus", "altocumulus", "stratocumulus", "lenticular",
+                   "mammatus", "fog_layer", "custom"]
+        },
+        "coverage_fraction": { "$ref": "#/$defs/ScalarSI", "description": "Okta-derived fraction 0-1." },
+        "opacity":         { "$ref": "#/$defs/ScalarSI" },
+        "base_altitude_m": { "$ref": "#/$defs/ScalarSI" },
+        "top_altitude_m":  { "$ref": "#/$defs/ScalarSI" },
+        "thickness_m":     { "$ref": "#/$defs/ScalarSI" },
+        "density_kg_per_m3": { "$ref": "#/$defs/ScalarSI" },
+        "liquid_water_content_g_per_m3": { "$ref": "#/$defs/ScalarSI" },
+        "ice_content_g_per_m3": { "$ref": "#/$defs/ScalarSI" },
+        "optical_depth":   { "$ref": "#/$defs/ScalarSI" },
+        "motion_vector":   { "$ref": "#/$defs/Vector3", "description": "Cloud advection velocity, m/s." },
+        "horizontal_extent": { "$ref": "#/$defs/Polygon" }
+      }
+    },
+
+    "CloudField": {
+      "type": "object",
+      "description": "Complete cloud state composited from one or more layers.",
+      "additionalProperties": false,
+      "properties": {
+        "total_coverage_fraction": { "$ref": "#/$defs/ScalarSI" },
+        "ceiling_m":       { "$ref": "#/$defs/ScalarSI" },
+        "layers":          { "type": "array", "items": { "$ref": "#/$defs/CloudLayer" } },
+        "spatial_field":   { "$ref": "#/$defs/SpatialField" }
+      }
+    },
+
+    "Precipitation": {
+      "type": "object",
+      "description": "Complete precipitation state including type, rate, accumulation, particle size distributions, and timing.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["none", "rain", "drizzle", "snow", "sleet", "hail", "graupel", "freezing_rain", "ice_pellets", "mixed"]
+        },
+        "intensity_class": {
+          "type": "string",
+          "enum": ["none", "trace", "light", "moderate", "heavy", "violent"]
+        },
+        "rainfall_rate_mm_per_hr":  { "$ref": "#/$defs/ScalarSI" },
+        "snowfall_rate_mm_per_hr":  { "$ref": "#/$defs/ScalarSI" },
+        "accumulation_mm":          { "$ref": "#/$defs/ScalarSI" },
+        "snow_water_equivalent_mm": { "$ref": "#/$defs/ScalarSI" },
+        "hail_size_mm":             { "$ref": "#/$defs/ScalarSI" },
+        "graupel_density_kg_per_m3":{ "$ref": "#/$defs/ScalarSI" },
+        "droplet_size_distribution": { "$ref": "#/$defs/ProbabilityDistribution" },
+        "ice_pellet_size_mm":       { "$ref": "#/$defs/ScalarSI" },
+        "duration_s":               { "type": "number", "minimum": 0 },
+        "start_time":               { "$ref": "#/$defs/Timestamp" },
+        "end_time":                 { "$ref": "#/$defs/Timestamp" },
+        "coverage_fraction":        { "$ref": "#/$defs/ScalarSI" },
+        "probability":              { "type": "number", "minimum": 0, "maximum": 1 },
+        "spatial_field":            { "$ref": "#/$defs/SpatialField" }
+      }
+    },
+
+    "Lightning": {
+      "type": "object",
+      "description": "Lightning activity state for the scoped region/time.",
+      "additionalProperties": false,
+      "properties": {
+        "flash_frequency_per_min": { "$ref": "#/$defs/ScalarSI" },
+        "cloud_to_ground_fraction": { "$ref": "#/$defs/ScalarSI" },
+        "cloud_to_cloud_fraction":  { "$ref": "#/$defs/ScalarSI" },
+        "peak_current_ka":          { "$ref": "#/$defs/ScalarSI" },
+        "flash_duration_s":         { "$ref": "#/$defs/ScalarSI" },
+        "strike_density_per_km2":   { "$ref": "#/$defs/ScalarSI" },
+        "electric_field_v_per_m":   { "$ref": "#/$defs/ScalarSI" },
+        "thunder_delay_s":          { "$ref": "#/$defs/ScalarSI" },
+        "probability":              { "type": "number", "minimum": 0, "maximum": 1 },
+        "recent_strikes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["timestamp", "location"],
+            "additionalProperties": false,
+            "properties": {
+              "timestamp": { "$ref": "#/$defs/Timestamp" },
+              "location":  { "$ref": "#/$defs/GeoCoordinate" },
+              "type":      { "type": "string", "enum": ["cloud_to_ground", "cloud_to_cloud", "intracloud"] },
+              "peak_current_ka": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+
+    "StormSystem": {
+      "type": "object",
+      "description": "A discrete tracked storm system (tropical cyclone, supercell, tornado, dust storm, etc.) with track, intensity, and forecast.",
+      "required": ["storm_id", "storm_type"],
+      "additionalProperties": false,
+      "properties": {
+        "storm_id":     { "$ref": "#/$defs/UUID" },
+        "storm_type": {
+          "type": "string",
+          "enum": ["thunderstorm", "supercell", "tornado", "waterspout", "tropical_cyclone",
+                   "hurricane", "typhoon", "extratropical_cyclone", "dust_storm", "sandstorm",
+                   "blizzard", "ice_storm", "monsoon_system", "squall_line", "derecho", "custom"]
+        },
+        "category":     { "type": "string", "description": "e.g. Saffir-Simpson 'Category 4', Enhanced Fujita 'EF3'." },
+        "name":         { "type": "string", "description": "Assigned storm name, e.g. 'Hurricane Helios'." },
+        "eye_location": { "$ref": "#/$defs/GeoCoordinate" },
+        "central_pressure_pa": { "$ref": "#/$defs/ScalarSI" },
+        "radius_m":     { "$ref": "#/$defs/ScalarSI" },
+        "eye_radius_m": { "$ref": "#/$defs/ScalarSI" },
+        "movement": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "forward_speed_mps": { "$ref": "#/$defs/ScalarSI" },
+            "heading_deg":       { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "track":          { "type": "array", "items": { "$ref": "#/$defs/GeoCoordinate" } },
+        "forecast_track":   { "type": "array", "items": { "$ref": "#/$defs/Forecast" } },
+        "maximum_sustained_wind_mps": { "$ref": "#/$defs/ScalarSI" },
+        "storm_surge_m":  { "$ref": "#/$defs/ScalarSI" },
+        "rain_bands":     { "type": "array", "items": { "$ref": "#/$defs/WeatherLayer" } },
+        "eye_wall":       { "$ref": "#/$defs/Polygon" },
+        "landfall_prediction": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "location":  { "$ref": "#/$defs/GeoCoordinate" },
+            "eta":       { "$ref": "#/$defs/Timestamp" },
+            "probability": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "intensity_forecast": { "type": "array", "items": { "$ref": "#/$defs/Forecast" } },
+        "severity_index": { "type": "number", "description": "Normalized 0-1 composite severity score." }
+      }
+    },
+
+    "VisibilityConditions": {
+      "type": "object",
+      "description": "Meteorological and obscurant-driven visibility, including optical scattering mechanisms relevant to sensor simulation.",
+      "additionalProperties": false,
+      "properties": {
+        "horizontal_visibility_m": { "$ref": "#/$defs/ScalarSI" },
+        "vertical_visibility_m":   { "$ref": "#/$defs/ScalarSI" },
+        "runway_visual_range_m":   { "$ref": "#/$defs/ScalarSI" },
+        "fog_density":             { "$ref": "#/$defs/ScalarSI" },
+        "dust_density":            { "$ref": "#/$defs/ScalarSI" },
+        "smoke_density":           { "$ref": "#/$defs/ScalarSI" },
+        "optical_attenuation_coefficient_per_m": { "$ref": "#/$defs/ScalarSI" },
+        "mie_scattering_coefficient": { "$ref": "#/$defs/ScalarSI" },
+        "rayleigh_scattering_coefficient": { "$ref": "#/$defs/ScalarSI" },
+        "obscurant_spectral_curve": { "$ref": "#/$defs/SpectralCurve" }
+      }
+    },
+
+    "SolarConditions": {
+      "type": "object",
+      "description": "Solar geometry and irradiance, including twilight phases and atmospheric attenuation.",
+      "additionalProperties": false,
+      "properties": {
+        "solar_irradiance_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "direct_irradiance_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "diffuse_irradiance_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "global_irradiance_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "uv_index":         { "$ref": "#/$defs/ScalarSI" },
+        "solar_elevation_deg": { "$ref": "#/$defs/ScalarSI" },
+        "solar_azimuth_deg":   { "$ref": "#/$defs/ScalarSI" },
+        "sunrise":          { "$ref": "#/$defs/Timestamp" },
+        "sunset":           { "$ref": "#/$defs/Timestamp" },
+        "golden_hour": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "start": { "$ref": "#/$defs/Timestamp" }, "end": { "$ref": "#/$defs/Timestamp" } }
+        },
+        "civil_twilight": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "start": { "$ref": "#/$defs/Timestamp" }, "end": { "$ref": "#/$defs/Timestamp" } }
+        },
+        "nautical_twilight": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "start": { "$ref": "#/$defs/Timestamp" }, "end": { "$ref": "#/$defs/Timestamp" } }
+        },
+        "astronomical_twilight": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "start": { "$ref": "#/$defs/Timestamp" }, "end": { "$ref": "#/$defs/Timestamp" } }
+        },
+        "solar_constant_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "cloud_attenuation_factor": { "$ref": "#/$defs/ScalarSI" },
+        "spectrum":          { "$ref": "#/$defs/SpectralCurve" }
+      }
+    },
+
+    "LunarConditions": {
+      "type": "object",
+      "description": "Lunar position and illumination, relevant to night-vision sensor simulation and tidal forcing.",
+      "additionalProperties": false,
+      "properties": {
+        "moon_phase_fraction": { "$ref": "#/$defs/ScalarSI", "description": "0=new moon, 1=full moon." },
+        "moonrise":         { "$ref": "#/$defs/Timestamp" },
+        "moonset":          { "$ref": "#/$defs/Timestamp" },
+        "illumination_pct": { "$ref": "#/$defs/ScalarSI" },
+        "lunar_irradiance_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "lunar_position": { "$ref": "#/$defs/GeoCoordinate", "description": "Sub-lunar point or topocentric az/el, depending on use." }
+      }
+    },
+
+    "RadiationField": {
+      "type": "object",
+      "description": "Broadband and ionizing radiation environment, distinct from solar/lunar visible-spectrum conditions.",
+      "additionalProperties": false,
+      "properties": {
+        "shortwave_w_per_m2":  { "$ref": "#/$defs/ScalarSI" },
+        "longwave_w_per_m2":   { "$ref": "#/$defs/ScalarSI" },
+        "net_radiation_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "thermal_radiation_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "ir_radiation_w_per_m2": { "$ref": "#/$defs/ScalarSI" },
+        "uv_w_per_m2":         { "$ref": "#/$defs/ScalarSI" },
+        "gamma_sv_per_hr":     { "$ref": "#/$defs/ScalarSI" },
+        "cosmic_radiation_sv_per_hr": { "$ref": "#/$defs/ScalarSI" },
+        "background_radiation_sv_per_hr": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "OceanWeather": {
+      "type": "object",
+      "description": "Ocean-atmosphere coupled state: waves, swell, tides, currents, sea state, and surface conditions.",
+      "additionalProperties": false,
+      "properties": {
+        "sea_state_code":   { "type": "integer", "minimum": 0, "maximum": 9, "description": "WMO sea state code 0-9." },
+        "wave_height_m":    { "$ref": "#/$defs/ScalarSI" },
+        "wave_direction_deg": { "$ref": "#/$defs/ScalarSI" },
+        "wave_period_s":    { "$ref": "#/$defs/ScalarSI" },
+        "swell": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "height_m":    { "$ref": "#/$defs/ScalarSI" },
+            "period_s":    { "$ref": "#/$defs/ScalarSI" },
+            "direction_deg": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "tide": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "height_m":      { "$ref": "#/$defs/ScalarSI" },
+            "phase": { "type": "string", "enum": ["high", "low", "rising", "falling"] },
+            "next_high_at":  { "$ref": "#/$defs/Timestamp" },
+            "next_low_at":   { "$ref": "#/$defs/Timestamp" }
+          }
+        },
+        "current": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "speed_mps":     { "$ref": "#/$defs/ScalarSI" },
+            "direction_deg": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "sea_surface_temperature_k": { "$ref": "#/$defs/ScalarSI" },
+        "sea_surface_salinity_psu": { "$ref": "#/$defs/ScalarSI" },
+        "storm_surge_m":    { "$ref": "#/$defs/ScalarSI" },
+        "whitecap_fraction": { "$ref": "#/$defs/ScalarSI" },
+        "foam_coverage_fraction": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "Cryosphere": {
+      "type": "object",
+      "description": "Snow, ice, and frozen-ground state.",
+      "additionalProperties": false,
+      "properties": {
+        "snow_depth_m":      { "$ref": "#/$defs/ScalarSI" },
+        "snow_density_kg_per_m3": { "$ref": "#/$defs/ScalarSI" },
+        "snow_age_hours":    { "$ref": "#/$defs/ScalarSI" },
+        "snow_temperature_k":{ "$ref": "#/$defs/ScalarSI" },
+        "ice_thickness_m":   { "$ref": "#/$defs/ScalarSI" },
+        "sea_ice_concentration_pct": { "$ref": "#/$defs/ScalarSI" },
+        "glacier_state": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mass_balance_kg_per_m2": { "$ref": "#/$defs/ScalarSI" },
+            "flow_velocity_m_per_yr": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "permafrost_depth_m": { "$ref": "#/$defs/ScalarSI" },
+        "frost_presence":    { "type": "boolean", "default": false },
+        "rime_thickness_mm": { "$ref": "#/$defs/ScalarSI" },
+        "black_ice_risk": {
+          "type": "string",
+          "enum": ["none", "low", "moderate", "high", "extreme"]
+        }
+      }
+    },
+
+    "Hydrology": {
+      "type": "object",
+      "description": "Surface and subsurface water state driven by precipitation, melt, and terrain.",
+      "additionalProperties": false,
+      "properties": {
+        "evaporation_rate_mm_per_day": { "$ref": "#/$defs/ScalarSI" },
+        "evapotranspiration_rate_mm_per_day": { "$ref": "#/$defs/ScalarSI" },
+        "soil_moisture_fraction": { "$ref": "#/$defs/ScalarSI" },
+        "groundwater_level_m":  { "$ref": "#/$defs/ScalarSI" },
+        "river_discharge_m3_per_s": { "$ref": "#/$defs/ScalarSI" },
+        "flood_probability":    { "type": "number", "minimum": 0, "maximum": 1 },
+        "water_table_depth_m":  { "$ref": "#/$defs/ScalarSI" },
+        "runoff_rate_mm_per_hr":{ "$ref": "#/$defs/ScalarSI" },
+        "infiltration_rate_mm_per_hr": { "$ref": "#/$defs/ScalarSI" },
+        "standing_water_depth_m": { "$ref": "#/$defs/ScalarSI" },
+        "snow_melt_rate_mm_per_hr": { "$ref": "#/$defs/ScalarSI" },
+        "terrain_ref":          { "$ref": "#/$defs/TerrainReference" }
+      }
+    },
+
+    "ClimateContext": {
+      "type": "object",
+      "description": "Long-term climatological context: normals, anomalies, and large-scale teleconnection indices.",
+      "additionalProperties": false,
+      "properties": {
+        "climate_normals":     { "$ref": "#/$defs/StatisticalSummary" },
+        "monthly_climatology": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "month": { "type": "integer", "minimum": 1, "maximum": 12 },
+              "summary": { "$ref": "#/$defs/StatisticalSummary" }
+            }
+          }
+        },
+        "long_term_trend": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "variable":   { "type": "string" },
+            "trend_per_decade": { "type": "number" },
+            "unit":       { "type": "string" }
+          }
+        },
+        "climate_anomaly": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "variable": { "type": "string" },
+            "anomaly_value": { "type": "number" },
+            "baseline_period": { "type": "string" }
+          }
+        },
+        "enso_index":    { "$ref": "#/$defs/ScalarSI", "description": "Oceanic Nino Index or equivalent." },
+        "nao_index":     { "$ref": "#/$defs/ScalarSI" },
+        "pdo_index":     { "$ref": "#/$defs/ScalarSI" },
+        "indian_ocean_dipole_index": { "$ref": "#/$defs/ScalarSI" },
+        "monsoon_index": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "SpaceWeather": {
+      "type": "object",
+      "description": "Solar-terrestrial and heliospheric space weather affecting GPS, communications, and radiation exposure.",
+      "additionalProperties": false,
+      "properties": {
+        "solar_flare": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "active":  { "type": "boolean", "default": false },
+            "class":   { "type": "string", "enum": ["A", "B", "C", "M", "X"], "description": "GOES X-ray flare class." },
+            "peak_time": { "$ref": "#/$defs/Timestamp" }
+          }
+        },
+        "geomagnetic_storm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "active":  { "type": "boolean", "default": false },
+            "kp_index": { "$ref": "#/$defs/ScalarSI" },
+            "ap_index": { "$ref": "#/$defs/ScalarSI" },
+            "g_scale": { "type": "string", "enum": ["G1", "G2", "G3", "G4", "G5"] }
+          }
+        },
+        "solar_wind": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "speed_km_per_s":   { "$ref": "#/$defs/ScalarSI" },
+            "density_per_cm3":  { "$ref": "#/$defs/ScalarSI" },
+            "magnetic_field_nt":{ "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "radiation_storm": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "active":  { "type": "boolean", "default": false },
+            "s_scale": { "type": "string", "enum": ["S1", "S2", "S3", "S4", "S5"] }
+          }
+        },
+        "coronal_mass_ejection": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "detected":     { "type": "boolean", "default": false },
+            "eta_earth":    { "$ref": "#/$defs/Timestamp" },
+            "speed_km_per_s": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "auroral_activity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "visible":          { "type": "boolean", "default": false },
+            "boundary_latitude_deg": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "magnetosphere_state": { "type": "string", "enum": ["quiet", "unsettled", "active", "storm", "severe_storm"] },
+        "ionosphere": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "total_electron_content_tecu": { "$ref": "#/$defs/ScalarSI" },
+            "gps_disturbance_level": { "type": "string", "enum": ["none", "minor", "moderate", "severe"] }
+          }
+        }
+      }
+    },
+
+    "AtmosphericLayer": {
+      "type": "object",
+      "description": "State of a single named atmospheric layer (troposphere, stratosphere, etc).",
+      "required": ["layer_name"],
+      "additionalProperties": false,
+      "properties": {
+        "layer_name": {
+          "type": "string",
+          "enum": ["troposphere", "stratosphere", "mesosphere", "thermosphere", "exosphere"]
+        },
+        "altitude_base_m":  { "type": "number" },
+        "altitude_top_m":   { "type": "number" },
+        "temperature_k":    { "$ref": "#/$defs/ScalarSI" },
+        "pressure_pa":      { "$ref": "#/$defs/ScalarSI" },
+        "density_kg_per_m3":{ "$ref": "#/$defs/ScalarSI" },
+        "composition":      { "$ref": "#/$defs/AirComposition" },
+        "wind":             { "$ref": "#/$defs/Vector3" },
+        "humidity_pct":     { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "AtmosphericLayers": {
+      "type": "object",
+      "description": "Full vertical stack of atmospheric layers from surface to exosphere.",
+      "additionalProperties": false,
+      "properties": {
+        "layers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AtmosphericLayer" }
+        }
+      }
+    },
+
+    "WeatherEvolution": {
+      "type": "object",
+      "description": "Time-dependent evolution of the weather state: current/historical/forecast composition, ensembles, and confidence.",
+      "additionalProperties": false,
+      "properties": {
+        "current_state_ref": { "type": "string", "description": "JSON pointer to the current authoritative state within this document, e.g. '#/atmosphere'." },
+        "historical_timeline": { "type": "array", "items": { "$ref": "#/$defs/Observation" } },
+        "forecast_timeline":   { "type": "array", "items": { "$ref": "#/$defs/Forecast" } },
+        "time_series":         { "type": "array", "items": { "$ref": "#/$defs/TimeSeries" } },
+        "interpolation":       { "$ref": "#/$defs/InterpolationMethod" },
+        "ensemble_forecast": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "member_count": { "type": "integer", "minimum": 1 },
+            "members":      { "type": "array", "items": { "$ref": "#/$defs/Forecast" } },
+            "spread":       { "$ref": "#/$defs/ConfidenceInterval" }
+          }
+        },
+        "forecast_confidence": { "$ref": "#/$defs/ConfidenceInterval" }
+      }
+    },
+
+    "SensorDegradationModel": {
+      "type": "object",
+      "description": "Generic weather-induced degradation model for a sensor modality, expressed as attenuation/noise/detection-probability terms rather than raw physics, so it can be applied by any rendering or sensor-simulation engine.",
+      "additionalProperties": false,
+      "properties": {
+        "sensor_modality": {
+          "type": "string",
+          "enum": ["camera_eo", "camera_ir", "thermal", "sar", "radar", "lidar", "sonar", "acoustic",
+                   "gps", "magnetometer", "laser_rangefinder", "hyperspectral", "night_vision", "custom"]
+        },
+        "attenuation_coefficient_per_m": { "$ref": "#/$defs/ScalarSI" },
+        "noise_increase_factor":  { "$ref": "#/$defs/ScalarSI" },
+        "scattering_coefficient": { "$ref": "#/$defs/ScalarSI" },
+        "backscatter_coefficient": { "$ref": "#/$defs/ScalarSI" },
+        "visibility_reduction_pct": { "$ref": "#/$defs/ScalarSI" },
+        "false_alarm_rate_increase": { "$ref": "#/$defs/ScalarSI" },
+        "detection_probability_factor": { "$ref": "#/$defs/ScalarSI", "description": "Multiplicative factor 0-1 applied to baseline detection probability." },
+        "spectral_attenuation_curve": { "$ref": "#/$defs/SpectralCurve" },
+        "primary_cause": {
+          "type": "string",
+          "enum": ["rain", "fog", "snow", "dust", "smoke", "humidity", "ionospheric", "tropospheric", "sea_clutter", "foliage", "custom"]
+        }
+      }
+    },
+
+    "SensorEffects": {
+      "type": "object",
+      "description": "Aggregated weather-to-sensor degradation models, optionally bound to specific sensor instances via SensorReference.",
+      "additionalProperties": false,
+      "properties": {
+        "models": { "type": "array", "items": { "$ref": "#/$defs/SensorDegradationModel" } },
+        "affected_sensors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "sensor": { "$ref": "#/$defs/SensorReference" },
+              "model_index": { "type": "integer", "minimum": 0, "description": "Index into `models` array applicable to this sensor instance." }
+            }
+          }
+        }
+      }
+    },
+
+    "AircraftWeatherEffects": {
+      "type": "object",
+      "description": "Weather effects on fixed-wing and rotary-wing aircraft performance, independent of any specific flight-dynamics engine.",
+      "additionalProperties": false,
+      "properties": {
+        "lift_degradation_factor": { "$ref": "#/$defs/ScalarSI" },
+        "drag_increase_factor":    { "$ref": "#/$defs/ScalarSI" },
+        "crosswind_component_mps": { "$ref": "#/$defs/ScalarSI" },
+        "icing": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "severity": { "type": "string", "enum": ["none", "trace", "light", "moderate", "severe"] },
+            "ice_accretion_rate_mm_per_min": { "$ref": "#/$defs/ScalarSI" },
+            "engine_icing_risk": { "type": "string", "enum": ["none", "low", "moderate", "high"] }
+          }
+        },
+        "turbulence_severity": { "type": "string", "enum": ["none", "light", "moderate", "severe", "extreme"] },
+        "wake_turbulence_factor": { "$ref": "#/$defs/ScalarSI" },
+        "density_altitude_m": { "$ref": "#/$defs/ScalarSI" },
+        "wind_shear_alert": { "type": "boolean", "default": false },
+        "microburst_alert": { "type": "boolean", "default": false },
+        "visibility_m": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "MaritimeWeatherEffects": {
+      "type": "object",
+      "description": "Weather effects on surface vessels and submarines.",
+      "additionalProperties": false,
+      "properties": {
+        "sea_state_code": { "type": "integer", "minimum": 0, "maximum": 9 },
+        "roll_pitch_increase_factor": { "$ref": "#/$defs/ScalarSI" },
+        "deck_icing_risk": { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+        "visibility_m": { "$ref": "#/$defs/ScalarSI" },
+        "submarine_thermocline_effect": { "$ref": "#/$defs/ScalarSI", "description": "Sonar propagation impact factor from thermocline/halocline structure." }
+      }
+    },
+
+    "GroundVehicleWeatherEffects": {
+      "type": "object",
+      "description": "Weather effects on wheeled, tracked, and pedestrian mobility.",
+      "additionalProperties": false,
+      "properties": {
+        "road_wetness_fraction":    { "$ref": "#/$defs/ScalarSI" },
+        "hydroplaning_risk":        { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+        "traction_coefficient":     { "$ref": "#/$defs/ScalarSI" },
+        "snow_traction_factor":     { "$ref": "#/$defs/ScalarSI" },
+        "ice_traction_factor":      { "$ref": "#/$defs/ScalarSI" },
+        "mud_depth_m":              { "$ref": "#/$defs/ScalarSI" },
+        "dust_ingestion_risk":      { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+        "sand_mobility_factor":     { "$ref": "#/$defs/ScalarSI" },
+        "flooding_depth_m":         { "$ref": "#/$defs/ScalarSI" },
+        "surface_material_ref":     { "$ref": "#/$defs/MaterialReference" }
+      }
+    },
+
+    "SpacecraftWeatherEffects": {
+      "type": "object",
+      "description": "Space-weather and re-entry environment effects on spacecraft and orbital systems.",
+      "additionalProperties": false,
+      "properties": {
+        "atmospheric_drag_factor": { "$ref": "#/$defs/ScalarSI" },
+        "radiation_exposure_sv_per_hr": { "$ref": "#/$defs/ScalarSI" },
+        "solar_panel_output_factor": { "$ref": "#/$defs/ScalarSI" },
+        "communication_blackout_risk": { "type": "string", "enum": ["none", "low", "moderate", "high"] }
+      }
+    },
+
+    "VehicleEffects": {
+      "type": "object",
+      "description": "Aggregated weather effects across vehicle/mobility classes, including robots and humans on foot.",
+      "additionalProperties": false,
+      "properties": {
+        "aircraft":     { "$ref": "#/$defs/AircraftWeatherEffects" },
+        "helicopter":   { "$ref": "#/$defs/AircraftWeatherEffects" },
+        "uav":          { "$ref": "#/$defs/AircraftWeatherEffects" },
+        "ground_vehicle": { "$ref": "#/$defs/GroundVehicleWeatherEffects" },
+        "tracked_vehicle": { "$ref": "#/$defs/GroundVehicleWeatherEffects" },
+        "ship":         { "$ref": "#/$defs/MaritimeWeatherEffects" },
+        "submarine":    { "$ref": "#/$defs/MaritimeWeatherEffects" },
+        "spacecraft":   { "$ref": "#/$defs/SpacecraftWeatherEffects" },
+        "ground_robot": { "$ref": "#/$defs/GroundVehicleWeatherEffects" },
+        "human_on_foot": { "$ref": "#/$defs/GroundVehicleWeatherEffects" }
+      }
+    },
+
+    "BallisticsEffects": {
+      "type": "object",
+      "description": "Standard environmental correction factors applied by fire-control and ballistics-simulation software to account for atmospheric conditions. These mirror long-published artillery/ballistics meteorology message fields (e.g. NATO METB) and describe environmental inputs only — not weapon design or construction.",
+      "additionalProperties": false,
+      "properties": {
+        "wind_drift_correction_mil": { "$ref": "#/$defs/ScalarSI" },
+        "air_density_correction_factor": { "$ref": "#/$defs/ScalarSI" },
+        "humidity_correction_factor": { "$ref": "#/$defs/ScalarSI" },
+        "temperature_correction_factor": { "$ref": "#/$defs/ScalarSI" },
+        "coriolis_deflection_m": { "$ref": "#/$defs/ScalarSI" },
+        "spin_drift_correction_mil": { "$ref": "#/$defs/ScalarSI" },
+        "precipitation_drag_increase_factor": { "$ref": "#/$defs/ScalarSI" },
+        "visibility_m": { "$ref": "#/$defs/ScalarSI" },
+        "speed_of_sound_m_per_s": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "WeaponSystemWeatherEffects": {
+      "type": "object",
+      "description": "Generic environmental-degradation factors for a weapon-system class, expressed purely as weather-driven performance multipliers (analogous to how rain de-rates solar panel output, or fog de-rates camera range). No targeting, guidance, fuzing, or design detail is modeled — only the environment's effect on already-existing platforms within a simulation.",
+      "additionalProperties": false,
+      "properties": {
+        "system_class": {
+          "type": "string",
+          "enum": ["guided_missile", "unguided_rocket", "gun_artillery", "mortar", "directed_energy", "loitering_munition", "custom"]
+        },
+        "guidance_degradation_factor": { "$ref": "#/$defs/ScalarSI", "description": "0-1 multiplier on baseline guidance/seeker performance due to weather (e.g. EO/IR seeker fog attenuation)." },
+        "range_reduction_factor":      { "$ref": "#/$defs/ScalarSI" },
+        "accuracy_dispersion_increase_factor": { "$ref": "#/$defs/ScalarSI" },
+        "directed_energy_atmospheric_attenuation": { "$ref": "#/$defs/ScalarSI", "description": "Beam attenuation factor from humidity/aerosols for directed-energy platforms." }
+      }
+    },
+
+    "WeaponEffects": {
+      "type": "object",
+      "description": "Aggregated environmental-performance-degradation factors across weapon-system classes, for use by simulation fire-control models. See BallisticsEffects for trajectory-level corrections.",
+      "additionalProperties": false,
+      "properties": {
+        "ballistics": { "$ref": "#/$defs/BallisticsEffects" },
+        "systems":    { "type": "array", "items": { "$ref": "#/$defs/WeaponSystemWeatherEffects" } }
+      }
+    },
+
+    "InfrastructureWeatherEffects": {
+      "type": "object",
+      "description": "Weather effects on static infrastructure assets.",
+      "additionalProperties": false,
+      "properties": {
+        "asset_class": {
+          "type": "string",
+          "enum": ["road", "bridge", "runway", "port", "railway", "building", "power_line",
+                   "communication_tower", "solar_farm", "wind_farm", "custom"]
+        },
+        "structural_load_factor": { "$ref": "#/$defs/ScalarSI", "description": "Multiplier on design load from wind/ice/snow loading." },
+        "operational_availability_pct": { "$ref": "#/$defs/ScalarSI" },
+        "power_output_factor": { "$ref": "#/$defs/ScalarSI", "description": "For solar_farm/wind_farm: weather-driven output multiplier." },
+        "flooding_risk": { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+        "icing_risk":    { "type": "string", "enum": ["none", "low", "moderate", "high"] }
+      }
+    },
+
+    "InfrastructureEffects": {
+      "type": "object",
+      "description": "Aggregated weather effects across infrastructure asset classes.",
+      "additionalProperties": false,
+      "properties": {
+        "assets": { "type": "array", "items": { "$ref": "#/$defs/InfrastructureWeatherEffects" } }
+      }
+    },
+
+    "HumanEffects": {
+      "type": "object",
+      "description": "Weather effects on human physiology, comfort, and safety.",
+      "additionalProperties": false,
+      "properties": {
+        "heat_index_k":      { "$ref": "#/$defs/ScalarSI" },
+        "wind_chill_k":      { "$ref": "#/$defs/ScalarSI" },
+        "heat_stress_level": { "type": "string", "enum": ["none", "caution", "extreme_caution", "danger", "extreme_danger"] },
+        "cold_stress_level": { "type": "string", "enum": ["none", "caution", "danger", "extreme_danger"] },
+        "visibility_impairment_factor": { "$ref": "#/$defs/ScalarSI" },
+        "breathing_hazard_level": { "$ref": "#/$defs/AirQuality/properties/breathing_hazard_level" },
+        "uv_exposure_index": { "$ref": "#/$defs/ScalarSI" },
+        "air_quality_hazard_level": { "type": "string", "enum": ["none", "low", "moderate", "high", "hazardous"] }
+      }
+    },
+
+    "BiologicalEffects": {
+      "type": "object",
+      "description": "Weather effects on plant, animal, and ecosystem processes.",
+      "additionalProperties": false,
+      "properties": {
+        "plant_growth_rate_factor": { "$ref": "#/$defs/ScalarSI" },
+        "photosynthesis_rate_factor": { "$ref": "#/$defs/ScalarSI" },
+        "disease_spread_risk_factor": { "$ref": "#/$defs/ScalarSI", "description": "Generic environmental favorability factor for vector/pathogen spread (e.g. humidity/temperature driven); not disease-specific guidance." },
+        "pollen_count": { "$ref": "#/$defs/ScalarSI" },
+        "insect_activity_factor": { "$ref": "#/$defs/ScalarSI" },
+        "animal_behavior_notes": { "type": "string" },
+        "migration_trigger_active": { "type": "boolean", "default": false }
+      }
+    },
+
+    "FireAndSmoke": {
+      "type": "object",
+      "description": "Fire-weather risk and smoke/aerosol dispersion driven by atmospheric conditions.",
+      "additionalProperties": false,
+      "properties": {
+        "fire_risk_index":   { "$ref": "#/$defs/ScalarSI", "description": "e.g. National Fire Danger Rating or equivalent normalized index." },
+        "fire_spread_rate_m_per_min": { "$ref": "#/$defs/ScalarSI" },
+        "smoke_density":     { "$ref": "#/$defs/ScalarSI" },
+        "smoke_plume": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "source_location": { "$ref": "#/$defs/GeoCoordinate" },
+            "dispersion_direction_deg": { "$ref": "#/$defs/ScalarSI" },
+            "plume_height_m":   { "$ref": "#/$defs/ScalarSI" },
+            "footprint":        { "$ref": "#/$defs/Polygon" }
+          }
+        },
+        "explosion_overpressure_atmospheric_factor": { "$ref": "#/$defs/ScalarSI", "description": "Atmospheric-density/temperature-driven scaling factor applied to overpressure propagation models elsewhere in the simulation; this schema does not model explosive yield or design." }
+      }
+    },
+
+    "AcousticEffects": {
+      "type": "object",
+      "description": "Weather effects on sound propagation, used for acoustic sensors and audio simulation.",
+      "additionalProperties": false,
+      "properties": {
+        "speed_of_sound_m_per_s": { "$ref": "#/$defs/ScalarSI" },
+        "acoustic_attenuation_db_per_km": { "$ref": "#/$defs/ScalarSI" },
+        "background_noise_level_db": { "$ref": "#/$defs/ScalarSI" },
+        "wind_noise_level_db":  { "$ref": "#/$defs/ScalarSI" },
+        "rain_noise_level_db":  { "$ref": "#/$defs/ScalarSI" },
+        "thunder_delay_s":      { "$ref": "#/$defs/ScalarSI" },
+        "reflection_coefficient": { "$ref": "#/$defs/ScalarSI" },
+        "absorption_coefficient": { "$ref": "#/$defs/ScalarSI" },
+        "reverberation_time_s":  { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "ElectromagneticEffects": {
+      "type": "object",
+      "description": "Weather and space-weather effects on RF propagation, navigation, and communications.",
+      "additionalProperties": false,
+      "properties": {
+        "atmospheric_attenuation_db_per_km": { "$ref": "#/$defs/ScalarSI" },
+        "rf_propagation_loss_factor": { "$ref": "#/$defs/ScalarSI" },
+        "gps_accuracy_degradation_m": { "$ref": "#/$defs/ScalarSI" },
+        "ionospheric_delay_ns":  { "$ref": "#/$defs/ScalarSI" },
+        "tropospheric_delay_ns": { "$ref": "#/$defs/ScalarSI" },
+        "scintillation_index":   { "$ref": "#/$defs/ScalarSI" },
+        "radio_refraction_factor": { "$ref": "#/$defs/ScalarSI" },
+        "multipath_risk":        { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+        "solar_geomagnetic_disturbance_level": { "$ref": "#/$defs/SpaceWeather/properties/magnetosphere_state" }
+      }
+    },
+
+    "SimulationCompatibility": {
+      "type": "object",
+      "description": "Engine-specific parameter blocks for physics/robotics/CFD/NWP simulation targets, keyed by SimulationReference.engine.",
+      "additionalProperties": false,
+      "properties": {
+        "targets": { "type": "array", "items": { "$ref": "#/$defs/SimulationReference" } }
+      }
+    },
+
+    "RenderingMetadata": {
+      "type": "object",
+      "description": "Visual rendering parameters for sky, cloud, fog, and HDR presentation. Strictly cosmetic — never authoritative for physics.",
+      "additionalProperties": false,
+      "properties": {
+        "sky_model": { "type": "string", "enum": ["preetham", "hosek_wilkie", "physical", "procedural", "custom"] },
+        "cloud_rendering": { "type": "string", "enum": ["billboard", "volumetric", "raymarched", "procedural", "custom"] },
+        "atmospheric_scattering_model": { "type": "string", "enum": ["rayleigh_mie", "physically_based", "stylized", "custom"] },
+        "fog_rendering": { "type": "string", "enum": ["linear", "exponential", "exponential_squared", "volumetric", "custom"] },
+        "volumetric_clouds_enabled": { "type": "boolean", "default": false },
+        "hdr_parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "exposure":  { "type": "number" },
+            "white_point": { "type": "number" }
+          }
+        },
+        "sky_color":  { "$ref": "#/$defs/Vector3", "description": "RGB 0-1." },
+        "sun_color":  { "$ref": "#/$defs/Vector3" },
+        "moon_color": { "$ref": "#/$defs/Vector3" }
+      }
+    },
+
+    "EngineCompatibility": {
+      "type": "object",
+      "description": "Compatibility/export blocks for DCC tools, USD ecosystems, and robotics middleware.",
+      "additionalProperties": false,
+      "properties": {
+        "openusd": { "type": "object", "additionalProperties": true },
+        "materialx": { "type": "object", "additionalProperties": true },
+        "cesium": { "type": "object", "additionalProperties": true },
+        "unreal": { "type": "object", "additionalProperties": true },
+        "unity": { "type": "object", "additionalProperties": true },
+        "blender": { "type": "object", "additionalProperties": true },
+        "ros2": { "type": "object", "additionalProperties": true },
+        "isaac_sim": { "type": "object", "additionalProperties": true },
+        "gazebo": { "type": "object", "additionalProperties": true },
+        "omniverse": { "type": "object", "additionalProperties": true }
+      }
+    },
+
+    "StandardReference": {
+      "type": "object",
+      "description": "Reference to an external meteorological, aviation, or data-interchange standard this schema or a value conforms to.",
+      "required": ["organization"],
+      "additionalProperties": false,
+      "properties": {
+        "organization": {
+          "type": "string",
+          "enum": ["WMO", "ICAO", "NOAA", "NASA", "ECMWF", "ISO", "IEC", "MIL", "ASTM", "NIST", "IPCC", "OpenWeather", "CF_Conventions", "NetCDF_Conventions", "GRIB2", "BUFR", "custom"]
+        },
+        "standard_id": { "type": "string", "description": "e.g. 'ISO 19115', 'MIL-STD-210C', 'WMO-No.306'." },
+        "url": { "type": "string", "format": "uri" },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "AIMetadata": {
+      "type": "object",
+      "description": "Metadata enabling AI reasoning, retrieval, and knowledge-graph integration over weather states.",
+      "additionalProperties": false,
+      "properties": {
+        "ontology_uri": { "type": "string", "format": "uri" },
+        "knowledge_graph_node": { "type": "string" },
+        "search_keywords": { "type": "array", "items": { "type": "string" } },
+        "semantic_labels": { "type": "array", "items": { "type": "string" } },
+        "embedding_vector": { "type": "array", "items": { "type": "number" } },
+        "natural_language_description": { "type": "string" },
+        "military_tags": { "type": "array", "items": { "type": "string" } },
+        "civilian_tags": { "type": "array", "items": { "type": "string" } },
+        "mission_tags": { "type": "array", "items": { "type": "string" } },
+        "functional_tags": { "type": "array", "items": { "type": "string" } },
+        "reasoning_tags": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "SchemaIntegration": {
+      "type": "object",
+      "description": "Declares cross-references to sibling PhysWorldLM schemas so weather data composes without duplicating their definitions.",
+      "additionalProperties": false,
+      "properties": {
+        "metadata_schema": { "type": "string", "default": "metadata.schema.json" },
+        "environment_schema": { "type": "string", "default": "environment.schema.json" },
+        "physics_schema": { "type": "string", "default": "physics.schema.json" },
+        "terrain_schema": { "type": "string", "default": "terrain.schema.json" },
+        "material_schema": { "type": "string", "default": "material.schema.json" },
+        "world_schema": { "type": "string", "default": "world.schema.json" }
+      }
+    },
+
+    "ValidationRules": {
+      "type": "object",
+      "description": "Cross-field and physical-consistency validation rules for this weather document.",
+      "additionalProperties": false,
+      "properties": {
+        "enforce_physical_limits": { "type": "boolean", "default": true },
+        "enforce_si_units":        { "type": "boolean", "default": true },
+        "require_time_consistency": { "type": "boolean", "default": true, "description": "start_time <= simulation_time <= end_time where all are present." },
+        "require_forecast_consistency": { "type": "boolean", "default": true, "description": "forecast.issued_at <= forecast.valid_at." },
+        "require_atmospheric_consistency": { "type": "boolean", "default": true, "description": "e.g. dew_point_k <= air_temperature_k; relative_humidity_pct in [0,100]." },
+        "custom_validators": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

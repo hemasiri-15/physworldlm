@@ -1,0 +1,1524 @@
+{
+  "$comment": "PhysWorldLM Golden Reference Example — PW-WSF-1300 Example 04: Air Intercept. 1v1 beyond-visual-range air-to-air engagement between a Blue Force F-16C (Viper) and a Red Force Su-30MK (Flanker). Exercises metadata, world, environment, terrain, weather, organizations, entities (aircraft × 2, BVRAAM missile, radar, IRST, RWR, GPS, INS), assets, missions, behavior, timeline, events, renderer, and output. Canonical integration-test scenario for PhysWorldLM WorldSpec v1.0.0.",
+
+  "metadata": {
+    "worldspec_version": "1.0.0",
+    "scene_name":        "Air Intercept — Viper vs Flanker",
+    "uuid":              "a1b2c3d4-0001-0001-0001-000000000001",
+    "author":            "PhysWorldLM Architecture Working Group",
+    "organization":      "PhysWorldLM",
+    "created_at":        "2025-01-15T08:00:00Z",
+    "modified_at":       "2025-01-15T08:00:00Z",
+    "simulation_engine_hint": "omniverse",
+    "ontology_version":  "1.0.0",
+    "coordinate_system": "ENU",
+    "units": {
+      "length":      "meters",
+      "mass":        "kg",
+      "time":        "seconds",
+      "angle":       "degrees",
+      "temperature": "celsius"
+    },
+    "description":  "Golden reference scenario. One Blue Force F-16C and one Red Force Su-30MK engage in a 1v1 beyond-visual-range (BVR) intercept over the Eastern Mediterranean at 08:15 local. Blue fires an AIM-120D AMRAAM; Red attempts a chaff/flare break and radar jamming. Outcome: missile impact at T+95 s. Exercises all PhysWorldLM WorldSpec schemas in a single coherent scenario.",
+    "tags":         ["air_intercept", "bvr", "fighter", "missile", "f16", "su30", "amraam", "golden_reference", "integration_test"],
+    "classification_level": "unclassified",
+    "domain":        "military",
+    "scenario_type": "training"
+  },
+
+  "world": {
+    "physics_config": {
+      "gravity":              { "x": 0.0, "y": 0.0, "z": -9.81 },
+      "air_density_kg_m3":    0.736,
+      "speed_of_sound_mps":   316.0,
+      "physics_step_s":       0.005,
+      "substeps":             4,
+      "solver":               "rk4",
+      "collision_detection":  "continuous",
+      "enable_fluid":         false,
+      "enable_soft_body":     false,
+      "enable_cloth":         false,
+      "enable_particles":     true
+    },
+    "simulation_config": {
+      "duration_s":    120.0,
+      "time_scale":    1.0,
+      "random_seed":   20250115,
+      "deterministic": true,
+      "tick_rate_hz":  100,
+      "render_rate_hz": 30,
+      "sensor_rate_hz": 10,
+      "log_level":     "info",
+      "enable_replay": true
+    },
+    "reference_frame": {
+      "origin_geo": {
+        "latitude":  34.0,
+        "longitude": 33.0,
+        "altitude":  0.0
+      },
+      "origin_cartesian": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "up_axis": "Z",
+      "planet":   "Earth"
+    }
+  },
+
+  "environment": {
+    "setting": "ocean",
+    "time_of_day": {
+      "simulation_start_utc": "2025-06-15T05:15:00Z",
+      "time_of_day_s":        29700,
+      "day_of_year":          166,
+      "year":                 2025
+    },
+    "weather": {
+      "temperature_c":     8.0,
+      "humidity_pct":      55.0,
+      "pressure_hpa":      918.0,
+      "wind": {
+        "speed_mps":      12.0,
+        "direction_deg":  270.0,
+        "gusts_mps":      18.0,
+        "shear_profile": [
+          { "altitude_m": 0,     "speed_mps": 5.0  },
+          { "altitude_m": 1000,  "speed_mps": 9.0  },
+          { "altitude_m": 3000,  "speed_mps": 12.0 },
+          { "altitude_m": 7500,  "speed_mps": 18.0 },
+          { "altitude_m": 10000, "speed_mps": 22.0 }
+        ]
+      },
+      "precipitation": {
+        "type":            "none",
+        "intensity_mm_hr": 0.0
+      },
+      "fog": {
+        "enabled":      false,
+        "density":      0.0,
+        "visibility_m": 50000
+      },
+      "cloud_cover_pct":     30.0,
+      "cloud_base_m":        2400.0,
+      "cloud_ceiling_m":     5800.0,
+      "visibility_km":       50.0,
+      "solar_irradiance_wm2": 820.0,
+      "sea_state":           3,
+      "wave_height_m":       1.2,
+      "dust_density":        0.0
+    },
+    "terrain": {
+      "dem_ref":     "cesium://assets/1/Eastern_Mediterranean_DEM",
+      "tile_source": "https://assets.cesium.com/1/Eastern_Mediterranean",
+      "bounds": {
+        "southwest": { "latitude": 33.0, "longitude": 32.0 },
+        "northeast": { "latitude": 35.0, "longitude": 34.5 }
+      },
+      "features": [
+        {
+          "feature_type": "ocean",
+          "geometry_ref": "terrain://features/mediterranean_sea",
+          "properties":   { "depth_m": 1500.0 }
+        },
+        {
+          "feature_type": "runway",
+          "geometry_ref": "terrain://features/lca_runway",
+          "properties":   { "name": "Larnaca International Runway 04/22", "length_m": 2991 }
+        }
+      ]
+    }
+  },
+
+  "organizations": [
+    {
+      "id":           "org-0001-0000-0000-000000000001",
+      "name":         "Blue Force — 64th Aggressor Squadron",
+      "org_type":     "squadron",
+      "faction":      "BLUE",
+      "parent_org_id": null,
+      "child_org_ids": [],
+      "entity_ids":   ["ent-0001-0000-0000-000000000001"],
+      "commander_id": "ent-0001-0000-0000-000000000001",
+      "callsign":     "VIPER FLIGHT",
+      "country_code": "US"
+    },
+    {
+      "id":           "org-0002-0000-0000-000000000002",
+      "name":         "Red Force — 4th Air Army, 22nd Fighter Regiment",
+      "org_type":     "flight",
+      "faction":      "RED",
+      "parent_org_id": null,
+      "child_org_ids": [],
+      "entity_ids":   ["ent-0002-0000-0000-000000000002"],
+      "commander_id": "ent-0002-0000-0000-000000000002",
+      "callsign":     "FLANKER LEAD",
+      "country_code": "RU"
+    }
+  ],
+
+  "entities": [
+
+    {
+      "id":          "ent-0001-0000-0000-000000000001",
+      "name":        "Viper 1",
+      "label":       "F-16C Block 52 — Viper 1",
+      "description": "Blue Force F-16C Block 52 Fighting Falcon. Primary BVR interceptor. Carries one AIM-120D AMRAAM on station 7, two AIM-9X on stations 1 and 9, and a full gun load.",
+      "entity_type": "aircraft",
+      "subtype":     "F-16C Block 52",
+      "category":    "fixed_wing_fighter",
+      "tags":        ["blue_force", "fighter", "f16", "bvr_capable", "viper"],
+      "callsign":    "VIPER 1",
+      "owner_faction":      "BLUE",
+      "owner_organization": "64th Aggressor Squadron",
+      "ontology_class":     "pw:Fighter",
+      "semantic_labels":    ["aircraft", "fighter", "fourth_generation", "blue_force"],
+
+      "transform": {
+        "position":        { "x": 0.0, "y": 0.0, "z": 7500.0 },
+        "rotation":        { "x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0 },
+        "scale":           { "x": 1.0, "y": 1.0, "z": 1.0 },
+        "geo_coordinate":  { "latitude": 34.1, "longitude": 32.8, "altitude": 7500.0 },
+        "reference_frame": "geo"
+      },
+
+      "geometry": {
+        "primitive":   "custom",
+        "bounding_box": {
+          "min": { "x": -4.98, "y": -0.5, "z": -1.0 },
+          "max": { "x":  4.98, "y":  5.0, "z":  1.0 }
+        },
+        "asset_ref":  "assets/models/f16c_block52.usd",
+        "lod_refs":   ["assets/models/f16c_lod1.usd", "assets/models/f16c_lod2.usd"],
+        "collision_geometry": "convex_hull"
+      },
+
+      "physics_body": {
+        "body_type":           "dynamic",
+        "mass":                9525.0,
+        "center_of_mass":      { "x": 0.0, "y": 1.8, "z": 0.0 },
+        "linear_velocity":     { "x": 250.0, "y": 0.0, "z": 0.0 },
+        "angular_velocity":    { "x": 0.0,   "y": 0.0, "z": 0.0 },
+        "linear_damping":      0.0,
+        "angular_damping":     0.01,
+        "drag_coefficient":    0.024,
+        "lift_coefficient":    1.4,
+        "gravity_scale":       1.0,
+        "collision_enabled":   true,
+        "continuous_collision_detection": true
+      },
+
+      "materials": [
+        {
+          "id":   "mat-f16-skin",
+          "name": "F-16C Tactical Gray Skin",
+          "type": "metal",
+          "density":              2700.0,
+          "friction":             0.3,
+          "restitution":          0.1,
+          "emissivity":           0.05,
+          "radar_cross_section":  1.2,
+          "ir_signature":         0.45,
+          "albedo":               0.22,
+          "roughness":            0.7,
+          "metallic":             0.8,
+          "opacity":              1.0,
+          "texture_refs":         ["assets/textures/f16_tactical_gray_diffuse.png", "assets/textures/f16_normal.png"]
+        }
+      ],
+
+      "health": {
+        "hp_max":      100,
+        "hp_current":  100,
+        "armor_rating": 5,
+        "damage_model": "component_based",
+        "damaged_components": [],
+        "is_destroyed": false,
+        "destruction_effect": "fx://explosion_aircraft_large"
+      },
+
+      "power": {
+        "source_type":            "turbine",
+        "output_kw":              17800.0,
+        "consumption_kw":         9200.0,
+        "fuel_type":              "JP-8",
+        "fuel_capacity_liters":   3162.0,
+        "fuel_remaining_liters":  2900.0,
+        "range_km":               550.0,
+        "endurance_hours":        1.5
+      },
+
+      "propulsion": {
+        "propulsion_type":    "jet",
+        "max_speed_mps":      555.0,
+        "max_altitude_m":     15240.0,
+        "acceleration_mps2":  35.0,
+        "max_climb_rate_mps": 305.0,
+        "max_turn_rate_dps":  14.0,
+        "thrust_n":           129000.0,
+        "engine_count":       1
+      },
+
+      "ai_behavior": {
+        "controller_type":    "behavior_tree",
+        "behavior_tree_ref":  "behaviors/blue_f16_intercept_bt.json",
+        "current_state":      "patrol",
+        "current_task":       "CAP_patrol_alpha",
+        "goals": [
+          {
+            "goal_type":  "patrol",
+            "priority":   3,
+            "parameters": { "waypoints": ["wp-blue-1", "wp-blue-2", "wp-blue-3"] }
+          },
+          {
+            "goal_type":  "intercept",
+            "priority":   1,
+            "target_id":  "ent-0002-0000-0000-000000000002",
+            "parameters": { "roe": "weapons_free_on_positive_id" }
+          }
+        ],
+        "perception_radius_m": 370000,
+        "faction":             "BLUE",
+        "team_id":             "VIPER_FLIGHT",
+        "rules_of_engagement": "weapons_free_on_positive_id",
+        "threat_awareness":    true,
+        "autonomous_level":    "supervised_autonomous"
+      },
+
+      "sensors": [
+        {
+          "id":          "sen-f16-apg68",
+          "name":        "AN/APG-68(V)9 Fire Control Radar",
+          "sensor_type": "radar",
+          "mount_transform": {
+            "position": { "x": 0.0, "y": 4.98, "z": 0.0 },
+            "reference_frame": "local"
+          },
+          "field_of_view": {
+            "horizontal_deg": 120.0,
+            "vertical_deg":   120.0,
+            "min_range_m":    500.0,
+            "max_range_m":    296000.0
+          },
+          "frame_rate_hz":       10.0,
+          "noise_model":         "gaussian_rcs",
+          "latency_ms":          25.0,
+          "power_consumption_w": 3500.0,
+          "output_topic":        "/viper1/radar/returns",
+          "enabled":             true,
+          "custom_properties": {
+            "prf_hz":            2000,
+            "waveforms":         ["pulse_doppler", "pulse"],
+            "modes":             ["search", "track_while_scan", "single_target_track", "air_to_ground"],
+            "current_mode":      "track_while_scan",
+            "track_capacity":    10,
+            "ecm_resistance":    0.7
+          }
+        },
+        {
+          "id":          "sen-f16-eo",
+          "name":        "Sniper Advanced Targeting Pod",
+          "sensor_type": "camera_eo",
+          "mount_transform": {
+            "position": { "x": 0.5, "y": -0.5, "z": 0.0 },
+            "reference_frame": "local"
+          },
+          "field_of_view": {
+            "horizontal_deg": 4.0,
+            "vertical_deg":   4.0,
+            "min_range_m":    100.0,
+            "max_range_m":    40000.0
+          },
+          "resolution":    { "width": 1920, "height": 1080 },
+          "frame_rate_hz": 30.0,
+          "spectral_band": "visible_nir",
+          "latency_ms":    33.0,
+          "output_topic":  "/viper1/eo/image_raw",
+          "enabled":       true
+        },
+        {
+          "id":          "sen-f16-gps",
+          "name":        "GPS/SAASM Navigation",
+          "sensor_type": "gps",
+          "mount_transform": { "reference_frame": "body" },
+          "frame_rate_hz": 10.0,
+          "latency_ms":   100.0,
+          "output_topic": "/viper1/gps/fix",
+          "enabled":      true,
+          "custom_properties": { "anti_spoof": true, "constellation": ["GPS", "GLONASS"] }
+        },
+        {
+          "id":          "sen-f16-ins",
+          "name":        "Litton LN-93 INS",
+          "sensor_type": "ins",
+          "mount_transform": { "reference_frame": "body" },
+          "frame_rate_hz": 100.0,
+          "latency_ms":   0.5,
+          "output_topic": "/viper1/ins/imu_raw",
+          "enabled":      true
+        }
+      ],
+
+      "weapons": [
+        {
+          "id":                "wpn-f16-aim120d-7",
+          "name":              "AIM-120D AMRAAM — Station 7",
+          "weapon_type":       "missile",
+          "mount_transform": {
+            "position": { "x": 0.0, "y": 0.0, "z": -0.6 },
+            "reference_frame": "local"
+          },
+          "ammunition_count":    1,
+          "muzzle_velocity_mps": 0.0,
+          "effective_range_m":   185000,
+          "max_range_m":         200000,
+          "warhead_type":        "blast_fragmentation",
+          "guidance_type":       "active_radar",
+          "reload_time_s":       0.0,
+          "state":               "ready",
+          "enabled":             true,
+          "custom_properties": {
+            "seeker_type":       "active_radar_homing",
+            "datalink":          true,
+            "no_escape_zone_km": 45.0,
+            "maneuverability_g": 40
+          }
+        },
+        {
+          "id":                "wpn-f16-aim9x-1",
+          "name":              "AIM-9X Sidewinder — Station 1",
+          "weapon_type":       "missile",
+          "mount_transform": {
+            "position": { "x": -4.5, "y": 0.0, "z": -0.3 },
+            "reference_frame": "local"
+          },
+          "ammunition_count":    1,
+          "effective_range_m":   35000,
+          "max_range_m":         35000,
+          "warhead_type":        "blast_fragmentation",
+          "guidance_type":       "passive_ir",
+          "state":               "ready",
+          "enabled":             true
+        },
+        {
+          "id":            "wpn-f16-gun",
+          "name":          "M61A1 Vulcan 20mm",
+          "weapon_type":   "cannon",
+          "ammunition_count": 512,
+          "rate_of_fire_rpm": 6000,
+          "muzzle_velocity_mps": 1050.0,
+          "effective_range_m":   1800.0,
+          "max_range_m":         3500.0,
+          "warhead_type":        "20mm_HEI_T",
+          "guidance_type":       "unguided",
+          "state":               "ready",
+          "enabled":             true
+        }
+      ],
+
+      "communications": [
+        {
+          "id":              "com-f16-link16",
+          "name":            "Link 16 MIDS-LVT",
+          "comm_type":       "link16",
+          "frequency_mhz":   969.0,
+          "bandwidth_khz":   3000.0,
+          "range_km":        500.0,
+          "data_rate_kbps":  238.0,
+          "encryption":      true,
+          "encryption_standard": "HAVE QUICK II",
+          "power_w":         200.0,
+          "latency_ms":      12.5,
+          "protocol":        "TADIL-J",
+          "enabled":         true
+        },
+        {
+          "id":           "com-f16-uhf",
+          "name":         "UHF/VHF Radio ARC-210",
+          "comm_type":    "radio_uhf",
+          "frequency_mhz": 305.0,
+          "range_km":     500.0,
+          "encryption":   true,
+          "power_w":      100.0,
+          "enabled":      true
+        }
+      ],
+
+      "state": {
+        "lifecycle":     "active",
+        "visibility":    "visible",
+        "is_active":     true,
+        "is_collidable": true,
+        "speed_mps":     250.0,
+        "altitude_m":    7500.0,
+        "heading_deg":   090.0,
+        "mach":          0.79,
+        "g_load":        1.0,
+        "radar_mode":    "track_while_scan",
+        "lock_on_target": null,
+        "countermeasures_chaff": 60,
+        "countermeasures_flares": 60
+      },
+
+      "relationships": [
+        {
+          "relation_type": "enemyOf",
+          "target_id":     "ent-0002-0000-0000-000000000002"
+        },
+        {
+          "relation_type": "targets",
+          "target_id":     "ent-0002-0000-0000-000000000002"
+        }
+      ],
+
+      "parent_id": null,
+      "child_ids": ["ent-0003-0000-0000-000000000003"]
+    },
+
+    {
+      "id":          "ent-0002-0000-0000-000000000002",
+      "name":        "Flanker Lead",
+      "label":       "Su-30MK Flanker-C — Flanker Lead",
+      "description": "Red Force Su-30MK multirole fighter. Carries two R-77 (AA-12 Adder) active-radar BVR missiles, two R-73 (AA-11 Archer) short-range IR missiles, and a 30mm cannon. Equipped with IRST, RWR, and jamming pod.",
+      "entity_type": "aircraft",
+      "subtype":     "Su-30MK",
+      "category":    "fixed_wing_fighter",
+      "tags":        ["red_force", "fighter", "su30", "flanker", "bvr_capable"],
+      "callsign":    "FLANKER 1",
+      "owner_faction":      "RED",
+      "owner_organization": "22nd Fighter Regiment",
+      "ontology_class":     "pw:Fighter",
+      "semantic_labels":    ["aircraft", "fighter", "fourth_generation", "red_force"],
+
+      "transform": {
+        "position":        { "x": 148000.0, "y": 0.0, "z": 8000.0 },
+        "rotation":        { "x": 0.0, "y": 0.0, "z": 0.707, "w": 0.707 },
+        "scale":           { "x": 1.0, "y": 1.0, "z": 1.0 },
+        "geo_coordinate":  { "latitude": 34.1, "longitude": 34.2, "altitude": 8000.0 },
+        "reference_frame": "geo"
+      },
+
+      "geometry": {
+        "primitive":  "custom",
+        "bounding_box": {
+          "min": { "x": -7.4, "y": -0.6, "z": -1.0 },
+          "max": { "x":  7.4, "y":  6.4, "z":  1.2 }
+        },
+        "asset_ref":  "assets/models/su30mk.usd",
+        "lod_refs":   ["assets/models/su30mk_lod1.usd", "assets/models/su30mk_lod2.usd"],
+        "collision_geometry": "convex_hull"
+      },
+
+      "physics_body": {
+        "body_type":           "dynamic",
+        "mass":                18400.0,
+        "center_of_mass":      { "x": 0.0, "y": 2.5, "z": 0.0 },
+        "linear_velocity":     { "x": -260.0, "y": 0.0, "z": 0.0 },
+        "angular_velocity":    { "x": 0.0, "y": 0.0, "z": 0.0 },
+        "drag_coefficient":    0.026,
+        "lift_coefficient":    1.6,
+        "gravity_scale":       1.0,
+        "collision_enabled":   true,
+        "continuous_collision_detection": true
+      },
+
+      "materials": [
+        {
+          "id":   "mat-su30-skin",
+          "name": "Su-30MK Air Superiority Blue-Gray",
+          "type": "metal",
+          "density":              2650.0,
+          "friction":             0.3,
+          "restitution":          0.1,
+          "emissivity":           0.06,
+          "radar_cross_section":  4.0,
+          "ir_signature":         0.72,
+          "albedo":               0.2,
+          "roughness":            0.65,
+          "metallic":             0.8,
+          "opacity":              1.0,
+          "texture_refs": ["assets/textures/su30mk_diffuse.png", "assets/textures/su30mk_normal.png"]
+        }
+      ],
+
+      "health": {
+        "hp_max":       100,
+        "hp_current":   100,
+        "armor_rating":  5,
+        "damage_model":  "component_based",
+        "damaged_components": [],
+        "is_destroyed":  false,
+        "destruction_effect": "fx://explosion_aircraft_large"
+      },
+
+      "power": {
+        "source_type":            "turbine",
+        "output_kw":              26000.0,
+        "consumption_kw":         14000.0,
+        "fuel_type":              "T-1",
+        "fuel_capacity_liters":   9640.0,
+        "fuel_remaining_liters":  8200.0,
+        "range_km":               3000.0,
+        "endurance_hours":        4.0
+      },
+
+      "propulsion": {
+        "propulsion_type":    "jet",
+        "max_speed_mps":      660.0,
+        "max_altitude_m":     17500.0,
+        "acceleration_mps2":  28.0,
+        "max_climb_rate_mps": 230.0,
+        "max_turn_rate_dps":  16.0,
+        "thrust_n":           245000.0,
+        "engine_count":       2
+      },
+
+      "ai_behavior": {
+        "controller_type":   "behavior_tree",
+        "behavior_tree_ref": "behaviors/red_su30_defensive_bt.json",
+        "current_state":     "patrol",
+        "current_task":      "offensive_patrol_beta",
+        "goals": [
+          {
+            "goal_type":  "patrol",
+            "priority":   3,
+            "parameters": { "waypoints": ["wp-red-1", "wp-red-2"] }
+          },
+          {
+            "goal_type":  "evade",
+            "priority":   1,
+            "parameters": { "trigger": "rwr_launch_warning", "maneuver": "break_turn_chaff" }
+          },
+          {
+            "goal_type":  "engage",
+            "priority":   2,
+            "target_id":  "ent-0001-0000-0000-000000000001",
+            "parameters": { "roe": "weapons_free" }
+          }
+        ],
+        "perception_radius_m": 400000,
+        "faction":             "RED",
+        "team_id":             "FLANKER_FLIGHT",
+        "rules_of_engagement": "weapons_free",
+        "threat_awareness":    true,
+        "autonomous_level":    "supervised_autonomous"
+      },
+
+      "sensors": [
+        {
+          "id":          "sen-su30-n011m",
+          "name":        "NIIP N011M Bars Fire Control Radar",
+          "sensor_type": "radar",
+          "mount_transform": {
+            "position": { "x": 0.0, "y": 7.4, "z": 0.0 },
+            "reference_frame": "local"
+          },
+          "field_of_view": {
+            "horizontal_deg": 120.0,
+            "vertical_deg":   100.0,
+            "min_range_m":    200.0,
+            "max_range_m":    350000.0
+          },
+          "frame_rate_hz":       10.0,
+          "noise_model":         "gaussian_rcs",
+          "latency_ms":          30.0,
+          "power_consumption_w": 5000.0,
+          "output_topic":        "/flanker1/radar/returns",
+          "enabled":             true,
+          "custom_properties": {
+            "modes":       ["search", "track_while_scan", "single_target_track"],
+            "current_mode": "track_while_scan",
+            "track_capacity": 15,
+            "can_track_simultaneously": 4
+          }
+        },
+        {
+          "id":          "sen-su30-irst",
+          "name":        "OLS-30 IRST",
+          "sensor_type": "camera_ir",
+          "mount_transform": {
+            "position": { "x": 0.0, "y": 7.2, "z": -0.3 },
+            "reference_frame": "local"
+          },
+          "field_of_view": {
+            "horizontal_deg": 90.0,
+            "vertical_deg":   60.0,
+            "min_range_m":    200.0,
+            "max_range_m":    50000.0
+          },
+          "resolution":    { "width": 640, "height": 480 },
+          "frame_rate_hz": 25.0,
+          "spectral_band": "MWIR",
+          "latency_ms":    40.0,
+          "output_topic":  "/flanker1/irst/image_raw",
+          "enabled":       true,
+          "custom_properties": { "passive_ranging": true, "laser_rangefinder": true }
+        },
+        {
+          "id":          "sen-su30-spo15",
+          "name":        "SPO-15LM Beryoza RWR",
+          "sensor_type": "sigint",
+          "field_of_view": { "horizontal_deg": 360.0, "vertical_deg": 180.0 },
+          "frame_rate_hz": 20.0,
+          "latency_ms":   15.0,
+          "output_topic": "/flanker1/rwr/alerts",
+          "enabled":      true,
+          "custom_properties": {
+            "frequency_range_ghz": [0.5, 18.0],
+            "launch_detection":    true,
+            "lock_detection":      true
+          }
+        },
+        {
+          "id":          "sen-su30-gps",
+          "name":        "GLONASS/GPS Navigation",
+          "sensor_type": "gps",
+          "frame_rate_hz": 10.0,
+          "output_topic": "/flanker1/gps/fix",
+          "enabled":      true,
+          "custom_properties": { "constellation": ["GLONASS", "GPS"] }
+        }
+      ],
+
+      "weapons": [
+        {
+          "id":               "wpn-su30-r77-l",
+          "name":             "R-77 (AA-12 Adder) — Left Wing",
+          "weapon_type":      "missile",
+          "mount_transform": { "position": { "x": -5.0, "y": 0.0, "z": -0.4 }, "reference_frame": "local" },
+          "ammunition_count": 1,
+          "effective_range_m": 110000,
+          "max_range_m":       120000,
+          "warhead_type":      "blast_fragmentation",
+          "guidance_type":     "active_radar",
+          "state":             "ready",
+          "enabled":           true,
+          "custom_properties": { "no_escape_zone_km": 30.0, "maneuverability_g": 35 }
+        },
+        {
+          "id":               "wpn-su30-r77-r",
+          "name":             "R-77 (AA-12 Adder) — Right Wing",
+          "weapon_type":      "missile",
+          "mount_transform": { "position": { "x": 5.0, "y": 0.0, "z": -0.4 }, "reference_frame": "local" },
+          "ammunition_count": 1,
+          "effective_range_m": 110000,
+          "max_range_m":       120000,
+          "warhead_type":      "blast_fragmentation",
+          "guidance_type":     "active_radar",
+          "state":             "ready",
+          "enabled":           true
+        },
+        {
+          "id":               "wpn-su30-r73-l",
+          "name":             "R-73 (AA-11 Archer) — Left Tip",
+          "weapon_type":      "missile",
+          "effective_range_m": 20000,
+          "warhead_type":      "blast_fragmentation",
+          "guidance_type":     "passive_ir",
+          "state":             "ready",
+          "enabled":           true
+        },
+        {
+          "id":            "wpn-su30-gsh301",
+          "name":          "GSh-30-1 30mm Cannon",
+          "weapon_type":   "cannon",
+          "ammunition_count": 150,
+          "rate_of_fire_rpm": 1800,
+          "muzzle_velocity_mps": 900.0,
+          "effective_range_m":   800.0,
+          "max_range_m":         2000.0,
+          "warhead_type":        "30mm_HEI",
+          "guidance_type":       "unguided",
+          "state":               "ready",
+          "enabled":             true
+        }
+      ],
+
+      "communications": [
+        {
+          "id":           "com-su30-datalink",
+          "name":         "Russian Datalink / SADL Equivalent",
+          "comm_type":    "data_link",
+          "frequency_mhz": 400.0,
+          "range_km":     350.0,
+          "data_rate_kbps": 56.0,
+          "encryption":   true,
+          "power_w":      150.0,
+          "enabled":      true
+        }
+      ],
+
+      "state": {
+        "lifecycle":      "active",
+        "visibility":     "visible",
+        "is_active":      true,
+        "is_collidable":  true,
+        "speed_mps":      260.0,
+        "altitude_m":     8000.0,
+        "heading_deg":    270.0,
+        "mach":           0.82,
+        "g_load":         1.0,
+        "radar_mode":     "track_while_scan",
+        "jamming_active": false,
+        "countermeasures_chaff": 60,
+        "countermeasures_flares": 60
+      },
+
+      "relationships": [
+        {
+          "relation_type": "enemyOf",
+          "target_id":     "ent-0001-0000-0000-000000000001"
+        }
+      ],
+
+      "parent_id": null,
+      "child_ids": ["ent-0003-0000-0000-000000000003"]
+    },
+
+    {
+      "id":          "ent-0003-0000-0000-000000000003",
+      "name":        "AMRAAM-01",
+      "label":       "AIM-120D AMRAAM — In Flight",
+      "description": "AIM-120D fired from Viper 1 at T+45 s. Active radar seeker with mid-course datalink update. Not yet spawned at scenario start — spawned by timeline trigger at T=45.",
+      "entity_type": "missile",
+      "subtype":     "AIM-120D",
+      "category":    "air_to_air_missile_active_radar",
+      "tags":        ["blue_force", "amraam", "bvr_missile", "active_radar"],
+      "callsign":    "AMRAAM-01",
+      "owner_faction":      "BLUE",
+      "owner_organization": "64th Aggressor Squadron",
+      "ontology_class":     "pw:BVRAMissile",
+
+      "transform": {
+        "position":        { "x": 0.0,      "y": 0.0, "z": 7500.0 },
+        "rotation":        { "x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0 },
+        "geo_coordinate":  { "latitude": 34.1, "longitude": 32.8, "altitude": 7500.0 },
+        "reference_frame": "geo"
+      },
+
+      "geometry": {
+        "primitive": "capsule",
+        "radius":     0.178,
+        "height":     3.657,
+        "collision_geometry": "convex_hull"
+      },
+
+      "physics_body": {
+        "body_type":           "dynamic",
+        "mass":                152.0,
+        "linear_velocity":     { "x": 0.0, "y": 0.0, "z": 0.0 },
+        "angular_velocity":    { "x": 0.0, "y": 0.0, "z": 0.0 },
+        "drag_coefficient":    0.018,
+        "gravity_scale":       1.0,
+        "collision_enabled":   true,
+        "continuous_collision_detection": true
+      },
+
+      "materials": [
+        {
+          "id":   "mat-amraam-body",
+          "name": "AMRAAM Airframe",
+          "type": "metal",
+          "density":             2700.0,
+          "radar_cross_section": 0.001,
+          "ir_signature":        0.9
+        }
+      ],
+
+      "health": {
+        "hp_max":    1,
+        "hp_current": 1,
+        "damage_model": "simple_hp",
+        "is_destroyed": false,
+        "destruction_effect": "fx://explosion_missile_warhead"
+      },
+
+      "propulsion": {
+        "propulsion_type":   "rocket",
+        "max_speed_mps":     1525.0,
+        "max_altitude_m":    20000.0,
+        "acceleration_mps2": 600.0,
+        "thrust_n":          11500.0,
+        "engine_count":      1
+      },
+
+      "ai_behavior": {
+        "controller_type":   "state_machine",
+        "state_machine_ref": "behaviors/amraam_guidance_sm.json",
+        "current_state":     "boost",
+        "goals": [
+          {
+            "goal_type":  "intercept_target",
+            "priority":   1,
+            "target_id":  "ent-0002-0000-0000-000000000002",
+            "parameters": {
+              "guidance_phases": ["boost", "midcourse_inertial", "midcourse_datalink", "terminal_active_radar"],
+              "fuze_type":       "proximity",
+              "fuze_radius_m":   15.0
+            }
+          }
+        ],
+        "autonomous_level": "fully_autonomous"
+      },
+
+      "sensors": [
+        {
+          "id":          "sen-amraam-seeker",
+          "name":        "AIM-120D Active Radar Seeker",
+          "sensor_type": "radar",
+          "field_of_view": {
+            "horizontal_deg": 90.0,
+            "vertical_deg":   90.0,
+            "min_range_m":    50.0,
+            "max_range_m":    25000.0
+          },
+          "frame_rate_hz": 20.0,
+          "noise_model":   "rcs_dependent",
+          "output_topic":  "/amraam01/seeker/track",
+          "enabled":       true,
+          "custom_properties": {
+            "active_at_range_km": 25.0,
+            "eccm_capable":       true
+          }
+        }
+      ],
+
+      "state": {
+        "lifecycle":    "inactive",
+        "is_active":    false,
+        "is_collidable": false,
+        "guidance_phase": "not_launched",
+        "time_to_target_s": null
+      },
+
+      "relationships": [
+        {
+          "relation_type": "controlledBy",
+          "target_id":     "ent-0001-0000-0000-000000000001"
+        },
+        {
+          "relation_type": "targets",
+          "target_id":     "ent-0002-0000-0000-000000000002"
+        }
+      ],
+
+      "parent_id": "ent-0001-0000-0000-000000000001"
+    }
+  ],
+
+  "relationships": [
+    {
+      "id":            "rel-0001",
+      "source_id":     "ent-0001-0000-0000-000000000001",
+      "relation_type": "fires_at",
+      "target_id":     "ent-0002-0000-0000-000000000002",
+      "bidirectional": false
+    },
+    {
+      "id":            "rel-0002",
+      "source_id":     "ent-0001-0000-0000-000000000001",
+      "relation_type": "owns",
+      "target_id":     "ent-0003-0000-0000-000000000003",
+      "bidirectional": false
+    }
+  ],
+
+  "assets": {
+    "base_url": "https://assets.physworldlm.org/examples/air_intercept/v1/",
+    "entries": [
+      {
+        "id":       "ast-0001",
+        "name":     "F-16C Block 52 Full-Detail USD",
+        "path":     "assets/models/f16c_block52.usd",
+        "format":   "usd",
+        "checksum": "sha256:a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+        "tags":     ["f16c", "blue_force", "aircraft", "lod0"]
+      },
+      {
+        "id":       "ast-0002",
+        "name":     "Su-30MK Full-Detail USD",
+        "path":     "assets/models/su30mk.usd",
+        "format":   "usd",
+        "checksum": "sha256:b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3",
+        "tags":     ["su30mk", "red_force", "aircraft", "lod0"]
+      },
+      {
+        "id":       "ast-0003",
+        "name":     "AIM-120D AMRAAM USD",
+        "path":     "assets/models/aim120d.usd",
+        "format":   "usd",
+        "checksum": "sha256:c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+        "tags":     ["amraam", "missile", "aim120d"]
+      },
+      {
+        "id":       "ast-0004",
+        "name":     "Mediterranean Sky HDRI",
+        "path":     "assets/hdri/mediterranean_morning.exr",
+        "format":   "custom",
+        "checksum": "sha256:d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5",
+        "tags":     ["hdri", "sky", "mediterranean", "morning"]
+      },
+      {
+        "id":       "ast-0005",
+        "name":     "Missile Exhaust VFX USD",
+        "path":     "assets/vfx/missile_exhaust.usd",
+        "format":   "usd",
+        "tags":     ["vfx", "exhaust", "missile"]
+      },
+      {
+        "id":       "ast-0006",
+        "name":     "Aircraft Explosion VFX USD",
+        "path":     "assets/vfx/explosion_aircraft_large.usd",
+        "format":   "usd",
+        "tags":     ["vfx", "explosion", "aircraft"]
+      },
+      {
+        "id":       "ast-0007",
+        "name":     "Chaff Cloud Particle USD",
+        "path":     "assets/vfx/chaff_cloud.usd",
+        "format":   "usd",
+        "tags":     ["vfx", "chaff", "countermeasures", "particles"]
+      },
+      {
+        "id":       "ast-0008",
+        "name":     "Flare VFX USD",
+        "path":     "assets/vfx/flare_ir.usd",
+        "format":   "usd",
+        "tags":     ["vfx", "flare", "countermeasures", "ir"]
+      }
+    ]
+  },
+
+  "missions": [
+    {
+      "id":           "msn-0001",
+      "name":         "CAP ALPHA — Blue Intercept Mission",
+      "mission_type": "intercept",
+      "assigned_entity_ids": ["ent-0001-0000-0000-000000000001"],
+      "primary_objective":   "Intercept and destroy Red Force Su-30MK before it enters ADIZ.",
+      "secondary_objectives": [
+        "Maintain own-ship survivability.",
+        "Preserve AIM-9X missiles for contingency.",
+        "Exit engagement area on recovery heading 270."
+      ],
+      "area_of_operation": {
+        "center":    { "latitude": 34.1, "longitude": 33.5 },
+        "radius_km": 200.0
+      },
+      "waypoints": [
+        {
+          "id":         "wp-blue-1",
+          "position":   { "latitude": 34.1, "longitude": 32.6 },
+          "action":     "patrol",
+          "altitude_m": 7500.0,
+          "speed_mps":  240.0
+        },
+        {
+          "id":         "wp-blue-2",
+          "position":   { "latitude": 34.2, "longitude": 33.0 },
+          "action":     "patrol",
+          "altitude_m": 7500.0,
+          "speed_mps":  240.0
+        },
+        {
+          "id":         "wp-blue-3",
+          "position":   { "latitude": 34.0, "longitude": 32.5 },
+          "action":     "rtb",
+          "altitude_m": 6000.0,
+          "speed_mps":  200.0
+        }
+      ],
+      "start_condition": "T >= 0",
+      "end_condition":   "target_destroyed OR fuel_critical",
+      "roe":             "weapons_free_on_positive_id",
+      "status":          "active",
+      "priority":        1
+    },
+    {
+      "id":           "msn-0002",
+      "name":         "ALPHA SWEEP — Red Offensive Patrol",
+      "mission_type": "patrol",
+      "assigned_entity_ids": ["ent-0002-0000-0000-000000000002"],
+      "primary_objective":   "Patrol assigned sector. Engage any Blue Force aircraft that enters detection range.",
+      "secondary_objectives": [
+        "Avoid entering Blue Force ADIZ.",
+        "Return to base if fuel below 20%."
+      ],
+      "area_of_operation": {
+        "center":    { "latitude": 34.1, "longitude": 34.0 },
+        "radius_km": 150.0
+      },
+      "waypoints": [
+        {
+          "id":         "wp-red-1",
+          "position":   { "latitude": 34.3, "longitude": 34.2 },
+          "action":     "patrol",
+          "altitude_m": 8000.0,
+          "speed_mps":  250.0
+        },
+        {
+          "id":         "wp-red-2",
+          "position":   { "latitude": 33.9, "longitude": 34.1 },
+          "action":     "patrol",
+          "altitude_m": 8000.0,
+          "speed_mps":  250.0
+        }
+      ],
+      "roe":      "weapons_free",
+      "status":   "active",
+      "priority": 2
+    }
+  ],
+
+  "events": [
+    {
+      "id":         "evt-0001",
+      "event_type": "mission_start",
+      "timestamp":  0.0,
+      "source_id":  "ent-0001-0000-0000-000000000001",
+      "parameters": { "mission_id": "msn-0001" },
+      "notes":      "Blue CAP mission begins. Viper 1 on patrol heading 090."
+    },
+    {
+      "id":         "evt-0002",
+      "event_type": "mission_start",
+      "timestamp":  0.0,
+      "source_id":  "ent-0002-0000-0000-000000000002",
+      "parameters": { "mission_id": "msn-0002" },
+      "notes":      "Red offensive patrol begins. Flanker 1 heading 270 at 8000 m."
+    },
+    {
+      "id":         "evt-0003",
+      "event_type": "detection",
+      "timestamp":  25.0,
+      "source_id":  "ent-0001-0000-0000-000000000001",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "position":   { "x": 148000.0, "y": 0.0, "z": 8000.0 },
+      "parameters": {
+        "sensor_id":          "sen-f16-apg68",
+        "detection_type":     "radar",
+        "range_km":           148.0,
+        "azimuth_deg":        90.0,
+        "elevation_deg":      0.2,
+        "rcs_m2":             4.0,
+        "snr_db":             18.5,
+        "classification":     "unknown_aircraft"
+      },
+      "notes": "APG-68 radar detects unknown aircraft contact at 148 km, 090 azimuth."
+    },
+    {
+      "id":         "evt-0004",
+      "event_type": "target_acquired",
+      "timestamp":  35.0,
+      "source_id":  "ent-0001-0000-0000-000000000001",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "parameters": {
+        "sensor_id":          "sen-f16-apg68",
+        "classification":     "hostile_fighter",
+        "confidence":         0.95,
+        "iff_result":         "hostile",
+        "range_km":           112.0
+      },
+      "notes": "Radar track confirmed hostile. IFF interrogation returns negative. Target classified as hostile Su-30 class. Fire control computer begins intercept solution."
+    },
+    {
+      "id":         "evt-0005",
+      "event_type": "radar_lock",
+      "timestamp":  42.0,
+      "source_id":  "ent-0001-0000-0000-000000000001",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "parameters": {
+        "sensor_id":     "sen-f16-apg68",
+        "mode":          "single_target_track",
+        "range_km":      80.0,
+        "lock_quality":  0.97,
+        "fire_control_solution": true
+      },
+      "notes": "APG-68 achieves STT lock. Fire control computer generates valid intercept firing solution. AMRAAM uncages."
+    },
+    {
+      "id":         "evt-0006",
+      "event_type": "detection",
+      "timestamp":  42.5,
+      "source_id":  "ent-0002-0000-0000-000000000002",
+      "target_id":  "ent-0001-0000-0000-000000000001",
+      "parameters": {
+        "sensor_id":         "sen-su30-spo15",
+        "detection_type":    "rwr",
+        "threat_type":       "radar_lock",
+        "bearing_deg":       270.0,
+        "threat_level":      "high",
+        "emitter_type":      "APG-68_STT"
+      },
+      "notes": "Flanker RWR detects STT lock from Blue Force APG-68. Threat level HIGH. Crew alerted."
+    },
+    {
+      "id":         "evt-0007",
+      "event_type": "fire",
+      "timestamp":  45.0,
+      "source_id":  "ent-0001-0000-0000-000000000001",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "position":   { "x": 19500.0, "y": 0.0, "z": 7500.0 },
+      "parameters": {
+        "weapon_id":          "wpn-f16-aim120d-7",
+        "missile_entity_id":  "ent-0003-0000-0000-000000000003",
+        "launch_range_km":    74.0,
+        "launch_speed_mps":   250.0,
+        "launch_altitude_m":  7500.0,
+        "target_solution_confidence": 0.97
+      },
+      "effects": [
+        { "effect_type": "missile_launch_smoke", "radius_m": 50.0, "duration_s": 3.0 },
+        { "effect_type": "recoil_force",         "magnitude": 500.0, "duration_s": 0.2 }
+      ],
+      "notes": "AIM-120D fired from Viper 1 station 7 at 74 km range. Rocket motor ignites."
+    },
+    {
+      "id":         "evt-0008",
+      "event_type": "detection",
+      "timestamp":  46.0,
+      "source_id":  "ent-0002-0000-0000-000000000002",
+      "target_id":  "ent-0003-0000-0000-000000000003",
+      "parameters": {
+        "sensor_id":      "sen-su30-spo15",
+        "detection_type": "rwr",
+        "threat_type":    "missile_launch_warning",
+        "bearing_deg":    270.0
+      },
+      "triggered_by_event_id": "evt-0007",
+      "notes": "Flanker RWR detects AMRAAM launch warning. Crew initiates defensive break."
+    },
+    {
+      "id":         "evt-0009",
+      "event_type": "custom",
+      "timestamp":  47.0,
+      "source_id":  "ent-0002-0000-0000-000000000002",
+      "parameters": {
+        "action":           "countermeasure_deploy",
+        "type":             "chaff",
+        "count_deployed":   4,
+        "maneuver":         "hard_break_port_3g",
+        "altitude_change_m": -500.0,
+        "heading_change_deg": -90.0,
+        "jamming_active":   true,
+        "jammer_power_w":   5000.0
+      },
+      "effects": [
+        { "effect_type": "chaff_cloud",   "radius_m": 150.0, "duration_s": 30.0 },
+        { "effect_type": "radar_clutter", "radius_m": 200.0, "duration_s": 20.0 },
+        { "effect_type": "rf_jamming",    "magnitude": 0.65, "radius_m": 40000.0 }
+      ],
+      "notes": "Flanker deploys chaff salvo, breaks hard port at 3g, activates Sorbtsiya-S ECM pod. Radar jamming degrades APG-68 track quality."
+    },
+    {
+      "id":         "evt-0010",
+      "event_type": "custom",
+      "timestamp":  55.0,
+      "source_id":  "ent-0003-0000-0000-000000000003",
+      "parameters": {
+        "guidance_phase":      "midcourse_datalink",
+        "range_to_target_km":  50.0,
+        "tgo_s":               40.0,
+        "datalink_active":     true,
+        "guidance_update_hz":  10
+      },
+      "notes": "AMRAAM transitions to mid-course guidance with datalink updates from Viper 1. Seeker still inactive."
+    },
+    {
+      "id":         "evt-0011",
+      "event_type": "custom",
+      "timestamp":  70.0,
+      "source_id":  "ent-0002-0000-0000-000000000002",
+      "parameters": {
+        "action":        "countermeasure_deploy",
+        "type":          "flares",
+        "count_deployed": 6
+      },
+      "effects": [
+        { "effect_type": "ir_flares", "magnitude": 1200.0, "radius_m": 200.0, "duration_s": 5.0 }
+      ],
+      "notes": "Flanker deploys 6 IR flares in defensive break. IR seeker on AMRAAM is not active — flares ineffective against active radar guidance."
+    },
+    {
+      "id":         "evt-0012",
+      "event_type": "custom",
+      "timestamp":  90.0,
+      "source_id":  "ent-0003-0000-0000-000000000003",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "parameters": {
+        "guidance_phase":      "terminal_active_radar",
+        "seeker_active":       true,
+        "range_to_target_km":  8.0,
+        "tgo_s":               5.0,
+        "closing_speed_mps":   1600.0,
+        "aspect_deg":          15.0
+      },
+      "notes": "AMRAAM seeker goes active at 8 km. Self-guiding. Datalink no longer needed."
+    },
+    {
+      "id":         "evt-0013",
+      "event_type": "custom",
+      "timestamp":  93.0,
+      "source_id":  "ent-0003-0000-0000-000000000003",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "parameters": {
+        "guidance_phase":    "terminal_active_radar",
+        "range_to_target_m": 2400.0,
+        "tgo_s":             1.5
+      },
+      "notes": "Terminal homing. Missile making final guidance corrections."
+    },
+    {
+      "id":         "evt-0014",
+      "event_type": "explosion",
+      "timestamp":  95.0,
+      "source_id":  "ent-0003-0000-0000-000000000003",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "position":   { "x": 127500.0, "y": -15000.0, "z": 7200.0 },
+      "parameters": {
+        "fuze_type":           "proximity",
+        "proximity_fuze_distance_m": 12.0,
+        "warhead_type":        "blast_fragmentation",
+        "tnt_equivalent_kg":   23.0,
+        "fragment_count":      2000,
+        "fragment_velocity_mps": 2400.0,
+        "overpressure_psi_at_10m": 35.0
+      },
+      "effects": [
+        { "effect_type": "explosion_blast",       "magnitude": 35.0,   "radius_m": 25.0,  "duration_s": 0.05 },
+        { "effect_type": "fragmentation",         "magnitude": 2400.0, "radius_m": 100.0, "duration_s": 0.1  },
+        { "effect_type": "fireball",              "magnitude": 1.0,    "radius_m": 15.0,  "duration_s": 2.5  },
+        { "effect_type": "smoke_trail",           "magnitude": 1.0,    "radius_m": 30.0,  "duration_s": 45.0 }
+      ],
+      "triggered_by_event_id": "evt-0007",
+      "notes": "Proximity fuse detonates at 12 m standoff. Blast and fragmentation envelope engulfs Su-30."
+    },
+    {
+      "id":         "evt-0015",
+      "event_type": "damage_received",
+      "timestamp":  95.1,
+      "source_id":  "ent-0003-0000-0000-000000000003",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "parameters": {
+        "damage_type":       "blast_fragmentation",
+        "damage_amount":     95.0,
+        "hp_before":         100.0,
+        "hp_after":          5.0,
+        "components_hit":    ["left_engine", "left_wing_spar", "fuel_tank_center", "hydraulics_primary"],
+        "fuel_fire":         true
+      },
+      "triggered_by_event_id": "evt-0014",
+      "notes": "Su-30 suffers catastrophic structural damage. Left engine destroyed. Center fuel tank ruptured. Aircraft uncontrollable."
+    },
+    {
+      "id":         "evt-0016",
+      "event_type": "destruction",
+      "timestamp":  95.5,
+      "source_id":  "ent-0003-0000-0000-000000000003",
+      "target_id":  "ent-0002-0000-0000-000000000002",
+      "position":   { "x": 127500.0, "y": -15000.0, "z": 7200.0 },
+      "parameters": {
+        "destruction_type":  "air_burst_structural_failure",
+        "crew_ejection":     true,
+        "bda":               "kill_confirmed"
+      },
+      "triggered_by_event_id": "evt-0015",
+      "notes": "Su-30 destroyed. Crew ejection confirmed. BDA: KILL CONFIRMED."
+    },
+    {
+      "id":         "evt-0017",
+      "event_type": "mission_complete",
+      "timestamp":  96.0,
+      "source_id":  "ent-0001-0000-0000-000000000001",
+      "parameters": {
+        "mission_id":        "msn-0001",
+        "outcome":           "success",
+        "primary_objective": "achieved",
+        "score":             92.0
+      },
+      "triggered_by_event_id": "evt-0016",
+      "notes": "Blue CAP mission complete. Primary objective achieved. Viper 1 RTB on heading 270."
+    }
+  ],
+
+  "timeline": [
+    {
+      "id":          "tl-0001",
+      "time_s":      0.0,
+      "action_type": "trigger_event",
+      "entity_id":   "ent-0001-0000-0000-000000000001",
+      "parameters":  { "event_id": "evt-0001" },
+      "label":       "T+0 — Mission start"
+    },
+    {
+      "id":          "tl-0002",
+      "time_s":      25.0,
+      "action_type": "trigger_event",
+      "entity_id":   "ent-0001-0000-0000-000000000001",
+      "parameters":  { "event_id": "evt-0003" },
+      "label":       "T+25 — Radar detection"
+    },
+    {
+      "id":          "tl-0003",
+      "time_s":      35.0,
+      "action_type": "trigger_event",
+      "entity_id":   "ent-0001-0000-0000-000000000001",
+      "parameters":  { "event_id": "evt-0004" },
+      "label":       "T+35 — Target classification hostile"
+    },
+    {
+      "id":          "tl-0004",
+      "time_s":      42.0,
+      "action_type": "trigger_event",
+      "entity_id":   "ent-0001-0000-0000-000000000001",
+      "parameters":  { "event_id": "evt-0005" },
+      "label":       "T+42 — Radar STT lock"
+    },
+    {
+      "id":          "tl-0005",
+      "time_s":      45.0,
+      "action_type": "spawn_entity",
+      "entity_id":   "ent-0003-0000-0000-000000000003",
+      "parameters": {
+        "spawn_position": { "x": 19500.0, "y": 0.0, "z": 7500.0 },
+        "initial_velocity": { "x": 750.0, "y": 0.0, "z": 0.0 },
+        "parent_entity": "ent-0001-0000-0000-000000000001"
+      },
+      "label": "T+45 — AIM-120D missile spawn"
+    },
+    {
+      "id":          "tl-0006",
+      "time_s":      45.0,
+      "action_type": "trigger_event",
+      "entity_id":   "ent-0001-0000-0000-000000000001",
+      "parameters":  { "event_id": "evt-0007" },
+      "label":       "T+45 — Missile launch"
+    },
+    {
+      "id":          "tl-0007",
+      "time_s":      47.0,
+      "action_type": "trigger_event",
+      "entity_id":   "ent-0002-0000-0000-000000000002",
+      "parameters":  { "event_id": "evt-0009" },
+      "label":       "T+47 — Flanker defensive break + ECM"
+    },
+    {
+      "id":          "tl-0008",
+      "time_s":      55.0,
+      "action_type": "set_state",
+      "entity_id":   "ent-0003-0000-0000-000000000003",
+      "parameters":  { "guidance_phase": "midcourse_datalink" },
+      "label":       "T+55 — AMRAAM midcourse guidance"
+    },
+    {
+      "id":          "tl-0009",
+      "time_s":      90.0,
+      "action_type": "set_state",
+      "entity_id":   "ent-0003-0000-0000-000000000003",
+      "parameters":  { "guidance_phase": "terminal_active_radar", "seeker_active": true },
+      "label":       "T+90 — AMRAAM seeker goes active"
+    },
+    {
+      "id":          "tl-0010",
+      "time_s":      95.0,
+      "action_type": "trigger_event",
+      "entity_id":   "ent-0003-0000-0000-000000000003",
+      "parameters":  { "event_id": "evt-0014" },
+      "label":       "T+95 — Warhead detonation"
+    },
+    {
+      "id":          "tl-0011",
+      "time_s":      95.5,
+      "action_type": "despawn_entity",
+      "entity_id":   "ent-0002-0000-0000-000000000002",
+      "parameters":  { "destruction_fx": "fx://explosion_aircraft_large", "debris_count": 24 },
+      "label":       "T+95.5 — Flanker destroyed"
+    },
+    {
+      "id":          "tl-0012",
+      "time_s":      96.0,
+      "action_type": "trigger_event",
+      "entity_id":   "ent-0001-0000-0000-000000000001",
+      "parameters":  { "event_id": "evt-0017" },
+      "label":       "T+96 — Mission complete"
+    },
+    {
+      "id":          "tl-0013",
+      "time_s":      100.0,
+      "action_type": "camera_cut",
+      "parameters":  {
+        "camera_id":   "cam-replay",
+        "target_entity": "ent-0001-0000-0000-000000000001",
+        "shot_type":   "follow_wide",
+        "duration_s":  20.0
+      },
+      "label":       "T+100 — Cinematic camera cut to Viper RTB"
+    }
+  ],
+
+  "constraints": [],
+
+  "outputs": {
+    "formats": ["rtx_render", "video_mp4", "sensor_frames", "physics_log", "json_telemetry", "csv_telemetry", "ground_truth", "ros_bag"],
+    "output_path":    "outputs/air_intercept/",
+    "record_physics": true,
+    "record_sensors": true,
+    "record_events":  true,
+    "render_config": {
+      "renderer":          "omniverse_rtx",
+      "resolution":        { "width": 3840, "height": 2160 },
+      "fps":               30,
+      "samples_per_pixel": 128,
+      "denoiser":          "dlss",
+      "hdr":               true,
+      "output_format":     "mp4",
+      "codec":             "h265",
+      "cameras": [
+        {
+          "id":        "cam-viper-cockpit",
+          "name":      "Viper Cockpit HUD Cam",
+          "type":      "cockpit",
+          "entity_id": "ent-0001-0000-0000-000000000001",
+          "fov_deg":   90
+        },
+        {
+          "id":        "cam-chase",
+          "name":      "Chase Camera — Viper 1",
+          "type":      "chase",
+          "entity_id": "ent-0001-0000-0000-000000000001",
+          "offset":    { "x": -15.0, "y": -5.0, "z": 3.0 }
+        },
+        {
+          "id":        "cam-flanker-cockpit",
+          "name":      "Flanker Cockpit Cam",
+          "type":      "cockpit",
+          "entity_id": "ent-0002-0000-0000-000000000002",
+          "fov_deg":   95
+        },
+        {
+          "id":        "cam-missile",
+          "name":      "Missile Seeker Cam (Simulated)",
+          "type":      "entity_forward",
+          "entity_id": "ent-0003-0000-0000-000000000003",
+          "fov_deg":   40
+        },
+        {
+          "id":        "cam-replay",
+          "name":      "Cinematic Replay Camera",
+          "type":      "free",
+          "fov_deg":   60
+        }
+      ]
+    }
+  },
+
+  "validation": {
+    "require_unique_ids":         true,
+    "require_valid_transforms":   true,
+    "require_physics_on_dynamic": true,
+    "max_entities":               50,
+    "custom_validators": [
+      "validators/check_weapon_refs.py",
+      "validators/check_sensor_output_topics.py",
+      "validators/check_mission_entity_refs.py",
+      "validators/check_event_timestamps_ordered.py"
+    ]
+  }
+}

@@ -1,0 +1,1813 @@
+{
+  "metadata": {
+    "worldspec_version": "1.0.0",
+    "scene_name": "Operation Broken Spear",
+    "uuid": "a1b2c3d4-0001-0001-0001-000000000001",
+    "author": "PhysWorldLM Team",
+    "organization": "PhysWorldLM",
+    "created_at": "2024-06-29T06:00:00Z",
+    "modified_at": "2024-06-29T06:00:00Z",
+    "simulation_engine_hint": "omniverse",
+    "ontology_version": "1.0.0",
+    "coordinate_system": "ENU",
+    "units": {
+      "length": "meters",
+      "mass": "kg",
+      "time": "seconds",
+      "angle": "degrees",
+      "temperature": "celsius"
+    },
+    "description": "Blue logistics convoy transporting fuel, ammunition and supplies through a mountain valley is ambushed by a Red insurgent force using IEDs, ATGMs, mortars, loitering munitions and UAV reconnaissance. Blue responds with organic escort, UAV ISR, attack helicopter and CAS. Ground warfare flagship benchmark exercising all land-domain schemas.",
+    "tags": ["convoy", "ambush", "combined_arms", "ground_warfare", "ISR", "CAS", "IED", "ATGM", "logistics", "benchmark"],
+    "classification_level": "unclassified",
+    "domain": "military",
+    "scenario_type": "synthetic_data"
+  },
+
+  "world": {
+    "physics_config": {
+      "gravity": { "x": 0.0, "y": 0.0, "z": -9.81 },
+      "air_density_kg_m3": 1.18,
+      "speed_of_sound_mps": 344.0,
+      "physics_step_s": 0.01,
+      "substeps": 4,
+      "solver": "rk4",
+      "collision_detection": "continuous",
+      "enable_fluid": false,
+      "enable_soft_body": false,
+      "enable_cloth": false,
+      "enable_particles": true
+    },
+    "simulation_config": {
+      "duration_s": 3900,
+      "time_scale": 1.0,
+      "random_seed": 20240629,
+      "deterministic": true,
+      "tick_rate_hz": 60,
+      "render_rate_hz": 30,
+      "sensor_rate_hz": 10,
+      "log_level": "info",
+      "enable_replay": true
+    },
+    "reference_frame": {
+      "origin_geo": {
+        "latitude": 34.85,
+        "longitude": 67.32,
+        "altitude": 1250.0
+      },
+      "origin_cartesian": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "up_axis": "Z",
+      "planet": "Earth"
+    }
+  },
+
+  "environment": {
+    "setting": "mountain",
+    "time_of_day": {
+      "simulation_start_utc": "2024-06-29T05:30:00Z",
+      "time_of_day_s": 19800,
+      "day_of_year": 181,
+      "year": 2024
+    },
+    "weather": {
+      "temperature_c": 29.0,
+      "humidity_pct": 32.0,
+      "pressure_hpa": 870.0,
+      "wind": {
+        "speed_mps": 5.0,
+        "direction_deg": 225.0,
+        "gusts_mps": 9.0,
+        "shear_profile": [
+          { "altitude_m": 0.0,    "speed_mps": 5.0 },
+          { "altitude_m": 500.0,  "speed_mps": 8.0 },
+          { "altitude_m": 1500.0, "speed_mps": 14.0 },
+          { "altitude_m": 3000.0, "speed_mps": 22.0 }
+        ]
+      },
+      "precipitation": {
+        "type": "none",
+        "intensity_mm_hr": 0.0
+      },
+      "fog": {
+        "enabled": false,
+        "density": 0.0,
+        "visibility_m": 18000.0
+      },
+      "cloud_cover_pct": 20.0,
+      "cloud_base_m": 3500.0,
+      "cloud_ceiling_m": 5000.0,
+      "visibility_km": 18.0,
+      "solar_irradiance_wm2": 820.0,
+      "dust_density": 0.25
+    },
+    "terrain": {
+      "dem_ref": "assets/terrain/hindukush_valley_dem.tif",
+      "tile_source": "https://assets.cesium.com/tiles/1",
+      "bounds": {
+        "southwest": { "latitude": 34.78, "longitude": 67.22 },
+        "northeast": { "latitude": 34.92, "longitude": 67.45 }
+      },
+      "features": [
+        { "feature_type": "road",     "geometry_ref": "assets/terrain/main_valley_road.geojson",    "properties": { "surface": "unpaved_gravel", "width_m": 6.0 } },
+        { "feature_type": "bridge",   "geometry_ref": "assets/terrain/wadi_bridge.geojson",         "properties": { "span_m": 28.0, "load_limit_t": 60.0, "material": "concrete" } },
+        { "feature_type": "building", "geometry_ref": "assets/terrain/village_qala_darreh.geojson", "properties": { "settlement": "Qala-e Darreh", "population": 420 } },
+        { "feature_type": "river",    "geometry_ref": "assets/terrain/dry_wadi.geojson",            "properties": { "name": "Wadi Surkhab", "seasonal": true, "depth_m": 0.3 } },
+        { "feature_type": "runway",   "geometry_ref": "assets/terrain/fob_runway.geojson",          "properties": { "name": "FOB Kestrel Strip", "length_m": 900 } }
+      ]
+    }
+  },
+
+  "organizations": [
+    {
+      "id": "org-0001-0000-0000-0000-000000000001",
+      "name": "Blue Convoy Group",
+      "org_type": "battalion",
+      "faction": "Blue",
+      "callsign": "DARKSTAR",
+      "country_code": "US",
+      "child_org_ids": [
+        "org-0001-0000-0000-0000-000000000002",
+        "org-0001-0000-0000-0000-000000000003",
+        "org-0001-0000-0000-0000-000000000004",
+        "org-0001-0000-0000-0000-000000000005",
+        "org-0001-0000-0000-0000-000000000006"
+      ],
+      "entity_ids": []
+    },
+    {
+      "id": "org-0001-0000-0000-0000-000000000002",
+      "name": "Logistics Convoy",
+      "org_type": "company",
+      "faction": "Blue",
+      "parent_org_id": "org-0001-0000-0000-0000-000000000001",
+      "callsign": "SUPPLY TRAIN",
+      "country_code": "US",
+      "entity_ids": [
+        "ent-0001-blue-cmd-vehicle-001",
+        "ent-0002-blue-fuel-truck-001",
+        "ent-0003-blue-ammo-truck-001",
+        "ent-0004-blue-cargo-truck-001",
+        "ent-0005-blue-medical-vehicle-001",
+        "ent-0006-blue-recovery-vehicle-001"
+      ]
+    },
+    {
+      "id": "org-0001-0000-0000-0000-000000000003",
+      "name": "Escort Platoon",
+      "org_type": "platoon",
+      "faction": "Blue",
+      "parent_org_id": "org-0001-0000-0000-0000-000000000001",
+      "callsign": "IRON GUARD",
+      "country_code": "US",
+      "entity_ids": [
+        "ent-0007-blue-mrap-001",
+        "ent-0008-blue-mrap-002",
+        "ent-0009-blue-apc-001",
+        "ent-0010-blue-ifv-001",
+        "ent-0011-blue-tank-001",
+        "ent-0012-blue-infantry-squad-001",
+        "ent-0013-blue-infantry-squad-002"
+      ]
+    },
+    {
+      "id": "org-0001-0000-0000-0000-000000000004",
+      "name": "UAV Platoon",
+      "org_type": "platoon",
+      "faction": "Blue",
+      "parent_org_id": "org-0001-0000-0000-0000-000000000001",
+      "callsign": "EYE IN SKY",
+      "country_code": "US",
+      "entity_ids": [
+        "ent-0014-blue-recon-uav-001",
+        "ent-0015-blue-attack-uav-001"
+      ]
+    },
+    {
+      "id": "org-0001-0000-0000-0000-000000000005",
+      "name": "Attack Helicopter Flight",
+      "org_type": "flight",
+      "faction": "Blue",
+      "parent_org_id": "org-0001-0000-0000-0000-000000000001",
+      "callsign": "VIPER FLIGHT",
+      "country_code": "US",
+      "entity_ids": [
+        "ent-0016-blue-attack-heli-001"
+      ]
+    },
+    {
+      "id": "org-0001-0000-0000-0000-000000000006",
+      "name": "CAS Flight",
+      "org_type": "flight",
+      "faction": "Blue",
+      "parent_org_id": "org-0001-0000-0000-0000-000000000001",
+      "callsign": "HAMMER FLIGHT",
+      "country_code": "US",
+      "entity_ids": [
+        "ent-0017-blue-cas-aircraft-001"
+      ]
+    },
+    {
+      "id": "org-0002-0000-0000-0000-000000000001",
+      "name": "Red Insurgent Force",
+      "org_type": "battalion",
+      "faction": "Red",
+      "callsign": "GHOST BATTALION",
+      "child_org_ids": [
+        "org-0002-0000-0000-0000-000000000002",
+        "org-0002-0000-0000-0000-000000000003",
+        "org-0002-0000-0000-0000-000000000004",
+        "org-0002-0000-0000-0000-000000000005"
+      ],
+      "entity_ids": []
+    },
+    {
+      "id": "org-0002-0000-0000-0000-000000000002",
+      "name": "Red Recon Cell",
+      "org_type": "team",
+      "faction": "Red",
+      "parent_org_id": "org-0002-0000-0000-0000-000000000001",
+      "callsign": "SHADOW",
+      "entity_ids": [
+        "ent-0018-red-recon-uav-001",
+        "ent-0019-red-scout-team-001"
+      ]
+    },
+    {
+      "id": "org-0002-0000-0000-0000-000000000003",
+      "name": "Red Fire Support Cell",
+      "org_type": "team",
+      "faction": "Red",
+      "parent_org_id": "org-0002-0000-0000-0000-000000000001",
+      "callsign": "HAMMER RED",
+      "entity_ids": [
+        "ent-0020-red-atgm-team-001",
+        "ent-0021-red-mortar-team-001",
+        "ent-0022-red-sniper-team-001",
+        "ent-0023-red-machinegun-team-001"
+      ]
+    },
+    {
+      "id": "org-0002-0000-0000-0000-000000000004",
+      "name": "Red IED Cell",
+      "org_type": "team",
+      "faction": "Red",
+      "parent_org_id": "org-0002-0000-0000-0000-000000000001",
+      "callsign": "VIPER RED",
+      "entity_ids": [
+        "ent-0024-red-ied-001",
+        "ent-0025-red-ied-002",
+        "ent-0026-red-loitering-munition-001",
+        "ent-0027-red-loitering-munition-002"
+      ]
+    },
+    {
+      "id": "org-0002-0000-0000-0000-000000000005",
+      "name": "Red Maneuver Cell",
+      "org_type": "team",
+      "faction": "Red",
+      "parent_org_id": "org-0002-0000-0000-0000-000000000001",
+      "callsign": "WOLF RED",
+      "entity_ids": [
+        "ent-0028-red-pickup-truck-001",
+        "ent-0029-red-pickup-truck-002",
+        "ent-0030-red-motorcycle-001",
+        "ent-0031-red-cmd-vehicle-001"
+      ]
+    }
+  ],
+
+  "entities": [
+
+    {
+      "id": "ent-0001-blue-cmd-vehicle-001",
+      "name": "Convoy Commander Vehicle",
+      "label": "DARKSTAR-6",
+      "description": "MRAP command variant. Convoy commander with secure comms and blue force tracking.",
+      "entity_type": "ground_vehicle",
+      "subtype": "MRAP-Command",
+      "tags": ["blue", "command", "convoy_lead"],
+      "owner_faction": "Blue",
+      "owner_organization": "Blue Convoy Group",
+      "callsign": "DARKSTAR-6",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.855, "longitude": 67.250, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 6.0, "y": 2.7, "z": 2.4 },
+        "asset_ref": "assets/vehicles/mrap_cmd.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 16000.0,
+        "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 },
+        "angular_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 },
+        "drag_coefficient": 0.48,
+        "collision_enabled": true,
+        "collision_group": "blue_ground",
+        "continuous_collision_detection": true
+      },
+      "health": {
+        "hp_max": 100.0,
+        "hp_current": 100.0,
+        "armor_rating": 55.0,
+        "damage_model": "component_based",
+        "is_destroyed": false
+      },
+      "power": {
+        "source_type": "diesel",
+        "fuel_type": "F-54",
+        "fuel_capacity_liters": 300.0,
+        "fuel_remaining_liters": 285.0,
+        "range_km": 480.0
+      },
+      "propulsion": {
+        "propulsion_type": "wheeled",
+        "max_speed_mps": 25.0,
+        "acceleration_mps2": 2.5
+      },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/convoy_lead.bt",
+        "current_state": "convoy_driving",
+        "current_task": "route_following",
+        "goals": [
+          { "goal_type": "reach_waypoint", "priority": 1, "parameters": { "waypoint": "wp_fob_arrival" } },
+          { "goal_type": "maintain_formation", "priority": 2 }
+        ],
+        "faction": "Blue",
+        "team_id": "blue_convoy",
+        "rules_of_engagement": "ROE_BLUE_STANDARD",
+        "autonomous_level": "supervised_autonomous"
+      },
+      "sensors": [
+        {
+          "id": "sens-0001-cmd-gps",
+          "name": "BFT GPS",
+          "sensor_type": "gps",
+          "enabled": true,
+          "output_topic": "/blue/cmd/gps"
+        },
+        {
+          "id": "sens-0002-cmd-imu",
+          "name": "Commander IMU",
+          "sensor_type": "imu",
+          "enabled": true,
+          "output_topic": "/blue/cmd/imu"
+        }
+      ],
+      "weapons": [
+        {
+          "id": "wpn-0001-cmd-m240",
+          "name": "M240B GPMG",
+          "weapon_type": "gun",
+          "ammunition_count": 800,
+          "rate_of_fire_rpm": 700,
+          "muzzle_velocity_mps": 853.0,
+          "effective_range_m": 800.0,
+          "max_range_m": 1800.0,
+          "warhead_type": "ball_7.62x51",
+          "guidance_type": "unguided",
+          "state": "ready",
+          "enabled": true
+        }
+      ],
+      "communications": [
+        {
+          "id": "comm-0001-cmd-link16",
+          "name": "Link-16 Datalink",
+          "comm_type": "link16",
+          "frequency_mhz": 969.0,
+          "bandwidth_khz": 3000.0,
+          "range_km": 500.0,
+          "data_rate_kbps": 115.2,
+          "encryption": true,
+          "encryption_standard": "AES-256",
+          "enabled": true
+        },
+        {
+          "id": "comm-0002-cmd-vhf",
+          "name": "SINCGARS VHF",
+          "comm_type": "radio_vhf",
+          "frequency_mhz": 46.5,
+          "range_km": 35.0,
+          "encryption": true,
+          "enabled": true
+        }
+      ],
+      "state": {
+        "lifecycle": "active",
+        "visibility": "visible",
+        "is_active": true,
+        "is_collidable": true
+      },
+      "semantic_labels": ["ground_vehicle", "command_vehicle", "blue_force", "mrap"],
+      "ontology_class": "pw:CommandVehicle"
+    },
+
+    {
+      "id": "ent-0002-blue-fuel-truck-001",
+      "name": "Fuel Tanker",
+      "label": "SUPPLY-1",
+      "description": "M978 HEMTT fuel tanker carrying 9500L of F-54 diesel.",
+      "entity_type": "ground_vehicle",
+      "subtype": "M978-HEMTT-Tanker",
+      "tags": ["blue", "logistics", "fuel", "high_value_target"],
+      "owner_faction": "Blue",
+      "callsign": "SUPPLY-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.8548, "longitude": 67.249, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 9.8, "y": 2.4, "z": 3.1 },
+        "asset_ref": "assets/vehicles/m978_tanker.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 29000.0,
+        "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 },
+        "drag_coefficient": 0.62,
+        "collision_enabled": true,
+        "collision_group": "blue_ground",
+        "continuous_collision_detection": true
+      },
+      "health": {
+        "hp_max": 100.0,
+        "hp_current": 100.0,
+        "armor_rating": 5.0,
+        "damage_model": "component_based",
+        "is_destroyed": false,
+        "destruction_effect": "fuel_fire_large"
+      },
+      "power": {
+        "source_type": "diesel",
+        "fuel_type": "F-54",
+        "fuel_capacity_liters": 500.0,
+        "fuel_remaining_liters": 480.0
+      },
+      "propulsion": {
+        "propulsion_type": "wheeled",
+        "max_speed_mps": 22.0,
+        "acceleration_mps2": 1.8
+      },
+      "materials": [
+        {
+          "id": "mat-0001-fuel-tank",
+          "name": "Steel Fuel Tank",
+          "type": "metal",
+          "density": 7850.0,
+          "ir_signature": 0.82,
+          "radar_cross_section": 28.0
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "convoy_driving",
+        "current_task": "route_following",
+        "goals": [ { "goal_type": "follow_leader", "priority": 1 } ],
+        "faction": "Blue",
+        "autonomous_level": "semi_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["fuel_truck", "logistics_vehicle", "high_value_target"],
+      "ontology_class": "pw:FuelTruck"
+    },
+
+    {
+      "id": "ent-0003-blue-ammo-truck-001",
+      "name": "Ammunition Truck",
+      "label": "SUPPLY-2",
+      "description": "M977 HEMTT ammunition carrier.",
+      "entity_type": "ground_vehicle",
+      "subtype": "M977-HEMTT-Ammo",
+      "tags": ["blue", "logistics", "ammunition", "high_value_target"],
+      "owner_faction": "Blue",
+      "callsign": "SUPPLY-2",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.8546, "longitude": 67.248, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 9.8, "y": 2.4, "z": 3.0 },
+        "asset_ref": "assets/vehicles/m977_ammo.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 27500.0,
+        "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 },
+        "drag_coefficient": 0.60,
+        "collision_enabled": true,
+        "collision_group": "blue_ground"
+      },
+      "health": {
+        "hp_max": 100.0,
+        "hp_current": 100.0,
+        "armor_rating": 5.0,
+        "damage_model": "component_based",
+        "is_destroyed": false,
+        "destruction_effect": "ammunition_cook_off"
+      },
+      "propulsion": {
+        "propulsion_type": "wheeled",
+        "max_speed_mps": 22.0,
+        "acceleration_mps2": 1.8
+      },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "convoy_driving",
+        "current_task": "route_following",
+        "goals": [ { "goal_type": "follow_leader", "priority": 1 } ],
+        "faction": "Blue",
+        "autonomous_level": "semi_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["ammunition_truck", "logistics_vehicle", "high_value_target"],
+      "ontology_class": "pw:AmmunitionTruck"
+    },
+
+    {
+      "id": "ent-0004-blue-cargo-truck-001",
+      "name": "Cargo Truck",
+      "label": "SUPPLY-3",
+      "description": "M1083 FMTV cargo truck, general supplies.",
+      "entity_type": "ground_vehicle",
+      "subtype": "M1083-FMTV",
+      "tags": ["blue", "logistics", "cargo"],
+      "owner_faction": "Blue",
+      "callsign": "SUPPLY-3",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.8544, "longitude": 67.247, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 7.5, "y": 2.4, "z": 2.8 },
+        "asset_ref": "assets/vehicles/m1083_fmtv.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": {
+        "body_type": "dynamic",
+        "mass": 12500.0,
+        "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 },
+        "drag_coefficient": 0.55,
+        "collision_enabled": true,
+        "collision_group": "blue_ground"
+      },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 5.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 24.0, "acceleration_mps2": 2.2 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "convoy_driving",
+        "current_task": "route_following",
+        "goals": [ { "goal_type": "follow_leader", "priority": 1 } ],
+        "faction": "Blue",
+        "autonomous_level": "semi_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["cargo_truck", "logistics_vehicle"],
+      "ontology_class": "pw:CargoTruck"
+    },
+
+    {
+      "id": "ent-0005-blue-medical-vehicle-001",
+      "name": "Medical Evacuation Vehicle",
+      "label": "MEDEVAC-1",
+      "description": "M997 HMMWV ambulance with medical crew and supplies.",
+      "entity_type": "ground_vehicle",
+      "subtype": "M997-HMMWV-Ambulance",
+      "tags": ["blue", "medical", "protected_status"],
+      "owner_faction": "Blue",
+      "callsign": "MEDEVAC-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.8542, "longitude": 67.246, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 4.8, "y": 2.2, "z": 2.1 },
+        "asset_ref": "assets/vehicles/m997_ambulance.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": { "body_type": "dynamic", "mass": 5500.0, "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 }, "collision_enabled": true, "collision_group": "blue_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 10.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 28.0, "acceleration_mps2": 3.0 },
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/medevac.bt",
+        "current_state": "convoy_driving",
+        "goals": [ { "goal_type": "follow_leader", "priority": 2 }, { "goal_type": "evacuate_casualties", "priority": 1 } ],
+        "faction": "Blue",
+        "autonomous_level": "supervised_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["medical_vehicle", "ambulance"],
+      "ontology_class": "pw:MedicalVehicle"
+    },
+
+    {
+      "id": "ent-0006-blue-recovery-vehicle-001",
+      "name": "Recovery Vehicle",
+      "label": "WRECKER-1",
+      "description": "M984 HEMTT wrecker for vehicle recovery.",
+      "entity_type": "ground_vehicle",
+      "subtype": "M984-HEMTT-Wrecker",
+      "tags": ["blue", "logistics", "recovery"],
+      "owner_faction": "Blue",
+      "callsign": "WRECKER-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.8540, "longitude": 67.245, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 9.5, "y": 2.5, "z": 3.2 },
+        "asset_ref": "assets/vehicles/m984_wrecker.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": { "body_type": "dynamic", "mass": 26000.0, "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 }, "collision_enabled": true, "collision_group": "blue_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 10.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 20.0, "acceleration_mps2": 1.5 },
+      "ai_behavior": {
+        "controller_type": "scripted",
+        "current_state": "convoy_driving",
+        "goals": [ { "goal_type": "recover_vehicles", "priority": 1 } ],
+        "faction": "Blue",
+        "autonomous_level": "semi_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["recovery_vehicle", "logistics_vehicle"],
+      "ontology_class": "pw:RecoveryVehicle"
+    },
+
+    {
+      "id": "ent-0007-blue-mrap-001",
+      "name": "MRAP Lead Escort",
+      "label": "IRON GUARD-1",
+      "description": "M-ATV MRAP, convoy lead security vehicle.",
+      "entity_type": "ground_vehicle",
+      "subtype": "M-ATV",
+      "tags": ["blue", "escort", "lead"],
+      "owner_faction": "Blue",
+      "callsign": "IRON GUARD-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.856, "longitude": 67.252, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": {
+        "primitive": "box",
+        "dimensions": { "x": 6.3, "y": 2.7, "z": 2.5 },
+        "asset_ref": "assets/vehicles/m_atv.usd",
+        "collision_geometry": "convex_hull"
+      },
+      "physics_body": { "body_type": "dynamic", "mass": 14700.0, "linear_velocity": { "x": 18.0, "y": 0.0, "z": 0.0 }, "collision_enabled": true, "collision_group": "blue_ground", "continuous_collision_detection": true },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 65.0, "damage_model": "component_based", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 28.0, "acceleration_mps2": 3.0 },
+      "sensors": [
+        {
+          "id": "sens-0010-mrap1-eo",
+          "name": "Forward EO Camera",
+          "sensor_type": "camera_eo",
+          "field_of_view": { "horizontal_deg": 60.0, "vertical_deg": 45.0, "max_range_m": 2000.0 },
+          "resolution": { "width": 1920, "height": 1080 },
+          "frame_rate_hz": 30.0,
+          "enabled": true,
+          "output_topic": "/blue/mrap1/eo"
+        },
+        {
+          "id": "sens-0011-mrap1-ir",
+          "name": "FLIR Thermal",
+          "sensor_type": "camera_ir",
+          "field_of_view": { "horizontal_deg": 45.0, "vertical_deg": 34.0, "max_range_m": 3000.0 },
+          "resolution": { "width": 640, "height": 512 },
+          "frame_rate_hz": 30.0,
+          "spectral_band": "MWIR_3_5um",
+          "enabled": true,
+          "output_topic": "/blue/mrap1/ir"
+        }
+      ],
+      "weapons": [
+        {
+          "id": "wpn-0010-mrap1-m2",
+          "name": "M2 .50 Cal HMG",
+          "weapon_type": "gun",
+          "ammunition_count": 500,
+          "rate_of_fire_rpm": 550,
+          "muzzle_velocity_mps": 895.0,
+          "effective_range_m": 1500.0,
+          "max_range_m": 3000.0,
+          "warhead_type": "ball_12.7x99",
+          "guidance_type": "unguided",
+          "state": "ready",
+          "enabled": true
+        }
+      ],
+      "ai_behavior": {
+        "controller_type": "behavior_tree",
+        "behavior_tree_ref": "behaviors/escort_lead.bt",
+        "current_state": "route_security",
+        "goals": [
+          { "goal_type": "route_clearance", "priority": 1 },
+          { "goal_type": "threat_detection", "priority": 2 }
+        ],
+        "faction": "Blue",
+        "threat_awareness": true,
+        "autonomous_level": "supervised_autonomous"
+      },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["mrap", "escort_vehicle", "lead_element"],
+      "ontology_class": "pw:MRAP"
+    },
+
+    {
+      "id": "ent-0008-blue-mrap-002",
+      "name": "MRAP Rear Escort",
+      "label": "IRON GUARD-2",
+      "description": "M-ATV MRAP, rear security vehicle.",
+      "entity_type": "ground_vehicle",
+      "subtype": "M-ATV",
+      "tags": ["blue", "escort", "rear"],
+      "owner_faction": "Blue",
+      "callsign": "IRON GUARD-2",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.8535, "longitude": 67.243, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 6.3, "y": 2.7, "z": 2.5 }, "asset_ref": "assets/vehicles/m_atv.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 14700.0, "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 }, "collision_enabled": true, "collision_group": "blue_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 65.0, "damage_model": "component_based", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 28.0, "acceleration_mps2": 3.0 },
+      "weapons": [ { "id": "wpn-0011-mrap2-m2", "name": "M2 .50 Cal HMG", "weapon_type": "gun", "ammunition_count": 500, "rate_of_fire_rpm": 550, "muzzle_velocity_mps": 895.0, "effective_range_m": 1500.0, "max_range_m": 3000.0, "warhead_type": "ball_12.7x99", "guidance_type": "unguided", "state": "ready", "enabled": true } ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/escort_rear.bt", "current_state": "route_security", "faction": "Blue", "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["mrap", "escort_vehicle", "rear_element"],
+      "ontology_class": "pw:MRAP"
+    },
+
+    {
+      "id": "ent-0009-blue-apc-001",
+      "name": "APC Infantry Carrier",
+      "label": "IRON GUARD-3",
+      "description": "M113A3 APC carrying dismounted infantry squad.",
+      "entity_type": "apc",
+      "subtype": "M113A3",
+      "tags": ["blue", "escort", "armored", "troop_carrier"],
+      "owner_faction": "Blue",
+      "callsign": "IRON GUARD-3",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.855, "longitude": 67.248, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 5.3, "y": 2.7, "z": 2.5 }, "asset_ref": "assets/vehicles/m113a3.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 11000.0, "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 }, "collision_enabled": true, "collision_group": "blue_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 40.0, "damage_model": "component_based", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "tracked", "max_speed_mps": 17.0, "acceleration_mps2": 2.0 },
+      "weapons": [ { "id": "wpn-0012-apc-m2", "name": "M2HB Pintle Mount", "weapon_type": "gun", "ammunition_count": 400, "rate_of_fire_rpm": 500, "muzzle_velocity_mps": 895.0, "effective_range_m": 1500.0, "max_range_m": 2800.0, "warhead_type": "ball_12.7x99", "guidance_type": "unguided", "state": "ready", "enabled": true } ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/apc_escort.bt", "current_state": "convoy_driving", "faction": "Blue", "autonomous_level": "supervised_autonomous" },
+      "child_ids": ["ent-0012-blue-infantry-squad-001"],
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["apc", "troop_carrier", "armored"],
+      "ontology_class": "pw:APC"
+    },
+
+    {
+      "id": "ent-0010-blue-ifv-001",
+      "name": "Infantry Fighting Vehicle",
+      "label": "IRON GUARD-4",
+      "description": "M2A3 Bradley IFV providing fire support and troop lift.",
+      "entity_type": "ifv",
+      "subtype": "M2A3-Bradley",
+      "tags": ["blue", "escort", "armored", "fire_support"],
+      "owner_faction": "Blue",
+      "callsign": "IRON GUARD-4",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.8548, "longitude": 67.247, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 6.6, "y": 3.6, "z": 2.98 }, "asset_ref": "assets/vehicles/m2a3_bradley.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 30000.0, "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 }, "collision_enabled": true, "collision_group": "blue_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 70.0, "damage_model": "component_based", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "tracked", "max_speed_mps": 17.0, "acceleration_mps2": 2.5 },
+      "sensors": [
+        { "id": "sens-0020-ifv-eo", "name": "Commander EO", "sensor_type": "camera_eo", "field_of_view": { "horizontal_deg": 360.0, "vertical_deg": 60.0, "max_range_m": 3000.0 }, "resolution": { "width": 1920, "height": 1080 }, "enabled": true, "output_topic": "/blue/ifv/eo" },
+        { "id": "sens-0021-ifv-ir", "name": "Bradley IBAS Thermal", "sensor_type": "camera_ir", "field_of_view": { "horizontal_deg": 45.0, "vertical_deg": 34.0, "max_range_m": 4000.0 }, "resolution": { "width": 640, "height": 512 }, "spectral_band": "MWIR_3_5um", "enabled": true, "output_topic": "/blue/ifv/ir" }
+      ],
+      "weapons": [
+        { "id": "wpn-0020-ifv-m242", "name": "M242 25mm Bushmaster", "weapon_type": "cannon", "ammunition_count": 900, "rate_of_fire_rpm": 200, "muzzle_velocity_mps": 1100.0, "effective_range_m": 2000.0, "max_range_m": 3000.0, "warhead_type": "APDS-T_25x137", "guidance_type": "unguided", "state": "ready", "enabled": true },
+        { "id": "wpn-0021-ifv-tow", "name": "TOW-2B ATGM Launcher", "weapon_type": "missile", "ammunition_count": 7, "muzzle_velocity_mps": 340.0, "effective_range_m": 3750.0, "max_range_m": 4000.0, "warhead_type": "tandem_HEAT", "guidance_type": "wire_guided", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/ifv_escort.bt", "current_state": "convoy_driving", "faction": "Blue", "threat_awareness": true, "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["ifv", "bradley", "fire_support"],
+      "ontology_class": "pw:IFV"
+    },
+
+    {
+      "id": "ent-0011-blue-tank-001",
+      "name": "M1A2 SEPv3 Tank",
+      "label": "IRON GUARD-5",
+      "description": "M1A2 SEPv3 Abrams providing heavy fire support for convoy.",
+      "entity_type": "tank",
+      "subtype": "M1A2-SEPv3-Abrams",
+      "tags": ["blue", "escort", "heavy_armor", "fire_support"],
+      "owner_faction": "Blue",
+      "callsign": "IRON GUARD-5",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.856, "longitude": 67.251, "altitude": 1262.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 9.8, "y": 3.7, "z": 2.9 }, "asset_ref": "assets/vehicles/m1a2_sepv3.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 66000.0, "linear_velocity": { "x": 15.0, "y": 0.0, "z": 0.0 }, "drag_coefficient": 0.8, "collision_enabled": true, "collision_group": "blue_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 95.0, "damage_model": "component_based", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "tracked", "max_speed_mps": 19.0, "acceleration_mps2": 2.2 },
+      "sensors": [
+        { "id": "sens-0030-tank-eo", "name": "Commander Independent Thermal Viewer", "sensor_type": "camera_eo", "field_of_view": { "horizontal_deg": 360.0, "vertical_deg": 45.0, "max_range_m": 5000.0 }, "enabled": true, "output_topic": "/blue/tank/eo" },
+        { "id": "sens-0031-tank-radar", "name": "APS Trophy Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360.0, "vertical_deg": 30.0, "min_range_m": 10.0, "max_range_m": 500.0 }, "enabled": true, "output_topic": "/blue/tank/aps_radar" }
+      ],
+      "weapons": [
+        { "id": "wpn-0030-tank-m256", "name": "M256A2 120mm Smoothbore", "weapon_type": "cannon", "ammunition_count": 42, "muzzle_velocity_mps": 1740.0, "effective_range_m": 3500.0, "max_range_m": 5000.0, "warhead_type": "M829A4_APFSDS", "guidance_type": "unguided", "reload_time_s": 6.0, "state": "ready", "enabled": true },
+        { "id": "wpn-0031-tank-m2", "name": "Commander M2HB .50 Cal", "weapon_type": "gun", "ammunition_count": 900, "rate_of_fire_rpm": 550, "muzzle_velocity_mps": 895.0, "effective_range_m": 1500.0, "max_range_m": 3000.0, "warhead_type": "ball_12.7x99", "guidance_type": "unguided", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/tank_escort.bt", "current_state": "route_security", "faction": "Blue", "threat_awareness": true, "rules_of_engagement": "ROE_BLUE_STANDARD", "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["tank", "main_battle_tank", "abrams", "heavy_armor"],
+      "ontology_class": "pw:MainBattleTank"
+    },
+
+    {
+      "id": "ent-0012-blue-infantry-squad-001",
+      "name": "Alpha Infantry Squad",
+      "label": "ALPHA SQUAD",
+      "description": "Nine-man dismounted infantry squad. Mounted in APC until ambush.",
+      "entity_type": "infantry",
+      "subtype": "US_Infantry_Squad_9man",
+      "tags": ["blue", "infantry", "dismount"],
+      "owner_faction": "Blue",
+      "callsign": "ALPHA SQUAD",
+      "parent_id": "ent-0009-blue-apc-001",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.855, "longitude": 67.248, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "radius": 0.4, "height": 1.8, "asset_ref": "assets/infantry/us_soldier_rifleman.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 110.0, "collision_enabled": true, "collision_group": "blue_infantry" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 15.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "weapons": [
+        { "id": "wpn-0040-alpha-m4", "name": "M4A1 Assault Rifle", "weapon_type": "gun", "ammunition_count": 300, "rate_of_fire_rpm": 800, "muzzle_velocity_mps": 910.0, "effective_range_m": 500.0, "max_range_m": 800.0, "warhead_type": "ball_5.56x45", "guidance_type": "unguided", "state": "ready", "enabled": true },
+        { "id": "wpn-0041-alpha-m249", "name": "M249 SAW", "weapon_type": "gun", "ammunition_count": 800, "rate_of_fire_rpm": 750, "muzzle_velocity_mps": 915.0, "effective_range_m": 600.0, "max_range_m": 1000.0, "warhead_type": "ball_5.56x45", "guidance_type": "unguided", "state": "ready", "enabled": true },
+        { "id": "wpn-0042-alpha-m203", "name": "M203 Grenade Launcher", "weapon_type": "grenade", "ammunition_count": 24, "muzzle_velocity_mps": 76.0, "effective_range_m": 350.0, "max_range_m": 400.0, "warhead_type": "40mm_HE", "guidance_type": "unguided", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/infantry_squad.bt", "current_state": "mounted", "goals": [ { "goal_type": "defend_convoy", "priority": 1 }, { "goal_type": "dismount_on_contact", "priority": 2 } ], "faction": "Blue", "threat_awareness": true, "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["infantry", "dismount", "blue_force"],
+      "ontology_class": "pw:InfantrySquad"
+    },
+
+    {
+      "id": "ent-0013-blue-infantry-squad-002",
+      "name": "Bravo Infantry Squad",
+      "label": "BRAVO SQUAD",
+      "description": "Second nine-man dismounted infantry squad with ATGM and sniper.",
+      "entity_type": "infantry",
+      "subtype": "US_Infantry_Squad_9man_Heavy",
+      "tags": ["blue", "infantry", "dismount", "heavy_weapons"],
+      "owner_faction": "Blue",
+      "callsign": "BRAVO SQUAD",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.8546, "longitude": 67.246, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "radius": 0.4, "height": 1.8, "asset_ref": "assets/infantry/us_soldier_rifleman.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 115.0, "collision_enabled": true, "collision_group": "blue_infantry" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 15.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "weapons": [
+        { "id": "wpn-0050-bravo-m4", "name": "M4A1 Assault Rifle x7", "weapon_type": "gun", "ammunition_count": 2100, "rate_of_fire_rpm": 800, "muzzle_velocity_mps": 910.0, "effective_range_m": 500.0, "max_range_m": 800.0, "warhead_type": "ball_5.56x45", "guidance_type": "unguided", "state": "ready", "enabled": true },
+        { "id": "wpn-0051-bravo-m110", "name": "M110 Semi-Auto Sniper", "weapon_type": "gun", "ammunition_count": 60, "muzzle_velocity_mps": 786.0, "effective_range_m": 800.0, "max_range_m": 1200.0, "warhead_type": "Match_7.62x51", "guidance_type": "unguided", "state": "ready", "enabled": true },
+        { "id": "wpn-0052-bravo-javelin", "name": "FGM-148 Javelin ATGM", "weapon_type": "missile", "ammunition_count": 3, "muzzle_velocity_mps": 190.0, "effective_range_m": 2500.0, "max_range_m": 4750.0, "warhead_type": "tandem_HEAT_top_attack", "guidance_type": "ir_homing", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/infantry_heavy.bt", "current_state": "convoy_driving", "goals": [ { "goal_type": "defend_convoy", "priority": 1 } ], "faction": "Blue", "threat_awareness": true, "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["infantry", "heavy_weapons", "blue_force"],
+      "ontology_class": "pw:InfantrySquad"
+    },
+
+    {
+      "id": "ent-0014-blue-recon-uav-001",
+      "name": "RQ-7B Shadow Recon UAV",
+      "label": "EYE IN SKY-1",
+      "description": "RQ-7B Shadow tactical UAV providing persistent ISR over convoy route.",
+      "entity_type": "uav",
+      "subtype": "RQ-7B-Shadow",
+      "tags": ["blue", "uav", "isr", "recon"],
+      "owner_faction": "Blue",
+      "callsign": "EYE IN SKY-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.858, "longitude": 67.260, "altitude": 1850.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 3.4, "y": 4.3, "z": 0.6 }, "asset_ref": "assets/uav/rq7b_shadow.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 170.0, "linear_velocity": { "x": 35.0, "y": 0.0, "z": 0.0 }, "drag_coefficient": 0.030, "lift_coefficient": 1.2, "collision_enabled": true, "collision_group": "blue_air" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "gasoline", "fuel_type": "JP8", "fuel_capacity_liters": 30.0, "fuel_remaining_liters": 28.0, "endurance_hours": 9.0 },
+      "propulsion": { "propulsion_type": "propeller", "max_speed_mps": 46.0, "max_altitude_m": 4600.0, "max_climb_rate_mps": 4.5 },
+      "sensors": [
+        { "id": "sens-0040-shadow-eo", "name": "Universal Payload EO", "sensor_type": "camera_eo", "field_of_view": { "horizontal_deg": 30.0, "vertical_deg": 25.0, "max_range_m": 8000.0 }, "resolution": { "width": 4096, "height": 3072 }, "frame_rate_hz": 30.0, "enabled": true, "output_topic": "/blue/shadow/eo" },
+        { "id": "sens-0041-shadow-ir", "name": "Universal Payload IR", "sensor_type": "camera_ir", "field_of_view": { "horizontal_deg": 25.0, "vertical_deg": 20.0, "max_range_m": 10000.0 }, "resolution": { "width": 640, "height": 512 }, "spectral_band": "LWIR_8_12um", "enabled": true, "output_topic": "/blue/shadow/ir" }
+      ],
+      "communications": [
+        { "id": "comm-0010-shadow-dl", "name": "C-Band Data Link", "comm_type": "data_link", "frequency_mhz": 5840.0, "range_km": 125.0, "data_rate_kbps": 5000.0, "encryption": true, "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/isr_uav.bt", "current_state": "isr_orbit", "goals": [ { "goal_type": "persistent_isr", "priority": 1 }, { "goal_type": "target_detection", "priority": 2 } ], "faction": "Blue", "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": false },
+      "semantic_labels": ["uav", "isr_platform", "fixed_wing"],
+      "ontology_class": "pw:TacticalUAV"
+    },
+
+    {
+      "id": "ent-0015-blue-attack-uav-001",
+      "name": "MQ-1C Gray Eagle Attack UAV",
+      "label": "EYE IN SKY-2",
+      "description": "MQ-1C Gray Eagle armed UAV with Hellfire missiles and Lynx SAR.",
+      "entity_type": "ucav",
+      "subtype": "MQ-1C-GrayEagle",
+      "tags": ["blue", "ucav", "armed_uav", "attack", "isr"],
+      "owner_faction": "Blue",
+      "callsign": "EYE IN SKY-2",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.870, "longitude": 67.290, "altitude": 2100.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 8.0, "y": 17.0, "z": 1.2 }, "asset_ref": "assets/uav/mq1c_gray_eagle.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 1633.0, "linear_velocity": { "x": 50.0, "y": 0.0, "z": 0.0 }, "drag_coefficient": 0.025, "lift_coefficient": 1.4, "collision_enabled": true, "collision_group": "blue_air" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "diesel", "fuel_type": "JP8", "endurance_hours": 25.0 },
+      "propulsion": { "propulsion_type": "propeller", "max_speed_mps": 56.0, "max_altitude_m": 8000.0 },
+      "sensors": [
+        { "id": "sens-0050-eagle-eo", "name": "M-TADS/PNVS EO", "sensor_type": "camera_eo", "field_of_view": { "horizontal_deg": 30.0, "vertical_deg": 25.0, "max_range_m": 15000.0 }, "resolution": { "width": 4096, "height": 3072 }, "frame_rate_hz": 30.0, "enabled": true, "output_topic": "/blue/eagle/eo" },
+        { "id": "sens-0051-eagle-sar", "name": "Lynx SAR", "sensor_type": "sar", "field_of_view": { "horizontal_deg": 90.0, "vertical_deg": 60.0, "max_range_m": 25000.0 }, "resolution": { "width": 2048, "height": 2048 }, "enabled": true, "output_topic": "/blue/eagle/sar" }
+      ],
+      "weapons": [
+        { "id": "wpn-0060-eagle-agm114", "name": "AGM-114 Hellfire II x4", "weapon_type": "missile", "ammunition_count": 4, "muzzle_velocity_mps": 475.0, "effective_range_m": 7000.0, "max_range_m": 11000.0, "warhead_type": "HEAT_tandem", "guidance_type": "laser_guided", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/armed_uav.bt", "current_state": "holding_orbit", "goals": [ { "goal_type": "area_patrol", "priority": 2 }, { "goal_type": "strike_on_designation", "priority": 1 } ], "faction": "Blue", "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "inactive", "visibility": "visible", "is_active": false, "is_collidable": false },
+      "semantic_labels": ["ucav", "armed_uav", "hellfire_armed"],
+      "ontology_class": "pw:ArmedUAV"
+    },
+
+    {
+      "id": "ent-0016-blue-attack-heli-001",
+      "name": "AH-64E Apache Attack Helicopter",
+      "label": "VIPER-1",
+      "description": "AH-64E Apache Guardian providing close air support. On alert at FOB Kestrel.",
+      "entity_type": "rotorcraft",
+      "subtype": "AH-64E-Apache-Guardian",
+      "tags": ["blue", "helicopter", "attack", "cas"],
+      "owner_faction": "Blue",
+      "callsign": "VIPER-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.840, "longitude": 67.220, "altitude": 1260.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 17.7, "y": 5.8, "z": 4.9 }, "asset_ref": "assets/rotorcraft/ah64e_apache.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 8006.0, "linear_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 }, "drag_coefficient": 0.45, "lift_coefficient": 1.1, "collision_enabled": true, "collision_group": "blue_air" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 25.0, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "turbine", "fuel_type": "JP8", "fuel_capacity_liters": 1420.0, "fuel_remaining_liters": 1380.0, "endurance_hours": 2.5 },
+      "propulsion": { "propulsion_type": "rotary_wing", "max_speed_mps": 85.0, "max_altitude_m": 6400.0, "max_climb_rate_mps": 12.7 },
+      "sensors": [
+        { "id": "sens-0060-apache-longbow", "name": "AN/APG-78 Longbow Radar", "sensor_type": "radar", "field_of_view": { "horizontal_deg": 360.0, "vertical_deg": 30.0, "max_range_m": 12000.0 }, "enabled": true, "output_topic": "/blue/apache/longbow" },
+        { "id": "sens-0061-apache-tads", "name": "M-TADS/PNVS", "sensor_type": "camera_ir", "field_of_view": { "horizontal_deg": 100.0, "vertical_deg": 45.0, "max_range_m": 8000.0 }, "resolution": { "width": 1024, "height": 768 }, "spectral_band": "LWIR_8_12um", "enabled": true, "output_topic": "/blue/apache/tads" }
+      ],
+      "weapons": [
+        { "id": "wpn-0070-apache-agm114", "name": "AGM-114L Hellfire Longbow x16", "weapon_type": "missile", "ammunition_count": 16, "muzzle_velocity_mps": 475.0, "effective_range_m": 7000.0, "max_range_m": 11000.0, "warhead_type": "HEAT_tandem", "guidance_type": "active_radar", "state": "ready", "enabled": true },
+        { "id": "wpn-0071-apache-hydra", "name": "Hydra 70 FFAR x38", "weapon_type": "rocket", "ammunition_count": 38, "muzzle_velocity_mps": 740.0, "effective_range_m": 3000.0, "max_range_m": 8000.0, "warhead_type": "M229_HEDP", "guidance_type": "unguided", "state": "ready", "enabled": true },
+        { "id": "wpn-0072-apache-m230", "name": "M230 30mm Chain Gun", "weapon_type": "cannon", "ammunition_count": 1200, "rate_of_fire_rpm": 625, "muzzle_velocity_mps": 805.0, "effective_range_m": 1500.0, "max_range_m": 4000.0, "warhead_type": "M788_HEDP_30x113", "guidance_type": "unguided", "state": "ready", "enabled": true }
+      ],
+      "communications": [
+        { "id": "comm-0020-apache-vhf", "name": "AN/ARC-186 VHF", "comm_type": "radio_vhf", "frequency_mhz": 46.5, "range_km": 60.0, "encryption": true, "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/attack_helicopter.bt", "current_state": "ground_alert", "goals": [ { "goal_type": "respond_to_cas_request", "priority": 1 }, { "goal_type": "attack_designated_targets", "priority": 2 } ], "faction": "Blue", "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "inactive", "visibility": "visible", "is_active": false, "is_collidable": true },
+      "semantic_labels": ["helicopter", "attack_helicopter", "apache", "cas"],
+      "ontology_class": "pw:AttackHelicopter"
+    },
+
+    {
+      "id": "ent-0017-blue-cas-aircraft-001",
+      "name": "A-10C Thunderbolt II",
+      "label": "HAMMER-1",
+      "description": "A-10C Warthog CAS aircraft on alert. Carries Maverick, GBU-12 and 30mm GAU-8.",
+      "entity_type": "aircraft",
+      "subtype": "A-10C-Thunderbolt-II",
+      "tags": ["blue", "aircraft", "cas", "fixed_wing"],
+      "owner_faction": "Blue",
+      "callsign": "HAMMER-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.835, "longitude": 67.215, "altitude": 1265.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 16.3, "y": 17.5, "z": 4.5 }, "asset_ref": "assets/aircraft/a10c_thunderbolt.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 23000.0, "linear_velocity": { "x": 0.0, "y": 0.0, "z": 0.0 }, "drag_coefficient": 0.032, "lift_coefficient": 1.6, "collision_enabled": true, "collision_group": "blue_air" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 30.0, "damage_model": "component_based", "is_destroyed": false },
+      "power": { "source_type": "turbine", "fuel_type": "JP8", "endurance_hours": 4.0 },
+      "propulsion": { "propulsion_type": "jet", "max_speed_mps": 220.0, "max_altitude_m": 13700.0, "max_climb_rate_mps": 30.0 },
+      "weapons": [
+        { "id": "wpn-0080-a10-gau8", "name": "GAU-8/A Avenger 30mm", "weapon_type": "cannon", "ammunition_count": 1174, "rate_of_fire_rpm": 3900, "muzzle_velocity_mps": 1067.0, "effective_range_m": 1200.0, "max_range_m": 3000.0, "warhead_type": "PGU-14_API_30mm", "guidance_type": "unguided", "state": "ready", "enabled": true },
+        { "id": "wpn-0081-a10-agm65", "name": "AGM-65D Maverick x6", "weapon_type": "missile", "ammunition_count": 6, "muzzle_velocity_mps": 290.0, "effective_range_m": 15000.0, "max_range_m": 28000.0, "warhead_type": "IIR_blast_frag_125kg", "guidance_type": "ir_homing", "state": "ready", "enabled": true },
+        { "id": "wpn-0082-a10-gbu12", "name": "GBU-12 Paveway II x4", "weapon_type": "bomb", "ammunition_count": 4, "effective_range_m": 15000.0, "max_range_m": 16000.0, "warhead_type": "LGB_Mk82_500lb", "guidance_type": "laser_guided", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/cas_aircraft.bt", "current_state": "ground_alert", "goals": [ { "goal_type": "respond_to_cas_request", "priority": 1 } ], "faction": "Blue", "autonomous_level": "supervised_autonomous" },
+      "state": { "lifecycle": "inactive", "visibility": "visible", "is_active": false, "is_collidable": true },
+      "semantic_labels": ["aircraft", "cas_aircraft", "a10", "warthog"],
+      "ontology_class": "pw:CASAircraft"
+    },
+
+    {
+      "id": "ent-0018-red-recon-uav-001",
+      "name": "Red Recon Quadrotor",
+      "label": "SHADOW-UAV",
+      "description": "Commercial-derived quadrotor UAV modified for reconnaissance. Used to detect convoy.",
+      "entity_type": "uav",
+      "subtype": "DJI-Phantom-Modified",
+      "tags": ["red", "uav", "recon", "commercial_modified"],
+      "owner_faction": "Red",
+      "callsign": "SHADOW-UAV",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.862, "longitude": 67.275, "altitude": 1480.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 0.55, "y": 0.55, "z": 0.25 }, "asset_ref": "assets/uav/dji_phantom_mod.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 2.8, "linear_velocity": { "x": 12.0, "y": 0.0, "z": 0.0 }, "collision_enabled": true, "collision_group": "red_air" },
+      "health": { "hp_max": 20.0, "hp_current": 20.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "electric_battery", "capacity_kwh": 0.18, "current_charge_pct": 95.0, "endurance_hours": 0.5 },
+      "propulsion": { "propulsion_type": "electric_motor", "max_speed_mps": 18.0, "max_altitude_m": 3000.0, "max_climb_rate_mps": 6.0 },
+      "sensors": [
+        { "id": "sens-0070-recon-eo", "name": "Gimbal EO Camera", "sensor_type": "camera_eo", "field_of_view": { "horizontal_deg": 83.0, "vertical_deg": 60.0, "max_range_m": 3000.0 }, "resolution": { "width": 4000, "height": 3000 }, "frame_rate_hz": 30.0, "enabled": true, "output_topic": "/red/recon_uav/eo" }
+      ],
+      "ai_behavior": { "controller_type": "state_machine", "state_machine_ref": "behaviors/recon_drone.sm", "current_state": "orbit_search", "goals": [ { "goal_type": "detect_convoy", "priority": 1 }, { "goal_type": "relay_coordinates", "priority": 2 } ], "faction": "Red", "autonomous_level": "semi_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "visible", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["uav", "recon_drone", "red_force"],
+      "ontology_class": "pw:ReconDrone"
+    },
+
+    {
+      "id": "ent-0019-red-scout-team-001",
+      "name": "Red Scout Observer Team",
+      "label": "SHADOW-GROUND",
+      "description": "Two-man observation team conducting ground surveillance on ridgeline.",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_Observer_2man",
+      "tags": ["red", "infantry", "observer", "hidden"],
+      "owner_faction": "Red",
+      "callsign": "SHADOW-GROUND",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.863, "longitude": 67.272, "altitude": 1340.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "radius": 0.4, "height": 1.8, "asset_ref": "assets/infantry/insurgent_observer.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 85.0, "collision_enabled": true, "collision_group": "red_infantry" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "sensors": [
+        { "id": "sens-0080-scout-bino", "name": "8x40 Binoculars", "sensor_type": "camera_eo", "field_of_view": { "horizontal_deg": 8.0, "vertical_deg": 6.0, "max_range_m": 5000.0 }, "enabled": true, "output_topic": "/red/scout/bino" }
+      ],
+      "ai_behavior": { "controller_type": "state_machine", "state_machine_ref": "behaviors/ground_observer.sm", "current_state": "observe_and_report", "goals": [ { "goal_type": "observe_convoy", "priority": 1 }, { "goal_type": "signal_ambush", "priority": 2 } ], "faction": "Red", "autonomous_level": "assisted" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["infantry", "observer", "red_force", "concealed"],
+      "ontology_class": "pw:ObserverTeam"
+    },
+
+    {
+      "id": "ent-0020-red-atgm-team-001",
+      "name": "Red ATGM Team",
+      "label": "HAMMER-RED-ATGM",
+      "description": "Four-man insurgent ATGM team with 9M113 Konkurs launcher in hull-down position on ridge.",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_ATGM_Team_4man",
+      "tags": ["red", "infantry", "atgm", "fire_support", "hidden"],
+      "owner_faction": "Red",
+      "callsign": "HAMMER-RED-ATGM",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.864, "longitude": 67.268, "altitude": 1380.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "radius": 0.4, "height": 1.7, "asset_ref": "assets/infantry/insurgent_atgm_team.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 320.0, "collision_enabled": true, "collision_group": "red_infantry" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "weapons": [
+        { "id": "wpn-0090-atgm-9m113", "name": "9M113 Konkurs ATGM x6", "weapon_type": "missile", "ammunition_count": 6, "muzzle_velocity_mps": 190.0, "effective_range_m": 2500.0, "max_range_m": 4000.0, "warhead_type": "HEAT_tandem_2.7kg", "guidance_type": "wire_guided", "state": "ready", "enabled": true },
+        { "id": "wpn-0091-atgm-ak74", "name": "AK-74 x4", "weapon_type": "gun", "ammunition_count": 1200, "rate_of_fire_rpm": 650, "muzzle_velocity_mps": 900.0, "effective_range_m": 400.0, "max_range_m": 600.0, "warhead_type": "ball_5.45x39", "guidance_type": "unguided", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/atgm_ambush.bt", "current_state": "hiding", "goals": [ { "goal_type": "wait_for_trigger", "priority": 2 }, { "goal_type": "engage_armored_vehicles", "priority": 1 }, { "goal_type": "relocate_after_firing", "priority": 3 } ], "faction": "Red", "threat_awareness": true, "autonomous_level": "semi_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["infantry", "atgm_team", "red_force", "concealed"],
+      "ontology_class": "pw:ATGMTeam"
+    },
+
+    {
+      "id": "ent-0021-red-mortar-team-001",
+      "name": "Red 82mm Mortar Team",
+      "label": "HAMMER-RED-MORTAR",
+      "description": "Four-man insurgent mortar team with 82mm M37 in defilade behind ridge.",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_Mortar_Team_4man",
+      "tags": ["red", "infantry", "mortar", "indirect_fire"],
+      "owner_faction": "Red",
+      "callsign": "HAMMER-RED-MORTAR",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.866, "longitude": 67.265, "altitude": 1395.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "radius": 0.4, "height": 1.7, "asset_ref": "assets/infantry/insurgent_mortar_team.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 300.0, "collision_enabled": true, "collision_group": "red_infantry" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "weapons": [
+        { "id": "wpn-0100-mortar-82mm", "name": "M-37 82mm Mortar x1", "weapon_type": "cannon", "ammunition_count": 32, "muzzle_velocity_mps": 211.0, "effective_range_m": 2800.0, "max_range_m": 4170.0, "warhead_type": "OF-832_HE_82mm", "guidance_type": "unguided", "reload_time_s": 8.0, "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/mortar_team.bt", "current_state": "setup", "goals": [ { "goal_type": "fire_on_convoy", "priority": 1 }, { "goal_type": "adjust_fire_from_observer", "priority": 2 }, { "goal_type": "displace_after_mission", "priority": 3 } ], "faction": "Red", "autonomous_level": "assisted" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["infantry", "mortar_team", "indirect_fire", "red_force"],
+      "ontology_class": "pw:MortarTeam"
+    },
+
+    {
+      "id": "ent-0022-red-sniper-team-001",
+      "name": "Red Sniper Pair",
+      "label": "SHADOW-SNIPER",
+      "description": "Two-man insurgent sniper team with Dragunov SVD. Targeting vehicle commanders.",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_Sniper_2man",
+      "tags": ["red", "infantry", "sniper"],
+      "owner_faction": "Red",
+      "callsign": "SHADOW-SNIPER",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.860, "longitude": 67.270, "altitude": 1350.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "radius": 0.35, "height": 1.8, "asset_ref": "assets/infantry/insurgent_sniper.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 90.0, "collision_enabled": true, "collision_group": "red_infantry" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "weapons": [
+        { "id": "wpn-0110-sniper-svd", "name": "SVD Dragunov 7.62mm", "weapon_type": "gun", "ammunition_count": 200, "rate_of_fire_rpm": 30, "muzzle_velocity_mps": 830.0, "effective_range_m": 800.0, "max_range_m": 1300.0, "warhead_type": "7N1_7.62x54R", "guidance_type": "unguided", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "state_machine", "state_machine_ref": "behaviors/sniper_pair.sm", "current_state": "hide", "goals": [ { "goal_type": "engage_vehicle_commanders", "priority": 1 }, { "goal_type": "create_confusion", "priority": 2 } ], "faction": "Red", "autonomous_level": "semi_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["infantry", "sniper", "red_force", "concealed"],
+      "ontology_class": "pw:SniperTeam"
+    },
+
+    {
+      "id": "ent-0023-red-machinegun-team-001",
+      "name": "Red PKM Machine Gun Team",
+      "label": "WOLF-MG",
+      "description": "Three-man insurgent PKM machine gun team providing suppressive fire from rock formation.",
+      "entity_type": "infantry",
+      "subtype": "Insurgent_MG_Team_3man",
+      "tags": ["red", "infantry", "machine_gun", "suppression"],
+      "owner_faction": "Red",
+      "callsign": "WOLF-MG",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.861, "longitude": 67.267, "altitude": 1310.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "capsule", "radius": 0.4, "height": 1.7, "asset_ref": "assets/infantry/insurgent_mg_team.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 240.0, "collision_enabled": true, "collision_group": "red_infantry" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "weapons": [
+        { "id": "wpn-0120-mg-pkm", "name": "PKM 7.62mm x2", "weapon_type": "gun", "ammunition_count": 2400, "rate_of_fire_rpm": 650, "muzzle_velocity_mps": 825.0, "effective_range_m": 800.0, "max_range_m": 1500.0, "warhead_type": "7.62x54R_LPS", "guidance_type": "unguided", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "state_machine", "state_machine_ref": "behaviors/mg_team.sm", "current_state": "hide", "goals": [ { "goal_type": "suppress_convoy", "priority": 1 }, { "goal_type": "prevent_dismount", "priority": 2 } ], "faction": "Red", "autonomous_level": "semi_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["infantry", "machine_gun_team", "red_force", "concealed"],
+      "ontology_class": "pw:MachineGunTeam"
+    },
+
+    {
+      "id": "ent-0024-red-ied-001",
+      "name": "Main Road IED",
+      "label": "IED-ALPHA",
+      "description": "100kg ANFO IED buried under road surface at kilometer 12. Command-wire detonation.",
+      "entity_type": "generic",
+      "subtype": "IED_Command_Wire_100kg",
+      "tags": ["red", "ied", "mine", "ambush_trigger", "buried"],
+      "owner_faction": "Red",
+      "callsign": "IED-ALPHA",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.857, "longitude": 67.258, "altitude": 1262.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 0.6, "y": 0.6, "z": 0.4 }, "asset_ref": "assets/weapons/ied_buried.usd", "collision_geometry": "bounding_box" },
+      "physics_body": { "body_type": "static", "mass": 100.0, "collision_enabled": false },
+      "health": { "hp_max": 1.0, "hp_current": 1.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "materials": [
+        { "id": "mat-0010-anfo", "name": "ANFO Explosive", "type": "explosive", "density": 850.0 }
+      ],
+      "ai_behavior": { "controller_type": "rule_based", "current_state": "armed", "goals": [ { "goal_type": "detonate_on_vehicle_proximity", "priority": 1, "parameters": { "trigger_radius_m": 1.5, "trigger_vehicle_classes": ["ground_vehicle", "tank", "apc", "ifv"] } } ], "faction": "Red", "autonomous_level": "manual" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": false },
+      "semantic_labels": ["ied", "explosive_device", "buried", "red_force"],
+      "ontology_class": "pw:IED"
+    },
+
+    {
+      "id": "ent-0025-red-ied-002",
+      "name": "Bridge Approach IED",
+      "label": "IED-BRAVO",
+      "description": "60kg IED emplaced at bridge approach. Radio-controlled detonation.",
+      "entity_type": "generic",
+      "subtype": "IED_Radio_Controlled_60kg",
+      "tags": ["red", "ied", "bridge", "ambush_secondary"],
+      "owner_faction": "Red",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.856, "longitude": 67.255, "altitude": 1261.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 0.5, "y": 0.5, "z": 0.35 }, "asset_ref": "assets/weapons/ied_surface.usd", "collision_geometry": "bounding_box" },
+      "physics_body": { "body_type": "static", "mass": 60.0, "collision_enabled": false },
+      "health": { "hp_max": 1.0, "hp_current": 1.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "materials": [ { "id": "mat-0011-pe4", "name": "PE4 Explosive", "type": "explosive", "density": 1601.0 } ],
+      "ai_behavior": { "controller_type": "rule_based", "current_state": "armed", "goals": [ { "goal_type": "detonate_on_command", "priority": 1 } ], "faction": "Red", "autonomous_level": "manual" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": false },
+      "semantic_labels": ["ied", "explosive_device", "red_force"],
+      "ontology_class": "pw:IED"
+    },
+
+    {
+      "id": "ent-0026-red-loitering-munition-001",
+      "name": "Shahed-136 Loitering Munition",
+      "label": "VIPER-LM1",
+      "description": "Shahed-136 one-way attack drone targeting fuel and ammunition trucks.",
+      "entity_type": "loitering_munition",
+      "subtype": "Shahed-136",
+      "tags": ["red", "loitering_munition", "attack_drone", "one_way"],
+      "owner_faction": "Red",
+      "callsign": "VIPER-LM1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.875, "longitude": 67.280, "altitude": 1800.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 3.5, "y": 2.5, "z": 0.4 }, "asset_ref": "assets/munitions/shahed136.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 200.0, "linear_velocity": { "x": 50.0, "y": 0.0, "z": 0.0 }, "drag_coefficient": 0.04, "lift_coefficient": 0.9, "collision_enabled": true, "collision_group": "red_air" },
+      "health": { "hp_max": 30.0, "hp_current": 30.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "gasoline", "fuel_type": "gasoline_motor", "endurance_hours": 2.0 },
+      "propulsion": { "propulsion_type": "propeller", "max_speed_mps": 65.0, "max_altitude_m": 4000.0 },
+      "weapons": [
+        { "id": "wpn-0130-lm1-warhead", "name": "40kg Blast Frag Warhead", "weapon_type": "bomb", "ammunition_count": 1, "warhead_type": "blast_frag_40kg", "guidance_type": "gps_inertial", "state": "ready", "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "state_machine", "state_machine_ref": "behaviors/loitering_munition.sm", "current_state": "transit", "goals": [ { "goal_type": "orbit_search", "priority": 2 }, { "goal_type": "terminal_dive_on_target", "priority": 1, "parameters": { "target_type": "fuel_truck" } } ], "faction": "Red", "autonomous_level": "semi_autonomous" },
+      "state": { "lifecycle": "inactive", "visibility": "visible", "is_active": false, "is_collidable": false },
+      "semantic_labels": ["loitering_munition", "kamikaze_drone", "red_force"],
+      "ontology_class": "pw:LoiteringMunition"
+    },
+
+    {
+      "id": "ent-0027-red-loitering-munition-002",
+      "name": "Shahed-136 Loitering Munition #2",
+      "label": "VIPER-LM2",
+      "description": "Second Shahed-136 targeting IFV or APC.",
+      "entity_type": "loitering_munition",
+      "subtype": "Shahed-136",
+      "tags": ["red", "loitering_munition", "attack_drone"],
+      "owner_faction": "Red",
+      "callsign": "VIPER-LM2",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.875, "longitude": 67.285, "altitude": 1820.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 3.5, "y": 2.5, "z": 0.4 }, "asset_ref": "assets/munitions/shahed136.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 200.0, "collision_enabled": true, "collision_group": "red_air" },
+      "health": { "hp_max": 30.0, "hp_current": 30.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "power": { "source_type": "gasoline", "fuel_type": "gasoline_motor", "endurance_hours": 2.0 },
+      "propulsion": { "propulsion_type": "propeller", "max_speed_mps": 65.0, "max_altitude_m": 4000.0 },
+      "weapons": [ { "id": "wpn-0131-lm2-warhead", "name": "40kg Blast Frag Warhead #2", "weapon_type": "bomb", "ammunition_count": 1, "warhead_type": "blast_frag_40kg", "guidance_type": "gps_inertial", "state": "ready", "enabled": true } ],
+      "ai_behavior": { "controller_type": "state_machine", "state_machine_ref": "behaviors/loitering_munition.sm", "current_state": "transit", "goals": [ { "goal_type": "terminal_dive_on_target", "priority": 1, "parameters": { "target_type": "apc" } } ], "faction": "Red", "autonomous_level": "semi_autonomous" },
+      "state": { "lifecycle": "inactive", "visibility": "visible", "is_active": false, "is_collidable": false },
+      "semantic_labels": ["loitering_munition", "kamikaze_drone", "red_force"],
+      "ontology_class": "pw:LoiteringMunition"
+    },
+
+    {
+      "id": "ent-0028-red-pickup-truck-001",
+      "name": "Red Pickup Truck #1",
+      "label": "WOLF-1",
+      "description": "Toyota Hilux pickup truck with PKM ground mount. Rapid-reaction vehicle.",
+      "entity_type": "ground_vehicle",
+      "subtype": "Toyota-Hilux-PKM",
+      "tags": ["red", "ground_vehicle", "technical", "maneuver"],
+      "owner_faction": "Red",
+      "callsign": "WOLF-1",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.868, "longitude": 67.280, "altitude": 1300.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 5.3, "y": 1.9, "z": 1.8 }, "asset_ref": "assets/vehicles/toyota_hilux_technical.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 2200.0, "collision_enabled": true, "collision_group": "red_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 2.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 38.0, "acceleration_mps2": 4.5 },
+      "weapons": [ { "id": "wpn-0140-wolf1-pkm", "name": "PKM 7.62 Truck Mount", "weapon_type": "gun", "ammunition_count": 2000, "rate_of_fire_rpm": 650, "muzzle_velocity_mps": 825.0, "effective_range_m": 800.0, "max_range_m": 1500.0, "warhead_type": "7.62x54R_LPS", "guidance_type": "unguided", "state": "ready", "enabled": true } ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/technical_vehicle.bt", "current_state": "hiding", "goals": [ { "goal_type": "flank_convoy", "priority": 1 }, { "goal_type": "escape_after_attack", "priority": 2 } ], "faction": "Red", "autonomous_level": "assisted" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["pickup_truck", "technical", "red_force"],
+      "ontology_class": "pw:Technical"
+    },
+
+    {
+      "id": "ent-0029-red-pickup-truck-002",
+      "name": "Red Pickup Truck #2",
+      "label": "WOLF-2",
+      "description": "Toyota Hilux with DShK 12.7mm heavy machine gun mount.",
+      "entity_type": "ground_vehicle",
+      "subtype": "Toyota-Hilux-DShK",
+      "tags": ["red", "ground_vehicle", "technical", "heavy_weapon"],
+      "owner_faction": "Red",
+      "callsign": "WOLF-2",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.867, "longitude": 67.278, "altitude": 1295.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 5.3, "y": 1.9, "z": 1.9 }, "asset_ref": "assets/vehicles/toyota_hilux_dshk.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 2400.0, "collision_enabled": true, "collision_group": "red_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 2.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 36.0, "acceleration_mps2": 4.0 },
+      "weapons": [ { "id": "wpn-0150-wolf2-dshk", "name": "DShK 12.7mm HMG", "weapon_type": "gun", "ammunition_count": 600, "rate_of_fire_rpm": 600, "muzzle_velocity_mps": 860.0, "effective_range_m": 1500.0, "max_range_m": 2500.0, "warhead_type": "B32_API_12.7x108", "guidance_type": "unguided", "state": "ready", "enabled": true } ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/technical_vehicle.bt", "current_state": "hiding", "goals": [ { "goal_type": "suppress_dismounted_infantry", "priority": 1 } ], "faction": "Red", "autonomous_level": "assisted" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["pickup_truck", "technical", "dshk", "red_force"],
+      "ontology_class": "pw:Technical"
+    },
+
+    {
+      "id": "ent-0030-red-motorcycle-001",
+      "name": "Red Motorcycle Courier",
+      "label": "SHADOW-MOTO",
+      "description": "Honda 125cc motorcycle used for fast command communication and escaping.",
+      "entity_type": "ground_vehicle",
+      "subtype": "Honda-125cc-Motorcycle",
+      "tags": ["red", "ground_vehicle", "motorcycle", "courier"],
+      "owner_faction": "Red",
+      "callsign": "SHADOW-MOTO",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.868, "longitude": 67.275, "altitude": 1298.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 2.0, "y": 0.8, "z": 1.2 }, "asset_ref": "assets/vehicles/honda_125cc.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 280.0, "collision_enabled": true, "collision_group": "red_ground" },
+      "health": { "hp_max": 40.0, "hp_current": 40.0, "armor_rating": 0.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 28.0, "acceleration_mps2": 6.0 },
+      "ai_behavior": { "controller_type": "scripted", "current_state": "ready", "goals": [ { "goal_type": "escape_after_attack", "priority": 1 } ], "faction": "Red", "autonomous_level": "assisted" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["motorcycle", "courier", "red_force"],
+      "ontology_class": "pw:Motorcycle"
+    },
+
+    {
+      "id": "ent-0031-red-cmd-vehicle-001",
+      "name": "Red Command Pickup",
+      "label": "GHOST-6",
+      "description": "Red force commander vehicle with Thuraya satellite phone and VHF radio.",
+      "entity_type": "ground_vehicle",
+      "subtype": "Toyota-Landcruiser-Command",
+      "tags": ["red", "ground_vehicle", "command", "high_value"],
+      "owner_faction": "Red",
+      "callsign": "GHOST-6",
+      "transform": {
+        "geo_coordinate": { "latitude": 34.869, "longitude": 67.283, "altitude": 1305.0 },
+        "reference_frame": "geo"
+      },
+      "geometry": { "primitive": "box", "dimensions": { "x": 4.8, "y": 2.0, "z": 2.0 }, "asset_ref": "assets/vehicles/landcruiser_cmd.usd", "collision_geometry": "convex_hull" },
+      "physics_body": { "body_type": "dynamic", "mass": 2800.0, "collision_enabled": true, "collision_group": "red_ground" },
+      "health": { "hp_max": 100.0, "hp_current": 100.0, "armor_rating": 3.0, "damage_model": "simple_hp", "is_destroyed": false },
+      "propulsion": { "propulsion_type": "wheeled", "max_speed_mps": 35.0, "acceleration_mps2": 4.0 },
+      "communications": [
+        { "id": "comm-0030-red-cmd-satphone", "name": "Thuraya Satellite Phone", "comm_type": "radio_satcom", "frequency_mhz": 1525.0, "range_km": 5000.0, "encryption": false, "enabled": true },
+        { "id": "comm-0031-red-cmd-vhf", "name": "Motorola VHF Radio", "comm_type": "radio_vhf", "frequency_mhz": 148.0, "range_km": 20.0, "encryption": false, "enabled": true }
+      ],
+      "ai_behavior": { "controller_type": "behavior_tree", "behavior_tree_ref": "behaviors/insurgent_cmd.bt", "current_state": "command_and_control", "goals": [ { "goal_type": "coordinate_ambush", "priority": 1 }, { "goal_type": "order_retreat", "priority": 2 } ], "faction": "Red", "autonomous_level": "semi_autonomous" },
+      "state": { "lifecycle": "active", "visibility": "hidden", "is_active": true, "is_collidable": true },
+      "semantic_labels": ["command_vehicle", "red_force", "high_value_target"],
+      "ontology_class": "pw:CommandVehicle"
+    }
+  ],
+
+  "missions": [
+    {
+      "id": "msn-0001-blue-escort",
+      "name": "Convoy Escort to FOB Kestrel",
+      "mission_type": "escort",
+      "assigned_entity_ids": [
+        "ent-0001-blue-cmd-vehicle-001",
+        "ent-0002-blue-fuel-truck-001",
+        "ent-0003-blue-ammo-truck-001",
+        "ent-0007-blue-mrap-001",
+        "ent-0010-blue-ifv-001",
+        "ent-0011-blue-tank-001"
+      ],
+      "primary_objective": "Transport fuel, ammunition and supplies to FOB Kestrel uninterrupted",
+      "secondary_objectives": [
+        "Maintain convoy integrity with at least 80% of vehicles",
+        "Evacuate all casualties",
+        "Neutralize ambush threat"
+      ],
+      "area_of_operation": {
+        "center": { "latitude": 34.856, "longitude": 67.270 },
+        "radius_km": 12.0
+      },
+      "waypoints": [
+        { "id": "wp-0001", "position": { "latitude": 34.855, "longitude": 67.250 }, "action": "depart_fob", "altitude_m": 1260.0, "speed_mps": 15.0 },
+        { "id": "wp-0002", "position": { "latitude": 34.857, "longitude": 67.260 }, "action": "route_check", "altitude_m": 1265.0, "speed_mps": 10.0 },
+        { "id": "wp-0003", "position": { "latitude": 34.856, "longitude": 67.270 }, "action": "bridge_crossing", "altitude_m": 1270.0, "speed_mps": 8.0 },
+        { "id": "wp-0004", "position": { "latitude": 34.858, "longitude": 67.295 }, "action": "rally_point", "altitude_m": 1280.0, "speed_mps": 15.0 },
+        { "id": "wp-0005", "position": { "latitude": 34.860, "longitude": 67.330 }, "action": "arrive_fob_kestrel", "altitude_m": 1290.0, "speed_mps": 5.0 }
+      ],
+      "start_condition": "simulation_start",
+      "end_condition": "convoy_reaches_fob_kestrel OR convoy_destroyed",
+      "roe": "Return fire authorized. Escalation of force procedures apply.",
+      "status": "active",
+      "priority": 1
+    },
+    {
+      "id": "msn-0002-blue-isr",
+      "name": "Convoy Route ISR",
+      "mission_type": "isr",
+      "assigned_entity_ids": ["ent-0014-blue-recon-uav-001"],
+      "primary_objective": "Persistent ISR coverage of convoy route 15km ahead of lead vehicle",
+      "secondary_objectives": ["Detect and classify all threats", "Provide early warning to convoy commander"],
+      "area_of_operation": {
+        "center": { "latitude": 34.860, "longitude": 67.270 },
+        "radius_km": 15.0
+      },
+      "start_condition": "T+720",
+      "end_condition": "mission_complete OR uav_fuel_critical",
+      "roe": "Observe and report only",
+      "status": "planned",
+      "priority": 2
+    },
+    {
+      "id": "msn-0003-blue-cas",
+      "name": "Close Air Support On Call",
+      "mission_type": "cas",
+      "assigned_entity_ids": ["ent-0016-blue-attack-heli-001", "ent-0017-blue-cas-aircraft-001"],
+      "primary_objective": "Provide immediate CAS on request from convoy commander",
+      "secondary_objectives": ["Suppress enemy fire support", "Destroy enemy vehicles and crew"],
+      "area_of_operation": {
+        "center": { "latitude": 34.856, "longitude": 67.270 },
+        "radius_km": 20.0
+      },
+      "start_condition": "cas_request_received",
+      "end_condition": "threat_neutralized OR bingo_fuel",
+      "roe": "Positive identification required. Minimize collateral damage.",
+      "status": "planned",
+      "priority": 1
+    },
+    {
+      "id": "msn-0004-red-ambush",
+      "name": "Operation Ghost Sting",
+      "mission_type": "attack",
+      "assigned_entity_ids": [
+        "ent-0018-red-recon-uav-001",
+        "ent-0019-red-scout-team-001",
+        "ent-0020-red-atgm-team-001",
+        "ent-0021-red-mortar-team-001",
+        "ent-0024-red-ied-001",
+        "ent-0025-red-ied-002",
+        "ent-0026-red-loitering-munition-001"
+      ],
+      "primary_objective": "Destroy convoy and prevent supplies reaching FOB Kestrel",
+      "secondary_objectives": [
+        "Destroy fuel tanker and ammunition truck",
+        "Inflict maximum casualties",
+        "Withdraw successfully"
+      ],
+      "area_of_operation": {
+        "center": { "latitude": 34.860, "longitude": 67.265 },
+        "radius_km": 8.0
+      },
+      "start_condition": "T+1440",
+      "end_condition": "convoy_destroyed OR red_force_destroyed OR T+3900",
+      "roe": "Attack all Blue military vehicles. Avoid civilian infrastructure.",
+      "status": "planned",
+      "priority": 1
+    }
+  ],
+
+  "events": [
+    {
+      "id": "evt-0001-mission-start",
+      "event_type": "mission_start",
+      "timestamp": 0.0,
+      "source_id": "ent-0001-blue-cmd-vehicle-001",
+      "parameters": { "mission_id": "msn-0001-blue-escort", "scene": "Operation Broken Spear" },
+      "notes": "Convoy departs FOB. All Blue units active."
+    },
+    {
+      "id": "evt-0002-uav-launch",
+      "event_type": "spawn",
+      "timestamp": 720.0,
+      "source_id": "ent-0014-blue-recon-uav-001",
+      "position": { "x": 0.0, "y": 0.0, "z": 590.0 },
+      "parameters": { "launch_site": "FOB_Kestrel_UAV_Pad", "mission": "msn-0002-blue-isr" },
+      "notes": "T+12min: RQ-7B Shadow launched for route ISR."
+    },
+    {
+      "id": "evt-0003-red-detection",
+      "event_type": "detection",
+      "timestamp": 1080.0,
+      "source_id": "ent-0018-red-recon-uav-001",
+      "target_id": "ent-0001-blue-cmd-vehicle-001",
+      "parameters": { "confidence": 0.95, "convoy_size_estimate": 12, "heading_deg": 75.0 },
+      "notes": "T+18min: Red UAV detects and classifies convoy. Coordinates relayed to ambush commander."
+    },
+    {
+      "id": "evt-0004-ied-detonation",
+      "event_type": "explosion",
+      "timestamp": 1440.0,
+      "source_id": "ent-0024-red-ied-001",
+      "target_id": "ent-0007-blue-mrap-001",
+      "position": { "x": 1200.0, "y": 0.0, "z": 0.0 },
+      "parameters": { "explosive_mass_kg": 100.0, "blast_radius_m": 25.0, "fragmentation_radius_m": 60.0 },
+      "effects": [
+        { "effect_type": "blast_damage", "magnitude": 85.0, "radius_m": 8.0, "duration_s": 0.1 },
+        { "effect_type": "fragmentation", "magnitude": 40.0, "radius_m": 60.0, "duration_s": 0.05 },
+        { "effect_type": "dust_cloud", "magnitude": 1.0, "radius_m": 80.0, "duration_s": 30.0 },
+        { "effect_type": "smoke", "magnitude": 0.8, "radius_m": 50.0, "duration_s": 120.0 }
+      ],
+      "notes": "T+24min: Main road IED detonates under lead MRAP. Convoy halts."
+    },
+    {
+      "id": "evt-0005-ambush-begins",
+      "event_type": "fire",
+      "timestamp": 1500.0,
+      "source_id": "ent-0023-red-machinegun-team-001",
+      "target_id": "ent-0007-blue-mrap-001",
+      "parameters": { "weapon": "PKM", "burst_length": 30, "range_m": 420.0 },
+      "notes": "T+25min: Red MG teams open fire. Ambush initiated."
+    },
+    {
+      "id": "evt-0006-atgm-launch",
+      "event_type": "missile_launch",
+      "timestamp": 1560.0,
+      "source_id": "ent-0020-red-atgm-team-001",
+      "target_id": "ent-0009-blue-apc-001",
+      "parameters": { "weapon": "9M113_Konkurs", "range_m": 1850.0, "flight_time_s": 9.7 },
+      "effects": [
+        { "effect_type": "penetration_damage", "magnitude": 75.0, "radius_m": 1.5, "duration_s": 0.05 },
+        { "effect_type": "spall", "magnitude": 50.0, "radius_m": 4.0, "duration_s": 0.02 }
+      ],
+      "notes": "T+26min: ATGM engages Blue APC. Hit amidships, crew casualty."
+    },
+    {
+      "id": "evt-0007-mortar-fire",
+      "event_type": "explosion",
+      "timestamp": 1620.0,
+      "source_id": "ent-0021-red-mortar-team-001",
+      "position": { "x": 1150.0, "y": 20.0, "z": 0.0 },
+      "parameters": { "weapon": "82mm_OF-832", "rounds_fired": 4, "rate_of_fire_rpm": 7.5 },
+      "effects": [
+        { "effect_type": "blast_damage", "magnitude": 45.0, "radius_m": 6.0, "duration_s": 0.05 },
+        { "effect_type": "fragmentation", "magnitude": 35.0, "radius_m": 35.0, "duration_s": 0.02 }
+      ],
+      "notes": "T+27min: 82mm mortar barrage on convoy halt point."
+    },
+    {
+      "id": "evt-0008-blue-uav-detects-mortar",
+      "event_type": "target_acquired",
+      "timestamp": 1920.0,
+      "source_id": "ent-0014-blue-recon-uav-001",
+      "target_id": "ent-0021-red-mortar-team-001",
+      "parameters": { "sensor": "thermal_ir", "confidence": 0.89, "grid_ref": "41SPT123456" },
+      "notes": "T+32min: Blue UAV thermal sensor locates mortar team heat signature. CAS requested."
+    },
+    {
+      "id": "evt-0009-loitering-munition-launch",
+      "event_type": "spawn",
+      "timestamp": 2040.0,
+      "source_id": "ent-0026-red-loitering-munition-001",
+      "target_id": "ent-0002-blue-fuel-truck-001",
+      "parameters": { "launch_location": "red_rear_area", "gps_target_lat": 34.855, "gps_target_lon": 67.250 },
+      "notes": "T+34min: Shahed-136 launched against fuel tanker."
+    },
+    {
+      "id": "evt-0010-helicopter-scramble",
+      "event_type": "spawn",
+      "timestamp": 2160.0,
+      "source_id": "ent-0016-blue-attack-heli-001",
+      "parameters": { "alert_type": "ground_scramble", "mission": "msn-0003-blue-cas", "eta_min": 8.0 },
+      "notes": "T+36min: AH-64E Apache scrambled from FOB Kestrel."
+    },
+    {
+      "id": "evt-0011-cas-request",
+      "event_type": "communication_sent",
+      "timestamp": 2220.0,
+      "source_id": "ent-0001-blue-cmd-vehicle-001",
+      "parameters": { "request_type": "immediate_cas", "target_grid": "41SPT123456", "target_description": "mortar_team_behind_ridge", "friendly_pos_grid": "41SPT119452" },
+      "notes": "T+37min: Convoy commander broadcasts 9-line CAS request."
+    },
+    {
+      "id": "evt-0012-apache-attack",
+      "event_type": "missile_launch",
+      "timestamp": 2640.0,
+      "source_id": "ent-0016-blue-attack-heli-001",
+      "target_id": "ent-0021-red-mortar-team-001",
+      "parameters": { "weapon": "AGM-114L_Longbow", "salvo_size": 2, "range_m": 4200.0 },
+      "effects": [
+        { "effect_type": "blast_damage", "magnitude": 90.0, "radius_m": 10.0, "duration_s": 0.15 },
+        { "effect_type": "fragmentation", "magnitude": 70.0, "radius_m": 25.0, "duration_s": 0.08 }
+      ],
+      "notes": "T+44min: Apache fires Hellfire Longbow x2 at mortar team. Mortar team destroyed."
+    },
+    {
+      "id": "evt-0013-a10-cas-strafing",
+      "event_type": "fire",
+      "timestamp": 2880.0,
+      "source_id": "ent-0017-blue-cas-aircraft-001",
+      "target_id": "ent-0028-red-pickup-truck-001",
+      "parameters": { "weapon": "GAU-8_30mm", "burst_rounds": 60, "pass_altitude_m": 300.0, "speed_mps": 180.0 },
+      "effects": [
+        { "effect_type": "kinetic_impact", "magnitude": 95.0, "radius_m": 5.0, "duration_s": 0.5 }
+      ],
+      "notes": "T+48min: A-10C strafes Red technical vehicle with GAU-8."
+    },
+    {
+      "id": "evt-0014-red-retreat",
+      "event_type": "retreat",
+      "timestamp": 3000.0,
+      "source_id": "ent-0031-red-cmd-vehicle-001",
+      "parameters": { "trigger": "air_superiority_lost", "remaining_red_forces_pct": 35.0 },
+      "notes": "T+50min: Red commander orders withdrawal. Surviving Red units disperse."
+    },
+    {
+      "id": "evt-0015-medevac",
+      "event_type": "repair",
+      "timestamp": 3120.0,
+      "source_id": "ent-0005-blue-medical-vehicle-001",
+      "target_id": "ent-0012-blue-infantry-squad-001",
+      "parameters": { "casualties_treated": 2, "casualties_critical": 1, "litter_count": 1 },
+      "notes": "T+52min: MEDEVAC treats and evacuates casualties from APC crew."
+    },
+    {
+      "id": "evt-0016-convoy-resumes",
+      "event_type": "move",
+      "timestamp": 3300.0,
+      "source_id": "ent-0001-blue-cmd-vehicle-001",
+      "parameters": { "action": "convoy_resume", "speed_mps": 12.0, "formation": "column_with_tank_lead" },
+      "notes": "T+55min: Convoy reorganizes and resumes movement to FOB Kestrel."
+    },
+    {
+      "id": "evt-0017-mission-complete",
+      "event_type": "mission_complete",
+      "timestamp": 3840.0,
+      "source_id": "ent-0001-blue-cmd-vehicle-001",
+      "parameters": {
+        "mission_id": "msn-0001-blue-escort",
+        "vehicles_survived_pct": 83.0,
+        "supply_delivered_pct": 92.0,
+        "blue_casualties_kia": 1,
+        "blue_casualties_wia": 3,
+        "red_kia_estimated": 12,
+        "scenario_outcome": "blue_victory_marginal"
+      },
+      "notes": "T+64min: Convoy reaches FOB Kestrel. Mission complete."
+    }
+  ],
+
+  "timeline": [
+    { "id": "tl-0001", "time_s": 0.0,    "action_type": "trigger_event", "entity_id": "ent-0001-blue-cmd-vehicle-001", "parameters": { "event_id": "evt-0001-mission-start" }, "label": "Convoy Departs FOB" },
+    { "id": "tl-0002", "time_s": 720.0,  "action_type": "spawn_entity",  "entity_id": "ent-0014-blue-recon-uav-001",    "parameters": { "spawn_location": "fob_uav_pad", "altitude_m": 1850.0 }, "label": "Blue UAV Launch" },
+    { "id": "tl-0003", "time_s": 1080.0, "action_type": "trigger_event", "entity_id": "ent-0018-red-recon-uav-001",    "parameters": { "event_id": "evt-0003-red-detection" }, "label": "Red UAV Detects Convoy" },
+    { "id": "tl-0004", "time_s": 1200.0, "action_type": "set_state",    "entity_id": "ent-0020-red-atgm-team-001",    "parameters": { "state": "armed_and_ready" }, "label": "ATGM Team Arms" },
+    { "id": "tl-0005", "time_s": 1320.0, "action_type": "set_state",    "entity_id": "ent-0024-red-ied-001",           "parameters": { "state": "armed", "trigger": "vehicle_proximity" }, "label": "IED Armed" },
+    { "id": "tl-0006", "time_s": 1440.0, "action_type": "trigger_event", "entity_id": "ent-0024-red-ied-001",           "parameters": { "event_id": "evt-0004-ied-detonation" }, "label": "IED Detonation — Ambush Begins", "condition": "lead_vehicle_within_2m" },
+    { "id": "tl-0007", "time_s": 1500.0, "action_type": "trigger_event", "entity_id": "ent-0023-red-machinegun-team-001", "parameters": { "event_id": "evt-0005-ambush-begins" }, "label": "Red MG Fire Opens" },
+    { "id": "tl-0008", "time_s": 1560.0, "action_type": "trigger_event", "entity_id": "ent-0020-red-atgm-team-001",    "parameters": { "event_id": "evt-0006-atgm-launch" }, "label": "ATGM Fired at APC" },
+    { "id": "tl-0009", "time_s": 1620.0, "action_type": "trigger_event", "entity_id": "ent-0021-red-mortar-team-001",  "parameters": { "event_id": "evt-0007-mortar-fire" }, "label": "Mortar Barrage Begins" },
+    { "id": "tl-0010", "time_s": 1740.0, "action_type": "spawn_entity",  "entity_id": "ent-0015-blue-attack-uav-001", "parameters": { "spawn_location": "fob_ucav_pad", "altitude_m": 2100.0 }, "label": "Blue UCAV Launched" },
+    { "id": "tl-0011", "time_s": 1920.0, "action_type": "trigger_event", "entity_id": "ent-0014-blue-recon-uav-001",  "parameters": { "event_id": "evt-0008-blue-uav-detects-mortar" }, "label": "UAV Locates Mortar" },
+    { "id": "tl-0012", "time_s": 2040.0, "action_type": "spawn_entity",  "entity_id": "ent-0026-red-loitering-munition-001", "parameters": { "target_entity_id": "ent-0002-blue-fuel-truck-001" }, "label": "Red Loitering Munition Launched" },
+    { "id": "tl-0013", "time_s": 2040.0, "action_type": "spawn_entity",  "entity_id": "ent-0027-red-loitering-munition-002", "parameters": { "target_entity_id": "ent-0009-blue-apc-001" }, "label": "Red Loitering Munition #2 Launched" },
+    { "id": "tl-0014", "time_s": 2160.0, "action_type": "spawn_entity",  "entity_id": "ent-0016-blue-attack-heli-001", "parameters": { "spawn_location": "fob_helipad", "action": "immediate_scramble" }, "label": "Apache Scrambled" },
+    { "id": "tl-0015", "time_s": 2220.0, "action_type": "trigger_event", "entity_id": "ent-0001-blue-cmd-vehicle-001", "parameters": { "event_id": "evt-0011-cas-request" }, "label": "CAS Request Transmitted" },
+    { "id": "tl-0016", "time_s": 2400.0, "action_type": "spawn_entity",  "entity_id": "ent-0017-blue-cas-aircraft-001", "parameters": { "spawn_location": "fob_runway_strip", "action": "scramble" }, "label": "A-10C Scrambles" },
+    { "id": "tl-0017", "time_s": 2640.0, "action_type": "trigger_event", "entity_id": "ent-0016-blue-attack-heli-001", "parameters": { "event_id": "evt-0012-apache-attack" }, "label": "Apache Hellfire Strike" },
+    { "id": "tl-0018", "time_s": 2880.0, "action_type": "trigger_event", "entity_id": "ent-0017-blue-cas-aircraft-001", "parameters": { "event_id": "evt-0013-a10-cas-strafing" }, "label": "A-10 Strafing Run" },
+    { "id": "tl-0019", "time_s": 3000.0, "action_type": "trigger_event", "entity_id": "ent-0031-red-cmd-vehicle-001",  "parameters": { "event_id": "evt-0014-red-retreat" }, "label": "Red Force Retreats" },
+    { "id": "tl-0020", "time_s": 3000.0, "action_type": "change_weather", "parameters": { "wind_speed_mps": 8.0, "dust_density": 0.45, "visibility_km": 12.0 }, "label": "Dust Storm Intensifies Post-Battle" },
+    { "id": "tl-0021", "time_s": 3120.0, "action_type": "trigger_event", "entity_id": "ent-0005-blue-medical-vehicle-001", "parameters": { "event_id": "evt-0015-medevac" }, "label": "MEDEVAC Begins" },
+    { "id": "tl-0022", "time_s": 3300.0, "action_type": "trigger_event", "entity_id": "ent-0001-blue-cmd-vehicle-001", "parameters": { "event_id": "evt-0016-convoy-resumes" }, "label": "Convoy Resumes Movement" },
+    { "id": "tl-0023", "time_s": 3840.0, "action_type": "trigger_event", "entity_id": "ent-0001-blue-cmd-vehicle-001", "parameters": { "event_id": "evt-0017-mission-complete" }, "label": "Mission Complete — FOB Kestrel Reached" }
+  ],
+
+  "relationships": [
+    { "id": "rel-0001", "source_id": "ent-0007-blue-mrap-001",   "relation_type": "escorting",        "target_id": "ent-0002-blue-fuel-truck-001",  "bidirectional": false },
+    { "id": "rel-0002", "source_id": "ent-0010-blue-ifv-001",    "relation_type": "escorting",        "target_id": "ent-0003-blue-ammo-truck-001",  "bidirectional": false },
+    { "id": "rel-0003", "source_id": "ent-0011-blue-tank-001",   "relation_type": "escorting",        "target_id": "ent-0001-blue-cmd-vehicle-001", "bidirectional": false },
+    { "id": "rel-0004", "source_id": "ent-0012-blue-infantry-squad-001", "relation_type": "inside",   "target_id": "ent-0009-blue-apc-001",         "bidirectional": false },
+    { "id": "rel-0005", "source_id": "ent-0014-blue-recon-uav-001", "relation_type": "providesDataTo","target_id": "ent-0001-blue-cmd-vehicle-001",  "bidirectional": false },
+    { "id": "rel-0006", "source_id": "ent-0001-blue-cmd-vehicle-001", "relation_type": "commandedBy", "target_id": "ent-0001-blue-cmd-vehicle-001",  "bidirectional": false },
+    { "id": "rel-0007", "source_id": "ent-0020-red-atgm-team-001", "relation_type": "enemyOf",        "target_id": "ent-0009-blue-apc-001",          "bidirectional": false },
+    { "id": "rel-0008", "source_id": "ent-0018-red-recon-uav-001","relation_type": "providesDataTo",  "target_id": "ent-0031-red-cmd-vehicle-001",   "bidirectional": false },
+    { "id": "rel-0009", "source_id": "ent-0021-red-mortar-team-001","relation_type": "receivesDataFrom","target_id": "ent-0019-red-scout-team-001",  "bidirectional": false },
+    { "id": "rel-0010", "source_id": "ent-0016-blue-attack-heli-001","relation_type": "targets",      "target_id": "ent-0021-red-mortar-team-001",   "bidirectional": false,
+      "valid_from": "2024-06-29T06:36:00Z" }
+  ],
+
+  "constraints": [
+    {
+      "id": "con-0001",
+      "constraint_type": "logical",
+      "entity_a_id": "ent-0012-blue-infantry-squad-001",
+      "entity_b_id": "ent-0009-blue-apc-001",
+      "breakable": true,
+      "break_force": 0.0,
+      "enabled": true
+    }
+  ],
+
+  "assets": {
+    "base_url": "file:///physworldlm/assets/",
+    "entries": [
+      { "id": "ast-0001", "name": "M-ATV MRAP",              "path": "vehicles/m_atv.usd",                  "format": "usd", "tags": ["vehicle", "blue", "mrap"] },
+      { "id": "ast-0002", "name": "M978 HEMTT Tanker",        "path": "vehicles/m978_tanker.usd",            "format": "usd", "tags": ["vehicle", "blue", "logistics"] },
+      { "id": "ast-0003", "name": "M977 HEMTT Ammo",          "path": "vehicles/m977_ammo.usd",              "format": "usd", "tags": ["vehicle", "blue", "logistics"] },
+      { "id": "ast-0004", "name": "M1083 FMTV Cargo",         "path": "vehicles/m1083_fmtv.usd",             "format": "usd", "tags": ["vehicle", "blue", "logistics"] },
+      { "id": "ast-0005", "name": "M997 HMMWV Ambulance",     "path": "vehicles/m997_ambulance.usd",         "format": "usd", "tags": ["vehicle", "blue", "medical"] },
+      { "id": "ast-0006", "name": "M984 HEMTT Wrecker",       "path": "vehicles/m984_wrecker.usd",           "format": "usd", "tags": ["vehicle", "blue", "recovery"] },
+      { "id": "ast-0007", "name": "M113A3 APC",               "path": "vehicles/m113a3.usd",                 "format": "usd", "tags": ["vehicle", "blue", "armored"] },
+      { "id": "ast-0008", "name": "M2A3 Bradley IFV",         "path": "vehicles/m2a3_bradley.usd",           "format": "usd", "tags": ["vehicle", "blue", "ifv"] },
+      { "id": "ast-0009", "name": "M1A2 SEPv3 Abrams",        "path": "vehicles/m1a2_sepv3.usd",             "format": "usd", "tags": ["vehicle", "blue", "tank"] },
+      { "id": "ast-0010", "name": "M997 MRAP Command",        "path": "vehicles/mrap_cmd.usd",               "format": "usd", "tags": ["vehicle", "blue", "command"] },
+      { "id": "ast-0011", "name": "RQ-7B Shadow UAV",         "path": "uav/rq7b_shadow.usd",                 "format": "usd", "tags": ["uav", "blue", "isr"] },
+      { "id": "ast-0012", "name": "MQ-1C Gray Eagle",         "path": "uav/mq1c_gray_eagle.usd",             "format": "usd", "tags": ["ucav", "blue", "armed"] },
+      { "id": "ast-0013", "name": "AH-64E Apache Guardian",   "path": "rotorcraft/ah64e_apache.usd",         "format": "usd", "tags": ["helicopter", "blue", "attack"] },
+      { "id": "ast-0014", "name": "A-10C Thunderbolt II",     "path": "aircraft/a10c_thunderbolt.usd",       "format": "usd", "tags": ["aircraft", "blue", "cas"] },
+      { "id": "ast-0015", "name": "Toyota Hilux PKM",         "path": "vehicles/toyota_hilux_technical.usd", "format": "usd", "tags": ["vehicle", "red", "technical"] },
+      { "id": "ast-0016", "name": "Toyota Hilux DShK",        "path": "vehicles/toyota_hilux_dshk.usd",      "format": "usd", "tags": ["vehicle", "red", "technical"] },
+      { "id": "ast-0017", "name": "Toyota Landcruiser CMD",   "path": "vehicles/landcruiser_cmd.usd",        "format": "usd", "tags": ["vehicle", "red", "command"] },
+      { "id": "ast-0018", "name": "DJI Phantom Modified",     "path": "uav/dji_phantom_mod.usd",             "format": "usd", "tags": ["uav", "red", "recon"] },
+      { "id": "ast-0019", "name": "Shahed-136",               "path": "munitions/shahed136.usd",             "format": "usd", "tags": ["loitering_munition", "red"] },
+      { "id": "ast-0020", "name": "US Soldier Rifleman",      "path": "infantry/us_soldier_rifleman.usd",    "format": "usd", "tags": ["infantry", "blue"] },
+      { "id": "ast-0021", "name": "Insurgent ATGM Team",      "path": "infantry/insurgent_atgm_team.usd",    "format": "usd", "tags": ["infantry", "red"] },
+      { "id": "ast-0022", "name": "Insurgent Observer",       "path": "infantry/insurgent_observer.usd",     "format": "usd", "tags": ["infantry", "red"] },
+      { "id": "ast-0023", "name": "Insurgent Mortar Team",    "path": "infantry/insurgent_mortar_team.usd",  "format": "usd", "tags": ["infantry", "red"] },
+      { "id": "ast-0024", "name": "Insurgent Sniper",         "path": "infantry/insurgent_sniper.usd",       "format": "usd", "tags": ["infantry", "red"] },
+      { "id": "ast-0025", "name": "Insurgent MG Team",        "path": "infantry/insurgent_mg_team.usd",      "format": "usd", "tags": ["infantry", "red"] },
+      { "id": "ast-0026", "name": "IED Buried",               "path": "weapons/ied_buried.usd",              "format": "usd", "tags": ["weapon", "red", "ied"] },
+      { "id": "ast-0027", "name": "IED Surface",              "path": "weapons/ied_surface.usd",             "format": "usd", "tags": ["weapon", "red", "ied"] },
+      { "id": "ast-0028", "name": "Honda 125cc Motorcycle",   "path": "vehicles/honda_125cc.usd",            "format": "usd", "tags": ["vehicle", "red"] },
+      { "id": "ast-0029", "name": "Hindukush Valley DEM",     "path": "terrain/hindukush_valley_dem.tif",    "format": "custom", "tags": ["terrain", "dem"] }
+    ]
+  },
+
+  "outputs": {
+    "formats": [
+      "json_telemetry",
+      "csv_telemetry",
+      "rtx_render",
+      "physics_log",
+      "sensor_frames",
+      "video_mp4",
+      "ground_truth",
+      "ros_bag"
+    ],
+    "output_path": "outputs/convoy_attack/",
+    "record_physics": true,
+    "record_sensors": true,
+    "record_events": true,
+    "render_config": {
+      "cameras": [
+        { "name": "uav_isr_feed",          "entity_id": "ent-0014-blue-recon-uav-001", "mount": "belly_gimbal",      "resolution": [1920, 1080], "fps": 30 },
+        { "name": "convoy_cmd_view",        "entity_id": "ent-0001-blue-cmd-vehicle-001", "mount": "commander_hatch", "resolution": [1920, 1080], "fps": 30 },
+        { "name": "driver_view",            "entity_id": "ent-0002-blue-fuel-truck-001", "mount": "dashboard",       "resolution": [1280, 720],  "fps": 30 },
+        { "name": "apache_tads_view",       "entity_id": "ent-0016-blue-attack-heli-001","mount": "tads_eo",         "resolution": [1280, 720],  "fps": 30 },
+        { "name": "tactical_topdown",       "entity_id": null,                           "mount": "free_overhead",   "resolution": [2560, 1440], "fps": 10, "altitude_m": 1500.0 },
+        { "name": "cinematic_free",         "entity_id": null,                           "mount": "free_cinematic",  "resolution": [3840, 2160], "fps": 24 },
+        { "name": "ied_impact_slowmo",      "entity_id": "ent-0024-red-ied-001",         "mount": "trigger_camera",  "resolution": [1920, 1080], "fps": 240, "trigger_event": "evt-0004-ied-detonation" }
+      ],
+      "enable_rtx": true,
+      "enable_pathtracing": false,
+      "shadows": true,
+      "dust_particles": true,
+      "smoke_simulation": true,
+      "explosion_effects": true,
+      "thermal_render": true,
+      "semantic_segmentation": true,
+      "depth_map": true,
+      "instance_segmentation": true
+    }
+  },
+
+  "validation": {
+    "require_unique_ids": true,
+    "require_valid_transforms": true,
+    "require_physics_on_dynamic": false,
+    "max_entities": 200,
+    "custom_validators": [
+      "validators/no_overlapping_entities.py",
+      "validators/faction_consistency.py",
+      "validators/timeline_monotonic.py"
+    ]
+  }
+}

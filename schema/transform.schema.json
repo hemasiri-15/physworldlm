@@ -1,0 +1,1508 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/transform.schema.json",
+  "title": "PW-WSF-120 Transform Schema Standard",
+  "description": "PhysWorldLM World Specification Format — Transform Schema (PW-WSF-120 v1.0). Defines the complete, authoritative spatial state of every object in every PhysWorldLM simulation. Simulator-independent. Compatible with NVIDIA PhysX, NVIDIA Omniverse/OpenUSD, MuJoCo, Bullet Physics, Gazebo, ROS2, Cesium/WGS84, Unreal Engine, Unity, Isaac Sim, WebGPU, and all future simulation engines. Suitable for military simulation, civilian robotics, aerospace, naval, ground vehicles, spacecraft, UAVs, digital twins, GIS, sensor simulation, and AI world models.",
+  "type": "object",
+  "required": ["transform_id", "entity_id"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier per RFC 4122."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp with optional sub-second precision."
+    },
+
+    "SimTime": {
+      "type": "number",
+      "description": "Simulation time in seconds from the simulation epoch (t=0). Always finite. Monotonically non-decreasing within a simulation run.",
+      "minimum": 0
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. '1.0.0'."
+    },
+
+    "FiniteNumber": {
+      "type": "number",
+      "description": "A finite real number. NaN and ±Infinity are not permitted.",
+      "not": {
+        "enum": [null]
+      }
+    },
+
+    "NonNegativeNumber": {
+      "type": "number",
+      "minimum": 0,
+      "description": "A non-negative finite real number."
+    },
+
+    "PositiveNumber": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "description": "A strictly positive finite real number."
+    },
+
+    "Covariance3x3": {
+      "type": "array",
+      "description": "Row-major 3×3 symmetric positive-semi-definite covariance matrix. Indices: [σxx, σxy, σxz, σyx, σyy, σyz, σzx, σzy, σzz]. Units depend on context (m² for position, rad² for orientation).",
+      "items": { "type": "number" },
+      "minItems": 9,
+      "maxItems": 9
+    },
+
+    "Covariance6x6": {
+      "type": "array",
+      "description": "Row-major 6×6 symmetric positive-semi-definite covariance matrix for 6-DoF pose. First 3 rows/cols = position (m²), last 3 = orientation (rad²). Used in ROS2 geometry_msgs/PoseWithCovariance.",
+      "items": { "type": "number" },
+      "minItems": 36,
+      "maxItems": 36
+    },
+
+    "Matrix3x3": {
+      "type": "array",
+      "description": "Row-major 3×3 real matrix. Used for rotation matrices, DCMs, inertia tensors, etc.",
+      "items": { "type": "number" },
+      "minItems": 9,
+      "maxItems": 9
+    },
+
+    "Matrix4x4": {
+      "type": "array",
+      "description": "Row-major 4×4 homogeneous transformation matrix [R|t; 0 0 0 1]. Used for full rigid-body transforms compatible with OpenGL, Vulkan, USD, and robotics.",
+      "items": { "type": "number" },
+      "minItems": 16,
+      "maxItems": 16
+    },
+
+    "Vector2": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number", "description": "X component." },
+        "y": { "type": "number", "description": "Y component." }
+      }
+    },
+
+    "Vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "description": "3-component real vector. Units depend on context.",
+      "properties": {
+        "x": { "type": "number", "description": "X component." },
+        "y": { "type": "number", "description": "Y component." },
+        "z": { "type": "number", "description": "Z component." }
+      }
+    },
+
+    "UnitVector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "description": "A unit vector (|v| = 1). Values validated at runtime. Components must be finite numbers in [-1, 1].",
+      "properties": {
+        "x": { "type": "number", "minimum": -1, "maximum": 1 },
+        "y": { "type": "number", "minimum": -1, "maximum": 1 },
+        "z": { "type": "number", "minimum": -1, "maximum": 1 }
+      }
+    },
+
+    "Quaternion": {
+      "type": "object",
+      "required": ["x", "y", "z", "w"],
+      "additionalProperties": false,
+      "description": "Unit quaternion representing a 3D rotation. Hamilton convention: q = w + xi + yj + zk. Must satisfy |q|² = 1 ± ε. Compatible with ROS2, Omniverse (USD), MuJoCo, Unity, and Unreal (with axis remapping).",
+      "properties": {
+        "x": { "type": "number", "minimum": -1, "maximum": 1, "description": "Imaginary i component." },
+        "y": { "type": "number", "minimum": -1, "maximum": 1, "description": "Imaginary j component." },
+        "z": { "type": "number", "minimum": -1, "maximum": 1, "description": "Imaginary k component." },
+        "w": { "type": "number", "minimum": -1, "maximum": 1, "description": "Real (scalar) component. Default: 1.0 (identity rotation)." }
+      }
+    },
+
+    "EulerAngles": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Euler angle representation of orientation. Convention (sequence and intrinsic/extrinsic) must be specified via 'sequence' field. All angles in radians unless 'unit' is 'degrees'.",
+      "properties": {
+        "roll":  { "type": "number", "description": "Rotation about X-axis (bank angle). Radians unless unit='degrees'." },
+        "pitch": { "type": "number", "description": "Rotation about Y-axis (elevation angle). Radians unless unit='degrees'." },
+        "yaw":   { "type": "number", "description": "Rotation about Z-axis (heading/azimuth). Radians unless unit='degrees'." },
+        "sequence": {
+          "type": "string",
+          "description": "Euler rotation sequence. Intrinsic = body-fixed axes; Extrinsic = world-fixed axes.",
+          "enum": [
+            "XYZ_intrinsic", "ZYX_intrinsic", "ZXY_intrinsic",
+            "XZY_intrinsic", "YXZ_intrinsic", "YZX_intrinsic",
+            "XYX_intrinsic", "XZX_intrinsic", "YXY_intrinsic",
+            "YZY_intrinsic", "ZXZ_intrinsic", "ZYZ_intrinsic",
+            "XYZ_extrinsic", "ZYX_extrinsic",
+            "aerospace_NED_ZYX", "nautical_ZYX", "custom"
+          ],
+          "default": "ZYX_intrinsic"
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["radians", "degrees"],
+          "default": "radians"
+        }
+      }
+    },
+
+    "AxisAngle": {
+      "type": "object",
+      "required": ["axis", "angle_rad"],
+      "additionalProperties": false,
+      "description": "Axis-angle rotation representation. Angle is in radians. Axis must be a unit vector.",
+      "properties": {
+        "axis":      { "$ref": "#/$defs/UnitVector3", "description": "Unit rotation axis." },
+        "angle_rad": { "type": "number", "description": "Rotation angle in radians. Range: [-π, π] preferred." }
+      }
+    },
+
+    "CartesianPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Position in a Cartesian (right-handed by default) coordinate frame. All components in meters.",
+      "properties": {
+        "x": { "type": "number", "description": "X coordinate (meters)." },
+        "y": { "type": "number", "description": "Y coordinate (meters)." },
+        "z": { "type": "number", "description": "Z coordinate (meters)." }
+      }
+    },
+
+    "GeodeticPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Geodetic position on an ellipsoidal body. Default datum: WGS84. Altitude options: ellipsoidal or orthometric (MSL).",
+      "properties": {
+        "latitude_deg":        { "type": "number", "minimum": -90, "maximum": 90, "description": "Geodetic latitude in decimal degrees. Positive = North. Range: [-90°, +90°]." },
+        "longitude_deg":       { "type": "number", "minimum": -180, "maximum": 180, "description": "Geodetic longitude in decimal degrees. Positive = East. Range: (-180°, +180°]." },
+        "altitude_m":          { "type": "number", "description": "Altitude in meters. Positive = above datum." },
+        "altitude_type": {
+          "type": "string",
+          "enum": ["ellipsoidal", "orthometric_msl", "agl", "asl", "custom"],
+          "default": "ellipsoidal",
+          "description": "Type of altitude: ellipsoidal (HAE), orthometric (MSL), AGL, ASL."
+        },
+        "datum": {
+          "type": "string",
+          "enum": ["WGS84", "GRS80", "NAD83", "ED50", "ETRS89", "PZ90", "CGCS2000", "custom"],
+          "default": "WGS84",
+          "description": "Geodetic datum/ellipsoid."
+        },
+        "geoid_separation_m":  { "type": "number", "description": "Geoid undulation (N): H_ellipsoidal = H_orthometric + N (meters)." }
+      }
+    },
+
+    "ECEFPosition": {
+      "type": "object",
+      "required": ["x_m", "y_m", "z_m"],
+      "additionalProperties": false,
+      "description": "Earth-Centered Earth-Fixed (ECEF) Cartesian position. Origin = Earth center of mass. X-axis points toward prime meridian/equator intersection. Z-axis toward north pole. WGS84 ellipsoid.",
+      "properties": {
+        "x_m": { "type": "number", "description": "ECEF X coordinate (meters)." },
+        "y_m": { "type": "number", "description": "ECEF Y coordinate (meters)." },
+        "z_m": { "type": "number", "description": "ECEF Z coordinate (meters)." }
+      }
+    },
+
+    "ENUPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "East-North-Up local tangent plane coordinates. Origin is a user-defined geographic reference point. ROS2 REP-103 compatible.",
+      "properties": {
+        "east_m":   { "type": "number", "description": "Eastward displacement from origin (meters)." },
+        "north_m":  { "type": "number", "description": "Northward displacement from origin (meters)." },
+        "up_m":     { "type": "number", "description": "Upward displacement from origin (meters)." },
+        "origin":   { "$ref": "#/$defs/GeodeticPosition", "description": "Geographic origin of the ENU frame." }
+      }
+    },
+
+    "NEDPosition": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "North-East-Down coordinates. Standard aerospace/military frame per MIL-HDBK-1797. Down = positive toward Earth center.",
+      "properties": {
+        "north_m":  { "type": "number", "description": "Northward displacement (meters)." },
+        "east_m":   { "type": "number", "description": "Eastward displacement (meters)." },
+        "down_m":   { "type": "number", "description": "Downward displacement from origin (meters). Positive = toward Earth." },
+        "origin":   { "$ref": "#/$defs/GeodeticPosition", "description": "Geographic origin of the NED frame." }
+      }
+    },
+
+    "UTMPosition": {
+      "type": "object",
+      "required": ["zone_number", "zone_letter", "easting_m", "northing_m"],
+      "additionalProperties": false,
+      "description": "Universal Transverse Mercator projected coordinates. Used in military maps, GIS, and NATO STANAG.",
+      "properties": {
+        "zone_number":  { "type": "integer", "minimum": 1, "maximum": 60, "description": "UTM zone number (1–60)." },
+        "zone_letter":  { "type": "string", "pattern": "^[C-HJ-NP-X]$", "description": "UTM latitude band letter (C–X, omitting I and O)." },
+        "easting_m":    { "type": "number", "minimum": 100000, "maximum": 900000, "description": "UTM easting in meters. False easting = 500,000 m." },
+        "northing_m":   { "type": "number", "minimum": 0, "maximum": 10000000, "description": "UTM northing in meters. Southern hemisphere uses false northing = 10,000,000 m." },
+        "altitude_m":   { "type": "number", "description": "Ellipsoidal altitude (meters)." },
+        "datum": { "type": "string", "enum": ["WGS84", "NAD83", "custom"], "default": "WGS84" }
+      }
+    },
+
+    "MGRSPosition": {
+      "type": "object",
+      "required": ["mgrs_string"],
+      "additionalProperties": false,
+      "description": "Military Grid Reference System coordinate string. NATO STANAG 2211 / MIL-HDBK-850.",
+      "properties": {
+        "mgrs_string": {
+          "type": "string",
+          "pattern": "^\\d{1,2}[C-HJ-NP-X][A-HJ-NP-Z]{2}(\\d{2}|\\d{4}|\\d{6}|\\d{8}|\\d{10})$",
+          "description": "MGRS coordinate string e.g. '4QFJ12345678'."
+        },
+        "altitude_m": { "type": "number", "description": "Altitude above datum (meters)." }
+      }
+    },
+
+    "SphericalPosition": {
+      "type": "object",
+      "required": ["radius_m", "azimuth_rad", "elevation_rad"],
+      "additionalProperties": false,
+      "description": "Spherical coordinates (r, θ, φ). Useful for sensor coverage modeling and radar range gates.",
+      "properties": {
+        "radius_m":       { "type": "number", "minimum": 0, "description": "Radial distance from origin (meters)." },
+        "azimuth_rad":    { "type": "number", "minimum": 0, "maximum": 6.283185307, "description": "Azimuth angle from reference direction (radians). [0, 2π)." },
+        "elevation_rad":  { "type": "number", "minimum": -1.5707963, "maximum": 1.5707963, "description": "Elevation angle above horizontal plane (radians). [-π/2, π/2]." }
+      }
+    },
+
+    "CylindricalPosition": {
+      "type": "object",
+      "required": ["rho_m", "phi_rad", "z_m"],
+      "additionalProperties": false,
+      "description": "Cylindrical coordinates (ρ, φ, z). Useful for rotating machinery, turret arcs, rotor modeling.",
+      "properties": {
+        "rho_m":    { "type": "number", "minimum": 0, "description": "Radial distance from Z-axis (meters)." },
+        "phi_rad":  { "type": "number", "minimum": 0, "maximum": 6.283185307, "description": "Azimuth angle (radians). [0, 2π)." },
+        "z_m":      { "type": "number", "description": "Height along Z-axis (meters)." }
+      }
+    },
+
+    "PositionBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Multi-representation position block. At least one coordinate representation should be populated. Redundant representations (if provided) must be consistent. Preferred primary representation is Cartesian for simulation, Geodetic for geospatial queries.",
+      "properties": {
+        "cartesian":       { "$ref": "#/$defs/CartesianPosition" },
+        "geodetic":        { "$ref": "#/$defs/GeodeticPosition" },
+        "ecef":            { "$ref": "#/$defs/ECEFPosition" },
+        "enu":             { "$ref": "#/$defs/ENUPosition" },
+        "ned":             { "$ref": "#/$defs/NEDPosition" },
+        "utm":             { "$ref": "#/$defs/UTMPosition" },
+        "mgrs":            { "$ref": "#/$defs/MGRSPosition" },
+        "spherical":       { "$ref": "#/$defs/SphericalPosition" },
+        "cylindrical":     { "$ref": "#/$defs/CylindricalPosition" },
+        "primary_representation": {
+          "type": "string",
+          "enum": ["cartesian", "geodetic", "ecef", "enu", "ned", "utm", "mgrs", "spherical", "cylindrical"],
+          "default": "cartesian",
+          "description": "Indicates which position representation is the authoritative primary. Others are derived/cached."
+        },
+        "covariance":      { "$ref": "#/$defs/Covariance3x3", "description": "Position uncertainty covariance matrix. Units: m². 3×3 symmetric PSD. [σxx, σxy, σxz, ...]." },
+        "uncertainty_ellipsoid": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Positional uncertainty ellipsoid (1-sigma).",
+          "properties": {
+            "semi_major_m":   { "type": "number", "minimum": 0, "description": "Semi-major axis length (meters)." },
+            "semi_minor_m":   { "type": "number", "minimum": 0, "description": "Semi-minor axis length (meters)." },
+            "semi_intermediate_m": { "type": "number", "minimum": 0 },
+            "orientation":    { "$ref": "#/$defs/Quaternion", "description": "Orientation of the uncertainty ellipsoid." },
+            "confidence_pct": { "type": "number", "minimum": 0, "maximum": 100, "default": 68.3, "description": "Confidence level (%). Default 68.3% = 1-sigma." }
+          }
+        },
+        "accuracy_m":      { "type": "number", "minimum": 0, "description": "1-sigma position accuracy (meters). Scalar summary of covariance." },
+        "timestamp":       { "$ref": "#/$defs/Timestamp", "description": "UTC timestamp when this position measurement was valid." },
+        "sim_time_s":      { "$ref": "#/$defs/SimTime", "description": "Simulation time when this position was valid." },
+        "is_predicted":    { "type": "boolean", "default": false, "description": "True if this position is an AI/Kalman prediction rather than a measured/ground-truth value." },
+        "is_interpolated": { "type": "boolean", "default": false }
+      }
+    },
+
+    "OrientationBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Multi-representation orientation block. Quaternion is the canonical internal representation. All other representations are derived. Consistency between representations is the caller's responsibility.",
+      "properties": {
+        "quaternion":    { "$ref": "#/$defs/Quaternion", "description": "Primary canonical orientation as unit quaternion. Hamilton convention. Identity = (0,0,0,1)." },
+        "euler":         { "$ref": "#/$defs/EulerAngles", "description": "Euler angle representation. Subject to gimbal lock — use quaternion for computation." },
+        "axis_angle":    { "$ref": "#/$defs/AxisAngle", "description": "Axis-angle representation." },
+        "rotation_matrix": { "$ref": "#/$defs/Matrix3x3", "description": "3×3 rotation matrix (orthonormal, det=+1). Row-major. Column vectors = body axes in world frame." },
+        "dcm":           { "$ref": "#/$defs/Matrix3x3", "description": "Direction Cosine Matrix. Equivalent to rotation_matrix. Used in aerospace per MIL-HDBK-1797." },
+        "heading_deg": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 360,
+          "description": "True heading in degrees clockwise from True North. [0°, 360°). Equivalent to yaw in NED frame."
+        },
+        "magnetic_heading_deg": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 360,
+          "description": "Magnetic heading in degrees. Differs from true heading by magnetic declination."
+        },
+        "bearing_deg":   { "type": "number", "minimum": 0, "maximum": 360, "description": "Bearing to target/waypoint in degrees from True North." },
+        "azimuth_deg":   { "type": "number", "minimum": 0, "maximum": 360, "description": "Sensor/weapon azimuth in degrees from reference direction." },
+        "elevation_deg": { "type": "number", "minimum": -90, "maximum": 90, "description": "Sensor/weapon elevation angle in degrees above/below horizontal." },
+        "bank_deg":      { "type": "number", "minimum": -180, "maximum": 180, "description": "Aircraft bank (roll) angle in degrees. Port wing up = negative (standard aerospace)." },
+        "look_vector":   { "$ref": "#/$defs/UnitVector3", "description": "Forward/boresight unit vector in world frame." },
+        "up_vector":     { "$ref": "#/$defs/UnitVector3", "description": "Up unit vector in world frame." },
+        "right_vector":  { "$ref": "#/$defs/UnitVector3", "description": "Right unit vector in world frame. Completes right-handed basis with look and up." },
+        "forward_vector":{ "$ref": "#/$defs/UnitVector3", "description": "Alias for look_vector. Forward direction in world frame." },
+        "north_vector":  { "$ref": "#/$defs/UnitVector3", "description": "Component of up/look vector projected onto local north. Used for navigation displays." },
+        "covariance":    { "$ref": "#/$defs/Covariance3x3", "description": "Orientation uncertainty covariance matrix (rad²). [σroll², σroll_pitch, ..., σyaw²]." },
+        "accuracy_rad":  { "type": "number", "minimum": 0, "description": "1-sigma orientation accuracy (radians)." },
+        "timestamp":     { "$ref": "#/$defs/Timestamp" },
+        "sim_time_s":    { "$ref": "#/$defs/SimTime" },
+        "is_predicted":  { "type": "boolean", "default": false }
+      }
+    },
+
+    "ScaleBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Scale transform block supporting uniform, non-uniform, mirrored, and constrained scaling.",
+      "properties": {
+        "uniform":       { "type": "number", "description": "Uniform scale factor applied to all axes (dimensionless). Overrides sx/sy/sz if set.", "default": 1.0 },
+        "sx":            { "type": "number", "description": "Scale factor along X-axis (dimensionless). Negative = mirror.", "default": 1.0 },
+        "sy":            { "type": "number", "description": "Scale factor along Y-axis (dimensionless). Negative = mirror.", "default": 1.0 },
+        "sz":            { "type": "number", "description": "Scale factor along Z-axis (dimensionless). Negative = mirror.", "default": 1.0 },
+        "min_scale":     { "type": "number", "description": "Minimum allowed scale factor (clamp). Must be > 0 for non-mirror transforms.", "default": 1e-6 },
+        "max_scale":     { "type": "number", "description": "Maximum allowed scale factor (clamp).", "default": 1e6 },
+        "locked_axes": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["x", "y", "z"] },
+          "uniqueItems": true,
+          "description": "Axes locked to uniform scale (changes in these axes track the uniform scale)."
+        },
+        "mirror_x":      { "type": "boolean", "default": false, "description": "Mirror transform about YZ plane (sets sx = -|sx|)." },
+        "mirror_y":      { "type": "boolean", "default": false, "description": "Mirror transform about XZ plane." },
+        "mirror_z":      { "type": "boolean", "default": false, "description": "Mirror transform about XY plane." },
+        "is_non_uniform":{ "type": "boolean", "default": false, "description": "True if sx, sy, sz differ. Informational hint for physics engines." },
+        "unit": { "type": "string", "enum": ["dimensionless", "meters_per_unit"], "default": "dimensionless" }
+      }
+    },
+
+    "VelocityBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Linear velocity state. Velocities are in m/s in the specified reference frame.",
+      "properties": {
+        "vx_mps":          { "type": "number", "description": "Velocity along X-axis (m/s)." },
+        "vy_mps":          { "type": "number", "description": "Velocity along Y-axis (m/s)." },
+        "vz_mps":          { "type": "number", "description": "Velocity along Z-axis (m/s)." },
+        "speed_mps":       { "type": "number", "minimum": 0, "description": "Scalar speed |v| (m/s). Derived: sqrt(vx²+vy²+vz²)." },
+        "ground_speed_mps":{ "type": "number", "minimum": 0, "description": "Speed projected onto horizontal plane (m/s). Excludes vertical component." },
+        "vertical_speed_mps": { "type": "number", "description": "Vertical component of velocity (m/s). Positive = upward." },
+        "airspeed_mps":    { "type": "number", "minimum": 0, "description": "Speed relative to surrounding air mass (m/s). Relevant for aerial vehicles." },
+        "tas_mps":         { "type": "number", "minimum": 0, "description": "True Air Speed (m/s)." },
+        "cas_mps":         { "type": "number", "minimum": 0, "description": "Calibrated Air Speed (m/s)." },
+        "ias_mps":         { "type": "number", "minimum": 0, "description": "Indicated Air Speed (m/s)." },
+        "mach":            { "type": "number", "minimum": 0, "description": "Mach number (dimensionless). Speed / local speed of sound." },
+        "heading_deg":     { "type": "number", "minimum": 0, "maximum": 360, "description": "Track/heading of velocity vector (degrees from True North)." },
+        "velocity_vector": { "$ref": "#/$defs/UnitVector3", "description": "Unit vector in direction of motion (world frame)." },
+        "reference_frame": { "$ref": "#/$defs/FrameReference" },
+        "covariance":      { "$ref": "#/$defs/Covariance3x3", "description": "Velocity covariance matrix (m²/s²)." },
+        "timestamp":       { "$ref": "#/$defs/Timestamp" },
+        "sim_time_s":      { "$ref": "#/$defs/SimTime" }
+      }
+    },
+
+    "AngularVelocityBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Angular velocity (rotational rate) state.",
+      "properties": {
+        "wx_rad_s": { "type": "number", "description": "Angular velocity about X-axis (rad/s). Roll rate (p) in body frame." },
+        "wy_rad_s": { "type": "number", "description": "Angular velocity about Y-axis (rad/s). Pitch rate (q) in body frame." },
+        "wz_rad_s": { "type": "number", "description": "Angular velocity about Z-axis (rad/s). Yaw rate (r) in body frame." },
+        "angular_speed_rad_s": { "type": "number", "minimum": 0, "description": "Scalar angular speed |ω| (rad/s)." },
+        "angular_speed_rpm":   { "type": "number", "minimum": 0, "description": "Angular speed in rotations per minute." },
+        "quaternion_derivative": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Time derivative of orientation quaternion: q̇ = 0.5 * q ⊗ ω_quat.",
+          "properties": {
+            "dx": { "type": "number" },
+            "dy": { "type": "number" },
+            "dz": { "type": "number" },
+            "dw": { "type": "number" }
+          }
+        },
+        "reference_frame":    { "$ref": "#/$defs/FrameReference" },
+        "covariance":         { "$ref": "#/$defs/Covariance3x3", "description": "Angular velocity covariance matrix (rad²/s²)." },
+        "timestamp":          { "$ref": "#/$defs/Timestamp" },
+        "sim_time_s":         { "$ref": "#/$defs/SimTime" }
+      }
+    },
+
+    "AccelerationBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Linear and angular acceleration state.",
+      "properties": {
+        "linear": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Linear acceleration components (m/s²).",
+          "properties": {
+            "ax_mps2": { "type": "number", "description": "Acceleration along X-axis (m/s²)." },
+            "ay_mps2": { "type": "number", "description": "Acceleration along Y-axis (m/s²)." },
+            "az_mps2": { "type": "number", "description": "Acceleration along Z-axis (m/s²)." },
+            "magnitude_mps2": { "type": "number", "minimum": 0, "description": "Scalar acceleration magnitude (m/s²)." },
+            "g_load": { "type": "number", "description": "Load factor in g units (1g = 9.80665 m/s²). Positive = upward g-force." },
+            "gravity_compensated": { "type": "boolean", "default": false, "description": "True = gravity vector has been subtracted from raw measurement." },
+            "includes_gravity": { "type": "boolean", "default": true, "description": "True = measurement includes gravitational acceleration (raw IMU output)." }
+          }
+        },
+        "angular": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Angular acceleration components (rad/s²).",
+          "properties": {
+            "alpha_x_rad_s2": { "type": "number", "description": "Angular acceleration about X-axis (rad/s²)." },
+            "alpha_y_rad_s2": { "type": "number", "description": "Angular acceleration about Y-axis (rad/s²)." },
+            "alpha_z_rad_s2": { "type": "number", "description": "Angular acceleration about Z-axis (rad/s²)." }
+          }
+        },
+        "jerk": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Rate of change of acceleration (m/s³). Used in trajectory smoothness analysis.",
+          "properties": {
+            "jx_mps3": { "type": "number" },
+            "jy_mps3": { "type": "number" },
+            "jz_mps3": { "type": "number" }
+          }
+        },
+        "snap": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Rate of change of jerk (m/s⁴). 4th derivative of position.",
+          "properties": {
+            "sx_mps4": { "type": "number" },
+            "sy_mps4": { "type": "number" },
+            "sz_mps4": { "type": "number" }
+          }
+        },
+        "reference_frame":  { "$ref": "#/$defs/FrameReference" },
+        "covariance":       { "$ref": "#/$defs/Covariance3x3", "description": "Linear acceleration covariance (m²/s⁴)." },
+        "timestamp":        { "$ref": "#/$defs/Timestamp" },
+        "sim_time_s":       { "$ref": "#/$defs/SimTime" }
+      }
+    },
+
+    "ForcesBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "External and internal forces acting on the entity at the current simulation step. All forces in Newtons (N) and torques in Newton-meters (N·m) in the specified reference frame.",
+      "properties": {
+        "net_force":        { "$ref": "#/$defs/Vector3", "description": "Net resultant force vector (N) in reference frame." },
+        "net_torque":       { "$ref": "#/$defs/Vector3", "description": "Net resultant torque/moment vector (N·m) in reference frame." },
+        "gravity":          { "$ref": "#/$defs/Vector3", "description": "Gravitational force vector (N). Typically (0, 0, -mg) in world frame." },
+        "gravity_mps2":     { "$ref": "#/$defs/Vector3", "description": "Gravitational acceleration vector (m/s²). Accounts for planetary gravity model." },
+        "thrust":           { "$ref": "#/$defs/Vector3", "description": "Propulsion thrust force (N)." },
+        "thrust_magnitude_n": { "type": "number", "description": "Scalar thrust magnitude (N)." },
+        "drag":             { "$ref": "#/$defs/Vector3", "description": "Aerodynamic/hydrodynamic drag force (N). Opposes velocity." },
+        "lift":             { "$ref": "#/$defs/Vector3", "description": "Aerodynamic/hydrodynamic lift force (N)." },
+        "buoyancy":         { "$ref": "#/$defs/Vector3", "description": "Buoyancy force (N). Equals displaced fluid weight upward." },
+        "wind_force":       { "$ref": "#/$defs/Vector3", "description": "Force due to wind on the body (N)." },
+        "current_force":    { "$ref": "#/$defs/Vector3", "description": "Force due to ocean/river current (N)." },
+        "magnetic_force":   { "$ref": "#/$defs/Vector3", "description": "Magnetic force (N). Relevant for magnetically-levitated systems." },
+        "contact_forces": {
+          "type": "array",
+          "description": "Contact forces at each contact point.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "contact_id":    { "$ref": "#/$defs/UUID" },
+              "entity_b_id":   { "$ref": "#/$defs/UUID", "description": "Entity generating the contact." },
+              "point":         { "$ref": "#/$defs/Vector3", "description": "Contact point (meters)." },
+              "normal":        { "$ref": "#/$defs/UnitVector3", "description": "Contact normal unit vector." },
+              "normal_force_n":{ "type": "number", "description": "Normal force magnitude (N)." },
+              "friction_force":{ "$ref": "#/$defs/Vector3", "description": "Friction force vector (N)." },
+              "impulse":       { "$ref": "#/$defs/Vector3", "description": "Impulse at contact (N·s)." },
+              "restitution":   { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          }
+        },
+        "spring_force":     { "$ref": "#/$defs/Vector3", "description": "Spring/elastic restoring force (N)." },
+        "constraint_forces":{ "$ref": "#/$defs/Vector3", "description": "Sum of constraint reaction forces (N)." },
+        "impulse":          { "$ref": "#/$defs/Vector3", "description": "Total impulse applied this tick (N·s)." },
+        "impulse_torque":   { "$ref": "#/$defs/Vector3", "description": "Impulse torque applied this tick (N·m·s)." },
+        "aerodynamic_moment": { "$ref": "#/$defs/Vector3", "description": "Total aerodynamic pitching/rolling/yawing moment (N·m)." },
+        "reference_frame":  { "$ref": "#/$defs/FrameReference" },
+        "timestamp":        { "$ref": "#/$defs/Timestamp" },
+        "sim_time_s":       { "$ref": "#/$defs/SimTime" }
+      }
+    },
+
+    "PhysicsStateBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Physics engine state metadata. Indicates how the physics engine treats this body.",
+      "properties": {
+        "body_type": {
+          "type": "string",
+          "enum": ["static", "dynamic", "kinematic", "soft", "particle", "fluid", "cloth", "rope", "ghost"],
+          "default": "dynamic",
+          "description": "Physics body type. Static = zero mass, fixed in space. Kinematic = motion set by animation/script. Dynamic = fully simulated."
+        },
+        "is_sleeping":      { "type": "boolean", "default": false, "description": "True if physics engine has put this body to sleep (velocity below threshold)." },
+        "is_awake":         { "type": "boolean", "default": true },
+        "is_frozen":        { "type": "boolean", "default": false, "description": "True if all degrees of freedom are locked (position + rotation)." },
+        "is_destroyed":     { "type": "boolean", "default": false },
+        "is_disabled":      { "type": "boolean", "default": false, "description": "True if removed from physics simulation (e.g. despawning)." },
+        "collision_enabled":{ "type": "boolean", "default": true },
+        "gravity_enabled":  { "type": "boolean", "default": true },
+        "gravity_scale":    { "type": "number", "default": 1.0, "description": "Multiplier on gravity applied to this body. 0 = weightless. 1 = normal." },
+        "mass_kg":          { "type": "number", "minimum": 0, "description": "Total mass (kg)." },
+        "mass_center_offset": { "$ref": "#/$defs/Vector3", "description": "Center of mass offset from geometric origin (meters)." },
+        "inertia_tensor":   { "$ref": "#/$defs/Matrix3x3", "description": "Inertia tensor (kg·m²) in body frame. Row-major 3×3." },
+        "principal_moments":{ "$ref": "#/$defs/Vector3", "description": "Ixx, Iyy, Izz diagonal inertia (kg·m²)." },
+        "principal_axes":   { "$ref": "#/$defs/Quaternion", "description": "Rotation of principal axes relative to body frame." },
+        "linear_damping":   { "type": "number", "minimum": 0, "description": "Linear velocity damping coefficient (1/s)." },
+        "angular_damping":  { "type": "number", "minimum": 0, "description": "Angular velocity damping coefficient (1/s)." },
+        "ccd_enabled":      { "type": "boolean", "default": false, "description": "Continuous Collision Detection enabled. Required for fast-moving projectiles." },
+        "sleep_threshold_mps": { "type": "number", "minimum": 0, "description": "Velocity below which the body is put to sleep (m/s)." },
+        "angular_sleep_threshold_rad_s": { "type": "number", "minimum": 0 },
+        "solver_iteration_count": { "type": "integer", "minimum": 1, "default": 4 },
+        "collision_group":  { "type": "string" },
+        "collision_mask":   { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "FrameReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Reference to a named coordinate frame.",
+      "properties": {
+        "frame_id": { "type": "string", "description": "Named frame identifier. Examples: 'world', 'body', 'sensor_radar_0', 'gimbal', 'ned_local'." },
+        "frame_type": {
+          "type": "string",
+          "enum": [
+            "world", "local", "parent", "body", "vehicle",
+            "earth_ecef", "earth_enu", "earth_ned",
+            "sensor_generic", "sensor_camera", "sensor_radar", "sensor_lidar",
+            "sensor_ir", "sensor_eo", "sensor_sar", "sensor_sonar", "sensor_gps", "sensor_ins",
+            "weapon", "turret", "launcher", "gimbal", "barrel",
+            "joint", "link", "end_effector",
+            "spacecraft", "satellite",
+            "map", "odom", "base_link",
+            "custom"
+          ]
+        }
+      }
+    },
+
+    "NamedFrame": {
+      "type": "object",
+      "required": ["frame_id", "frame_type"],
+      "additionalProperties": false,
+      "description": "A named coordinate frame definition with full transform from parent.",
+      "properties": {
+        "frame_id":         { "type": "string", "description": "Unique frame identifier. Must be unique within the entity transform." },
+        "frame_type":       { "type": "string", "description": "Semantic type of frame." },
+        "parent_frame_id":  { "type": "string", "description": "Parent frame identifier. Null = root (world frame)." },
+        "child_frame_ids":  { "type": "array", "items": { "type": "string" }, "description": "Child frame identifiers." },
+        "transform_from_parent": { "$ref": "#/$defs/RigidTransform", "description": "Transform from parent frame to this frame." },
+        "transform_matrix": { "$ref": "#/$defs/Matrix4x4", "description": "4×4 homogeneous transform matrix from parent to this frame. Row-major." },
+        "description":      { "type": "string" },
+        "timestamp":        { "$ref": "#/$defs/Timestamp" },
+        "sim_time_s":       { "$ref": "#/$defs/SimTime" },
+        "is_static":        { "type": "boolean", "default": false, "description": "True = this frame never changes relative to parent. Optimization hint." },
+        "uncertainty":      { "$ref": "#/$defs/Covariance6x6", "description": "6×6 pose covariance of this frame relative to parent." }
+      }
+    },
+
+    "RigidTransform": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Minimal rigid body transform (position + orientation, no scale). Sufficient for frame-to-frame transforms in robotics and sensor modeling.",
+      "properties": {
+        "position":    { "$ref": "#/$defs/CartesianPosition", "description": "Translation (meters)." },
+        "orientation": { "$ref": "#/$defs/Quaternion", "description": "Rotation as unit quaternion." }
+      }
+    },
+
+    "HierarchyBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Transform hierarchy: parent-child scene graph, sockets, attachment points, and hardware mount locations.",
+      "properties": {
+        "parent_transform_id": { "$ref": "#/$defs/UUID", "description": "UUID of the parent Transform. Null for root (world-anchored) entities." },
+        "root_transform_id":   { "$ref": "#/$defs/UUID", "description": "UUID of the root Transform of the hierarchy." },
+        "child_transform_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "UUIDs of direct child transforms."
+        },
+        "depth":               { "type": "integer", "minimum": 0, "description": "Depth in scene graph (0 = root)." },
+        "scene_graph_path":    { "type": "string", "description": "Dot-separated path from root e.g. 'aircraft.left_wing.pylon_2.missile'." },
+        "named_frames": {
+          "type": "array",
+          "description": "All named sub-frames attached to this transform (sensor frames, joint frames, socket frames, etc.).",
+          "items": { "$ref": "#/$defs/NamedFrame" }
+        },
+        "sockets": {
+          "type": "array",
+          "description": "Named socket/slot attachment points on this entity.",
+          "items": {
+            "type": "object",
+            "required": ["socket_id", "socket_name"],
+            "additionalProperties": false,
+            "properties": {
+              "socket_id":       { "$ref": "#/$defs/UUID" },
+              "socket_name":     { "type": "string", "description": "e.g. 'left_pylon_1', 'weapon_rail_2', 'sensor_nose'." },
+              "socket_type": {
+                "type": "string",
+                "enum": ["weapon", "sensor", "fuel", "docking", "payload", "hardpoint", "pylon", "landing_gear", "rotor", "antenna", "generic", "custom"]
+              },
+              "transform":       { "$ref": "#/$defs/RigidTransform", "description": "Transform of socket relative to parent entity origin." },
+              "attached_entity_id": { "$ref": "#/$defs/UUID", "description": "UUID of entity currently attached to this socket." },
+              "is_occupied":     { "type": "boolean", "default": false },
+              "max_load_kg":     { "type": "number", "minimum": 0 }
+            }
+          }
+        },
+        "bone_transforms": {
+          "type": "array",
+          "description": "Skeletal bone transforms for articulated entities (avatars, robotic arms, suspension).",
+          "items": {
+            "type": "object",
+            "required": ["bone_id", "bone_name"],
+            "additionalProperties": false,
+            "properties": {
+              "bone_id":       { "$ref": "#/$defs/UUID" },
+              "bone_name":     { "type": "string" },
+              "parent_bone_id":{ "$ref": "#/$defs/UUID" },
+              "local_transform": { "$ref": "#/$defs/RigidTransform" },
+              "world_transform": { "$ref": "#/$defs/RigidTransform" },
+              "bind_pose":     { "$ref": "#/$defs/RigidTransform", "description": "Bind/rest pose transform." }
+            }
+          }
+        },
+        "constraint_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "UUIDs of physics constraints involving this transform."
+        }
+      }
+    },
+
+    "SensorFramesBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Transform frames for all sensors attached to this entity. Extends the named_frames list with semantic sensor-specific fields.",
+      "properties": {
+        "radar":     { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "sar":       { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "eo_camera": { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "ir_camera": { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "lidar":     { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "sonar":     { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "gps":       { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "ins":       { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "imu":       { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "laser_designator": { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "rangefinder": { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "weapon_seeker": { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "turret":    { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "gimbal":    { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "launcher":  { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } },
+        "custom":    { "type": "array", "items": { "$ref": "#/$defs/SensorFrameEntry" } }
+      }
+    },
+
+    "SensorFrameEntry": {
+      "type": "object",
+      "required": ["frame_id"],
+      "additionalProperties": false,
+      "description": "A sensor's coordinate frame relative to the entity body frame.",
+      "properties": {
+        "frame_id":          { "type": "string", "description": "Unique frame ID e.g. 'radar_0', 'eo_turret_front'." },
+        "sensor_id":         { "$ref": "#/$defs/UUID", "description": "UUID of the sensor component." },
+        "mount_transform":   { "$ref": "#/$defs/RigidTransform", "description": "Position and orientation of sensor origin in body frame." },
+        "boresight_vector":  { "$ref": "#/$defs/UnitVector3", "description": "Sensor boresight unit vector in sensor frame (usually [0,0,1] = Z-forward)." },
+        "fov_horizontal_deg":{ "type": "number", "minimum": 0, "maximum": 360 },
+        "fov_vertical_deg":  { "type": "number", "minimum": 0, "maximum": 180 },
+        "can_slew":          { "type": "boolean", "default": false },
+        "slew_limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "azimuth_min_deg":   { "type": "number" },
+            "azimuth_max_deg":   { "type": "number" },
+            "elevation_min_deg": { "type": "number" },
+            "elevation_max_deg": { "type": "number" }
+          }
+        },
+        "current_azimuth_deg":   { "type": "number" },
+        "current_elevation_deg": { "type": "number" }
+      }
+    },
+
+    "CameraIntrinsics": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Camera intrinsic parameters. Fully compatible with OpenCV, ROS2 sensor_msgs/CameraInfo, and Omniverse Isaac Sim.",
+      "properties": {
+        "image_width_px":     { "type": "integer", "minimum": 1 },
+        "image_height_px":    { "type": "integer", "minimum": 1 },
+        "fx":                 { "type": "number", "minimum": 0, "description": "Focal length along X in pixels." },
+        "fy":                 { "type": "number", "minimum": 0, "description": "Focal length along Y in pixels." },
+        "cx":                 { "type": "number", "description": "Principal point X coordinate (pixels)." },
+        "cy":                 { "type": "number", "description": "Principal point Y coordinate (pixels)." },
+        "skew":               { "type": "number", "default": 0, "description": "Camera skew (pixel aspect ratio deviation). Usually 0." },
+        "fov_horizontal_deg": { "type": "number", "minimum": 0, "maximum": 360 },
+        "fov_vertical_deg":   { "type": "number", "minimum": 0, "maximum": 180 },
+        "fov_diagonal_deg":   { "type": "number", "minimum": 0, "maximum": 360 },
+        "aspect_ratio":       { "type": "number", "minimum": 0 },
+        "near_plane_m":       { "type": "number", "minimum": 0, "description": "Near clipping plane (meters)." },
+        "far_plane_m":        { "type": "number", "minimum": 0, "description": "Far clipping plane (meters)." },
+        "pixel_size_um":      { "$ref": "#/$defs/Vector2", "description": "Pixel pitch (micrometers) in x and y." },
+        "sensor_size_mm":     { "$ref": "#/$defs/Vector2", "description": "Physical sensor dimensions (millimeters)." },
+        "distortion_model": {
+          "type": "string",
+          "enum": ["none", "plumb_bob_opencv", "equidistant_fisheye", "rational_polynomial", "custom"],
+          "default": "plumb_bob_opencv"
+        },
+        "distortion_coeffs": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Lens distortion coefficients [k1, k2, p1, p2, k3, ...]. Count depends on distortion_model."
+        },
+        "intrinsic_matrix": { "$ref": "#/$defs/Matrix3x3", "description": "3×3 camera intrinsic matrix K = [[fx,s,cx],[0,fy,cy],[0,0,1]]." },
+        "projection_matrix": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 12,
+          "maxItems": 12,
+          "description": "3×4 projection matrix P = K[R|t]. Row-major."
+        }
+      }
+    },
+
+    "CameraFrameBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Complete camera frame specification: extrinsic transform + intrinsic calibration.",
+      "properties": {
+        "camera_id":        { "$ref": "#/$defs/UUID" },
+        "camera_name":      { "type": "string" },
+        "extrinsic":        { "$ref": "#/$defs/RigidTransform", "description": "Camera pose in world or body frame (extrinsic transform)." },
+        "extrinsic_matrix": { "$ref": "#/$defs/Matrix4x4", "description": "4×4 extrinsic matrix [R|t; 0 0 0 1]. Transforms world points to camera frame." },
+        "intrinsics":       { "$ref": "#/$defs/CameraIntrinsics" },
+        "optical_axis":     { "$ref": "#/$defs/UnitVector3", "description": "Optical axis direction in world frame." },
+        "image_plane_origin": { "$ref": "#/$defs/Vector3", "description": "Origin of image plane in world coordinates." }
+      }
+    },
+
+    "RoboticsBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Robotics-specific transform information. ROS2 TF2-compatible. Supports DH parameters, joint transforms, and manipulator kinematics.",
+      "properties": {
+        "ros2_frame_id":    { "type": "string", "description": "ROS2 TF2 frame ID for this entity's base frame e.g. 'base_link', 'map'." },
+        "ros2_child_frame_id": { "type": "string", "description": "ROS2 TF2 child frame ID." },
+        "ros2_parent_frame_id": { "type": "string", "description": "ROS2 TF2 parent frame ID." },
+        "joint_transforms": {
+          "type": "array",
+          "description": "Joint-space transforms for articulated robots.",
+          "items": {
+            "type": "object",
+            "required": ["joint_id", "joint_name"],
+            "additionalProperties": false,
+            "properties": {
+              "joint_id":       { "$ref": "#/$defs/UUID" },
+              "joint_name":     { "type": "string", "description": "URDF joint name." },
+              "joint_type": {
+                "type": "string",
+                "enum": ["revolute", "prismatic", "continuous", "fixed", "floating", "planar"],
+                "description": "URDF joint type."
+              },
+              "position":       { "type": "number", "description": "Joint position: angle (rad) for revolute, displacement (m) for prismatic." },
+              "velocity":       { "type": "number", "description": "Joint velocity: rad/s or m/s." },
+              "effort":         { "type": "number", "description": "Joint effort: torque (N·m) or force (N)." },
+              "position_limit": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "lower": { "type": "number" },
+                  "upper": { "type": "number" }
+                }
+              },
+              "velocity_limit": { "type": "number", "minimum": 0 },
+              "effort_limit":   { "type": "number", "minimum": 0 },
+              "transform":      { "$ref": "#/$defs/RigidTransform", "description": "Transform from parent link to child link at current joint position." },
+              "dh_params": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "Denavit-Hartenberg parameters for this joint.",
+                "properties": {
+                  "a_m":       { "type": "number", "description": "DH link length (meters)." },
+                  "alpha_rad": { "type": "number", "description": "DH link twist (radians)." },
+                  "d_m":       { "type": "number", "description": "DH link offset (meters)." },
+                  "theta_rad": { "type": "number", "description": "DH joint angle (radians)." },
+                  "convention":{ "type": "string", "enum": ["standard", "modified", "craig"], "default": "standard" }
+                }
+              }
+            }
+          }
+        },
+        "end_effector_transform": { "$ref": "#/$defs/RigidTransform", "description": "World-frame transform of end effector / tool center point." },
+        "wheel_transforms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["wheel_id"],
+            "additionalProperties": false,
+            "properties": {
+              "wheel_id":      { "$ref": "#/$defs/UUID" },
+              "name":          { "type": "string" },
+              "transform":     { "$ref": "#/$defs/RigidTransform" },
+              "steering_angle_rad": { "type": "number" },
+              "rotation_rate_rad_s": { "type": "number" }
+            }
+          }
+        },
+        "suspension_transforms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["suspension_id"],
+            "additionalProperties": false,
+            "properties": {
+              "suspension_id":    { "$ref": "#/$defs/UUID" },
+              "name":             { "type": "string" },
+              "transform":        { "$ref": "#/$defs/RigidTransform" },
+              "compression_m":    { "type": "number", "description": "Current suspension compression (meters)." }
+            }
+          }
+        }
+      }
+    },
+
+    "TerrainAlignmentBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Terrain contact and surface alignment properties.",
+      "properties": {
+        "surface_normal":     { "$ref": "#/$defs/UnitVector3", "description": "Surface normal unit vector at entity's ground contact point (world frame)." },
+        "slope_angle_deg":    { "type": "number", "minimum": 0, "maximum": 90, "description": "Terrain slope angle at current position (degrees from horizontal)." },
+        "slope_direction_deg":{ "type": "number", "minimum": 0, "maximum": 360, "description": "Downslope direction (degrees from True North)." },
+        "surface_elevation_m":{ "type": "number", "description": "Terrain elevation at entity's horizontal position (meters MSL)." },
+        "ground_clearance_m": { "type": "number", "minimum": 0, "description": "Distance from entity's lowest point to terrain surface (meters). 0 = on ground." },
+        "is_grounded":        { "type": "boolean", "default": false, "description": "True = entity is in contact with terrain/ground." },
+        "waterline_m":        { "type": "number", "description": "Water surface elevation at entity position (meters MSL). NaN if no water." },
+        "submersion_depth_m": { "type": "number", "minimum": 0, "description": "Depth below waterline (meters). 0 = at surface." },
+        "ocean_depth_m":      { "type": "number", "minimum": 0, "description": "Total ocean depth at current horizontal position (meters)." },
+        "snow_depth_m":       { "type": "number", "minimum": 0 },
+        "ice_thickness_m":    { "type": "number", "minimum": 0 },
+        "sand_depth_m":       { "type": "number", "minimum": 0 },
+        "road_aligned":       { "type": "boolean", "default": false },
+        "road_heading_deg":   { "type": "number", "minimum": 0, "maximum": 360, "description": "Heading of road/path at current position (degrees from True North)." },
+        "runway_aligned":     { "type": "boolean", "default": false },
+        "surface_type": {
+          "type": "string",
+          "enum": ["asphalt", "concrete", "gravel", "dirt", "grass", "sand", "mud", "snow", "ice", "water", "rock", "vegetation", "custom"],
+          "description": "Surface material type at ground contact."
+        },
+        "surface_friction":   { "type": "number", "minimum": 0, "description": "Friction coefficient of surface at contact point." }
+      }
+    },
+
+    "GeospatialBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Geospatial integration data. Cesium/WGS84-compatible. Links the simulation to real-world geographic context.",
+      "properties": {
+        "wgs84":             { "$ref": "#/$defs/GeodeticPosition", "description": "Primary WGS84 geographic position." },
+        "cesium_cartesian3": { "$ref": "#/$defs/ECEFPosition", "description": "Cesium Cartesian3 ECEF position (meters)." },
+        "geoid_model":       { "type": "string", "enum": ["EGM96", "EGM2008", "EGM84", "custom"], "default": "EGM2008" },
+        "magnetic_declination_deg": { "type": "number", "minimum": -180, "maximum": 180, "description": "Magnetic declination at current position (degrees East of True North)." },
+        "magnetic_inclination_deg": { "type": "number", "minimum": -90, "maximum": 90 },
+        "grid_convergence_deg": { "type": "number", "description": "Angle between True North and Grid North at current position (degrees)." },
+        "true_north_vector":  { "$ref": "#/$defs/UnitVector3", "description": "Direction of True North in world frame." },
+        "magnetic_north_vector": { "$ref": "#/$defs/UnitVector3" },
+        "earth_rotation_rate_rad_s": { "type": "number", "default": 7.2921150e-5, "description": "Earth rotation rate (rad/s). WGS84: 7.2921150×10⁻⁵ rad/s." },
+        "gravity_mps2":       { "type": "number", "description": "Local gravitational acceleration magnitude (m/s²). WGS84 model value at current position." },
+        "planet": {
+          "type": "string",
+          "enum": ["Earth", "Moon", "Mars", "Venus", "Titan", "custom"],
+          "default": "Earth"
+        },
+        "planet_radius_m":    { "type": "number", "minimum": 0 },
+        "atmosphere_model":   { "type": "string", "enum": ["ISA", "US_standard_1976", "MSIS", "none", "custom"] }
+      }
+    },
+
+    "NavigationBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Navigation solution and localization confidence state.",
+      "properties": {
+        "nav_mode": {
+          "type": "string",
+          "enum": ["gps", "gnss", "ins", "dead_reckoning", "visual_odometry", "slam",
+                   "terrain_relative", "celestial", "magnetic", "star_tracker", "hybrid", "manual"],
+          "description": "Current primary navigation mode."
+        },
+        "fix_quality": {
+          "type": "string",
+          "enum": ["no_fix", "gps_2d", "gps_3d", "dgps", "rtk_float", "rtk_fixed", "sbas", "ins_aided"],
+          "description": "GPS/GNSS fix quality."
+        },
+        "satellites_visible": { "type": "integer", "minimum": 0 },
+        "satellites_used":    { "type": "integer", "minimum": 0 },
+        "hdop":               { "type": "number", "minimum": 0, "description": "Horizontal dilution of precision." },
+        "vdop":               { "type": "number", "minimum": 0, "description": "Vertical dilution of precision." },
+        "pdop":               { "type": "number", "minimum": 0, "description": "Position dilution of precision." },
+        "position_confidence_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "heading_confidence_pct":  { "type": "number", "minimum": 0, "maximum": 100 },
+        "velocity_confidence_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "slam_map_id":        { "$ref": "#/$defs/UUID" },
+        "slam_confidence":    { "type": "number", "minimum": 0, "maximum": 1 },
+        "trajectory_id":      { "$ref": "#/$defs/UUID", "description": "UUID of the current trajectory being followed or recorded." },
+        "waypoint_index":     { "type": "integer", "minimum": 0, "description": "Index into the current waypoint sequence." },
+        "cross_track_error_m":{ "type": "number", "description": "Lateral deviation from planned path (meters)." },
+        "along_track_progress_m": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "TemporalBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Temporal state: timestamps, simulation tick, history, and prediction.",
+      "properties": {
+        "timestamp_utc":      { "$ref": "#/$defs/Timestamp", "description": "UTC wall-clock time for this transform snapshot." },
+        "sim_time_s":         { "$ref": "#/$defs/SimTime", "description": "Simulation time in seconds." },
+        "tick_number":        { "type": "integer", "minimum": 0, "description": "Discrete simulation tick number." },
+        "frame_number":       { "type": "integer", "minimum": 0, "description": "Render frame number." },
+        "dt_s":               { "type": "number", "minimum": 0, "description": "Time step duration (seconds) for this tick." },
+        "is_prediction":      { "type": "boolean", "default": false, "description": "True = this is a predicted future state, not ground truth." },
+        "prediction_horizon_s":{ "type": "number", "minimum": 0, "description": "How far ahead this prediction extends (seconds)." },
+        "interpolation_method": {
+          "type": "string",
+          "enum": ["none", "linear", "slerp", "cubic", "hermite", "kalman", "custom"],
+          "default": "slerp",
+          "description": "Interpolation method used if this is an interpolated state."
+        },
+        "history": {
+          "type": "array",
+          "description": "Recent transform history (sliding window). Ordered oldest first.",
+          "maxItems": 1000,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "sim_time_s":  { "$ref": "#/$defs/SimTime" },
+              "position":    { "$ref": "#/$defs/CartesianPosition" },
+              "orientation": { "$ref": "#/$defs/Quaternion" }
+            }
+          }
+        },
+        "predicted_states": {
+          "type": "array",
+          "description": "Future predicted transform states.",
+          "maxItems": 200,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "sim_time_s":  { "$ref": "#/$defs/SimTime" },
+              "position":    { "$ref": "#/$defs/CartesianPosition" },
+              "orientation": { "$ref": "#/$defs/Quaternion" },
+              "confidence":  { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          }
+        }
+      }
+    },
+
+    "AnimationBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Animation state for the transform: keyframe animation, root motion, and procedural animation.",
+      "properties": {
+        "animation_id":     { "$ref": "#/$defs/UUID" },
+        "animation_name":   { "type": "string" },
+        "animation_time_s": { "type": "number", "minimum": 0, "description": "Current position in animation clip (seconds)." },
+        "animation_speed":  { "type": "number", "default": 1.0, "description": "Playback speed multiplier." },
+        "is_looping":       { "type": "boolean", "default": false },
+        "is_playing":       { "type": "boolean", "default": false },
+        "blend_weight":     { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0 },
+        "interpolation_method": {
+          "type": "string",
+          "enum": ["linear", "bezier", "catmull_rom", "b_spline", "hermite", "slerp_squad", "custom"],
+          "default": "slerp_squad"
+        },
+        "root_motion_enabled": { "type": "boolean", "default": false, "description": "True = root bone motion drives entity world position." },
+        "keyframes": {
+          "type": "array",
+          "description": "Animation keyframes. Sparse or dense.",
+          "items": {
+            "type": "object",
+            "required": ["time_s"],
+            "additionalProperties": false,
+            "properties": {
+              "time_s":      { "type": "number", "minimum": 0 },
+              "position":    { "$ref": "#/$defs/CartesianPosition" },
+              "orientation": { "$ref": "#/$defs/Quaternion" },
+              "scale":       { "$ref": "#/$defs/Vector3" },
+              "easing": {
+                "type": "string",
+                "enum": ["linear", "ease_in", "ease_out", "ease_in_out", "cubic_bezier", "step"],
+                "default": "linear"
+              }
+            }
+          }
+        },
+        "usd_prim_path":    { "type": "string", "description": "OpenUSD prim path for USD-native animation e.g. '/World/Aircraft/anim'." },
+        "gltf_animation_index": { "type": "integer", "minimum": 0, "description": "glTF animation clip index." }
+      }
+    },
+
+    "ConstraintBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Physics constraints affecting this transform. Includes joints, springs, motors, and limits.",
+      "properties": {
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["constraint_id", "constraint_type"],
+            "additionalProperties": false,
+            "properties": {
+              "constraint_id": { "$ref": "#/$defs/UUID" },
+              "constraint_type": {
+                "type": "string",
+                "enum": [
+                  "fixed", "hinge", "prismatic", "ball_socket", "universal",
+                  "gear", "rack_pinion", "spring_linear", "spring_angular",
+                  "distance", "slider", "6dof", "motor", "servo",
+                  "contact", "exclusion", "custom"
+                ]
+              },
+              "body_a_id":      { "$ref": "#/$defs/UUID", "description": "First body (this entity's transform UUID)." },
+              "body_b_id":      { "$ref": "#/$defs/UUID", "description": "Second body UUID." },
+              "frame_a":        { "$ref": "#/$defs/RigidTransform", "description": "Constraint frame on body A." },
+              "frame_b":        { "$ref": "#/$defs/RigidTransform", "description": "Constraint frame on body B." },
+              "linear_limits": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "x": { "type": "object", "additionalProperties": false, "properties": { "lower_m": { "type": "number" }, "upper_m": { "type": "number" } } },
+                  "y": { "type": "object", "additionalProperties": false, "properties": { "lower_m": { "type": "number" }, "upper_m": { "type": "number" } } },
+                  "z": { "type": "object", "additionalProperties": false, "properties": { "lower_m": { "type": "number" }, "upper_m": { "type": "number" } } }
+                }
+              },
+              "angular_limits": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "rx": { "type": "object", "additionalProperties": false, "properties": { "lower_rad": { "type": "number" }, "upper_rad": { "type": "number" } } },
+                  "ry": { "type": "object", "additionalProperties": false, "properties": { "lower_rad": { "type": "number" }, "upper_rad": { "type": "number" } } },
+                  "rz": { "type": "object", "additionalProperties": false, "properties": { "lower_rad": { "type": "number" }, "upper_rad": { "type": "number" } } }
+                }
+              },
+              "stiffness":  { "type": "number", "minimum": 0, "description": "Spring stiffness (N/m for linear, N·m/rad for angular)." },
+              "damping":    { "type": "number", "minimum": 0, "description": "Damping coefficient." },
+              "max_force_n":{ "type": "number", "minimum": 0 },
+              "max_torque_nm":{ "type": "number", "minimum": 0 },
+              "breakable":  { "type": "boolean", "default": false },
+              "break_force_n": { "type": "number", "minimum": 0 },
+              "break_torque_nm": { "type": "number", "minimum": 0 },
+              "enabled":    { "type": "boolean", "default": true }
+            }
+          }
+        }
+      }
+    },
+
+    "PrecisionBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Numerical precision metadata for this transform.",
+      "properties": {
+        "position_precision": {
+          "type": "string",
+          "enum": ["float16", "float32", "float64", "decimal128"],
+          "default": "float64",
+          "description": "Floating-point precision for position coordinates. float64 required for geospatial accuracy."
+        },
+        "orientation_precision": {
+          "type": "string",
+          "enum": ["float16", "float32", "float64"],
+          "default": "float64"
+        },
+        "velocity_precision": {
+          "type": "string",
+          "enum": ["float16", "float32", "float64"],
+          "default": "float32"
+        },
+        "numerical_tolerance": { "type": "number", "minimum": 0, "default": 1e-9, "description": "Numerical tolerance ε for comparisons and normalization checks." },
+        "position_error_bound_m": { "type": "number", "minimum": 0, "description": "Maximum representable position error (meters) given precision level." },
+        "quaternion_normalization_tolerance": { "type": "number", "minimum": 0, "default": 1e-6, "description": "|q|² must equal 1 ± this tolerance." },
+        "rounding_mode": {
+          "type": "string",
+          "enum": ["round_half_to_even", "round_half_up", "truncate", "round_half_down"],
+          "default": "round_half_to_even",
+          "description": "IEEE 754 rounding mode."
+        },
+        "double_precision_required": { "type": "boolean", "default": true, "description": "True = float64 mandatory. Required for Cesium/geospatial-scale scenes." }
+      }
+    },
+
+    "UnitsBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Explicit unit declarations for all numeric fields in this transform. SI units by default.",
+      "properties": {
+        "length":       { "type": "string", "enum": ["meters", "feet", "kilometers", "nautical_miles"], "default": "meters" },
+        "angle":        { "type": "string", "enum": ["radians", "degrees"], "default": "radians" },
+        "time":         { "type": "string", "enum": ["seconds", "milliseconds", "microseconds"], "default": "seconds" },
+        "velocity":     { "type": "string", "enum": ["m_per_s", "knots", "km_per_h", "ft_per_s"], "default": "m_per_s" },
+        "acceleration": { "type": "string", "enum": ["m_per_s2", "g", "ft_per_s2"], "default": "m_per_s2" },
+        "angular_velocity": { "type": "string", "enum": ["rad_per_s", "deg_per_s", "rpm"], "default": "rad_per_s" },
+        "force":        { "type": "string", "enum": ["newtons", "kilonewtons", "lbf"], "default": "newtons" },
+        "torque":       { "type": "string", "enum": ["newton_meters", "kilonewton_meters", "lbf_ft"], "default": "newton_meters" },
+        "mass":         { "type": "string", "enum": ["kg", "lb", "metric_tons"], "default": "kg" },
+        "pressure":     { "type": "string", "enum": ["pascals", "hPa", "psi", "bar", "atm"], "default": "pascals" },
+        "temperature":  { "type": "string", "enum": ["celsius", "kelvin", "fahrenheit"], "default": "celsius" },
+        "coordinate_origin": { "type": "string", "description": "Human-readable description of coordinate origin e.g. 'WGS84 ellipsoid center', 'Airfield threshold Rwy 27L'." }
+      }
+    },
+
+    "CompatibilityBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Simulator-specific compatibility metadata and export hints. Allows PhysWorldLM to target multiple backends without schema changes.",
+      "properties": {
+        "physx": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "NVIDIA PhysX compatibility hints.",
+          "properties": {
+            "up_axis":  { "type": "string", "enum": ["Y", "Z"], "default": "Y" },
+            "handedness": { "type": "string", "enum": ["left", "right"], "default": "left" },
+            "actor_type": { "type": "string", "enum": ["PxRigidStatic", "PxRigidDynamic", "PxArticulationReducedCoordinate", "custom"] },
+            "scene_desc_gravity": { "$ref": "#/$defs/Vector3" }
+          }
+        },
+        "omniverse_usd": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "NVIDIA Omniverse / OpenUSD compatibility.",
+          "properties": {
+            "prim_path":        { "type": "string", "description": "USD prim path e.g. '/World/Aircraft_01'." },
+            "up_axis":          { "type": "string", "enum": ["Y", "Z"], "default": "Y" },
+            "meters_per_unit":  { "type": "number", "default": 1.0 },
+            "time_codes_per_second": { "type": "number", "default": 60.0 },
+            "xform_op_order":   { "type": "array", "items": { "type": "string" }, "description": "USD xformOp:order array e.g. ['xformOp:translate','xformOp:orient','xformOp:scale']." }
+          }
+        },
+        "ros2": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "ROS2 TF2 and REP-103 compatibility.",
+          "properties": {
+            "frame_id":      { "type": "string", "description": "ROS2 frame_id string." },
+            "up_axis":       { "type": "string", "enum": ["Z"], "default": "Z", "description": "ROS2 REP-103 uses Z-up, right-handed (ENU for world frame)." },
+            "handedness":    { "type": "string", "enum": ["right"], "default": "right" },
+            "stamp_sec":     { "type": "integer", "description": "ROS2 Header stamp seconds." },
+            "stamp_nanosec": { "type": "integer", "description": "ROS2 Header stamp nanoseconds." }
+          }
+        },
+        "mujoco": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "MuJoCo compatibility.",
+          "properties": {
+            "up_axis":    { "type": "string", "enum": ["Z"], "default": "Z" },
+            "handedness": { "type": "string", "enum": ["right"], "default": "right" },
+            "body_name":  { "type": "string" },
+            "geom_name":  { "type": "string" }
+          }
+        },
+        "cesium": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Cesium / CesiumJS / Cesium for Omniverse compatibility.",
+          "properties": {
+            "cartesian3_ecef": { "$ref": "#/$defs/ECEFPosition" },
+            "quaternion_ecef": { "$ref": "#/$defs/Quaternion", "description": "Orientation in ECEF frame." },
+            "model_matrix":    { "$ref": "#/$defs/Matrix4x4", "description": "Cesium model matrix (ECEF 4×4)." },
+            "fixed_frame_transform": { "$ref": "#/$defs/Matrix4x4" }
+          }
+        },
+        "unreal": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Unreal Engine compatibility (left-handed, Z-up, centimeters).",
+          "properties": {
+            "up_axis":         { "type": "string", "enum": ["Z"], "default": "Z" },
+            "handedness":      { "type": "string", "enum": ["left"], "default": "left" },
+            "units":           { "type": "string", "enum": ["centimeters"], "default": "centimeters" },
+            "actor_location":  { "$ref": "#/$defs/Vector3", "description": "UE Actor location in centimeters, Z-up, left-handed." },
+            "actor_rotation_deg": { "$ref": "#/$defs/EulerAngles" }
+          }
+        },
+        "unity": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Unity Engine compatibility (left-handed, Y-up, meters).",
+          "properties": {
+            "up_axis":    { "type": "string", "enum": ["Y"], "default": "Y" },
+            "handedness": { "type": "string", "enum": ["left"], "default": "left" }
+          }
+        },
+        "gazebo": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Gazebo (Ignition) compatibility.",
+          "properties": {
+            "up_axis":    { "type": "string", "enum": ["Z"], "default": "Z" },
+            "handedness": { "type": "string", "enum": ["right"], "default": "right" },
+            "model_name": { "type": "string" }
+          }
+        },
+        "bullet": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Bullet Physics compatibility.",
+          "properties": {
+            "up_axis":    { "type": "string", "enum": ["Y", "Z"], "default": "Y" },
+            "handedness": { "type": "string", "enum": ["right"], "default": "right" }
+          }
+        },
+        "opengl_vulkan": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "OpenGL / Vulkan rendering compatibility.",
+          "properties": {
+            "model_matrix": { "$ref": "#/$defs/Matrix4x4", "description": "OpenGL model matrix (column-major in GLSL, row-major here)." },
+            "view_matrix":  { "$ref": "#/$defs/Matrix4x4" },
+            "mvp_matrix":   { "$ref": "#/$defs/Matrix4x4" },
+            "opengl_handedness": { "type": "string", "enum": ["right"], "default": "right" },
+            "vulkan_handedness": { "type": "string", "enum": ["right_y_flipped"], "default": "right_y_flipped" }
+          }
+        }
+      }
+    },
+
+    "CoordinateSystemBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Coordinate system metadata for this transform's primary representation.",
+      "properties": {
+        "system": {
+          "type": "string",
+          "enum": ["cartesian", "ecef", "enu", "ned", "geodetic", "utm", "mgrs", "spherical", "cylindrical", "custom"],
+          "default": "cartesian"
+        },
+        "handedness": {
+          "type": "string",
+          "enum": ["right", "left"],
+          "default": "right",
+          "description": "Coordinate system handedness. Right-handed is physics/math standard. Left-handed used by Unity, DirectX, Unreal."
+        },
+        "up_axis": {
+          "type": "string",
+          "enum": ["X", "Y", "Z", "-X", "-Y", "-Z"],
+          "default": "Z",
+          "description": "World up axis. Omniverse/Gazebo/MuJoCo/ROS2 = Z. Unity/USD-default = Y. NED = -Z (down)."
+        },
+        "forward_axis": {
+          "type": "string",
+          "enum": ["X", "Y", "Z", "-X", "-Y", "-Z"],
+          "default": "X",
+          "description": "World forward axis convention."
+        },
+        "dimensionality": {
+          "type": "integer",
+          "enum": [2, 3],
+          "default": 3,
+          "description": "Spatial dimensionality. 2D for flat-world simulations (GIS overlays, 2D nav)."
+        },
+        "planet_fixed": { "type": "boolean", "default": false, "description": "True = coordinate system rotates with the planet (ECEF)." },
+        "custom_axes": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Custom axis definitions for non-standard coordinate systems.",
+          "properties": {
+            "x_direction": { "$ref": "#/$defs/UnitVector3" },
+            "y_direction": { "$ref": "#/$defs/UnitVector3" },
+            "z_direction": { "$ref": "#/$defs/UnitVector3" }
+          }
+        }
+      }
+    },
+
+    "IdentityBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Identity and provenance fields for a transform instance.",
+      "required": ["transform_id"],
+      "properties": {
+        "transform_id":    { "$ref": "#/$defs/UUID", "description": "Primary UUID of this transform instance." },
+        "entity_id":       { "$ref": "#/$defs/UUID", "description": "UUID of the entity this transform belongs to." },
+        "parent_transform_id": { "$ref": "#/$defs/UUID", "description": "UUID of parent transform. Null for world-anchored (root) entities." },
+        "root_transform_id":   { "$ref": "#/$defs/UUID", "description": "UUID of the hierarchy root transform." },
+        "instance_id":     { "$ref": "#/$defs/UUID", "description": "Instance ID for instanced/cloned entities." },
+        "namespace":       { "type": "string", "description": "Namespace for multi-world or multi-agent isolation." },
+        "frame_name":      { "type": "string", "description": "Human-readable name for this transform's primary frame e.g. 'aircraft_body', 'missile_body'." },
+        "version":         { "$ref": "#/$defs/VersionString" },
+        "revision":        { "type": "string" },
+        "tags":            { "type": "array", "items": { "type": "string" } },
+        "labels":          { "type": "object", "additionalProperties": { "type": "string" }, "description": "Key-value string labels for filtering and querying." },
+        "created_at":      { "$ref": "#/$defs/Timestamp" },
+        "modified_at":     { "$ref": "#/$defs/Timestamp" }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "transform_id":  { "$ref": "#/$defs/UUID", "description": "Primary UUID of this transform." },
+    "entity_id":     { "$ref": "#/$defs/UUID", "description": "UUID of the owning entity." },
+
+    "identity":            { "$ref": "#/$defs/IdentityBlock" },
+    "coordinate_system":   { "$ref": "#/$defs/CoordinateSystemBlock" },
+    "units":               { "$ref": "#/$defs/UnitsBlock" },
+    "precision":           { "$ref": "#/$defs/PrecisionBlock" },
+
+    "position":            { "$ref": "#/$defs/PositionBlock" },
+    "orientation":         { "$ref": "#/$defs/OrientationBlock" },
+    "scale":               { "$ref": "#/$defs/ScaleBlock" },
+
+    "velocity":            { "$ref": "#/$defs/VelocityBlock" },
+    "angular_velocity":    { "$ref": "#/$defs/AngularVelocityBlock" },
+    "acceleration":        { "$ref": "#/$defs/AccelerationBlock" },
+
+    "forces":              { "$ref": "#/$defs/ForcesBlock" },
+    "physics":             { "$ref": "#/$defs/PhysicsStateBlock" },
+
+    "hierarchy":           { "$ref": "#/$defs/HierarchyBlock" },
+    "sensor_frames":       { "$ref": "#/$defs/SensorFramesBlock" },
+    "camera_frames": {
+      "type": "array",
+      "description": "Full camera intrinsic+extrinsic specifications for all cameras on this entity.",
+      "items": { "$ref": "#/$defs/CameraFrameBlock" }
+    },
+
+    "robotics":            { "$ref": "#/$defs/RoboticsBlock" },
+    "terrain_alignment":   { "$ref": "#/$defs/TerrainAlignmentBlock" },
+    "geospatial":          { "$ref": "#/$defs/GeospatialBlock" },
+    "navigation":          { "$ref": "#/$defs/NavigationBlock" },
+    "temporal":            { "$ref": "#/$defs/TemporalBlock" },
+    "animation":           { "$ref": "#/$defs/AnimationBlock" },
+    "constraints":         { "$ref": "#/$defs/ConstraintBlock" },
+
+    "compatibility":       { "$ref": "#/$defs/CompatibilityBlock" },
+
+    "homogeneous_matrix":  { "$ref": "#/$defs/Matrix4x4", "description": "Full 4×4 homogeneous world transform [R|t; 0 0 0 1]. Row-major. Updated every tick. Ground truth." },
+    "inverse_matrix":      { "$ref": "#/$defs/Matrix4x4", "description": "Inverse of homogeneous_matrix. Pre-computed for performance." },
+    "local_matrix":        { "$ref": "#/$defs/Matrix4x4", "description": "Local transform relative to parent (local_matrix × parent_world_matrix = world_matrix)." },
+
+    "pose_covariance":     { "$ref": "#/$defs/Covariance6x6", "description": "Full 6-DoF pose covariance [position (m²) | orientation (rad²)]. ROS2 geometry_msgs/PoseWithCovariance format." },
+
+    "is_world_anchored":   { "type": "boolean", "default": true, "description": "True = position is in world frame. False = position is relative to parent." },
+
+    "custom_extensions":   { "type": "object", "additionalProperties": true, "description": "Domain-specific transform extension fields. Use namespaced keys." }
+  },
+
+  "examples": [
+    {
+      "transform_id": "11111111-2222-3333-4444-555555555555",
+      "entity_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+      "identity": {
+        "transform_id": "11111111-2222-3333-4444-555555555555",
+        "entity_id": "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+        "frame_name": "f16_body",
+        "version": "1.0.0",
+        "tags": ["aircraft", "fighter", "dynamic"]
+      },
+      "coordinate_system": {
+        "system": "cartesian",
+        "handedness": "right",
+        "up_axis": "Z",
+        "forward_axis": "X",
+        "dimensionality": 3
+      },
+      "units": {
+        "length": "meters",
+        "angle": "radians",
+        "velocity": "m_per_s",
+        "force": "newtons"
+      },
+      "position": {
+        "cartesian": { "x": 12500.0, "y": -3200.0, "z": 6000.0 },
+        "geodetic": {
+          "latitude_deg": 33.9425,
+          "longitude_deg": -118.4081,
+          "altitude_m": 6000.0,
+          "altitude_type": "ellipsoidal",
+          "datum": "WGS84"
+        },
+        "primary_representation": "cartesian",
+        "accuracy_m": 10.0
+      },
+      "orientation": {
+        "quaternion": { "x": 0.0, "y": 0.0, "z": 0.3826834, "w": 0.9238795 },
+        "euler": { "roll": 0.0, "pitch": 0.0, "yaw": 0.7854, "sequence": "ZYX_intrinsic", "unit": "radians" },
+        "heading_deg": 45.0
+      },
+      "scale": { "uniform": 1.0, "sx": 1.0, "sy": 1.0, "sz": 1.0 },
+      "velocity": {
+        "vx_mps": 180.0, "vy_mps": 180.0, "vz_mps": 0.0,
+        "speed_mps": 254.56,
+        "ground_speed_mps": 254.56,
+        "mach": 0.745
+      },
+      "physics": {
+        "body_type": "dynamic",
+        "is_sleeping": false,
+        "is_awake": true,
+        "collision_enabled": true,
+        "gravity_enabled": true,
+        "mass_kg": 12000.0
+      },
+      "geospatial": {
+        "planet": "Earth",
+        "gravity_mps2": 9.789
+      },
+      "temporal": {
+        "sim_time_s": 245.0,
+        "tick_number": 14700,
+        "dt_s": 0.01666
+      },
+      "compatibility": {
+        "ros2": { "frame_id": "f16_body", "up_axis": "Z", "handedness": "right" },
+        "omniverse_usd": { "prim_path": "/World/Aircraft/F16_01", "up_axis": "Z", "meters_per_unit": 1.0 }
+      }
+    }
+  ]
+}

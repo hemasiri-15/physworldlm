@@ -1,0 +1,1241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/metadata.schema.json",
+  "title": "PhysWorldLM Universal Entity Metadata",
+  "description": "Canonical metadata standard for every ontology node, entity, asset, concept, relationship, component, or object in the PhysWorldLM ecosystem (PW-META v1.0). Every ontology class inherits from this schema.",
+  "type": "object",
+  "required": ["identity"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "NonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid"
+    },
+
+    "URI": {
+      "type": "string",
+      "format": "uri"
+    },
+
+    "ISOTimestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+
+    "ISODate": {
+      "type": "string",
+      "format": "date"
+    },
+
+    "LanguageTag": {
+      "type": "string",
+      "pattern": "^[a-z]{2,3}(-[A-Z]{2})?$",
+      "description": "BCP 47 language tag e.g. en, en-US, fr, ar"
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+
+    "ConfidenceScore": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Confidence or quality score in [0, 1]."
+    },
+
+    "LocalizedString": {
+      "type": "object",
+      "description": "A string with optional per-language variants.",
+      "required": ["default"],
+      "additionalProperties": false,
+      "properties": {
+        "default": { "$ref": "#/$defs/NonEmptyString" },
+        "translations": {
+          "type": "object",
+          "description": "Keys are BCP-47 language tags.",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+
+    "ExternalLink": {
+      "type": "object",
+      "required": ["url"],
+      "additionalProperties": false,
+      "properties": {
+        "url":         { "$ref": "#/$defs/URI" },
+        "label":       { "type": "string" },
+        "link_type": {
+          "type": "string",
+          "enum": ["wikidata", "dbpedia", "nato_term", "mil_std", "iso", "ieee",
+                   "datasheet", "manual", "patent", "research_paper", "dataset",
+                   "model", "simulation", "website", "custom"]
+        },
+        "accessed_at": { "$ref": "#/$defs/ISODate" }
+      }
+    },
+
+    "Citation": {
+      "type": "object",
+      "required": ["title"],
+      "additionalProperties": false,
+      "properties": {
+        "id":           { "$ref": "#/$defs/UUID" },
+        "title":        { "type": "string" },
+        "authors":      { "type": "array", "items": { "type": "string" } },
+        "year":         { "type": "integer", "minimum": 1800, "maximum": 2200 },
+        "publisher":    { "type": "string" },
+        "journal":      { "type": "string" },
+        "volume":       { "type": "string" },
+        "issue":        { "type": "string" },
+        "pages":        { "type": "string" },
+        "doi":          { "type": "string" },
+        "url":          { "$ref": "#/$defs/URI" },
+        "document_type": {
+          "type": "string",
+          "enum": ["book", "article", "report", "standard", "manual", "patent",
+                   "thesis", "conference_paper", "dataset", "website", "custom"]
+        },
+        "classification_level": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret"]
+        }
+      }
+    },
+
+    "AssetRef": {
+      "type": "object",
+      "description": "Reference to an external asset file. WorldSpec never stores raw asset data.",
+      "required": ["path"],
+      "additionalProperties": false,
+      "properties": {
+        "id":       { "$ref": "#/$defs/UUID" },
+        "path":     { "type": "string" },
+        "url":      { "$ref": "#/$defs/URI" },
+        "format": {
+          "type": "string",
+          "enum": ["usd", "usda", "usdc", "usdz", "glb", "gltf", "fbx", "obj",
+                   "ply", "stl", "dae", "abc", "blend", "3ds", "png", "jpg",
+                   "exr", "hdr", "tiff", "mp4", "wav", "mp3", "pdf", "custom"]
+        },
+        "checksum":    { "type": "string" },
+        "checksum_algorithm": {
+          "type": "string",
+          "enum": ["md5", "sha1", "sha256", "sha512"],
+          "default": "sha256"
+        },
+        "size_bytes":  { "type": "integer" },
+        "version":     { "$ref": "#/$defs/VersionString" },
+        "license":     { "type": "string" }
+      }
+    },
+
+    "GeoPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90  },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "altitude_m":{ "type": "number" }
+      }
+    },
+
+    "RelationshipSummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "relation_type":  { "type": "string" },
+        "target_id":      { "$ref": "#/$defs/UUID" },
+        "target_name":    { "type": "string" },
+        "target_uri":     { "$ref": "#/$defs/URI" }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "identity": {
+      "type": "object",
+      "description": "Primary identity of the ontology node.",
+      "required": ["uuid", "canonical_name"],
+      "additionalProperties": false,
+      "properties": {
+
+        "uuid": {
+          "$ref": "#/$defs/UUID",
+          "description": "Globally unique persistent identifier. Never reused or recycled."
+        },
+        "global_id": {
+          "type": "string",
+          "description": "External global identifier e.g. NATO STANAG ID, DoD system ID."
+        },
+        "local_id": {
+          "type": "string",
+          "description": "Local system identifier within a specific database or registry."
+        },
+        "ontology_uri": {
+          "$ref": "#/$defs/URI",
+          "description": "Canonical URI within the PhysWorldLM ontology namespace e.g. https://physworldlm.org/ontology/military/aircraft/F16C"
+        },
+        "knowledge_graph_uri": {
+          "$ref": "#/$defs/URI",
+          "description": "URI of this node within the PhysWorldLM knowledge graph."
+        },
+        "persistent_identifier": {
+          "type": "string",
+          "description": "DOI, ARK, PURL, or other persistent identifier for long-term resolution."
+        },
+
+        "canonical_name": {
+          "$ref": "#/$defs/NonEmptyString",
+          "description": "Official authoritative name. Used as the primary key in ontology lookups."
+        },
+        "display_name": {
+          "$ref": "#/$defs/LocalizedString",
+          "description": "Human-readable name for UI and visualization."
+        },
+        "short_name": {
+          "type": "string",
+          "maxLength": 32,
+          "description": "Abbreviated name for space-constrained displays."
+        },
+        "long_name": {
+          "type": "string",
+          "description": "Full official name including designations."
+        },
+        "preferred_label": {
+          "$ref": "#/$defs/LocalizedString",
+          "description": "SKOS preferredLabel — the single best label per language."
+        },
+        "alternative_labels": {
+          "type": "array",
+          "description": "SKOS altLabel — all acceptable alternative labels.",
+          "items": { "$ref": "#/$defs/LocalizedString" }
+        },
+
+        "aliases": {
+          "type": "array",
+          "description": "All known alternative names. Used for NLP resolution.",
+          "items": { "type": "string" }
+        },
+        "nicknames": {
+          "type": "array",
+          "description": "Informal names e.g. 'Viper' for F-16.",
+          "items": { "type": "string" }
+        },
+        "abbreviations": {
+          "type": "array",
+          "description": "Official and common abbreviations.",
+          "items": { "type": "string" }
+        },
+        "callsigns": {
+          "type": "array",
+          "description": "Military callsigns or tactical identifiers.",
+          "items": { "type": "string" }
+        },
+        "code_names": {
+          "type": "array",
+          "description": "NATO reporting names, classified project names, program code names.",
+          "items": { "type": "string" }
+        },
+        "nato_reporting_name": {
+          "type": "string",
+          "description": "NATO standardized reporting name e.g. 'Flanker' for Su-27."
+        },
+
+        "registry_number":  { "type": "string", "description": "Official registry or tail number." },
+        "serial_number":    { "type": "string" },
+        "part_number":      { "type": "string" },
+        "asset_number":     { "type": "string", "description": "Enterprise asset management ID." },
+        "nato_stock_number":{ "type": "string", "description": "13-digit NATO Stock Number (NSN)." },
+        "cage_code":        { "type": "string", "description": "Commercial and Government Entity code." },
+        "lin_code":         { "type": "string", "description": "Line Item Number (US Army)." },
+        "dodaac":           { "type": "string", "description": "Department of Defense Activity Address Code." },
+
+        "description": {
+          "$ref": "#/$defs/LocalizedString",
+          "description": "Comprehensive description of this entity."
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 512,
+          "description": "One or two sentence summary for quick reference."
+        },
+        "language": {
+          "$ref": "#/$defs/LanguageTag",
+          "default": "en",
+          "description": "Primary language of this metadata record."
+        }
+      }
+    },
+
+    "classification": {
+      "type": "object",
+      "description": "Taxonomic and categorical classification of this node.",
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "type": "string",
+          "enum": ["military", "civilian", "dual_use", "space", "maritime", "robotics",
+                   "environment", "infrastructure", "biological", "chemical", "nuclear",
+                   "cyber", "cognitive", "logistics", "medical", "custom"],
+          "description": "Top-level domain."
+        },
+        "category": {
+          "type": "string",
+          "description": "Primary category e.g. 'aircraft', 'sensor', 'terrain', 'material'."
+        },
+        "subcategory":  { "type": "string" },
+        "class":        { "type": "string", "description": "Ontology class name." },
+        "subclass":     { "type": "string" },
+        "superclass":   { "type": "string", "description": "Immediate parent class in the ontology." },
+        "type":         { "type": "string", "description": "Fine-grained type within the class." },
+        "subtype":      { "type": "string", "description": "Specific variant or model." },
+        "family":       { "type": "string", "description": "Design or equipment family." },
+        "series":       { "type": "string" },
+        "variant":      { "type": "string" },
+        "generation": {
+          "type": "string",
+          "description": "Technology generation e.g. '4th Generation Fighter', 'Gen III NVG'."
+        },
+        "platform": {
+          "type": "string",
+          "enum": ["airborne", "ground", "naval", "submarine", "space", "fixed",
+                   "man_portable", "multi_platform", "virtual", "custom"]
+        },
+        "role": {
+          "type": "array",
+          "description": "One or more operational roles.",
+          "items": { "type": "string" }
+        },
+        "mission_categories": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "capability_tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "function_tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "technology_readiness_level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9,
+          "description": "NASA/DoD TRL 1-9."
+        },
+        "discipline": {
+          "type": "string",
+          "description": "Engineering or scientific discipline."
+        },
+        "taxonomy_path": {
+          "type": "string",
+          "description": "Full path in the taxonomy e.g. 'military/aircraft/fixed_wing/fighter/multirole'."
+        },
+        "ontology_path": {
+          "type": "string",
+          "description": "Full path in the ontology hierarchy."
+        },
+        "hierarchy_depth": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Depth of this node in the ontology tree."
+        },
+        "is_abstract": {
+          "type": "boolean",
+          "default": false,
+          "description": "True if this is an abstract class with no direct instances."
+        },
+        "is_leaf": {
+          "type": "boolean",
+          "default": false,
+          "description": "True if this node has no children in the taxonomy."
+        }
+      }
+    },
+
+    "semantic": {
+      "type": "object",
+      "description": "Semantic and NLP metadata for natural language parsing, knowledge graphs, and AI reasoning.",
+      "additionalProperties": false,
+      "properties": {
+        "keywords": {
+          "type": "array",
+          "description": "Controlled vocabulary keywords.",
+          "items": { "type": "string" }
+        },
+        "tags": {
+          "type": "array",
+          "description": "Free-form tags for search and filtering.",
+          "items": { "type": "string" }
+        },
+        "synonyms": {
+          "type": "array",
+          "description": "Semantically equivalent terms.",
+          "items": { "type": "string" }
+        },
+        "related_terms": {
+          "type": "array",
+          "description": "Semantically related but not identical terms.",
+          "items": { "type": "string" }
+        },
+        "antonyms": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "alternative_spellings": {
+          "type": "array",
+          "description": "Variant spellings including transliterations.",
+          "items": { "type": "string" }
+        },
+        "language_variants": {
+          "type": "object",
+          "description": "Name in various languages. Keys are BCP-47 tags.",
+          "additionalProperties": { "type": "string" }
+        },
+        "disambiguation": {
+          "type": "string",
+          "description": "Short note clarifying what makes this entity distinct from similar ones."
+        },
+        "natural_language_examples": {
+          "type": "array",
+          "description": "Example NL phrases that the parser should map to this entity.",
+          "items": { "type": "string" }
+        },
+        "prompt_examples": {
+          "type": "array",
+          "description": "Example LLM prompts that should resolve to this entity.",
+          "items": { "type": "string" }
+        },
+        "context_labels": {
+          "type": "array",
+          "description": "Context hints for NLP disambiguation e.g. 'air combat', 'maritime'.",
+          "items": { "type": "string" }
+        },
+        "reasoning_labels": {
+          "type": "array",
+          "description": "Labels used by the PhysWorldLM reasoning engine.",
+          "items": { "type": "string" }
+        },
+        "skos_broader": {
+          "type": "array",
+          "description": "SKOS broader concept URIs.",
+          "items": { "$ref": "#/$defs/URI" }
+        },
+        "skos_narrower": {
+          "type": "array",
+          "description": "SKOS narrower concept URIs.",
+          "items": { "$ref": "#/$defs/URI" }
+        },
+        "skos_related": {
+          "type": "array",
+          "description": "SKOS related concept URIs.",
+          "items": { "$ref": "#/$defs/URI" }
+        },
+        "skos_exact_match": {
+          "type": "array",
+          "description": "SKOS exactMatch — equivalent concepts in external vocabularies.",
+          "items": { "$ref": "#/$defs/URI" }
+        },
+        "skos_close_match": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/URI" }
+        },
+        "owl_same_as": {
+          "type": "array",
+          "description": "OWL sameAs links to equivalent ontology nodes.",
+          "items": { "$ref": "#/$defs/URI" }
+        },
+        "wikidata_id": {
+          "type": "string",
+          "pattern": "^Q\\d+$",
+          "description": "Wikidata entity ID e.g. Q25373."
+        },
+        "dbpedia_uri":    { "$ref": "#/$defs/URI" },
+        "wordnet_id":     { "type": "string" },
+        "framenet_frame": { "type": "string" },
+        "embedding_ref": {
+          "type": "string",
+          "description": "Reference to a precomputed semantic embedding vector for this entity."
+        },
+        "embedding_model": {
+          "type": "string",
+          "description": "Model used to generate the embedding e.g. 'text-embedding-3-large'."
+        },
+        "external_links": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ExternalLink" }
+        }
+      }
+    },
+
+    "ownership": {
+      "type": "object",
+      "description": "Provenance of who created, owns, and operates this entity.",
+      "additionalProperties": false,
+      "properties": {
+        "manufacturer":    { "type": "string" },
+        "manufacturer_country": { "type": "string" },
+        "designer":        { "type": "string" },
+        "developer":       { "type": "string" },
+        "prime_contractor":{ "type": "string" },
+        "sub_contractors": { "type": "array", "items": { "type": "string" } },
+        "supplier":        { "type": "string" },
+        "maintainer":      { "type": "string" },
+        "owner":           { "type": "string" },
+        "operator":        { "type": "string" },
+        "operators": {
+          "type": "array",
+          "description": "All known operators (nations, organizations).",
+          "items": { "type": "string" }
+        },
+        "country_of_origin": {
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 or alpha-3 country code."
+        },
+        "countries_of_operation": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "military_branch": {
+          "type": "string",
+          "enum": ["army", "navy", "air_force", "marine_corps", "coast_guard",
+                   "space_force", "strategic_forces", "special_forces",
+                   "intelligence", "joint", "civilian", "multi", "custom"]
+        },
+        "military_branches": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "organization":     { "type": "string" },
+        "department":       { "type": "string" },
+        "agency":           { "type": "string" },
+        "command":          { "type": "string" },
+        "program_name":     { "type": "string" },
+        "program_office":   { "type": "string" },
+        "contract_number":  { "type": "string" },
+        "project_code":     { "type": "string" },
+        "budget_line":      { "type": "string" },
+        "license_holder":   { "type": "string" },
+        "intellectual_property_owner": { "type": "string" }
+      }
+    },
+
+    "lifecycle": {
+      "type": "object",
+      "description": "Lifecycle, development, and service history.",
+      "additionalProperties": false,
+      "properties": {
+        "lifecycle_stage": {
+          "type": "string",
+          "enum": ["concept", "design", "prototype", "experimental", "development",
+                   "testing", "qualification", "pre_production", "production",
+                   "operational", "legacy", "maintenance_only", "retired",
+                   "deprecated", "obsolete", "cancelled", "unknown"]
+        },
+        "development_status": {
+          "type": "string",
+          "enum": ["active", "completed", "cancelled", "on_hold", "unknown"]
+        },
+        "production_status": {
+          "type": "string",
+          "enum": ["in_production", "limited_production", "ceased", "never_produced", "unknown"]
+        },
+        "service_status": {
+          "type": "string",
+          "enum": ["in_service", "limited_service", "reserve", "retired", "never_entered_service", "unknown"]
+        },
+        "availability": {
+          "type": "string",
+          "enum": ["available", "limited", "restricted", "unavailable", "unknown"]
+        },
+        "support_status": {
+          "type": "string",
+          "enum": ["full_support", "limited_support", "community_support", "no_support", "unknown"]
+        },
+
+        "date_concept":       { "$ref": "#/$defs/ISODate", "description": "Date concept was first proposed." },
+        "date_design_start":  { "$ref": "#/$defs/ISODate" },
+        "date_first_flight":  { "$ref": "#/$defs/ISODate", "description": "First flight or first operational test." },
+        "date_prototype":     { "$ref": "#/$defs/ISODate" },
+        "date_first_production": { "$ref": "#/$defs/ISODate" },
+        "date_introduced":    { "$ref": "#/$defs/ISODate", "description": "Date entered service." },
+        "date_retired":       { "$ref": "#/$defs/ISODate" },
+        "date_deprecated":    { "$ref": "#/$defs/ISODate" },
+        "date_cancelled":     { "$ref": "#/$defs/ISODate" },
+        "planned_retirement": { "$ref": "#/$defs/ISODate" },
+
+        "service_life_years":   { "type": "number" },
+        "mean_time_between_failures_hours": { "type": "number" },
+        "mean_time_to_repair_hours": { "type": "number" },
+        "maintenance_interval_hours": { "type": "number" },
+        "overhaul_interval_hours":    { "type": "number" },
+
+        "units_produced":      { "type": "integer" },
+        "units_in_service":    { "type": "integer" },
+        "units_lost":          { "type": "integer" },
+
+        "superseded_by":       { "type": "array", "items": { "type": "string" } },
+        "supersedes":          { "type": "array", "items": { "type": "string" } },
+        "variants":            { "type": "array", "items": { "type": "string" } },
+        "upgrade_programs":    { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "source": {
+      "type": "object",
+      "description": "Provenance, evidence, and source quality metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "primary_source":   { "type": "string", "description": "Name of the primary data source." },
+        "source_type": {
+          "type": "string",
+          "enum": ["official_document", "technical_manual", "field_manual", "standard",
+                   "specification", "datasheet", "research_paper", "patent",
+                   "open_source", "classified", "expert_knowledge", "simulation",
+                   "sensor_data", "satellite_imagery", "osint", "humint", "custom"]
+        },
+        "source_url":       { "$ref": "#/$defs/URI" },
+        "origin": {
+          "type": "string",
+          "enum": ["manufacturer", "government", "nato", "un", "academic",
+                   "think_tank", "open_source", "classified", "simulation", "custom"]
+        },
+        "citations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Citation" }
+        },
+        "standards_references": {
+          "type": "array",
+          "description": "Applicable standards that define or govern this entity.",
+          "items": { "type": "string" }
+        },
+        "specification_documents": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "confidence_score": {
+          "$ref": "#/$defs/ConfidenceScore",
+          "description": "Overall confidence in the accuracy of this record."
+        },
+        "completeness_score": {
+          "$ref": "#/$defs/ConfidenceScore",
+          "description": "How complete this record is relative to the schema."
+        },
+        "data_quality_score": {
+          "$ref": "#/$defs/ConfidenceScore"
+        },
+        "verified":         { "type": "boolean", "default": false },
+        "verified_by":      { "type": "string" },
+        "verified_date":    { "$ref": "#/$defs/ISODate" },
+        "reviewed_by":      { "type": "array", "items": { "type": "string" } },
+        "reviewed_date":    { "$ref": "#/$defs/ISODate" },
+        "approved_by":      { "type": "string" },
+        "approved_date":    { "$ref": "#/$defs/ISODate" },
+        "author":           { "type": "string" },
+        "contributors":     { "type": "array", "items": { "type": "string" } },
+        "license": {
+          "type": "string",
+          "description": "License identifier e.g. MIT, CC-BY-4.0, proprietary, classified."
+        },
+        "copyright":        { "type": "string" },
+        "data_rights": {
+          "type": "string",
+          "enum": ["unlimited", "limited", "restricted", "government_purpose",
+                   "proprietary", "classified", "custom"]
+        },
+        "export_control": {
+          "type": "string",
+          "enum": ["none", "EAR", "ITAR", "EU_GDPR", "classified", "custom"]
+        },
+        "evidence_basis": {
+          "type": "array",
+          "description": "What evidence supports the claims in this record.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "evidence_type": { "type": "string" },
+              "description":   { "type": "string" },
+              "source":        { "type": "string" },
+              "confidence":    { "$ref": "#/$defs/ConfidenceScore" }
+            }
+          }
+        }
+      }
+    },
+
+    "technical": {
+      "type": "object",
+      "description": "Technical and schema versioning metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version":   { "$ref": "#/$defs/VersionString", "description": "Version of metadata.schema.json this record conforms to." },
+        "ontology_version": { "$ref": "#/$defs/VersionString", "description": "Version of the PhysWorldLM ontology." },
+        "world_spec_version": { "$ref": "#/$defs/VersionString" },
+        "api_version":      { "$ref": "#/$defs/VersionString" },
+        "record_version":   { "$ref": "#/$defs/VersionString", "description": "Version of this specific record." },
+        "file_format":      { "type": "string" },
+        "encoding":         { "type": "string", "default": "UTF-8" },
+        "compression":      { "type": "string", "enum": ["none", "gzip", "zstd", "lz4", "brotli"], "default": "none" },
+        "serialization":    { "type": "string", "enum": ["json", "yaml", "msgpack", "cbor", "protobuf", "custom"] },
+        "namespace":        { "$ref": "#/$defs/URI" },
+        "checksum":         { "type": "string" },
+        "checksum_algorithm": { "type": "string", "enum": ["md5", "sha1", "sha256", "sha512"], "default": "sha256" },
+        "uuid_version":     { "type": "integer", "enum": [1, 3, 4, 5, 7], "default": 4 },
+        "compatibility": {
+          "type": "array",
+          "description": "Other schema or system versions this record is compatible with.",
+          "items": { "type": "string" }
+        },
+        "dependencies": {
+          "type": "array",
+          "description": "Other ontology modules or schemas this record depends on.",
+          "items": { "type": "string" }
+        },
+        "extensions": {
+          "type": "array",
+          "description": "PhysWorldLM extension modules this record uses.",
+          "items": { "type": "string" }
+        },
+        "profiles": {
+          "type": "array",
+          "description": "Conformance profiles e.g. 'military_core', 'simulation_ready', 'kg_complete'.",
+          "items": { "type": "string" }
+        },
+        "change_log": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["version", "date", "description"],
+            "properties": {
+              "version":     { "$ref": "#/$defs/VersionString" },
+              "date":        { "$ref": "#/$defs/ISODate" },
+              "author":      { "type": "string" },
+              "description": { "type": "string" },
+              "change_type": {
+                "type": "string",
+                "enum": ["create", "update", "deprecate", "correct", "merge", "split", "delete"]
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "simulation": {
+      "type": "object",
+      "description": "Simulation readiness and integration metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "simulation_ready":     { "type": "boolean", "default": false },
+        "physics_ready":        { "type": "boolean", "default": false },
+        "render_ready":         { "type": "boolean", "default": false },
+        "sensor_ready":         { "type": "boolean", "default": false },
+        "ai_ready":             { "type": "boolean", "default": false },
+        "rl_ready":             { "type": "boolean", "default": false },
+        "ros_ready":            { "type": "boolean", "default": false },
+
+        "physics_profile": {
+          "type": "string",
+          "enum": ["rigid_body", "soft_body", "particle", "fluid", "cloth", "rope",
+                   "static", "kinematic", "none", "custom"]
+        },
+        "collision_profile": {
+          "type": "string",
+          "enum": ["exact", "convex_hull", "bounding_box", "capsule", "none", "custom"]
+        },
+        "render_profile": {
+          "type": "string",
+          "enum": ["realistic", "stylized", "wireframe", "bounding_box", "none", "custom"]
+        },
+        "lod_levels": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Number of Level-of-Detail representations available."
+        },
+        "behavior_profile": {
+          "type": "string",
+          "enum": ["scripted", "behavior_tree", "state_machine", "rl_policy",
+                   "llm_agent", "rule_based", "none", "custom"]
+        },
+        "sensor_profile":      { "type": "string" },
+
+        "asset_refs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "thumbnail":   { "$ref": "#/$defs/AssetRef" },
+            "icon":        { "$ref": "#/$defs/AssetRef" },
+            "preview":     { "$ref": "#/$defs/AssetRef" },
+            "mesh_lod0":   { "$ref": "#/$defs/AssetRef" },
+            "mesh_lod1":   { "$ref": "#/$defs/AssetRef" },
+            "mesh_lod2":   { "$ref": "#/$defs/AssetRef" },
+            "mesh_lod3":   { "$ref": "#/$defs/AssetRef" },
+            "collision_mesh": { "$ref": "#/$defs/AssetRef" },
+            "material":    { "$ref": "#/$defs/AssetRef" },
+            "texture_albedo": { "$ref": "#/$defs/AssetRef" },
+            "texture_normal": { "$ref": "#/$defs/AssetRef" },
+            "texture_roughness": { "$ref": "#/$defs/AssetRef" },
+            "texture_metallic":  { "$ref": "#/$defs/AssetRef" },
+            "texture_emissive":  { "$ref": "#/$defs/AssetRef" },
+            "texture_ao":        { "$ref": "#/$defs/AssetRef" },
+            "animation_idle":    { "$ref": "#/$defs/AssetRef" },
+            "animation_move":    { "$ref": "#/$defs/AssetRef" },
+            "animation_destroy": { "$ref": "#/$defs/AssetRef" },
+            "audio_engine":      { "$ref": "#/$defs/AssetRef" },
+            "audio_weapon":      { "$ref": "#/$defs/AssetRef" },
+            "audio_ambient":     { "$ref": "#/$defs/AssetRef" },
+            "cad_model":         { "$ref": "#/$defs/AssetRef" },
+            "blueprint":         { "$ref": "#/$defs/AssetRef" },
+            "documentation":     { "$ref": "#/$defs/AssetRef" },
+            "behavior_tree":     { "$ref": "#/$defs/AssetRef" },
+            "rl_policy":         { "$ref": "#/$defs/AssetRef" },
+            "custom":            { "type": "array", "items": { "$ref": "#/$defs/AssetRef" } }
+          }
+        },
+
+        "spawn_rules": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Rules governing how and when this entity may be spawned in simulation."
+        },
+        "despawn_rules": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "interaction_rules": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "default_state": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Default runtime state values when this entity is instantiated."
+        },
+        "simulation_tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "supported_engines": {
+          "type": "array",
+          "description": "Simulation engines this entity has been validated with.",
+          "items": {
+            "type": "string",
+            "enum": ["omniverse", "physx", "isaac_sim", "mujoco", "gazebo",
+                     "unreal", "unity", "ros2", "airsim", "carla", "custom"]
+          }
+        },
+        "ros_package":     { "type": "string" },
+        "ros_node":        { "type": "string" },
+        "usd_prim_path":   { "type": "string" }
+      }
+    },
+
+    "ai": {
+      "type": "object",
+      "description": "AI, machine learning, and reasoning metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "reasoning_labels": {
+          "type": "array",
+          "description": "Labels used by the PhysWorldLM LLM reasoning engine for entity disambiguation.",
+          "items": { "type": "string" }
+        },
+        "training_tags": {
+          "type": "array",
+          "description": "Tags indicating which ML training datasets this entity appears in.",
+          "items": { "type": "string" }
+        },
+        "prompt_labels": {
+          "type": "array",
+          "description": "Short tokens the LLM parser should associate with this entity.",
+          "items": { "type": "string" }
+        },
+        "negative_prompt_labels": {
+          "type": "array",
+          "description": "Tokens that should NOT resolve to this entity (disambiguation exclusions).",
+          "items": { "type": "string" }
+        },
+        "embedding_id":   { "type": "string" },
+        "embedding_model":{ "type": "string" },
+        "feature_vector_ref": { "type": "string" },
+        "latent_space_id":    { "type": "string" },
+        "knowledge_node_id":  { "type": "string", "description": "ID of this entity's node in the PW knowledge graph." },
+        "planner_tags": {
+          "type": "array",
+          "description": "Tags used by mission/task planners.",
+          "items": { "type": "string" }
+        },
+        "behavior_tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "goal_tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rl_observation_space": {
+          "type": "string",
+          "description": "Reference to the RL observation space specification for this entity."
+        },
+        "rl_action_space": {
+          "type": "string"
+        },
+        "rl_reward_function": {
+          "type": "string"
+        },
+        "rl_tags": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "llm_entity_type_hint": {
+          "type": "string",
+          "description": "Short type hint passed to LLM during parsing e.g. 'military_aircraft'."
+        },
+        "llm_description_prompt": {
+          "type": "string",
+          "description": "A curated description optimized for LLM consumption."
+        },
+        "agent_profile": {
+          "type": "string",
+          "description": "Reference to an AI agent profile for this entity class."
+        },
+        "synthetic_data_tags": {
+          "type": "array",
+          "description": "Tags governing inclusion in synthetic data generation pipelines.",
+          "items": { "type": "string" }
+        },
+        "ground_truth_class": {
+          "type": "string",
+          "description": "Class label used in ground-truth annotations for CV/detection models."
+        },
+        "ground_truth_id": {
+          "type": "integer",
+          "description": "Integer class ID for segmentation and detection ground truth."
+        },
+        "detection_difficulty": {
+          "type": "string",
+          "enum": ["easy", "medium", "hard", "very_hard", "custom"]
+        }
+      }
+    },
+
+    "validation": {
+      "type": "object",
+      "description": "Schema compliance, completeness, and quality validation metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "validation_status": {
+          "type": "string",
+          "enum": ["unvalidated", "in_review", "validated", "rejected", "needs_update"],
+          "default": "unvalidated"
+        },
+        "validator":           { "type": "string" },
+        "validation_date":     { "$ref": "#/$defs/ISODate" },
+        "validation_tool":     { "type": "string" },
+        "schema_compliance":   { "type": "boolean" },
+        "ontology_compliance": { "type": "boolean" },
+        "constraint_status":   { "type": "string", "enum": ["pass", "fail", "warning", "not_checked"] },
+        "error_count":         { "type": "integer", "minimum": 0 },
+        "warning_count":       { "type": "integer", "minimum": 0 },
+        "completeness_score":  { "$ref": "#/$defs/ConfidenceScore" },
+        "consistency_score":   { "$ref": "#/$defs/ConfidenceScore" },
+        "quality_score":       { "$ref": "#/$defs/ConfidenceScore" },
+        "validation_notes":    { "type": "string" },
+        "required_fields_present": { "type": "boolean" },
+        "optional_fields_present_count": { "type": "integer" },
+        "validation_errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field":       { "type": "string" },
+              "error_code":  { "type": "string" },
+              "message":     { "type": "string" },
+              "severity":    { "type": "string", "enum": ["error", "warning", "info"] }
+            }
+          }
+        }
+      }
+    },
+
+    "security": {
+      "type": "object",
+      "description": "Information security and access control metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "classification_level": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret",
+                   "top_secret", "top_secret_sci", "custom"],
+          "default": "unclassified"
+        },
+        "caveat": {
+          "type": "array",
+          "description": "Additional classification caveats e.g. NOFORN, REL TO, ORCON.",
+          "items": { "type": "string" }
+        },
+        "releasability": {
+          "type": "array",
+          "description": "Countries or organizations this record can be released to.",
+          "items": { "type": "string" }
+        },
+        "need_to_know_groups": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "minimum_clearance": {
+          "type": "string",
+          "enum": ["none", "confidential", "secret", "top_secret", "top_secret_sci"]
+        },
+        "access_roles": {
+          "type": "array",
+          "description": "Role-based access control roles permitted to read this record.",
+          "items": { "type": "string" }
+        },
+        "data_sensitivity": {
+          "type": "string",
+          "enum": ["public", "internal", "sensitive", "restricted", "classified", "custom"]
+        },
+        "export_control_category": {
+          "type": "string",
+          "description": "ITAR category, EAR ECCN, or custom export control classification."
+        },
+        "itar_controlled":         { "type": "boolean", "default": false },
+        "ear_controlled":          { "type": "boolean", "default": false },
+        "pii_present":             { "type": "boolean", "default": false },
+        "encryption_at_rest":      { "type": "boolean", "default": false },
+        "encryption_in_transit":   { "type": "boolean", "default": false },
+        "encryption_standard":     { "type": "string" },
+        "digital_signature":       { "type": "string" },
+        "signing_algorithm":       { "type": "string" },
+        "trust_level": {
+          "type": "string",
+          "enum": ["untrusted", "low", "medium", "high", "verified"],
+          "default": "medium"
+        },
+        "integrity_hash":          { "type": "string" },
+        "audit_trail": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "timestamp":  { "$ref": "#/$defs/ISOTimestamp" },
+              "actor":      { "type": "string" },
+              "action":     { "type": "string" },
+              "ip_address": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "geospatial": {
+      "type": "object",
+      "description": "Geospatial and geographic metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "country":         { "type": "string", "description": "ISO 3166-1 alpha-2 code." },
+        "country_name":    { "type": "string" },
+        "region":          { "type": "string" },
+        "continent": {
+          "type": "string",
+          "enum": ["africa", "antarctica", "asia", "europe", "north_america",
+                   "oceania", "south_america", "global", "space"]
+        },
+        "theater_of_operations": {
+          "type": "string",
+          "enum": ["europe", "middle_east", "pacific", "arctic", "africa",
+                   "south_asia", "latin_america", "global", "space", "cyber", "custom"]
+        },
+        "origin_location":     { "$ref": "#/$defs/GeoPoint" },
+        "bounding_box": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "southwest": { "$ref": "#/$defs/GeoPoint" },
+            "northeast": { "$ref": "#/$defs/GeoPoint" }
+          }
+        },
+        "reference_frame": {
+          "type": "string",
+          "enum": ["WGS84", "ETRS89", "NAD83", "ITRF", "ENU", "NED", "ECEF", "custom"]
+        },
+        "projection":      { "type": "string" },
+        "datum":           { "type": "string" },
+        "map_layer":       { "type": "string" },
+        "spatial_resolution_m": { "type": "number" },
+        "mgrs_grid":       { "type": "string", "description": "Military Grid Reference System cell." },
+        "utm_zone":        { "type": "string" },
+        "operational_environment": {
+          "type": "string",
+          "enum": ["land", "urban", "desert", "arctic", "jungle", "mountain", "ocean",
+                   "littoral", "underground", "space", "cyber", "mixed", "all"]
+        }
+      }
+    },
+
+    "temporal": {
+      "type": "object",
+      "description": "Temporal and time-reference metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "created_at":       { "$ref": "#/$defs/ISOTimestamp" },
+        "updated_at":       { "$ref": "#/$defs/ISOTimestamp" },
+        "reviewed_at":      { "$ref": "#/$defs/ISOTimestamp" },
+        "approved_at":      { "$ref": "#/$defs/ISOTimestamp" },
+        "published_at":     { "$ref": "#/$defs/ISOTimestamp" },
+        "valid_from":       { "$ref": "#/$defs/ISOTimestamp", "description": "Time from which this record is valid." },
+        "valid_until":      { "$ref": "#/$defs/ISOTimestamp" },
+        "time_zone":        { "type": "string", "description": "IANA time zone identifier." },
+        "simulation_epoch": { "$ref": "#/$defs/ISOTimestamp", "description": "Simulation start time if applicable." },
+        "historical_period":{ "type": "string", "description": "Historical era e.g. 'Cold War', 'WWII', 'Modern'." },
+        "era": {
+          "type": "string",
+          "enum": ["wwi", "wwii", "cold_war", "post_cold_war", "modern", "near_future",
+                   "far_future", "historical", "fictional", "custom"]
+        },
+        "time_reference": {
+          "type": "string",
+          "enum": ["UTC", "local", "simulation", "mission", "zulu"],
+          "default": "UTC"
+        }
+      }
+    },
+
+    "relationships_summary": {
+      "type": "object",
+      "description": "Summary statistics and key relationships for this ontology node.",
+      "additionalProperties": false,
+      "properties": {
+        "total_relationships":  { "type": "integer", "minimum": 0 },
+        "parent_count":         { "type": "integer", "minimum": 0 },
+        "child_count":          { "type": "integer", "minimum": 0 },
+        "dependency_count":     { "type": "integer", "minimum": 0 },
+        "reference_count":      { "type": "integer", "minimum": 0 },
+        "incoming_link_count":  { "type": "integer", "minimum": 0 },
+        "outgoing_link_count":  { "type": "integer", "minimum": 0 },
+        "relationship_types": {
+          "type": "array",
+          "description": "All relationship types this node participates in.",
+          "items": { "type": "string" }
+        },
+        "key_relationships": {
+          "type": "array",
+          "description": "The most important relationships for quick graph traversal.",
+          "items": { "$ref": "#/$defs/RelationshipSummary" }
+        },
+        "graph_centrality": {
+          "type": "number",
+          "description": "Centrality score in the PhysWorldLM knowledge graph (0-1)."
+        }
+      }
+    },
+
+    "interoperability": {
+      "type": "object",
+      "description": "Standards compliance and cross-system interoperability.",
+      "additionalProperties": false,
+      "properties": {
+        "nato_standards": {
+          "type": "array",
+          "description": "Applicable NATO STANAG or AAP standards.",
+          "items": { "type": "string" }
+        },
+        "mil_standards": {
+          "type": "array",
+          "description": "Applicable US MIL-STD standards.",
+          "items": { "type": "string" }
+        },
+        "ieee_standards": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "iso_standards": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "arinc_standards": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "do_standards": {
+          "type": "array",
+          "description": "RTCA DO-xxx aviation standards.",
+          "items": { "type": "string" }
+        },
+        "usd_compatibility": {
+          "type": "string",
+          "enum": ["full", "partial", "none", "untested"]
+        },
+        "gltf_compatibility": {
+          "type": "string",
+          "enum": ["full", "partial", "none", "untested"]
+        },
+        "fbx_compatibility": {
+          "type": "string",
+          "enum": ["full", "partial", "none", "untested"]
+        },
+        "ros_compatibility": {
+          "type": "string",
+          "enum": ["ros1", "ros2", "both", "none", "untested"]
+        },
+        "link16_compatible":    { "type": "boolean" },
+        "link22_compatible":    { "type": "boolean" },
+        "maap_compatible":      { "type": "boolean" },
+        "siso_compatible":      { "type": "boolean" },
+        "hla_compatible":       { "type": "boolean" },
+        "dis_compatible":       { "type": "boolean" },
+        "simulation_engine_compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "omniverse":  { "type": "boolean" },
+            "physx":      { "type": "boolean" },
+            "isaac_sim":  { "type": "boolean" },
+            "mujoco":     { "type": "boolean" },
+            "gazebo":     { "type": "boolean" },
+            "unreal":     { "type": "boolean" },
+            "unity":      { "type": "boolean" },
+            "airsim":     { "type": "boolean" },
+            "carla":      { "type": "boolean" }
+          }
+        },
+        "knowledge_graph_compatibility": {
+          "type": "array",
+          "description": "Knowledge graph systems this entity can be exported to.",
+          "items": {
+            "type": "string",
+            "enum": ["neo4j", "rdf", "owl", "sparql", "graphdb", "neptune",
+                     "dgraph", "weaviate", "pinecone", "custom"]
+          }
+        }
+      }
+    },
+
+    "custom": {
+      "type": "object",
+      "description": "Extension namespace for domain-specific metadata not covered by the base schema. Use reverse-domain keys e.g. 'org.physworldlm.military.threat_level'.",
+      "additionalProperties": true,
+      "properties": {
+        "_extensions_schema_ref": {
+          "type": "string",
+          "description": "URI of the JSON Schema that validates the custom extensions in this record."
+        }
+      }
+    }
+  }
+}

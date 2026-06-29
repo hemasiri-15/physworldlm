@@ -1,0 +1,859 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/timeline.schema.json",
+  "title": "TimelineSpec",
+  "description": "PhysWorldLM World Specification Timeline Standard (PW-WSF-800) v1.0. Authoritative chronological ledger of a simulated world: references events, owns temporal ordering, supports replay, branching, checkpointing, and distributed synchronization.",
+  "$comment": "committee: PhysWorldLM Architecture Board | status: ACTIVE | license: MIT | revision: 1.0.0",
+  "type": "object",
+  "required": ["id", "name", "timeline_type", "time_reference"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "RFC 4122 universally unique identifier."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version e.g. 1.0.0."
+    },
+
+    "SimTime": {
+      "type": "object",
+      "description": "Multi-domain time representation for a single instant.",
+      "additionalProperties": false,
+      "properties": {
+        "utc":            { "$ref": "#/$defs/Timestamp" },
+        "sim_time_s":     { "type": "number", "description": "Simulation clock elapsed time (s)." },
+        "mission_time_s": { "type": "number", "description": "Mission elapsed time (s)." },
+        "frame_number":   { "type": "integer", "minimum": 0 },
+        "tick_number":    { "type": "integer", "minimum": 0 },
+        "julian_date":    { "type": "number", "description": "Julian Date (days)." },
+        "gps_week":       { "type": "integer", "minimum": 0 },
+        "gps_tow_s":      { "type": "number", "description": "GPS time of week (s)." },
+        "tai_s":          { "type": "number", "description": "International Atomic Time offset from epoch (s)." }
+      }
+    },
+
+    "TimeInterval": {
+      "type": "object",
+      "description": "Half-open time interval [start, end).",
+      "required": ["start_s"],
+      "additionalProperties": false,
+      "properties": {
+        "start_s":    { "type": "number", "description": "Start sim time (s)." },
+        "end_s":      { "type": "number", "description": "End sim time (s). Omit for open-ended." },
+        "duration_s": { "type": "number", "description": "Duration (s). Computed if omitted." }
+      }
+    },
+
+    "EventEntry": {
+      "type": "object",
+      "description": "Chronological reference to an Event defined in event.schema.json.",
+      "required": ["event_id", "sim_time_s"],
+      "additionalProperties": false,
+      "properties": {
+        "event_id":      { "$ref": "#/$defs/UUID", "description": "Foreign key into event.schema.json." },
+        "event_type":    { "type": "string", "description": "Denormalized event_type for fast filtering." },
+        "category":      { "type": "string" },
+        "sim_time_s":    { "type": "number", "description": "Simulation clock at event occurrence (s)." },
+        "utc":           { "$ref": "#/$defs/Timestamp" },
+        "frame_number":  { "type": "integer", "minimum": 0 },
+        "tick_number":   { "type": "integer", "minimum": 0 },
+        "priority": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low", "informational"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["scheduled", "running", "completed", "cancelled", "failed", "skipped"]
+        },
+        "duration_s":    { "type": "number" },
+        "source_entity_id": { "$ref": "#/$defs/UUID" },
+        "target_entity_id": { "$ref": "#/$defs/UUID" },
+        "depends_on":    { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "triggers":      { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "track_ids":     { "type": "array", "items": { "type": "string" }, "description": "Track IDs this event belongs to." }
+      }
+    },
+
+    "Track": {
+      "type": "object",
+      "description": "A named synchronized track grouping events by subsystem.",
+      "required": ["track_id", "track_type"],
+      "additionalProperties": false,
+      "properties": {
+        "track_id":    { "type": "string", "description": "Unique track identifier within this timeline." },
+        "track_type": {
+          "type": "string",
+          "enum": [
+            "physics", "ai", "mission", "weather", "terrain", "sensor",
+            "communication", "ew", "logistics", "organization", "human",
+            "cyber", "animation", "audio", "camera", "rendering",
+            "user_interaction", "debug", "custom"
+          ]
+        },
+        "name":            { "type": "string" },
+        "description":     { "type": "string" },
+        "entity_id":       { "$ref": "#/$defs/UUID", "description": "Entity this track is bound to, if any." },
+        "org_id":          { "$ref": "#/$defs/UUID" },
+        "update_rate_hz":  { "type": "number", "description": "Nominal update frequency (Hz)." },
+        "enabled":         { "type": "boolean", "default": true },
+        "event_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "Ordered event IDs on this track."
+        },
+        "interval":        { "$ref": "#/$defs/TimeInterval" },
+        "color_hex":       { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$", "description": "UI visualization color." }
+      }
+    },
+
+    "Keyframe": {
+      "type": "object",
+      "description": "A world-state snapshot at a specific point in time for interpolation or replay.",
+      "required": ["keyframe_id", "sim_time_s"],
+      "additionalProperties": false,
+      "properties": {
+        "keyframe_id":   { "$ref": "#/$defs/UUID" },
+        "sim_time_s":    { "type": "number" },
+        "frame_number":  { "type": "integer", "minimum": 0 },
+        "tick_number":   { "type": "integer", "minimum": 0 },
+        "entity_id":     { "$ref": "#/$defs/UUID" },
+        "interpolation": {
+          "type": "string",
+          "enum": ["linear", "cubic", "step", "slerp", "ease_in", "ease_out", "ease_in_out", "none"],
+          "default": "linear"
+        },
+        "transform": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Serialized Transform (references transform.schema.json conventions)."
+        },
+        "physics_state": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Serialized PhysicsBody state."
+        },
+        "animation_clip_ref": { "type": "string" },
+        "sensor_state": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "material_override": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "health_hp":   { "type": "number" },
+        "fuel_liters": { "type": "number" },
+        "custom":      { "type": "object", "additionalProperties": true }
+      }
+    },
+
+    "Checkpoint": {
+      "type": "object",
+      "description": "Full or delta world-state save that enables rollback and branching.",
+      "required": ["checkpoint_id", "sim_time_s", "checkpoint_type"],
+      "additionalProperties": false,
+      "properties": {
+        "checkpoint_id":   { "$ref": "#/$defs/UUID" },
+        "name":            { "type": "string" },
+        "description":     { "type": "string" },
+        "sim_time_s":      { "type": "number" },
+        "utc":             { "$ref": "#/$defs/Timestamp" },
+        "frame_number":    { "type": "integer", "minimum": 0 },
+        "checkpoint_type": {
+          "type": "string",
+          "enum": ["automatic", "manual", "branch_point", "mission_phase", "pre_event", "periodic", "custom"]
+        },
+        "state_type": {
+          "type": "string",
+          "enum": ["full", "delta", "compressed", "entity_only", "physics_only", "custom"],
+          "default": "full"
+        },
+        "state_ref":       { "type": "string", "description": "URI or path to serialized world state blob." },
+        "state_size_bytes":{ "type": "integer" },
+        "checksum":        { "type": "string" },
+        "hash_algorithm":  { "type": "string", "enum": ["sha256", "sha512", "xxhash", "none"], "default": "sha256" },
+        "parent_checkpoint_id": { "$ref": "#/$defs/UUID" },
+        "delta_from_id":   { "$ref": "#/$defs/UUID", "description": "Checkpoint this delta was computed against." },
+        "restorable":      { "type": "boolean", "default": true },
+        "tags":            { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "Branch": {
+      "type": "object",
+      "description": "A divergent timeline forked from a parent at a specific point.",
+      "required": ["branch_id", "fork_sim_time_s"],
+      "additionalProperties": false,
+      "properties": {
+        "branch_id":         { "$ref": "#/$defs/UUID" },
+        "name":              { "type": "string" },
+        "description":       { "type": "string" },
+        "branch_reason": {
+          "type": "string",
+          "enum": [
+            "scenario_variant", "what_if", "ai_planning", "rl_rollout",
+            "red_team", "blue_team", "replay_edit", "fork_on_event",
+            "monte_carlo", "historical_comparison", "custom"
+          ]
+        },
+        "parent_timeline_id":{ "$ref": "#/$defs/UUID" },
+        "fork_sim_time_s":   { "type": "number", "description": "Simulation time at which the branch diverges (s)." },
+        "fork_checkpoint_id":{ "$ref": "#/$defs/UUID" },
+        "child_timeline_id": { "$ref": "#/$defs/UUID" },
+        "merge_sim_time_s":  { "type": "number", "description": "Simulation time at re-merge, if applicable (s)." },
+        "merge_strategy": {
+          "type": "string",
+          "enum": ["replace", "union", "intersection", "manual", "none"],
+          "default": "none"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "merged", "abandoned", "archived"]
+        }
+      }
+    },
+
+    "ScheduledEntry": {
+      "type": "object",
+      "description": "A future event scheduled on the timeline.",
+      "required": ["entry_id", "schedule_type"],
+      "additionalProperties": false,
+      "properties": {
+        "entry_id":     { "$ref": "#/$defs/UUID" },
+        "event_id":     { "$ref": "#/$defs/UUID", "description": "Event to fire (references event.schema.json)." },
+        "schedule_type":{
+          "type": "string",
+          "enum": ["immediate", "delayed", "at_sim_time", "at_utc",
+                   "periodic", "conditional", "triggered",
+                   "randomized", "ai_generated", "custom"]
+        },
+        "fire_sim_time_s":    { "type": "number" },
+        "fire_utc":           { "$ref": "#/$defs/Timestamp" },
+        "delay_s":            { "type": "number" },
+        "period_s":           { "type": "number", "description": "Repeat interval for periodic events (s)." },
+        "repeat_count":       { "type": "integer", "minimum": -1, "description": "-1 = infinite." },
+        "condition_expr":     { "type": "string", "description": "Boolean condition expression string." },
+        "trigger_event_id":   { "$ref": "#/$defs/UUID" },
+        "jitter_s":           { "type": "number", "description": "Random time jitter ±jitter_s (s)." },
+        "priority":           { "type": "integer", "minimum": 0 },
+        "enabled":            { "type": "boolean", "default": true }
+      }
+    },
+
+    "SyncConfig": {
+      "type": "object",
+      "description": "Clock synchronization configuration for distributed simulation.",
+      "additionalProperties": false,
+      "properties": {
+        "clock_source": {
+          "type": "string",
+          "enum": ["internal", "ntp", "ptp_ieee1588", "gps", "hla_rpr", "dis", "custom"],
+          "default": "internal"
+        },
+        "master_node_id":      { "type": "string" },
+        "sync_method": {
+          "type": "string",
+          "enum": ["lock_step", "optimistic", "conservative", "time_warp", "none"],
+          "default": "lock_step"
+        },
+        "sync_interval_s":     { "type": "number", "default": 0.1 },
+        "max_clock_drift_s":   { "type": "number", "description": "Allowed clock drift before re-sync (s)." },
+        "max_latency_s":       { "type": "number" },
+        "lookahead_s":         { "type": "number", "description": "Conservative synchronization lookahead (s)." },
+        "participant_nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["node_id"],
+            "additionalProperties": false,
+            "properties": {
+              "node_id":       { "type": "string" },
+              "role":          { "type": "string", "enum": ["master", "slave", "peer"] },
+              "latency_ms":    { "type": "number" },
+              "drift_s":       { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+
+    "PlaybackControl": {
+      "type": "object",
+      "description": "Current playback state and control parameters.",
+      "additionalProperties": false,
+      "properties": {
+        "playback_state": {
+          "type": "string",
+          "enum": ["idle", "playing", "paused", "stopped", "rewinding", "fast_forwarding", "stepping"],
+          "default": "idle"
+        },
+        "playback_speed": { "type": "number", "default": 1.0, "description": "Multiplier vs real time (1.0 = real-time)." },
+        "loop":           { "type": "boolean", "default": false },
+        "loop_interval":  { "$ref": "#/$defs/TimeInterval" },
+        "current_sim_time_s": { "type": "number" },
+        "step_size_s":    { "type": "number", "description": "Step size for frame-step mode (s)." },
+        "reverse_enabled":{ "type": "boolean", "default": false },
+        "bookmark_sim_times_s": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Named playback bookmark positions (s)."
+        }
+      }
+    },
+
+    "UpdateRates": {
+      "type": "object",
+      "description": "Nominal subsystem update frequencies (Hz).",
+      "additionalProperties": false,
+      "properties": {
+        "physics_hz":      { "type": "number", "default": 100 },
+        "ai_hz":           { "type": "number", "default": 10  },
+        "sensor_hz":       { "type": "number", "default": 10  },
+        "render_hz":       { "type": "number", "default": 30  },
+        "audio_hz":        { "type": "number", "default": 60  },
+        "network_hz":      { "type": "number", "default": 20  },
+        "weather_hz":      { "type": "number", "default": 1   },
+        "terrain_hz":      { "type": "number", "default": 0.1 },
+        "mission_hz":      { "type": "number", "default": 5   },
+        "logistics_hz":    { "type": "number", "default": 1   }
+      }
+    },
+
+    "FrameInfo": {
+      "type": "object",
+      "description": "Per-frame simulation statistics.",
+      "additionalProperties": false,
+      "properties": {
+        "frame_number":      { "type": "integer", "minimum": 0 },
+        "tick_number":       { "type": "integer", "minimum": 0 },
+        "sim_time_s":        { "type": "number" },
+        "delta_time_s":      { "type": "number", "description": "Time step for this frame (s)." },
+        "wall_time_ms":      { "type": "number", "description": "Real-world wall time for this frame (ms)." },
+        "physics_iter":      { "type": "integer" },
+        "render_iter":       { "type": "integer" },
+        "event_count":       { "type": "integer" },
+        "entity_count":      { "type": "integer" }
+      }
+    },
+
+    "EntityTimeline": {
+      "type": "object",
+      "description": "Per-entity temporal lifecycle record.",
+      "required": ["entity_id"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id":         { "$ref": "#/$defs/UUID" },
+        "spawn_sim_time_s":  { "type": "number" },
+        "destroy_sim_time_s":{ "type": "number" },
+        "active_intervals": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/TimeInterval" },
+          "description": "Intervals during which the entity was active."
+        },
+        "state_event_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "Ordered event IDs that changed this entity's state."
+        },
+        "keyframe_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" }
+        },
+        "mission_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" }
+        }
+      }
+    },
+
+    "CameraTrack": {
+      "type": "object",
+      "description": "Camera motion and cut timeline.",
+      "required": ["camera_id"],
+      "additionalProperties": false,
+      "properties": {
+        "camera_id":   { "$ref": "#/$defs/UUID" },
+        "name":        { "type": "string" },
+        "cuts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sim_time_s", "camera_mode"],
+            "additionalProperties": false,
+            "properties": {
+              "sim_time_s":    { "type": "number" },
+              "camera_mode": {
+                "type": "string",
+                "enum": ["fixed", "follow_entity", "orbit", "free", "cinematic",
+                         "first_person", "bird_eye", "tactical_map", "custom"]
+              },
+              "follow_entity_id": { "$ref": "#/$defs/UUID" },
+              "position": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "x": { "type": "number" },
+                  "y": { "type": "number" },
+                  "z": { "type": "number" }
+                }
+              },
+              "fov_deg":     { "type": "number" },
+              "shake":       { "type": "boolean", "default": false },
+              "duration_s":  { "type": "number" },
+              "transition":  { "type": "string", "enum": ["cut", "blend", "fade", "none"], "default": "cut" }
+            }
+          }
+        }
+      }
+    },
+
+    "AudioEvent": {
+      "type": "object",
+      "description": "Scheduled audio event on the audio track.",
+      "required": ["audio_id", "sim_time_s", "audio_type"],
+      "additionalProperties": false,
+      "properties": {
+        "audio_id":    { "$ref": "#/$defs/UUID" },
+        "sim_time_s":  { "type": "number" },
+        "audio_type": {
+          "type": "string",
+          "enum": ["explosion", "gunfire", "engine", "speech", "alert", "ambient",
+                   "music", "sonar_ping", "radar_beep", "notification", "custom"]
+        },
+        "asset_ref":   { "type": "string", "description": "Path or URI to audio asset." },
+        "position": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "z": { "type": "number" }
+          }
+        },
+        "spatial":     { "type": "boolean", "default": true },
+        "volume":      { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0 },
+        "duration_s":  { "type": "number" },
+        "loop":        { "type": "boolean", "default": false },
+        "source_entity_id": { "$ref": "#/$defs/UUID" }
+      }
+    },
+
+    "PerformanceStats": {
+      "type": "object",
+      "description": "Simulation performance telemetry.",
+      "additionalProperties": false,
+      "properties": {
+        "total_event_count":    { "type": "integer" },
+        "total_frame_count":    { "type": "integer" },
+        "total_tick_count":     { "type": "integer" },
+        "sim_duration_s":       { "type": "number" },
+        "wall_clock_duration_s":{ "type": "number" },
+        "avg_fps":              { "type": "number" },
+        "avg_physics_ms":       { "type": "number" },
+        "avg_ai_ms":            { "type": "number" },
+        "avg_render_ms":        { "type": "number" },
+        "avg_sensor_ms":        { "type": "number" },
+        "peak_memory_mb":       { "type": "number" },
+        "avg_cpu_pct":          { "type": "number", "minimum": 0, "maximum": 100 },
+        "avg_gpu_pct":          { "type": "number", "minimum": 0, "maximum": 100 },
+        "network_bandwidth_mbps":{ "type": "number" },
+        "critical_event_count": { "type": "integer" },
+        "checkpoint_count":     { "type": "integer" }
+      }
+    },
+
+    "LoggingConfig": {
+      "type": "object",
+      "description": "Timeline logging and audit configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "log_level": {
+          "type": "string",
+          "enum": ["debug", "info", "warning", "error", "critical"],
+          "default": "info"
+        },
+        "audit_trail_enabled":  { "type": "boolean", "default": true },
+        "replay_recording":     { "type": "boolean", "default": true },
+        "output_path":          { "type": "string" },
+        "max_log_size_mb":      { "type": "number" },
+        "rotate_logs":          { "type": "boolean", "default": true },
+        "log_entries": {
+          "type": "array",
+          "description": "Inline log entries for small timelines or debug purposes.",
+          "items": {
+            "type": "object",
+            "required": ["level", "sim_time_s", "message"],
+            "additionalProperties": false,
+            "properties": {
+              "level":       { "type": "string", "enum": ["debug", "info", "warning", "error", "critical"] },
+              "sim_time_s":  { "type": "number" },
+              "utc":         { "$ref": "#/$defs/Timestamp" },
+              "message":     { "type": "string" },
+              "error_code":  { "type": "string" },
+              "source":      { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "OmniverseIntegration": {
+      "type": "object",
+      "description": "NVIDIA Omniverse / OpenUSD integration bindings.",
+      "additionalProperties": false,
+      "properties": {
+        "usd_stage_ref":     { "type": "string", "description": "USD stage file path or Nucleus URI." },
+        "usd_layer_refs":    { "type": "array", "items": { "type": "string" } },
+        "prim_path_prefix":  { "type": "string", "description": "USD prim path root for timeline entities." },
+        "animation_tracks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["prim_path", "attribute"],
+            "additionalProperties": false,
+            "properties": {
+              "prim_path":  { "type": "string" },
+              "attribute":  { "type": "string" },
+              "timecodes":  { "type": "array", "items": { "type": "number" } }
+            }
+          }
+        },
+        "render_products":   { "type": "array", "items": { "type": "string" } },
+        "camera_prim_paths": { "type": "array", "items": { "type": "string" } },
+        "fps":               { "type": "number", "default": 30 },
+        "time_codes_per_second": { "type": "number", "default": 24 }
+      }
+    },
+
+    "CesiumIntegration": {
+      "type": "object",
+      "description": "Cesium geospatial integration bindings.",
+      "additionalProperties": false,
+      "properties": {
+        "ion_asset_ids":      { "type": "array", "items": { "type": "integer" } },
+        "tileset_urls":       { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "imagery_layer_urls": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "terrain_asset_id":   { "type": "integer" },
+        "geospatial_origin": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "latitude":  { "type": "number" },
+            "longitude": { "type": "number" },
+            "altitude":  { "type": "number" }
+          }
+        },
+        "dynamic_layer_events": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["sim_time_s", "layer_url"],
+            "additionalProperties": false,
+            "properties": {
+              "sim_time_s":  { "type": "number" },
+              "layer_url":   { "type": "string" },
+              "action":      { "type": "string", "enum": ["add", "remove", "update"] }
+            }
+          }
+        }
+      }
+    },
+
+    "AIMetadata": {
+      "type": "object",
+      "description": "AI, ontology, and knowledge-graph metadata for the timeline.",
+      "additionalProperties": false,
+      "properties": {
+        "ontology_class":       { "type": "string" },
+        "ontology_uri":         { "type": "string", "format": "uri" },
+        "knowledge_graph_node": { "type": "string", "format": "uri" },
+        "semantic_tags":        { "type": "array", "items": { "type": "string" } },
+        "mission_tags":         { "type": "array", "items": { "type": "string" } },
+        "prediction_tags":      { "type": "array", "items": { "type": "string" } },
+        "reasoning_tags":       { "type": "array", "items": { "type": "string" } },
+        "nl_summary":           { "type": "string", "description": "LLM-ready natural language summary of the timeline." },
+        "embedding_model":      { "type": "string" },
+        "embedding_vector":     { "type": "array", "items": { "type": "number" } }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "id": {
+      "$ref": "#/$defs/UUID",
+      "description": "Globally unique timeline identifier."
+    },
+
+    "timeline_id": {
+      "type": "string",
+      "description": "Human-readable timeline identifier (e.g. TL-OP-IRON-SWORD-001)."
+    },
+
+    "name": {
+      "type": "string",
+      "description": "Display name."
+    },
+
+    "description": {
+      "type": "string"
+    },
+
+    "version":        { "$ref": "#/$defs/VersionString" },
+
+    "ontology_uri":   { "type": "string", "format": "uri" },
+
+    "knowledge_graph_uri": { "type": "string", "format": "uri" },
+
+    "timeline_type": {
+      "type": "string",
+      "description": "Primary purpose of this timeline.",
+      "enum": [
+        "historical", "real_time", "simulation", "mission",
+        "training", "rl_rollout", "predicted", "recorded",
+        "replay", "branch", "checkpoint_restore",
+        "scenario", "wargame", "synthetic_data", "custom"
+      ]
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["created", "initialized", "loading", "ready",
+               "running", "paused", "stopped", "completed",
+               "failed", "archived", "restarting"],
+      "default": "created"
+    },
+
+    "classification": {
+      "type": "string",
+      "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret", "custom"],
+      "default": "unclassified"
+    },
+
+    "time_reference": {
+      "type": "object",
+      "description": "Global temporal reference frame for this timeline.",
+      "required": ["start_utc"],
+      "additionalProperties": false,
+      "properties": {
+        "start_utc":      { "$ref": "#/$defs/Timestamp", "description": "Simulation epoch in UTC." },
+        "end_utc":        { "$ref": "#/$defs/Timestamp" },
+        "start_sim_time_s": { "type": "number", "default": 0 },
+        "end_sim_time_s":   { "type": "number" },
+        "duration_s":       { "type": "number" },
+        "time_scale":       { "type": "number", "default": 1.0, "description": "Sim time / real time ratio." },
+        "time_step_s":      { "type": "number", "description": "Fixed physics/master step (s). Null = variable." },
+        "timezone":         { "type": "string", "default": "UTC" },
+        "calendar_system":  { "type": "string", "enum": ["gregorian", "julian", "custom"], "default": "gregorian" }
+      }
+    },
+
+    "context": {
+      "type": "object",
+      "description": "Cross-schema foreign keys.",
+      "additionalProperties": false,
+      "properties": {
+        "world_id":     { "$ref": "#/$defs/UUID" },
+        "scenario_id":  { "$ref": "#/$defs/UUID" },
+        "simulation_id":{ "$ref": "#/$defs/UUID" },
+        "mission_id":   { "$ref": "#/$defs/UUID" },
+        "org_id":       { "$ref": "#/$defs/UUID" },
+        "random_seed":  { "type": "integer" }
+      }
+    },
+
+    "update_rates":  { "$ref": "#/$defs/UpdateRates" },
+
+    "playback":      { "$ref": "#/$defs/PlaybackControl" },
+
+    "sync":          { "$ref": "#/$defs/SyncConfig" },
+
+    "tracks": {
+      "type": "array",
+      "description": "Synchronized subsystem tracks.",
+      "items": { "$ref": "#/$defs/Track" }
+    },
+
+    "events": {
+      "type": "array",
+      "description": "Master ordered event ledger. Sorted ascending by sim_time_s.",
+      "items": { "$ref": "#/$defs/EventEntry" }
+    },
+
+    "scheduled": {
+      "type": "array",
+      "description": "Future events in the scheduling queue.",
+      "items": { "$ref": "#/$defs/ScheduledEntry" }
+    },
+
+    "keyframes": {
+      "type": "array",
+      "description": "Entity keyframes for interpolation and replay.",
+      "items": { "$ref": "#/$defs/Keyframe" }
+    },
+
+    "checkpoints": {
+      "type": "array",
+      "description": "World-state checkpoints for rollback and branching.",
+      "items": { "$ref": "#/$defs/Checkpoint" }
+    },
+
+    "branches": {
+      "type": "array",
+      "description": "Branched (forked) timelines derived from this one.",
+      "items": { "$ref": "#/$defs/Branch" }
+    },
+
+    "parent_timeline_id": {
+      "$ref": "#/$defs/UUID",
+      "description": "Parent timeline UUID if this is a branch."
+    },
+
+    "fork_sim_time_s": {
+      "type": "number",
+      "description": "Simulation time at which this timeline forked from its parent (s)."
+    },
+
+    "entity_timelines": {
+      "type": "array",
+      "description": "Per-entity temporal lifecycle records.",
+      "items": { "$ref": "#/$defs/EntityTimeline" }
+    },
+
+    "camera_tracks": {
+      "type": "array",
+      "description": "Camera motion timeline for visualization.",
+      "items": { "$ref": "#/$defs/CameraTrack" }
+    },
+
+    "audio_events": {
+      "type": "array",
+      "description": "Scheduled audio events.",
+      "items": { "$ref": "#/$defs/AudioEvent" }
+    },
+
+    "frame_log": {
+      "type": "array",
+      "description": "Per-frame simulation statistics (sparse or full).",
+      "items": { "$ref": "#/$defs/FrameInfo" }
+    },
+
+    "performance": { "$ref": "#/$defs/PerformanceStats" },
+
+    "logging":     { "$ref": "#/$defs/LoggingConfig" },
+
+    "omniverse":   { "$ref": "#/$defs/OmniverseIntegration" },
+
+    "cesium":      { "$ref": "#/$defs/CesiumIntegration" },
+
+    "ai_metadata": { "$ref": "#/$defs/AIMetadata" },
+
+    "creator":     { "type": "string" },
+
+    "created_at":  { "$ref": "#/$defs/Timestamp" },
+
+    "modified_at": { "$ref": "#/$defs/Timestamp" },
+
+    "tags":        { "type": "array", "items": { "type": "string" } },
+
+    "custom_properties": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Domain-specific extension fields."
+    }
+
+  },
+
+  "dependentRequired": {
+    "branches":          ["id"],
+    "fork_sim_time_s":   ["parent_timeline_id"],
+    "parent_timeline_id":["fork_sim_time_s"]
+  },
+
+  "examples": [
+    {
+      "id": "c1d2e3f4-0001-0001-0001-000000000001",
+      "timeline_id": "TL-OP-DAWN-PATROL-001",
+      "name": "Operation Dawn Patrol — Main Timeline",
+      "description": "Primary simulation timeline for a combined-arms brigade exercise.",
+      "version": "1.0.0",
+      "timeline_type": "simulation",
+      "status": "completed",
+      "classification": "unclassified",
+      "time_reference": {
+        "start_utc": "2025-06-01T04:00:00Z",
+        "end_utc":   "2025-06-01T08:00:00Z",
+        "duration_s": 14400,
+        "time_scale": 1.0,
+        "time_step_s": 0.01
+      },
+      "context": {
+        "world_id":      "a0b0c0d0-0000-0001-0001-000000000001",
+        "scenario_id":   "a0b0c0d0-0000-0002-0001-000000000001",
+        "simulation_id": "a0b0c0d0-0000-0003-0001-000000000001",
+        "random_seed": 42
+      },
+      "update_rates": {
+        "physics_hz": 100,
+        "ai_hz": 10,
+        "sensor_hz": 10,
+        "render_hz": 30,
+        "weather_hz": 1
+      },
+      "playback": {
+        "playback_state": "idle",
+        "playback_speed": 1.0,
+        "loop": false
+      },
+      "performance": {
+        "total_event_count": 48200,
+        "total_frame_count": 432000,
+        "sim_duration_s": 14400,
+        "avg_fps": 30.0,
+        "critical_event_count": 143,
+        "checkpoint_count": 5
+      },
+      "tags": ["exercise", "combined_arms", "brigade", "dawn", "unclassified"]
+    },
+    {
+      "id": "c1d2e3f4-0002-0001-0001-000000000002",
+      "timeline_id": "TL-OP-DAWN-PATROL-001-BRANCH-REDFORCE",
+      "name": "Red Force What-If Branch",
+      "timeline_type": "branch",
+      "status": "archived",
+      "classification": "unclassified",
+      "time_reference": {
+        "start_utc": "2025-06-01T06:30:00Z",
+        "duration_s": 5400,
+        "time_scale": 4.0
+      },
+      "parent_timeline_id": "c1d2e3f4-0001-0001-0001-000000000001",
+      "fork_sim_time_s": 9000,
+      "branches": [
+        {
+          "branch_id": "d1e2f3a4-0001-0001-0001-000000000001",
+          "name": "Red Force Flanking Manoeuvre",
+          "branch_reason": "what_if",
+          "parent_timeline_id": "c1d2e3f4-0001-0001-0001-000000000001",
+          "fork_sim_time_s": 9000,
+          "status": "active"
+        }
+      ],
+      "tags": ["what_if", "red_force", "branch"]
+    }
+  ]
+}

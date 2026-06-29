@@ -1,0 +1,1871 @@
+{
+  "@context": {
+    "pwmo": "https://physworld.ai/ontology/radar#",
+    "owl":  "http://www.w3.org/2002/07/owl#",
+    "rdf":  "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd":  "http://www.w3.org/2001/XMLSchema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@id": "pwmo:RadarRelationshipOntology",
+  "@type": "owl:Ontology",
+  "rdfs:label": "PhysWorldLM Radar Relationship Ontology (PWMO-REL)",
+  "rdfs:comment": "Canonical relationship graph defining every semantic, structural, functional, physical, operational, C2, electromagnetic, EW, maintenance, logistics, AI, and temporal relationship between all radar entities in PhysWorldLM.",
+  "owl:versionInfo": "1.0.0",
+  "pwmo:status": "ACTIVE",
+  "pwmo:classification": "UNCLASSIFIED // OPEN SOURCE AGGREGATION",
+  "pwmo:dependsOn": [
+    "pwmo:upper_taxonomy.json",
+    "pwmo:component_ontology.json",
+    "pwmo:rf_signal_processing.json"
+  ],
+
+  "RelationshipCategories": {
+
+    "1_Structural": {
+      "@id": "pwmo:StructuralRelationships",
+      "rdfs:label": "Structural Relationships",
+      "skos:definition": "Relationships describing physical composition, containment, mounting, and assembly of radar entities.",
+
+      "relationships": {
+
+        "hasComponent": {
+          "@id": "pwmo:rel:hasComponent",
+          "rdfs:label": "hasComponent",
+          "skos:definition": "Asserts that the subject entity physically or logically contains the object entity as a constituent component.",
+          "domain": ["pwmo:Radar", "pwmo:RadarSubsystem"],
+          "range": ["pwmo:RadarComponent"],
+          "inverseOf": "pwmo:rel:componentOf",
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "transitivity": true,
+          "constraints": ["Object must be typed as pwmo:RadarComponent or subclass"],
+          "examples": [
+            "pwmo:AESARadar pwmo:rel:hasComponent pwmo:AESA_Array",
+            "pwmo:AESARadar pwmo:rel:hasComponent pwmo:SignalProcessor",
+            "pwmo:AESARadar pwmo:rel:hasComponent pwmo:FrequencySynthesizer"
+          ],
+          "validationRules": ["No radar may assert hasComponent of itself (anti-reflexive)"]
+        },
+
+        "componentOf": {
+          "@id": "pwmo:rel:componentOf",
+          "rdfs:label": "componentOf",
+          "skos:definition": "Inverse of hasComponent. The subject is a constituent part of the object system.",
+          "domain": ["pwmo:RadarComponent"],
+          "range": ["pwmo:Radar", "pwmo:RadarSubsystem"],
+          "inverseOf": "pwmo:rel:hasComponent",
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "partOf": {
+          "@id": "pwmo:rel:partOf",
+          "rdfs:label": "partOf",
+          "skos:definition": "Weaker mereological relationship; the subject is a physical part of the object but may not be a replaceable component (e.g., a waveguide slot is part of a slotted array).",
+          "domain": ["pwmo:RadarEntity"],
+          "range": ["pwmo:RadarEntity"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "transitivity": true
+        },
+
+        "contains": {
+          "@id": "pwmo:rel:contains",
+          "rdfs:label": "contains",
+          "skos:definition": "Spatial containment; the subject physically encloses the object.",
+          "domain": ["pwmo:RadarEnclosure", "pwmo:RadarChassis", "pwmo:MissionComputer"],
+          "range": ["pwmo:RadarComponent"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "assembledFrom": {
+          "@id": "pwmo:rel:assembledFrom",
+          "rdfs:label": "assembledFrom",
+          "skos:definition": "Manufacturing assembly relationship; the subject system is assembled from the enumerated object parts.",
+          "domain": ["pwmo:Radar", "pwmo:AESA_Array"],
+          "range": ["pwmo:TR_Module", "pwmo:RadarComponent"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "examples": [
+            "pwmo:AN_APG-77 pwmo:rel:assembledFrom pwmo:TR_Module_GaN (x2200)"
+          ]
+        },
+
+        "mountedOn": {
+          "@id": "pwmo:rel:mountedOn",
+          "rdfs:label": "mountedOn",
+          "skos:definition": "Physical mounting relationship; the subject is mechanically mounted on the object structure.",
+          "domain": ["pwmo:Antenna", "pwmo:RotaryJoint", "pwmo:CoolingSystem"],
+          "range": ["pwmo:Platform", "pwmo:RadarPedestal", "pwmo:AircraftNose"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "examples": [
+            "pwmo:AESA_Array pwmo:rel:mountedOn pwmo:FighterNoseCone",
+            "pwmo:ParabolicReflector pwmo:rel:mountedOn pwmo:RotatingPedestal"
+          ]
+        },
+
+        "integratedInto": {
+          "@id": "pwmo:rel:integratedInto",
+          "rdfs:label": "integratedInto",
+          "skos:definition": "Denotes deep functional and physical integration into the host structure, beyond simple mounting — the entity and host share structural members, cooling, or power planes.",
+          "domain": ["pwmo:ConformalArray", "pwmo:AESA_Array"],
+          "range": ["pwmo:AircraftFuselage", "pwmo:ShipSuperstructure"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "housedIn": {
+          "@id": "pwmo:rel:housedIn",
+          "rdfs:label": "housedIn",
+          "skos:definition": "The subject component is physically located inside the object shelter, radome, or chassis.",
+          "domain": ["pwmo:RadarComponent"],
+          "range": ["pwmo:Radome", "pwmo:ShelterUnit", "pwmo:EquipmentRack"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "connectedTo": {
+          "@id": "pwmo:rel:connectedTo",
+          "rdfs:label": "connectedTo",
+          "skos:definition": "General bidirectional physical or electrical connection. Subject and object are linked via cable, waveguide, fiber, or bus.",
+          "domain": ["pwmo:RadarComponent"],
+          "range": ["pwmo:RadarComponent"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional",
+          "connectionTypes": ["RF Waveguide", "Coaxial Cable", "Fiber Optic", "VME/VPX Backplane", "Ethernet", "Serial Bus"]
+        },
+
+        "poweredBy": {
+          "@id": "pwmo:rel:poweredBy",
+          "rdfs:label": "poweredBy",
+          "skos:definition": "The subject receives electrical power from the object power supply or generator.",
+          "domain": ["pwmo:RadarComponent", "pwmo:Radar"],
+          "range": ["pwmo:PowerSupply", "pwmo:Generator", "pwmo:VehiclePowerBus"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "physicalQuantity": "electrical_power_kW"
+        },
+
+        "cooledBy": {
+          "@id": "pwmo:rel:cooledBy",
+          "rdfs:label": "cooledBy",
+          "skos:definition": "The subject component dissipates waste heat through the object cooling system.",
+          "domain": ["pwmo:TR_Module", "pwmo:Transmitter", "pwmo:SignalProcessor"],
+          "range": ["pwmo:CoolingSystem"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "physicalQuantity": "heat_flux_W_per_cm2"
+        },
+
+        "protectedBy": {
+          "@id": "pwmo:rel:protectedBy",
+          "rdfs:label": "protectedBy",
+          "skos:definition": "The subject entity is physically or electronically protected by the object (radome, limiter, armor, ECCM module).",
+          "domain": ["pwmo:Antenna", "pwmo:LNA", "pwmo:Receiver"],
+          "range": ["pwmo:Radome", "pwmo:Limiter", "pwmo:ECCMModule"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "stabilizedBy": {
+          "@id": "pwmo:rel:stabilizedBy",
+          "rdfs:label": "stabilizedBy",
+          "skos:definition": "The subject antenna or sensor is attitude-stabilized by the object stabilization platform.",
+          "domain": ["pwmo:Antenna", "pwmo:AirborneRadar", "pwmo:NavalRadar"],
+          "range": ["pwmo:StabilizationPlatform", "pwmo:INS_GPS"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "replacedBy": {
+          "@id": "pwmo:rel:replacedBy",
+          "rdfs:label": "replacedBy",
+          "skos:definition": "Maintenance relationship; the subject LRU is replaced by the object spare unit during field maintenance.",
+          "domain": ["pwmo:RadarComponent"],
+          "range": ["pwmo:SparePart", "pwmo:LineReplaceableUnit"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "temporalContext": "maintenance_event"
+        },
+
+        "interfacesVia": {
+          "@id": "pwmo:rel:interfacesVia",
+          "rdfs:label": "interfacesVia",
+          "skos:definition": "The subject communicates with the object through the specified interface standard.",
+          "domain": ["pwmo:RadarComponent"],
+          "range": ["pwmo:RadarComponent"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional",
+          "interfaceTypes": ["MIL-STD-1553", "ARINC 429", "Ethernet GigE", "VPX VITA 65", "VME", "RS-422", "Fiber Channel"]
+        }
+      }
+    },
+
+    "2_RF_Electromagnetic": {
+      "@id": "pwmo:RFElectromagneticRelationships",
+      "rdfs:label": "RF and Electromagnetic Relationships",
+      "skos:definition": "Relationships describing RF signal flow, electromagnetic propagation, and wave interactions.",
+
+      "relationships": {
+
+        "generatesSignal": {
+          "@id": "pwmo:rel:generatesSignal",
+          "rdfs:label": "generatesSignal",
+          "skos:definition": "The subject device generates the RF or IF signal consumed by the object device.",
+          "domain": ["pwmo:FrequencySynthesizer", "pwmo:Magnetron", "pwmo:Klystron", "pwmo:TWT"],
+          "range": ["pwmo:Transmitter", "pwmo:Receiver", "pwmo:Mixer"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": "signal_power_dBm"
+        },
+
+        "transmitsTo": {
+          "@id": "pwmo:rel:transmitsTo",
+          "rdfs:label": "transmitsTo",
+          "skos:definition": "The subject transmitter or antenna emits RF energy toward the object target or region.",
+          "domain": ["pwmo:Transmitter", "pwmo:Antenna"],
+          "range": ["pwmo:Target", "pwmo:AirspaceVolume", "pwmo:TerrainPatch"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": "EIRP_dBW"
+        },
+
+        "receives": {
+          "@id": "pwmo:rel:receives",
+          "rdfs:label": "receives",
+          "skos:definition": "The subject antenna or receiver captures RF energy from the object source or reflected target.",
+          "domain": ["pwmo:Antenna", "pwmo:Receiver", "pwmo:LNA"],
+          "range": ["pwmo:Target", "pwmo:Clutter", "pwmo:JammingSource"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": "received_power_dBm"
+        },
+
+        "amplifies": {
+          "@id": "pwmo:rel:amplifies",
+          "rdfs:label": "amplifies",
+          "skos:definition": "The subject amplifier increases the power of the signal from the object.",
+          "domain": ["pwmo:LNA", "pwmo:SSPA", "pwmo:TWT", "pwmo:Klystron"],
+          "range": ["pwmo:RFSignal"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "physicalQuantity": "gain_dB"
+        },
+
+        "filters": {
+          "@id": "pwmo:rel:filters",
+          "rdfs:label": "filters",
+          "skos:definition": "The subject filter passes or rejects frequency components from the signal produced by the object.",
+          "domain": ["pwmo:BandpassFilter", "pwmo:LowPassFilter", "pwmo:IFFilter"],
+          "range": ["pwmo:RFSignal", "pwmo:IFSignal"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "physicalQuantity": "bandwidth_MHz"
+        },
+
+        "mixes": {
+          "@id": "pwmo:rel:mixes",
+          "rdfs:label": "mixes",
+          "skos:definition": "The subject mixer multiplies the RF signal with a local oscillator signal to produce an IF signal.",
+          "domain": ["pwmo:Mixer"],
+          "range": ["pwmo:RFSignal", "pwmo:LocalOscillator"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "outputSignal": "pwmo:IFSignal"
+        },
+
+        "digitizes": {
+          "@id": "pwmo:rel:digitizes",
+          "rdfs:label": "digitizes",
+          "skos:definition": "The ADC converts the analog signal from the object into digital samples.",
+          "domain": ["pwmo:ADC"],
+          "range": ["pwmo:AnalogSignal", "pwmo:IFSignal", "pwmo:BasebandSignal"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "physicalQuantity": "sampling_rate_MHz"
+        },
+
+        "modulates": {
+          "@id": "pwmo:rel:modulates",
+          "rdfs:label": "modulates",
+          "skos:definition": "The waveform generator impresses modulation onto the carrier signal (LFM, FMCW, BPSK, OFDM, etc.).",
+          "domain": ["pwmo:FrequencySynthesizer", "pwmo:WaveformGenerator"],
+          "range": ["pwmo:RFCarrier"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "modulationTypes": ["LFM", "FMCW", "NLFM", "BPSK", "QPSK", "OFDM", "SteppedFrequency", "PseudoRandom"]
+        },
+
+        "demodulates": {
+          "@id": "pwmo:rel:demodulates",
+          "rdfs:label": "demodulates",
+          "skos:definition": "The receiver or digital down-converter extracts the baseband information from the modulated signal.",
+          "domain": ["pwmo:Receiver", "pwmo:DigitalDownConverter"],
+          "range": ["pwmo:ModulatedRFSignal"],
+          "cardinality": "one-to-one",
+          "directionality": "directed"
+        },
+
+        "propagatesThrough": {
+          "@id": "pwmo:rel:propagatesThrough",
+          "rdfs:label": "propagatesThrough",
+          "skos:definition": "The RF signal travels through the specified propagation medium.",
+          "domain": ["pwmo:RFSignal"],
+          "range": ["pwmo:Atmosphere", "pwmo:Rain", "pwmo:Fog", "pwmo:IonosphericLayer", "pwmo:Vacuum"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalEffect": "Propagation loss, refraction, attenuation"
+        },
+
+        "attenuatedBy": {
+          "@id": "pwmo:rel:attenuatedBy",
+          "rdfs:label": "attenuatedBy",
+          "skos:definition": "The RF signal loses power when passing through or reflecting from the specified medium or material.",
+          "domain": ["pwmo:RFSignal"],
+          "range": ["pwmo:Rain", "pwmo:Fog", "pwmo:RadarAbsorbingMaterial", "pwmo:Atmosphere", "pwmo:Radome"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": "attenuation_dB_per_km"
+        },
+
+        "reflectedBy": {
+          "@id": "pwmo:rel:reflectedBy",
+          "rdfs:label": "reflectedBy",
+          "skos:definition": "The incident RF signal is reflected by the target surface back toward the radar.",
+          "domain": ["pwmo:RFSignal"],
+          "range": ["pwmo:Target", "pwmo:GroundClutter", "pwmo:SeaClutter", "pwmo:Chaff"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": "radar_cross_section_dBsm"
+        },
+
+        "scatteredBy": {
+          "@id": "pwmo:rel:scatteredBy",
+          "rdfs:label": "scatteredBy",
+          "skos:definition": "The RF signal is scattered diffusely by the object (volume clutter, rain, chaff cloud, rough surface).",
+          "domain": ["pwmo:RFSignal"],
+          "range": ["pwmo:RainClutter", "pwmo:ChaffCloud", "pwmo:VolumeClutter", "pwmo:TerrainClutter"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "absorbedBy": {
+          "@id": "pwmo:rel:absorbedBy",
+          "rdfs:label": "absorbedBy",
+          "skos:definition": "RF energy is absorbed by the object (RAM coating, absorbing material, ionosphere).",
+          "domain": ["pwmo:RFSignal"],
+          "range": ["pwmo:RadarAbsorbingMaterial", "pwmo:AnechoicCoating", "pwmo:IonosphereAbsorption"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "generatesBeam": {
+          "@id": "pwmo:rel:generatesBeam",
+          "rdfs:label": "generatesBeam",
+          "skos:definition": "The antenna forms and directs a focused electromagnetic beam with specified parameters.",
+          "domain": ["pwmo:Antenna", "pwmo:AESA_Array", "pwmo:PESA_Array"],
+          "range": ["pwmo:RadarBeam"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "beamParameters": ["azimuth_deg", "elevation_deg", "beamwidth_3dB_deg", "gain_dBi", "sidelobe_level_dB"]
+        },
+
+        "steeresBeamTo": {
+          "@id": "pwmo:rel:steersBeamTo",
+          "rdfs:label": "steersBeamTo",
+          "skos:definition": "The beamforming network electronically steers the radiation pattern to the specified direction.",
+          "domain": ["pwmo:AESA_Array", "pwmo:PESA_Array", "pwmo:DigitalBeamformer"],
+          "range": ["pwmo:AzimuthElevationPoint", "pwmo:Target", "pwmo:TrackFile"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "steeringTime_us": [1, 50]
+        },
+
+        "illuminates": {
+          "@id": "pwmo:rel:illuminates",
+          "rdfs:label": "illuminates",
+          "skos:definition": "The fire control radar continuously illuminates the target with RF energy to support semi-active missile homing.",
+          "domain": ["pwmo:FireControlRadar", "pwmo:IlluminatorRadar"],
+          "range": ["pwmo:Target", "pwmo:Aircraft", "pwmo:Missile", "pwmo:Ship"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "operationalContext": "semi-active terminal guidance phase"
+        },
+
+        "isolatesRFPath": {
+          "@id": "pwmo:rel:isolatesRFPath",
+          "rdfs:label": "isolatesRFPath",
+          "skos:definition": "The subject device (circulator, duplexer, T/R switch) provides RF isolation between TX and RX paths.",
+          "domain": ["pwmo:Circulator", "pwmo:Duplexer", "pwmo:TR_Switch"],
+          "range": ["pwmo:Transmitter", "pwmo:Receiver"],
+          "cardinality": "one-to-many",
+          "physicalQuantity": "isolation_dB"
+        }
+      }
+    },
+
+    "3_SignalProcessing": {
+      "@id": "pwmo:SignalProcessingRelationships",
+      "rdfs:label": "Signal Processing Relationships",
+      "skos:definition": "Relationships describing the signal processing chain from raw ADC data to extracted target reports.",
+
+      "relationships": {
+
+        "processesSignal": {
+          "@id": "pwmo:rel:processesSignal",
+          "rdfs:label": "processesSignal",
+          "skos:definition": "The subject processing block operates on the digital signal received from the object.",
+          "domain": ["pwmo:SignalProcessor", "pwmo:FPGA", "pwmo:DSP", "pwmo:GPU"],
+          "range": ["pwmo:DigitalSignal", "pwmo:ADCSamples", "pwmo:CompressedPulse"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "performsPulseCompression": {
+          "@id": "pwmo:rel:performsPulseCompression",
+          "rdfs:label": "performsPulseCompression",
+          "skos:definition": "The matched filter or correlation block compresses the received wideband waveform to achieve range resolution.",
+          "domain": ["pwmo:MatchedFilter", "pwmo:SignalProcessor"],
+          "range": ["pwmo:ReceivedEcho"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "outputProduct": "range-compressed pulse profile",
+          "processingGain_dB": "10*log10(time_bandwidth_product)"
+        },
+
+        "performsFFT": {
+          "@id": "pwmo:rel:performsFFT",
+          "rdfs:label": "performsFFT",
+          "skos:definition": "The signal processor applies a Fast Fourier Transform to the pulse-compressed data to extract Doppler frequency bins.",
+          "domain": ["pwmo:DopplerProcessor", "pwmo:SignalProcessor"],
+          "range": ["pwmo:CompressedPulseMatrix"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "outputProduct": "range-Doppler map"
+        },
+
+        "performsCFAR": {
+          "@id": "pwmo:rel:performsCFAR",
+          "rdfs:label": "performsCFAR",
+          "skos:definition": "The CFAR detector adaptively sets detection threshold relative to estimated local noise/clutter level.",
+          "domain": ["pwmo:CFARDetector"],
+          "range": ["pwmo:RangeDopplerMap", "pwmo:DetectionCell"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "CFARTypes": ["CA-CFAR", "OS-CFAR", "GO-CFAR", "SO-CFAR", "VI-CFAR", "2D-CFAR"],
+          "outputProduct": "list of detection reports"
+        },
+
+        "performsMTI": {
+          "@id": "pwmo:rel:performsMTI",
+          "rdfs:label": "performsMTI",
+          "skos:definition": "The MTI filter cancels stationary clutter returns by applying delay-line cancellation, suppressing zero-Doppler returns.",
+          "domain": ["pwmo:MTIFilter", "pwmo:SignalProcessor"],
+          "range": ["pwmo:PulsePair", "pwmo:IQSampleMatrix"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "minimumDetectableVelocity_ms": [0.5, 5.0]
+        },
+
+        "performsMTD": {
+          "@id": "pwmo:rel:performsMTD",
+          "rdfs:label": "performsMTD",
+          "skos:definition": "The MTD processor uses a bank of Doppler filters (FFT-based) to separate moving targets from clutter across all velocity bins simultaneously.",
+          "domain": ["pwmo:MTDProcessor", "pwmo:SignalProcessor"],
+          "range": ["pwmo:IQSampleMatrix"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "performsSTAP": {
+          "@id": "pwmo:rel:performsSTAP",
+          "rdfs:label": "performsSTAP",
+          "skos:definition": "Space-Time Adaptive Processing jointly processes multi-channel (spatial) and multi-pulse (temporal) data to suppress airborne clutter and detect slow ground movers.",
+          "domain": ["pwmo:STAPProcessor"],
+          "range": ["pwmo:MultichannelDataCube"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "applicability": ["pwmo:GMTIRadar", "pwmo:AirborneRadar"],
+          "computationalComplexity": "O(K^3) per range cell, K = space-time degrees of freedom"
+        },
+
+        "performsBeamforming": {
+          "@id": "pwmo:rel:performsBeamforming",
+          "rdfs:label": "performsBeamforming",
+          "skos:definition": "The beamforming unit applies complex weights to antenna element signals to form directional beams.",
+          "domain": ["pwmo:DigitalBeamformer", "pwmo:AnalogBeamformer", "pwmo:FPGA"],
+          "range": ["pwmo:ElementSignalArray"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "beamformingTypes": ["Conventional", "Adaptive (MVDR)", "Capon", "Null-Steering", "Sum-Difference Monopulse"]
+        },
+
+        "performsSARImaging": {
+          "@id": "pwmo:rel:performsSARImaging",
+          "rdfs:label": "performsSARImaging",
+          "skos:definition": "The SAR processor integrates coherent returns across the synthetic aperture to form a 2D image.",
+          "domain": ["pwmo:SARProcessor", "pwmo:SignalProcessor"],
+          "range": ["pwmo:RawSARData"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "focusingAlgorithms": ["Range-Doppler Algorithm (RDA)", "Chirp Scaling Algorithm (CSA)", "Omega-K", "Back Projection", "PFA"],
+          "outputProduct": "complex SAR image (magnitude + phase)"
+        },
+
+        "performsMotionCompensation": {
+          "@id": "pwmo:rel:performsMotionCompensation",
+          "rdfs:label": "performsMotionCompensation",
+          "skos:definition": "The motion compensation module corrects SAR phase history for deviations from ideal straight-line flight using INS/GPS data.",
+          "domain": ["pwmo:MotionCompensationProcessor"],
+          "range": ["pwmo:RawSARData", "pwmo:INS_GPS"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "applicability": ["pwmo:SARRadar", "pwmo:AirborneGMTI"]
+        },
+
+        "estimatesRange": {
+          "@id": "pwmo:rel:estimatesRange",
+          "rdfs:label": "estimatesRange",
+          "skos:definition": "The radar processor measures range to the target using two-way propagation time-of-flight.",
+          "domain": ["pwmo:SignalProcessor", "pwmo:Radar"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": "range_m",
+          "rangeResolution_m": "c / (2 * bandwidth_Hz)"
+        },
+
+        "estimatesVelocity": {
+          "@id": "pwmo:rel:estimatesVelocity",
+          "rdfs:label": "estimatesVelocity",
+          "skos:definition": "The Doppler processor extracts radial velocity of target from measured Doppler frequency shift.",
+          "domain": ["pwmo:DopplerProcessor", "pwmo:SignalProcessor"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": "radial_velocity_ms",
+          "velocityResolution": "PRF / (2 * N_pulses * frequency_GHz / c)"
+        },
+
+        "estimatesAngle": {
+          "@id": "pwmo:rel:estimatesAngle",
+          "rdfs:label": "estimatesAngle",
+          "skos:definition": "The monopulse processor measures target angular position (azimuth and elevation) from sum and difference beam ratios.",
+          "domain": ["pwmo:MonopulseProcessor", "pwmo:SignalProcessor"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": ["azimuth_deg", "elevation_deg"],
+          "angularAccuracy_mrad": [0.1, 2.0]
+        },
+
+        "estimatesRCS": {
+          "@id": "pwmo:rel:estimatesRCS",
+          "rdfs:label": "estimatesRCS",
+          "skos:definition": "The radar processor estimates target radar cross section from calibrated received power, range, and system parameters.",
+          "domain": ["pwmo:SignalProcessor"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "physicalQuantity": "radar_cross_section_dBsm"
+        },
+
+        "performsDespeckle": {
+          "@id": "pwmo:rel:performsDespeckle",
+          "rdfs:label": "performsDespeckle",
+          "skos:definition": "The despeckling module suppresses multiplicative speckle noise in SAR imagery using filtering, statistical, or deep learning approaches.",
+          "domain": ["pwmo:DespeckleProcessor", "pwmo:DDIMSampler", "pwmo:DiffusionModel"],
+          "range": ["pwmo:SAR_Image"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "note": "Directly relevant to PhysWorldLM SAR-DDPM / StructDiff USF framework",
+          "approachTypes": ["Lee Filter", "Frost Filter", "NL-SAR", "SAR-CNN", "SAR-DRN", "DDPM-based (USF)", "DDIM-based"]
+        },
+
+        "fusesData": {
+          "@id": "pwmo:rel:fusesData",
+          "rdfs:label": "fusesData",
+          "skos:definition": "The fusion processor combines track data from the subject and additional sensors to produce a higher-confidence composite track.",
+          "domain": ["pwmo:DataFusionProcessor", "pwmo:MissionComputer"],
+          "range": ["pwmo:TrackFile", "pwmo:Detection"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "fusionLevels": ["Signal Level", "Measurement Level", "Track Level", "Decision Level"],
+          "algorithms": ["Kalman Filter", "IMM", "JPDA", "MHT", "Dempster-Shafer", "Bayesian Network"]
+        }
+      }
+    },
+
+    "4_Detection_Tracking": {
+      "@id": "pwmo:DetectionTrackingRelationships",
+      "rdfs:label": "Detection and Tracking Relationships",
+      "skos:definition": "Relationships describing the radar's detection, tracking, identification, and classification of targets.",
+
+      "relationships": {
+
+        "detects": {
+          "@id": "pwmo:rel:detects",
+          "rdfs:label": "detects",
+          "skos:definition": "The radar system produces a detection report for the specified target type, exceeding detection threshold at a given probability.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:Target", "pwmo:Aircraft", "pwmo:UAV", "pwmo:Missile", "pwmo:BallisticMissile", "pwmo:CruiseMissile", "pwmo:Ship", "pwmo:Vehicle", "pwmo:Projectile", "pwmo:DroneSwarm"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "conditionalParameters": {
+            "minimumRCS_dBsm": [-40, 20],
+            "detectionRange_km": [1, 6000],
+            "Pd_required_percent": [50, 95],
+            "Pfa_target": "1e-6 to 1e-4"
+          }
+        },
+
+        "tracks": {
+          "@id": "pwmo:rel:tracks",
+          "rdfs:label": "tracks",
+          "skos:definition": "The radar initiates and maintains a track file on the target, providing continuous state estimates (position, velocity, acceleration).",
+          "domain": ["pwmo:Radar", "pwmo:TrackProcessor"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "trackModes": ["Single Target Track (STT)", "Track While Scan (TWS)", "Multiple Target Track (MTT)"],
+          "stateVector": ["x", "y", "z", "vx", "vy", "vz", "ax", "ay", "az"],
+          "trackFilters": ["Alpha-Beta", "Kalman Filter", "EKF", "UKF", "IMM", "Particle Filter"]
+        },
+
+        "initiatesTrack": {
+          "@id": "pwmo:rel:initiatesTrack",
+          "rdfs:label": "initiatesTrack",
+          "skos:definition": "The radar creates a new track file upon confirmed detection of a new target.",
+          "domain": ["pwmo:TrackInitiator", "pwmo:Radar"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "initiation_logic": ["M-of-N detections", "Hough Transform", "Track-before-detect"]
+        },
+
+        "losesTrack": {
+          "@id": "pwmo:rel:losesTrack",
+          "rdfs:label": "losesTrack",
+          "skos:definition": "The radar drops the track file due to insufficient detections, jamming, or target maneuver exceeding gate.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:TrackFile"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "triggers": ["Jamming", "Target Maneuver", "Terrain Masking", "Clutter", "ECM"]
+        },
+
+        "reacquiresTarget": {
+          "@id": "pwmo:rel:reacquiresTarget",
+          "rdfs:label": "reacquiresTarget",
+          "skos:definition": "The radar re-establishes a track on a previously lost target.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "identifies": {
+          "@id": "pwmo:rel:identifies",
+          "rdfs:label": "identifies",
+          "skos:definition": "The radar and IFF system determine the identity (friend/neutral/foe) of the tracked target.",
+          "domain": ["pwmo:IFF_System", "pwmo:Radar"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "identificationResult": ["Friend", "Neutral", "Unknown", "Hostile", "Assumed Hostile"],
+          "IFF_Modes": ["Mode 1", "Mode 2", "Mode 3A", "Mode 4", "Mode 5", "Mode S"]
+        },
+
+        "classifies": {
+          "@id": "pwmo:rel:classifies",
+          "rdfs:label": "classifies",
+          "skos:definition": "The radar signal processor classifies the target into a type category using wideband signature, micro-Doppler, or ML-based NCTR.",
+          "domain": ["pwmo:NCTR_Module", "pwmo:AIClassifier", "pwmo:SignalProcessor"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "classificationMethods": ["JEM (Jet Engine Modulation)", "ISAR imaging", "Micro-Doppler", "RCS fluctuation", "Wideband signature", "CNN-based NCTR"]
+        },
+
+        "prioritizesThreat": {
+          "@id": "pwmo:rel:prioritizesThreat",
+          "rdfs:label": "prioritizesThreat",
+          "skos:definition": "The mission computer assigns a threat priority rank to each tracked target based on lethality, engagement timeline, and RoE.",
+          "domain": ["pwmo:MissionComputer", "pwmo:ThreatEvaluator"],
+          "range": ["pwmo:TrackFile"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "threatFactors": ["Time-to-impact", "RCS", "Velocity", "Classification", "Heading", "IFF status"]
+        },
+
+        "cues": {
+          "@id": "pwmo:rel:cues",
+          "rdfs:label": "cues",
+          "skos:definition": "The subject radar provides initial spatial cue (bearing, range, altitude) to the object sensor or weapon system to accelerate its search.",
+          "domain": ["pwmo:SurveillanceRadar", "pwmo:EarlyWarningRadar"],
+          "range": ["pwmo:FireControlRadar", "pwmo:SAMSystem", "pwmo:ESMSensor", "pwmo:EO_IRSystem"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "cueData": ["azimuth_deg", "elevation_deg", "range_km", "velocity_ms", "classification"]
+        },
+
+        "handoffTarget": {
+          "@id": "pwmo:rel:handoffTarget",
+          "rdfs:label": "handoffTarget",
+          "skos:definition": "The subject radar transfers track custody to the object radar or weapon system for precision engagement.",
+          "domain": ["pwmo:SurveillanceRadar", "pwmo:AirborneRadar"],
+          "range": ["pwmo:FireControlRadar", "pwmo:NavalFireControlRadar"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "handoffData": "complete track state vector + covariance matrix + classification + IFF"
+        },
+
+        "designates": {
+          "@id": "pwmo:rel:designates",
+          "rdfs:label": "designates",
+          "skos:definition": "The radar laser or RF designates a specific target for precision munition terminal guidance.",
+          "domain": ["pwmo:FireControlRadar", "pwmo:AirborneFCR"],
+          "range": ["pwmo:Target", "pwmo:GroundTarget"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "surveils": {
+          "@id": "pwmo:rel:surveils",
+          "rdfs:label": "surveils",
+          "skos:definition": "The radar provides persistent surveillance coverage of an airspace volume or ground area.",
+          "domain": ["pwmo:SurveillanceRadar", "pwmo:EarlyWarningRadar", "pwmo:AWACS"],
+          "range": ["pwmo:AirspaceVolume", "pwmo:MaritimeArea", "pwmo:BorderRegion"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "coverageParameter": ["range_km", "azimuth_coverage_deg", "elevation_coverage_deg", "revisit_rate_s"]
+        }
+      }
+    },
+
+    "5_CommandControl": {
+      "@id": "pwmo:CommandControlRelationships",
+      "rdfs:label": "Command and Control Relationships",
+      "skos:definition": "Relationships describing C2 authority, data flows, and tasking between radar systems and command networks.",
+
+      "relationships": {
+
+        "controlledBy": {
+          "@id": "pwmo:rel:controlledBy",
+          "rdfs:label": "controlledBy",
+          "skos:definition": "The subject radar is operated and tasked by the object operator, C2 system, or command authority.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:OperatorConsole", "pwmo:C2System", "pwmo:AirDefenseCommandPost", "pwmo:AIController"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "reportsTo": {
+          "@id": "pwmo:rel:reportsTo",
+          "rdfs:label": "reportsTo",
+          "skos:definition": "The radar sends processed tracks and reports up the C2 hierarchy to the object command node.",
+          "domain": ["pwmo:Radar", "pwmo:SensorNode"],
+          "range": ["pwmo:C2System", "pwmo:AirDefenseCommandPost", "pwmo:CombatManagementSystem"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "coordinatesWith": {
+          "@id": "pwmo:rel:coordinatesWith",
+          "rdfs:label": "coordinatesWith",
+          "skos:definition": "Peer-level coordination between radar systems for deconfliction, hand-off, or cooperative search.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:Radar"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional"
+        },
+
+        "sendsTrackDataTo": {
+          "@id": "pwmo:rel:sendsTrackDataTo",
+          "rdfs:label": "sendsTrackDataTo",
+          "skos:definition": "The radar transmits formatted track data (position, velocity, classification, IFF) to the object system.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:C2System", "pwmo:DataFusionCenter", "pwmo:CombatManagementSystem", "pwmo:FireControlSystem"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "dataFormats": ["ASTERIX", "Link 16", "STANAG 4586", "MIL-STD-6016", "NACT", "SDDS"]
+        },
+
+        "receivesCommandFrom": {
+          "@id": "pwmo:rel:receivesCommandFrom",
+          "rdfs:label": "receivesCommandFrom",
+          "skos:definition": "The radar receives mode change, tasking, or targeting commands from the object C2 node.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:C2System", "pwmo:OperatorConsole", "pwmo:AirDefenseCommandPost"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "exchangesTracksWith": {
+          "@id": "pwmo:rel:exchangesTracksWith",
+          "rdfs:label": "exchangesTracksWith",
+          "skos:definition": "Bidirectional track sharing between radar nodes for netted air picture compilation.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:Radar", "pwmo:C2System"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional",
+          "protocol": ["Link 16 / JTIDS", "Link 22", "TTNT", "Tactical Data Link"]
+        },
+
+        "networkedWith": {
+          "@id": "pwmo:rel:networkedWith",
+          "rdfs:label": "networkedWith",
+          "skos:definition": "The radar is part of a wider sensor network enabling distributed surveillance and netted fire control.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:SensorNetwork", "pwmo:IADS", "pwmo:AegisNetwork"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional"
+        },
+
+        "assignedTo": {
+          "@id": "pwmo:rel:assignedTo",
+          "rdfs:label": "assignedTo",
+          "skos:definition": "The radar resource is assigned to support the specified mission, unit, or weapon system.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:MissionTask", "pwmo:MilitaryUnit", "pwmo:WeaponSystem"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "synchronizedWith": {
+          "@id": "pwmo:rel:synchronizedWith",
+          "rdfs:label": "synchronizedWith",
+          "skos:definition": "Timing or frequency synchronization between radar nodes for coherent operation (netted radar, bistatic radar).",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:Radar", "pwmo:GPSTimingReference"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional",
+          "synchronizationPrecision_ns": [1, 100]
+        }
+      }
+    },
+
+    "6_WeaponEngagement": {
+      "@id": "pwmo:WeaponEngagementRelationships",
+      "rdfs:label": "Weapon and Engagement Relationships",
+      "skos:definition": "Relationships between radar systems and weapon systems across the engagement sequence.",
+
+      "relationships": {
+
+        "supportsFireControl": {
+          "@id": "pwmo:rel:supportsFireControl",
+          "rdfs:label": "supportsFireControl",
+          "skos:definition": "The radar provides precision targeting data sufficient for weapon engagement.",
+          "domain": ["pwmo:FireControlRadar"],
+          "range": ["pwmo:WeaponSystem", "pwmo:SAMBattery", "pwmo:NavalGunSystem", "pwmo:CIWS"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "guidesMissile": {
+          "@id": "pwmo:rel:guidesMissile",
+          "rdfs:label": "guidesMissile",
+          "skos:definition": "The radar provides mid-course or terminal guidance commands or illumination to the object missile.",
+          "domain": ["pwmo:FireControlRadar", "pwmo:IlluminatorRadar", "pwmo:MissileGuidanceRadar"],
+          "range": ["pwmo:SAMissile", "pwmo:AAMissile", "pwmo:AShMissile"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "guidanceModes": ["SARH (Semi-Active Radar Homing)", "TVM (Track Via Missile)", "Command Guidance", "Active Mid-Course + TVM Terminal"]
+        },
+
+        "supportsCIWS": {
+          "@id": "pwmo:rel:supportsCIWS",
+          "rdfs:label": "supportsCIWS",
+          "skos:definition": "The tracking radar provides real-time fire control for Close-In Weapon System engagement against terminal threats.",
+          "domain": ["pwmo:NavalFireControlRadar"],
+          "range": ["pwmo:CIWS"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "reactionTime_s": [0.5, 3.0]
+        },
+
+        "engagesTarget": {
+          "@id": "pwmo:rel:engagesTarget",
+          "rdfs:label": "engagesTarget",
+          "skos:definition": "The weapon system, cued and guided by the radar, launches weapon against the target.",
+          "domain": ["pwmo:WeaponSystem"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "providesTargetIllumination": {
+          "@id": "pwmo:rel:providesTargetIllumination",
+          "rdfs:label": "providesTargetIllumination",
+          "skos:definition": "The continuous wave illuminator transmits RF energy at the target to support seeker homing of SARH missiles.",
+          "domain": ["pwmo:IlluminatorRadar", "pwmo:FireControlRadar"],
+          "range": ["pwmo:Target"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "assignsWeapon": {
+          "@id": "pwmo:rel:assignsWeapon",
+          "rdfs:label": "assignsWeapon",
+          "skos:definition": "The radar-cued C2 system assigns a specific weapon or interceptor to engage the tracked threat.",
+          "domain": ["pwmo:MissionComputer", "pwmo:C2System"],
+          "range": ["pwmo:WeaponSystem", "pwmo:Interceptor"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "evaluatesKillProbability": {
+          "@id": "pwmo:rel:evaluatesKillProbability",
+          "rdfs:label": "evaluatesKillProbability",
+          "skos:definition": "The fire control system computes Pk (probability of kill) for a proposed weapon-target pair based on radar-derived track quality.",
+          "domain": ["pwmo:FireControlSystem", "pwmo:MissionComputer"],
+          "range": ["pwmo:TrackFile", "pwmo:WeaponTarget_Pair"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "outputProduct": "probability_of_kill_percent"
+        }
+      }
+    },
+
+    "7_ElectronicWarfare": {
+      "@id": "pwmo:ElectronicWarfareRelationships",
+      "rdfs:label": "Electronic Warfare Relationships",
+      "skos:definition": "Relationships describing offensive and defensive EW interactions between radars and jamming systems.",
+
+      "relationships": {
+
+        "jammedBy": {
+          "@id": "pwmo:rel:jammedBy",
+          "rdfs:label": "jammedBy",
+          "skos:definition": "The subject radar's reception is degraded by the object jamming system (noise, deceptive, or repeater jamming).",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:NoiseJammer", "pwmo:DeceptiveJammer", "pwmo:DRFMJammer", "pwmo:StandoffJammer", "pwmo:SelfProtectionJammer"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "jammingTypes": ["Barrage Noise", "Spot Noise", "Swept Noise", "DRFM Range Gate Pull-Off", "DRFM Velocity Gate Pull-Off", "Cross-Eye", "Transponder Deception"],
+          "jammingMetric": "J/S ratio (dB)"
+        },
+
+        "jams": {
+          "@id": "pwmo:rel:jams",
+          "rdfs:label": "jams",
+          "skos:definition": "The subject EW system actively transmits to deny, degrade, or deceive the object radar.",
+          "domain": ["pwmo:EWSystem", "pwmo:EWAircraft", "pwmo:JammingPod"],
+          "range": ["pwmo:Radar"],
+          "cardinality": "many-to-many",
+          "directionality": "directed"
+        },
+
+        "homeOnJam": {
+          "@id": "pwmo:rel:homeOnJam",
+          "rdfs:label": "homeOnJam",
+          "skos:definition": "The anti-radiation missile or HOJ mode allows the radar or missile to use the enemy jamming signal as a targeting beacon.",
+          "domain": ["pwmo:FireControlRadar", "pwmo:AntiRadiationMissile"],
+          "range": ["pwmo:JammingSource", "pwmo:EWSystem"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "capability": "HOJ (Home On Jam)"
+        },
+
+        "detectsJamming": {
+          "@id": "pwmo:rel:detectsJamming",
+          "rdfs:label": "detectsJamming",
+          "skos:definition": "The radar or its ECCM subsystem detects the presence of jamming on the radar frequency.",
+          "domain": ["pwmo:Radar", "pwmo:ECCMModule", "pwmo:ESMReceiver"],
+          "range": ["pwmo:JammingSignal"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "detectionMethod": ["Noise floor elevation", "Correlation loss", "ESM intercept"]
+        },
+
+        "performsFrequencyHopping": {
+          "@id": "pwmo:rel:performsFrequencyHopping",
+          "rdfs:label": "performsFrequencyHopping",
+          "skos:definition": "The radar changes operating frequency pseudo-randomly pulse-to-pulse to defeat narrowband jamming and reduce LPI.",
+          "domain": ["pwmo:Radar", "pwmo:FrequencySynthesizer"],
+          "range": ["pwmo:JammingThreat"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "hoppingRate_Hz": [1, 100000],
+          "hoppingBand_MHz": [10, 5000]
+        },
+
+        "performsAdaptiveNulling": {
+          "@id": "pwmo:rel:performsAdaptiveNulling",
+          "rdfs:label": "performsAdaptiveNulling",
+          "skos:definition": "The AESA or DPCA beamformer steers a null in the antenna pattern toward the jamming source to suppress its effect.",
+          "domain": ["pwmo:AESA_Array", "pwmo:DigitalBeamformer", "pwmo:AdaptiveProcessor"],
+          "range": ["pwmo:JammingSource"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "nullDepth_dB": [-40, -80]
+        },
+
+        "performsLPI": {
+          "@id": "pwmo:rel:performsLPI",
+          "rdfs:label": "performsLPI",
+          "skos:definition": "The radar employs Low Probability of Intercept techniques to reduce probability of detection by ESM systems.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:ESMSystem", "pwmo:RWR"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "LPI_Techniques": ["Wide bandwidth spreading", "Low peak power", "Frequency hopping", "Pseudo-random PRF", "Short dwell time", "Beam agility", "OFDM waveform"]
+        },
+
+        "spoofedBy": {
+          "@id": "pwmo:rel:spoofedBy",
+          "rdfs:label": "spoofedBy",
+          "skos:definition": "The radar is deceived by a false target injected by the object DRFM or deception jammer.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:DRFMJammer", "pwmo:DeceptionJammer"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "deceptionTypes": ["False range targets", "False Doppler", "Multiple false targets", "Angle deception"]
+        },
+
+        "protectedByECCM": {
+          "@id": "pwmo:rel:protectedByECCM",
+          "rdfs:label": "protectedByECCM",
+          "skos:definition": "The radar is hardened against EW attack through the object ECCM measure set.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:ECCMModule"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "ECCMFeatures": ["Sidelobe Blanking (SLB)", "Sidelobe Cancellation (SLC)", "Frequency Agility", "Pulse Compression ECCM", "PRF Jitter", "Polarization Diversity", "Monopulse ECCM", "HOJ", "Adaptive Beamforming"]
+        },
+
+        "threatenedByARM": {
+          "@id": "pwmo:rel:threatenedByARM",
+          "rdfs:label": "threatenedByARM",
+          "skos:definition": "The emitting radar is potentially targeted by the object Anti-Radiation Missile homing on its emissions.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:AntiRadiationMissile"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "mitigations": ["Shutdown protocol", "Reduced emission time", "Decoy transmitter", "LPI waveforms", "Passive radar fallback"]
+        },
+
+        "performsElectronicAttack": {
+          "@id": "pwmo:rel:performsElectronicAttack",
+          "rdfs:label": "performsElectronicAttack",
+          "skos:definition": "A dual-role AESA radar uses its transmit aperture to actively jam, deceive, or disrupt enemy electronics.",
+          "domain": ["pwmo:AESARadar"],
+          "range": ["pwmo:EnemyRadar", "pwmo:EnemyCommsSystem", "pwmo:EnemyDataLink"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "capability": "AN/APG-77, AN/APG-81 EA modes; EPAWSS integration"
+        }
+      }
+    },
+
+    "8_Platform": {
+      "@id": "pwmo:PlatformRelationships",
+      "rdfs:label": "Platform Relationships",
+      "skos:definition": "Relationships describing radar installation and integration with carrier platforms.",
+
+      "relationships": {
+
+        "installedOn": {
+          "@id": "pwmo:rel:installedOn",
+          "rdfs:label": "installedOn",
+          "skos:definition": "The radar system is installed on and carried by the specified platform.",
+          "domain": ["pwmo:Radar"],
+          "range": [
+            "pwmo:FighterAircraft", "pwmo:Bomber", "pwmo:PatrolAircraft", "pwmo:AEW_Aircraft",
+            "pwmo:UAV", "pwmo:UCAV", "pwmo:Helicopter", "pwmo:Airship",
+            "pwmo:Destroyer", "pwmo:Frigate", "pwmo:Cruiser", "pwmo:AircraftCarrier", "pwmo:PatrolVessel", "pwmo:Submarine",
+            "pwmo:MainBattleTank", "pwmo:APC", "pwmo:RadarVehicle", "pwmo:TowedPlatform",
+            "pwmo:FixedSite", "pwmo:MastMounted", "pwmo:Tower", "pwmo:Satellite"
+          ],
+          "cardinality": "many-to-many",
+          "directionality": "directed"
+        },
+
+        "deployedFrom": {
+          "@id": "pwmo:rel:deployedFrom",
+          "rdfs:label": "deployedFrom",
+          "skos:definition": "The radar is carried to operational site by the object transport and deployed there.",
+          "domain": ["pwmo:MobileRadar", "pwmo:TransportableRadar"],
+          "range": ["pwmo:AircraftTransport", "pwmo:ShipTransport", "pwmo:TruckTransport", "pwmo:HelicopterTransport"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "deploymentTime_min": [5, 240]
+        },
+
+        "supportsPlatformNavigation": {
+          "@id": "pwmo:rel:supportsPlatformNavigation",
+          "rdfs:label": "supportsPlatformNavigation",
+          "skos:definition": "The radar provides terrain-following, terrain-avoidance, or navigation cues to the host platform.",
+          "domain": ["pwmo:TerrainFollowingRadar", "pwmo:AltimeterRadar", "pwmo:NavigationRadar"],
+          "range": ["pwmo:AircraftFCS", "pwmo:ShipNavigationSystem"],
+          "cardinality": "one-to-one",
+          "directionality": "directed"
+        },
+
+        "sharesPlatformPower": {
+          "@id": "pwmo:rel:sharesPlatformPower",
+          "rdfs:label": "sharesPlatformPower",
+          "skos:definition": "The radar competes with other platform systems for electrical power from the shared generator or APU.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:PlatformPowerBus"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "powerBudget_kW": [0.5, 50]
+        },
+
+        "sharesPlatformCooling": {
+          "@id": "pwmo:rel:sharesPlatformCooling",
+          "rdfs:label": "sharesPlatformCooling",
+          "skos:definition": "The radar uses the host platform's liquid cooling loop or ECS for heat rejection.",
+          "domain": ["pwmo:AirborneFCR", "pwmo:NavalRadar"],
+          "range": ["pwmo:AircraftECS", "pwmo:ShipCoolingLoop"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        }
+      }
+    },
+
+    "9_Environment": {
+      "@id": "pwmo:EnvironmentalRelationships",
+      "rdfs:label": "Environmental Relationships",
+      "skos:definition": "Relationships between radar systems and atmospheric, terrain, and clutter environments.",
+
+      "relationships": {
+
+        "affectedByRain": {
+          "@id": "pwmo:rel:affectedByRain",
+          "rdfs:label": "affectedByRain",
+          "skos:definition": "Rainfall causes both signal attenuation and volume clutter that degrades radar performance.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:RainEnvironment"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "physicalEffect": "attenuation_dB_per_km + clutter_return",
+          "frequencyDependence": "Severe above 10 GHz (X-band and higher)"
+        },
+
+        "affectedBySeaClutter": {
+          "@id": "pwmo:rel:affectedBySeaClutter",
+          "rdfs:label": "affectedBySeaClutter",
+          "skos:definition": "Sea surface backscatter competes with low-flying target returns in naval radars.",
+          "domain": ["pwmo:NavalRadar", "pwmo:MaritimeSurveillanceRadar"],
+          "range": ["pwmo:SeaState"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "clutterModels": ["Weibull", "K-distribution", "Log-Normal", "GIT model"],
+          "clutterRCS_per_m2": "sigma_0 (dB)"
+        },
+
+        "affectedByGroundClutter": {
+          "@id": "pwmo:rel:affectedByGroundClutter",
+          "rdfs:label": "affectedByGroundClutter",
+          "skos:definition": "Surface backscatter from land masks low-altitude targets and requires MTI/STAP to suppress.",
+          "domain": ["pwmo:AirborneRadar", "pwmo:GroundRadar"],
+          "range": ["pwmo:TerrainClutter"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "mitigationTechniques": ["MTI", "MTD", "STAP", "Doppler filtering", "Clutter map CFAR"]
+        },
+
+        "affectedByAtmosphericDucting": {
+          "@id": "pwmo:rel:affectedByAtmosphericDucting",
+          "rdfs:label": "affectedByAtmosphericDucting",
+          "skos:definition": "Anomalous propagation (ducting) can extend radar range beyond line-of-sight or create blind zones.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:AtmosphericDuct"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "effect": ["Extended range (beneficial)", "Blind zone (detrimental)", "False echo"]
+        },
+
+        "affectedByMultipath": {
+          "@id": "pwmo:rel:affectedByMultipath",
+          "rdfs:label": "affectedByMultipath",
+          "skos:definition": "Multipath propagation over sea or flat terrain causes constructive/destructive interference, creating lobing in elevation coverage.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:MultiPathEnvironment"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "effect": ["Elevation lobing", "Angle measurement error", "Target fading"]
+        },
+
+        "affectedByIonosphere": {
+          "@id": "pwmo:rel:affectedByIonosphere",
+          "rdfs:label": "affectedByIonosphere",
+          "skos:definition": "Ionospheric layers refract, absorb, and scatter HF and UHF signals, enabling OTH radar but causing errors in BMD radars.",
+          "domain": ["pwmo:OTH_Radar", "pwmo:BMD_Radar"],
+          "range": ["pwmo:IonosphereLayer"],
+          "cardinality": "many-to-many",
+          "directionality": "directed"
+        },
+
+        "compensatesForClutter": {
+          "@id": "pwmo:rel:compensatesForClutter",
+          "rdfs:label": "compensatesForClutter",
+          "skos:definition": "The radar signal processor actively compensates for or suppresses the effect of the specified clutter type.",
+          "domain": ["pwmo:SignalProcessor", "pwmo:MTIFilter", "pwmo:STAPProcessor"],
+          "range": ["pwmo:SeaClutter", "pwmo:GroundClutter", "pwmo:RainClutter", "pwmo:ChaffClutter"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        }
+      }
+    },
+
+    "10_Maintenance_Logistics": {
+      "@id": "pwmo:MaintenanceLogisticsRelationships",
+      "rdfs:label": "Maintenance and Logistics Relationships",
+      "skos:definition": "Relationships describing maintenance, supply chain, and support activities for radar systems.",
+
+      "relationships": {
+
+        "maintainedBy": {
+          "@id": "pwmo:rel:maintainedBy",
+          "rdfs:label": "maintainedBy",
+          "skos:definition": "The radar system is maintained by the specified maintenance unit or technician echelon.",
+          "domain": ["pwmo:Radar", "pwmo:RadarComponent"],
+          "range": ["pwmo:MaintenanceUnit", "pwmo:OEMTechnician", "pwmo:DepotFacility"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "maintenanceLevels": ["Operator-level (1st Line)", "Field-level (2nd Line)", "Depot-level (3rd Line)", "OEM Factory"]
+        },
+
+        "calibratedBy": {
+          "@id": "pwmo:rel:calibratedBy",
+          "rdfs:label": "calibratedBy",
+          "skos:definition": "The radar or component is periodically calibrated by the object test equipment or reference standard.",
+          "domain": ["pwmo:Radar", "pwmo:FrequencySynthesizer", "pwmo:Receiver"],
+          "range": ["pwmo:CalibrationEquipment", "pwmo:BITE_System", "pwmo:ExternalTestSet"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "calibrationPeriod_hours": [100, 2000]
+        },
+
+        "diagnosedBy": {
+          "@id": "pwmo:rel:diagnosedBy",
+          "rdfs:label": "diagnosedBy",
+          "skos:definition": "The BIT system or test equipment diagnoses fault condition in the subject radar LRU.",
+          "domain": ["pwmo:Radar", "pwmo:LineReplaceableUnit"],
+          "range": ["pwmo:BuiltInTest_BIT", "pwmo:ExternalTestEquipment"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "faultIsolationTarget_minutes": [10, 30]
+        },
+
+        "upgradedBy": {
+          "@id": "pwmo:rel:upgradedBy",
+          "rdfs:label": "upgradedBy",
+          "skos:definition": "The radar capability is enhanced through installation of the object upgrade kit (hardware or software).",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:HardwareUpgradeKit", "pwmo:SoftwareUpgrade", "pwmo:ModernizationProgram"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "examples": ["AN/APG-63v1 → v2 → v3 AESA retrofit", "SPY-1D → SPY-1D(V) upgrade"]
+        },
+
+        "suppliedBy": {
+          "@id": "pwmo:rel:suppliedBy",
+          "rdfs:label": "suppliedBy",
+          "skos:definition": "Spare parts, consumables, or support equipment are supplied to the radar unit by the object logistics organization.",
+          "domain": ["pwmo:Radar", "pwmo:LineReplaceableUnit"],
+          "range": ["pwmo:SupplyDepot", "pwmo:OEMSupplyChain", "pwmo:ForwardLogisticsBase"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "testedBy": {
+          "@id": "pwmo:rel:testedBy",
+          "rdfs:label": "testedBy",
+          "skos:definition": "The subject radar or component undergoes functional test by the object test system.",
+          "domain": ["pwmo:Radar", "pwmo:RadarComponent"],
+          "range": ["pwmo:BuiltInTest_BIT", "pwmo:AutomaticTestEquipment", "pwmo:RFAnechoicChamber"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "storedAt": {
+          "@id": "pwmo:rel:storedAt",
+          "rdfs:label": "storedAt",
+          "skos:definition": "The radar system or spare part is stored at the specified location when not in operational service.",
+          "domain": ["pwmo:Radar", "pwmo:SparePart"],
+          "range": ["pwmo:WarehouseFacility", "pwmo:ForwardBase", "pwmo:ShipMagazine"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "hasSuccessorSystem": {
+          "@id": "pwmo:rel:hasSuccessorSystem",
+          "rdfs:label": "hasSuccessorSystem",
+          "skos:definition": "The subject radar system is replaced by or succeeded by the object radar in the operational inventory.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:Radar"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "examples": [
+            "pwmo:AN_APG-63v1 pwmo:rel:hasSuccessorSystem pwmo:AN_APG-63v3",
+            "pwmo:AN_SPY-1 pwmo:rel:hasSuccessorSystem pwmo:AN_SPY-6"
+          ]
+        }
+      }
+    },
+
+    "11_Navigation_Timing": {
+      "@id": "pwmo:NavigationTimingRelationships",
+      "rdfs:label": "Navigation and Timing Relationships",
+      "skos:definition": "Relationships between radar systems and navigation, positioning, and timing infrastructure.",
+
+      "relationships": {
+
+        "referencedByGPS": {
+          "@id": "pwmo:rel:referencedByGPS",
+          "rdfs:label": "referencedByGPS",
+          "skos:definition": "The radar uses GPS timing signal for coherent pulse-to-pulse phase reference and geo-location.",
+          "domain": ["pwmo:Radar", "pwmo:FrequencySynthesizer"],
+          "range": ["pwmo:GPSReceiver"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "timingAccuracy_ns": 10
+        },
+
+        "compensatedByINS": {
+          "@id": "pwmo:rel:compensatedByINS",
+          "rdfs:label": "compensatedByINS",
+          "skos:definition": "The radar uses INS platform motion data for motion compensation in SAR focusing and antenna beam stabilization.",
+          "domain": ["pwmo:SARRadar", "pwmo:AirborneFCR", "pwmo:GMTIRadar"],
+          "range": ["pwmo:INS_GPS"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "parameters": ["platform_velocity_ms", "platform_attitude_deg", "platform_acceleration_ms2"]
+        },
+
+        "georeferencesWith": {
+          "@id": "pwmo:rel:georeferencesWith",
+          "rdfs:label": "georeferencesWith",
+          "skos:definition": "The radar output is geo-referenced to absolute Earth coordinates using the specified navigation system.",
+          "domain": ["pwmo:SARRadar", "pwmo:GMTIRadar", "pwmo:CounterBatteryRadar"],
+          "range": ["pwmo:INS_GPS", "pwmo:DGPSReference"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "geolocationAccuracy_m": [1, 50]
+        }
+      }
+    },
+
+    "12_Communication_DataLink": {
+      "@id": "pwmo:CommunicationDataLinkRelationships",
+      "rdfs:label": "Communication and Data Link Relationships",
+      "skos:definition": "Relationships between radar systems and communication networks, data links, and interoperability standards.",
+
+      "relationships": {
+
+        "communicatesVia": {
+          "@id": "pwmo:rel:communicatesVia",
+          "rdfs:label": "communicatesVia",
+          "skos:definition": "The radar exchanges data with external systems through the specified communication interface.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:DataLink", "pwmo:CommunicationSystem"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional",
+          "interfaces": {
+            "Link_16": {"frequency": "969-1206 MHz", "dataRate_kbps": 28.8},
+            "MADL": {"note": "F-35 inter-flight LPI link; 1 Gbps encrypted"},
+            "IFDL": {"note": "F-22 intra-flight LPI"},
+            "CDL": {"dataRate_Mbps": [10, 137], "note": "SAR/SIGINT downlink"},
+            "TTNT": {"note": "IP-based high-throughput tactical network"},
+            "ASTERIX": {"note": "Eurocontrol ATM data format for civil/military radar"},
+            "Link_22": {"note": "NATO HF/UHF; replaces Link 11"},
+            "ARINC_653": {"note": "Avionics software partitioning"},
+            "MIL-STD-1553B": {"note": "Avionics bus; radar to aircraft systems"}
+          }
+        },
+
+        "publishesTracksTo": {
+          "@id": "pwmo:rel:publishesTracksTo",
+          "rdfs:label": "publishesTracksTo",
+          "skos:definition": "The radar publishes track messages to the object network node or publish-subscribe middleware.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:TrackServer", "pwmo:CombatManagementSystem", "pwmo:IADS"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "subscribesToTrackData": {
+          "@id": "pwmo:rel:subscribesToTrackData",
+          "rdfs:label": "subscribesToTrackData",
+          "skos:definition": "The system consumes track data published by the specified radar source node.",
+          "domain": ["pwmo:WeaponSystem", "pwmo:C2System", "pwmo:AnotherRadar"],
+          "range": ["pwmo:Radar"],
+          "cardinality": "many-to-many",
+          "directionality": "directed"
+        },
+
+        "interoperableWith": {
+          "@id": "pwmo:rel:interoperableWith",
+          "rdfs:label": "interoperableWith",
+          "skos:definition": "The radar system is interoperable with the specified allied or coalition system through common standards.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:Radar", "pwmo:C2System", "pwmo:WeaponSystem"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional",
+          "interopStandards": ["Link 16", "NATO STANAG 4586", "STANAG 5516", "MIL-STD-6016"]
+        }
+      }
+    },
+
+    "13_AI_Cognitive": {
+      "@id": "pwmo:AI_CognitiveRelationships",
+      "rdfs:label": "AI and Cognitive Radar Relationships",
+      "skos:definition": "Relationships describing AI-driven control, optimization, and autonomous decision-making in radar systems.",
+
+      "relationships": {
+
+        "classifiedByAI": {
+          "@id": "pwmo:rel:classifiedByAI",
+          "rdfs:label": "classifiedByAI",
+          "skos:definition": "An AI model classifies the target type or track from radar signature data.",
+          "domain": ["pwmo:AIClassifier", "pwmo:CNNClassifier", "pwmo:TransformerModel"],
+          "range": ["pwmo:TrackFile", "pwmo:Target", "pwmo:RadarEcho"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "inputFeatures": ["RCS", "Micro-Doppler", "HRRP", "Polarimetric signature", "Maneuver profile"],
+          "outputClasses": ["Fighter", "Bomber", "UAV", "Helicopter", "Missile", "Ballistic Missile", "Bird", "Chaff", "Clutter"]
+        },
+
+        "optimizedByAI": {
+          "@id": "pwmo:rel:optimizedByAI",
+          "rdfs:label": "optimizedByAI",
+          "skos:definition": "An AI optimization module dynamically adjusts radar parameters for optimal performance.",
+          "domain": ["pwmo:CognitiveRadarController", "pwmo:ReinforcementLearningAgent"],
+          "range": ["pwmo:Radar", "pwmo:WaveformGenerator", "pwmo:BeamScheduler"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "optimizationTargets": ["Detection probability", "Tracking accuracy", "ECCM effectiveness", "Power consumption", "Spectrum efficiency"]
+        },
+
+        "scheduledByAI": {
+          "@id": "pwmo:rel:scheduledByAI",
+          "rdfs:label": "scheduledByAI",
+          "skos:definition": "An AI beam and resource scheduler manages radar dwell times, beam directions, and waveform selection.",
+          "domain": ["pwmo:BeamScheduler", "pwmo:AIController"],
+          "range": ["pwmo:RadarBeam", "pwmo:DwellPlan"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "algorithm": ["Priority queue", "Reinforcement Learning", "Model Predictive Control", "Integer programming"]
+        },
+
+        "adaptedByCognitiveLoop": {
+          "@id": "pwmo:rel:adaptedByCognitiveLoop",
+          "rdfs:label": "adaptedByCognitiveLoop",
+          "skos:definition": "The radar waveform and processing are adapted in a closed perception-action loop based on environmental observations.",
+          "domain": ["pwmo:CognitiveRadar"],
+          "range": ["pwmo:Environment", "pwmo:JammingThreat", "pwmo:TargetScenario"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "loopComponents": ["Observe (RX)", "Orient (Process)", "Decide (Select waveform/beam)", "Act (TX)"]
+        },
+
+        "anomalyDetectedByAI": {
+          "@id": "pwmo:rel:anomalyDetectedByAI",
+          "rdfs:label": "anomalyDetectedByAI",
+          "skos:definition": "An AI module detects anomalous radar behaviour indicating hardware fault, jamming, spoofing, or cyber intrusion.",
+          "domain": ["pwmo:AnomalyDetector"],
+          "range": ["pwmo:Radar", "pwmo:SignalProcessor", "pwmo:DataStream"],
+          "cardinality": "one-to-many",
+          "directionality": "directed"
+        },
+
+        "fusedByAI": {
+          "@id": "pwmo:rel:fusedByAI",
+          "rdfs:label": "fusedByAI",
+          "skos:definition": "AI-based multi-source data fusion combines radar, EO/IR, ESM, and AIS data to produce composite track.",
+          "domain": ["pwmo:AIFusionEngine"],
+          "range": ["pwmo:TrackFile", "pwmo:SensorReport"],
+          "cardinality": "one-to-many",
+          "directionality": "directed",
+          "fusionArchitectures": ["Graph Neural Network", "Transformer-based", "Bayesian Deep Learning", "Kalman + Neural"]
+        },
+
+        "despeckledByDiffusionModel": {
+          "@id": "pwmo:rel:despeckledByDiffusionModel",
+          "rdfs:label": "despeckledByDiffusionModel",
+          "skos:definition": "The SAR image is denoised/despeckled by a score-based diffusion model (DDPM/DDIM) conditioned on structural features.",
+          "domain": ["pwmo:DiffusionModel", "pwmo:DDIMSampler", "pwmo:USF_Framework"],
+          "range": ["pwmo:SAR_Image", "pwmo:SpeckleNoiseSAR"],
+          "cardinality": "one-to-one",
+          "directionality": "directed",
+          "note": "Direct link to PhysWorldLM StructDiff / USF SAR despeckling framework",
+          "inputRepresentation": "Log-intensity or complex-valued SAR image",
+          "conditionalInputs": ["Structure tensor", "Multiscale feature maps", "Confidence maps", "Cycle-spin ensemble"]
+        }
+      }
+    },
+
+    "14_Temporal": {
+      "@id": "pwmo:TemporalRelationships",
+      "rdfs:label": "Temporal Relationships",
+      "skos:definition": "Relationships describing temporal ordering, dependencies, and state transitions in radar operation.",
+
+      "relationships": {
+
+        "precedes": {
+          "@id": "pwmo:rel:precedes",
+          "rdfs:label": "precedes",
+          "skos:definition": "The subject event or process temporally precedes the object event.",
+          "domain": ["pwmo:RadarEvent", "pwmo:RadarProcess"],
+          "range": ["pwmo:RadarEvent", "pwmo:RadarProcess"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "examples": [
+            "pwmo:PulseTransmission pwmo:rel:precedes pwmo:EchoReception",
+            "pwmo:PulseCompression pwmo:rel:precedes pwmo:CFARDetection",
+            "pwmo:SearchPhase pwmo:rel:precedes pwmo:TrackPhase"
+          ]
+        },
+
+        "follows": {
+          "@id": "pwmo:rel:follows",
+          "rdfs:label": "follows",
+          "skos:definition": "The subject event temporally follows the object event.",
+          "domain": ["pwmo:RadarEvent"],
+          "range": ["pwmo:RadarEvent"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "inverseOf": "pwmo:rel:precedes"
+        },
+
+        "concurrentWith": {
+          "@id": "pwmo:rel:concurrentWith",
+          "rdfs:label": "concurrentWith",
+          "skos:definition": "The subject and object processes execute simultaneously or within the same radar pulse interval.",
+          "domain": ["pwmo:RadarProcess"],
+          "range": ["pwmo:RadarProcess"],
+          "cardinality": "many-to-many",
+          "directionality": "bidirectional",
+          "examples": [
+            "AESA multi-beam simultaneous search and track beams",
+            "Simultaneous TX waveform generation and prior-pulse RX processing"
+          ]
+        },
+
+        "triggeredBy": {
+          "@id": "pwmo:rel:triggeredBy",
+          "rdfs:label": "triggeredBy",
+          "skos:definition": "The subject mode or process is triggered by the occurrence of the object event or condition.",
+          "domain": ["pwmo:RadarMode", "pwmo:RadarProcess"],
+          "range": ["pwmo:RadarEvent", "pwmo:ThreatDetection", "pwmo:CommandSignal"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "examples": [
+            "TrackMode pwmo:rel:triggeredBy DetectionConfirmed",
+            "ECCMActivation pwmo:rel:triggeredBy JammingDetected",
+            "PowerUpBIT pwmo:rel:triggeredBy SystemPowerOn"
+          ]
+        },
+
+        "dependsOnCompletion": {
+          "@id": "pwmo:rel:dependsOnCompletion",
+          "rdfs:label": "dependsOnCompletion",
+          "skos:definition": "The subject process cannot begin until the object process has completed successfully.",
+          "domain": ["pwmo:RadarProcess"],
+          "range": ["pwmo:RadarProcess"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "examples": [
+            "SARFocusing pwmo:rel:dependsOnCompletion MotionCompensation",
+            "TrackEngagement pwmo:rel:dependsOnCompletion IFF_Correlation"
+          ]
+        },
+
+        "hasOperationalState": {
+          "@id": "pwmo:rel:hasOperationalState",
+          "rdfs:label": "hasOperationalState",
+          "skos:definition": "The radar currently occupies the specified operational state.",
+          "domain": ["pwmo:Radar"],
+          "range": ["pwmo:RadarState"],
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "states": ["Standby", "Warm-Up", "Search", "Track", "Fire Control", "Electronic Attack", "Maintenance", "Fault", "Shutdown"]
+        },
+
+        "transitionsTo": {
+          "@id": "pwmo:rel:transitionsTo",
+          "rdfs:label": "transitionsTo",
+          "skos:definition": "The radar transitions from its current state to the target state upon the specified trigger.",
+          "domain": ["pwmo:RadarState"],
+          "range": ["pwmo:RadarState"],
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "stateTransitionTable": {
+            "Standby → Search": "Operator command",
+            "Search → Track": "Detection confirmed",
+            "Track → FireControl": "Engagement order received",
+            "FireControl → Search": "Target destroyed / track lost",
+            "AnyState → Fault": "BIT failure detected",
+            "AnyState → Maintenance": "Maintenance command"
+          }
+        }
+      }
+    },
+
+    "15_Inheritance_Taxonomy": {
+      "@id": "pwmo:InheritanceTaxonomyRelationships",
+      "rdfs:label": "Inheritance and Taxonomy Relationships",
+      "skos:definition": "Relationships describing ontological class hierarchy and specialization.",
+
+      "relationships": {
+
+        "inheritsFrom": {
+          "@id": "pwmo:rel:inheritsFrom",
+          "rdfs:label": "inheritsFrom",
+          "skos:definition": "The subject class inherits all properties and relationships of the object parent class (OWL rdfs:subClassOf).",
+          "owl:equivalentProperty": "rdfs:subClassOf",
+          "cardinality": "many-to-one",
+          "directionality": "directed",
+          "transitivity": true,
+          "examples": [
+            "pwmo:AESARadar pwmo:rel:inheritsFrom pwmo:Radar",
+            "pwmo:AN_APG-77 pwmo:rel:inheritsFrom pwmo:AESARadar"
+          ]
+        },
+
+        "specializes": {
+          "@id": "pwmo:rel:specializes",
+          "rdfs:label": "specializes",
+          "skos:definition": "The subject is a more specific subtype of the object class with additional constraints or capabilities.",
+          "domain": ["owl:Class"],
+          "range": ["owl:Class"],
+          "cardinality": "many-to-one",
+          "directionality": "directed"
+        },
+
+        "instanceOf": {
+          "@id": "pwmo:rel:instanceOf",
+          "rdfs:label": "instanceOf",
+          "skos:definition": "The subject individual is a concrete instance of the object class (OWL rdf:type).",
+          "owl:equivalentProperty": "rdf:type",
+          "cardinality": "many-to-many",
+          "directionality": "directed",
+          "examples": [
+            "pwmo:instance:AN_APG-77_SN1234 pwmo:rel:instanceOf pwmo:AESARadar",
+            "pwmo:instance:AN_APG-77_SN1234 pwmo:rel:instanceOf pwmo:AirborneFCR"
+          ]
+        }
+      }
+    }
+  },
+
+  "RelationshipRegistry": {
+    "@id": "pwmo:RelationshipRegistry",
+    "rdfs:label": "Complete Relationship ID Registry",
+    "skos:definition": "Flat index of all relationship IDs for rapid lookup, graph database import, and validation.",
+
+    "structuralRelationships": [
+      "pwmo:rel:hasComponent", "pwmo:rel:componentOf", "pwmo:rel:partOf", "pwmo:rel:contains",
+      "pwmo:rel:assembledFrom", "pwmo:rel:mountedOn", "pwmo:rel:integratedInto", "pwmo:rel:housedIn",
+      "pwmo:rel:connectedTo", "pwmo:rel:poweredBy", "pwmo:rel:cooledBy", "pwmo:rel:protectedBy",
+      "pwmo:rel:stabilizedBy", "pwmo:rel:replacedBy", "pwmo:rel:interfacesVia"
+    ],
+    "rfElectromagneticRelationships": [
+      "pwmo:rel:generatesSignal", "pwmo:rel:transmitsTo", "pwmo:rel:receives", "pwmo:rel:amplifies",
+      "pwmo:rel:filters", "pwmo:rel:mixes", "pwmo:rel:digitizes", "pwmo:rel:modulates",
+      "pwmo:rel:demodulates", "pwmo:rel:propagatesThrough", "pwmo:rel:attenuatedBy",
+      "pwmo:rel:reflectedBy", "pwmo:rel:scatteredBy", "pwmo:rel:absorbedBy",
+      "pwmo:rel:generatesBeam", "pwmo:rel:steersBeamTo", "pwmo:rel:illuminates", "pwmo:rel:isolatesRFPath"
+    ],
+    "signalProcessingRelationships": [
+      "pwmo:rel:processesSignal", "pwmo:rel:performsPulseCompression", "pwmo:rel:performsFFT",
+      "pwmo:rel:performsCFAR", "pwmo:rel:performsMTI", "pwmo:rel:performsMTD",
+      "pwmo:rel:performsSTAP", "pwmo:rel:performsBeamforming", "pwmo:rel:performsSARImaging",
+      "pwmo:rel:performsMotionCompensation", "pwmo:rel:estimatesRange", "pwmo:rel:estimatesVelocity",
+      "pwmo:rel:estimatesAngle", "pwmo:rel:estimatesRCS", "pwmo:rel:performsDespeckle", "pwmo:rel:fusesData"
+    ],
+    "detectionTrackingRelationships": [
+      "pwmo:rel:detects", "pwmo:rel:tracks", "pwmo:rel:initiatesTrack", "pwmo:rel:losesTrack",
+      "pwmo:rel:reacquiresTarget", "pwmo:rel:identifies", "pwmo:rel:classifies",
+      "pwmo:rel:prioritizesThreat", "pwmo:rel:cues", "pwmo:rel:handoffTarget",
+      "pwmo:rel:designates", "pwmo:rel:surveils"
+    ],
+    "commandControlRelationships": [
+      "pwmo:rel:controlledBy", "pwmo:rel:reportsTo", "pwmo:rel:coordinatesWith",
+      "pwmo:rel:sendsTrackDataTo", "pwmo:rel:receivesCommandFrom", "pwmo:rel:exchangesTracksWith",
+      "pwmo:rel:networkedWith", "pwmo:rel:assignedTo", "pwmo:rel:synchronizedWith"
+    ],
+    "weaponEngagementRelationships": [
+      "pwmo:rel:supportsFireControl", "pwmo:rel:guidesMissile", "pwmo:rel:supportsCIWS",
+      "pwmo:rel:engagesTarget", "pwmo:rel:providesTargetIllumination",
+      "pwmo:rel:assignsWeapon", "pwmo:rel:evaluatesKillProbability"
+    ],
+    "electronicWarfareRelationships": [
+      "pwmo:rel:jammedBy", "pwmo:rel:jams", "pwmo:rel:homeOnJam", "pwmo:rel:detectsJamming",
+      "pwmo:rel:performsFrequencyHopping", "pwmo:rel:performsAdaptiveNulling", "pwmo:rel:performsLPI",
+      "pwmo:rel:spoofedBy", "pwmo:rel:protectedByECCM", "pwmo:rel:threatenedByARM",
+      "pwmo:rel:performsElectronicAttack"
+    ],
+    "platformRelationships": [
+      "pwmo:rel:installedOn", "pwmo:rel:deployedFrom", "pwmo:rel:supportsPlatformNavigation",
+      "pwmo:rel:sharesPlatformPower", "pwmo:rel:sharesPlatformCooling"
+    ],
+    "environmentalRelationships": [
+      "pwmo:rel:affectedByRain", "pwmo:rel:affectedBySeaClutter", "pwmo:rel:affectedByGroundClutter",
+      "pwmo:rel:affectedByAtmosphericDucting", "pwmo:rel:affectedByMultipath",
+      "pwmo:rel:affectedByIonosphere", "pwmo:rel:compensatesForClutter"
+    ],
+    "maintenanceLogisticsRelationships": [
+      "pwmo:rel:maintainedBy", "pwmo:rel:calibratedBy", "pwmo:rel:diagnosedBy",
+      "pwmo:rel:upgradedBy", "pwmo:rel:suppliedBy", "pwmo:rel:testedBy",
+      "pwmo:rel:storedAt", "pwmo:rel:hasSuccessorSystem"
+    ],
+    "navigationTimingRelationships": [
+      "pwmo:rel:referencedByGPS", "pwmo:rel:compensatedByINS", "pwmo:rel:georeferencesWith"
+    ],
+    "communicationDataLinkRelationships": [
+      "pwmo:rel:communicatesVia", "pwmo:rel:publishesTracksTo",
+      "pwmo:rel:subscribesToTrackData", "pwmo:rel:interoperableWith"
+    ],
+    "aiCognitiveRelationships": [
+      "pwmo:rel:classifiedByAI", "pwmo:rel:optimizedByAI", "pwmo:rel:scheduledByAI",
+      "pwmo:rel:adaptedByCognitiveLoop", "pwmo:rel:anomalyDetectedByAI",
+      "pwmo:rel:fusedByAI", "pwmo:rel:despeckledByDiffusionModel"
+    ],
+    "temporalRelationships": [
+      "pwmo:rel:precedes", "pwmo:rel:follows", "pwmo:rel:concurrentWith",
+      "pwmo:rel:triggeredBy", "pwmo:rel:dependsOnCompletion",
+      "pwmo:rel:hasOperationalState", "pwmo:rel:transitionsTo"
+    ],
+    "inheritanceTaxonomyRelationships": [
+      "pwmo:rel:inheritsFrom", "pwmo:rel:specializes", "pwmo:rel:instanceOf"
+    ],
+
+    "totalRelationshipCount": 103
+  },
+
+  "RepresentativeRelationshipTriples": {
+    "@id": "pwmo:ExampleTriples",
+    "rdfs:label": "Representative Relationship Triple Examples",
+    "skos:definition": "Canonical example triples demonstrating correct use of the relationship ontology across all categories.",
+
+    "structural": [
+      { "subject": "pwmo:AN_APG-77", "predicate": "pwmo:rel:hasComponent", "object": "pwmo:AESA_Array" },
+      { "subject": "pwmo:AN_APG-77", "predicate": "pwmo:rel:hasComponent", "object": "pwmo:SignalProcessor" },
+      { "subject": "pwmo:AESA_Array", "predicate": "pwmo:rel:assembledFrom", "object": "pwmo:TR_Module_GaN", "quantity": 2200 },
+      { "subject": "pwmo:AN_APG-77", "predicate": "pwmo:rel:mountedOn", "object": "pwmo:F22_NoseCone" },
+      { "subject": "pwmo:TR_Module", "predicate": "pwmo:rel:cooledBy", "object": "pwmo:LiquidCoolingSystem" }
+    ],
+    "rfElectromagnetic": [
+      { "subject": "pwmo:FrequencySynthesizer", "predicate": "pwmo:rel:generatesSignal", "object": "pwmo:RFWaveform" },
+      { "subject": "pwmo:AESA_Array", "predicate": "pwmo:rel:transmitsTo", "object": "pwmo:AirspaceVolume" },
+      { "subject": "pwmo:RFPulse", "predicate": "pwmo:rel:reflectedBy", "object": "pwmo:TargetAircraft" },
+      { "subject": "pwmo:RFPulse", "predicate": "pwmo:rel:attenuatedBy", "object": "pwmo:RadarAbsorbingMaterial" },
+      { "subject": "pwmo:Circulator", "predicate": "pwmo:rel:isolatesRFPath", "object": "pwmo:Receiver" }
+    ],
+    "signalProcessing": [
+      { "subject": "pwmo:MatchedFilter", "predicate": "pwmo:rel:performsPulseCompression", "object": "pwmo:ReceivedEcho" },
+      { "subject": "pwmo:DopplerProcessor", "predicate": "pwmo:rel:performsFFT", "object": "pwmo:CompressedPulseMatrix" },
+      { "subject": "pwmo:CFARDetector", "predicate": "pwmo:rel:performsCFAR", "object": "pwmo:RangeDopplerMap" },
+      { "subject": "pwmo:USF_Framework", "predicate": "pwmo:rel:despeckledByDiffusionModel", "object": "pwmo:SAR_Image" },
+      { "subject": "pwmo:MonopulseProcessor", "predicate": "pwmo:rel:estimatesAngle", "object": "pwmo:TrackTarget" }
+    ],
+    "detectionTracking": [
+      { "subject": "pwmo:EarlyWarningRadar", "predicate": "pwmo:rel:detects", "object": "pwmo:BallisticMissile" },
+      { "subject": "pwmo:AN_APG-77", "predicate": "pwmo:rel:tracks", "object": "pwmo:TargetAircraft" },
+      { "subject": "pwmo:IFF_System", "predicate": "pwmo:rel:identifies", "object": "pwmo:TrackContact" },
+      { "subject": "pwmo:EarlyWarningRadar", "predicate": "pwmo:rel:cues", "object": "pwmo:FireControlRadar" }
+    ],
+    "commandControl": [
+      { "subject": "pwmo:AN_SPY-6", "predicate": "pwmo:rel:sendsTrackDataTo", "object": "pwmo:AegisWeaponSystem" },
+      { "subject": "pwmo:EarlyWarningRadar", "predicate": "pwmo:rel:reportsTo", "object": "pwmo:CAOC_CommandPost" },
+      { "subject": "pwmo:AESARadar", "predicate": "pwmo:rel:exchangesTracksWith", "object": "pwmo:Link16Network" }
+    ],
+    "weaponEngagement": [
+      { "subject": "pwmo:Patriot_MPQ-65", "predicate": "pwmo:rel:supportsFireControl", "object": "pwmo:PAC3_Missile" },
+      { "subject": "pwmo:AN_SPY-1", "predicate": "pwmo:rel:guidesMissile", "object": "pwmo:SM2_Missile" },
+      { "subject": "pwmo:NavalFCR", "predicate": "pwmo:rel:supportsCIWS", "object": "pwmo:Phalanx_CIWS" }
+    ],
+    "electronicWarfare": [
+      { "subject": "pwmo:AN_APG-77", "predicate": "pwmo:rel:performsLPI", "object": "pwmo:EnemyESM" },
+      { "subject": "pwmo:EnemyJammer", "predicate": "pwmo:rel:jammedBy", "object": "pwmo:NoiseJammer" },
+      { "subject": "pwmo:AESARadar", "predicate": "pwmo:rel:performsAdaptiveNulling", "object": "pwmo:StandoffJammer" },
+      { "subject": "pwmo:AN_APG-81", "predicate": "pwmo:rel:performsElectronicAttack", "object": "pwmo:EnemyRadar" }
+    ],
+    "platform": [
+      { "subject": "pwmo:AN_APG-77", "predicate": "pwmo:rel:installedOn", "object": "pwmo:F22_Raptor" },
+      { "subject": "pwmo:AN_APG-81", "predicate": "pwmo:rel:installedOn", "object": "pwmo:F35A" },
+      { "subject": "pwmo:AN_SPY-6", "predicate": "pwmo:rel:installedOn", "object": "pwmo:DDG_FlightIII" }
+    ],
+    "environment": [
+      { "subject": "pwmo:NavalRadar", "predicate": "pwmo:rel:affectedBySeaClutter", "object": "pwmo:SeaState5" },
+      { "subject": "pwmo:STAPProcessor", "predicate": "pwmo:rel:compensatesForClutter", "object": "pwmo:GroundClutter" },
+      { "subject": "pwmo:X-bandRadar", "predicate": "pwmo:rel:affectedByRain", "object": "pwmo:HeavyRainEnvironment" }
+    ],
+    "aiCognitive": [
+      { "subject": "pwmo:CNNClassifier", "predicate": "pwmo:rel:classifiedByAI", "object": "pwmo:TrackFile_007" },
+      { "subject": "pwmo:USF_Framework", "predicate": "pwmo:rel:despeckledByDiffusionModel", "object": "pwmo:SARImage_Sentinel1" },
+      { "subject": "pwmo:CognitiveRadarController", "predicate": "pwmo:rel:optimizedByAI", "object": "pwmo:WaveformParameters" }
+    ],
+    "temporal": [
+      { "subject": "pwmo:PulseTransmission", "predicate": "pwmo:rel:precedes", "object": "pwmo:EchoReception" },
+      { "subject": "pwmo:SearchMode", "predicate": "pwmo:rel:transitionsTo", "object": "pwmo:TrackMode", "trigger": "DetectionConfirmed" },
+      { "subject": "pwmo:ECCMActivation", "predicate": "pwmo:rel:triggeredBy", "object": "pwmo:JammingDetected" }
+    ]
+  },
+
+  "ValidationRules": {
+    "@id": "pwmo:ValidationRules",
+    "rdfs:label": "Relationship Ontology Validation Rules",
+
+    "rules": [
+      {
+        "ruleId": "PWMO-REL-V001",
+        "description": "Every relationship triple must have a subject and object typed in upper_taxonomy.json, component_ontology.json, or rf_signal_processing.json",
+        "severity": "ERROR"
+      },
+      {
+        "ruleId": "PWMO-REL-V002",
+        "description": "No structural containment cycle: X hasComponent Y hasComponent ... hasComponent X is forbidden",
+        "severity": "ERROR"
+      },
+      {
+        "ruleId": "PWMO-REL-V003",
+        "description": "Radar cannot be jammedBy itself",
+        "severity": "ERROR"
+      },
+      {
+        "ruleId": "PWMO-REL-V004",
+        "description": "installedOn subject must be a Radar or RadarSubsystem; object must be a Platform",
+        "severity": "ERROR"
+      },
+      {
+        "ruleId": "PWMO-REL-V005",
+        "description": "guidesMissile is only valid if the subject is a FireControlRadar or IlluminatorRadar",
+        "severity": "ERROR"
+      },
+      {
+        "ruleId": "PWMO-REL-V006",
+        "description": "performsSTAP requires subject to be a STAPProcessor or have STAPProcessor as a component",
+        "severity": "WARNING"
+      },
+      {
+        "ruleId": "PWMO-REL-V007",
+        "description": "despeckledByDiffusionModel subject must be a DiffusionModel; object must be a SAR_Image or SpeckleNoise type",
+        "severity": "ERROR"
+      },
+      {
+        "ruleId": "PWMO-REL-V008",
+        "description": "Temporal precedes/follows must not form cycles (irreflexive, asymmetric)",
+        "severity": "ERROR"
+      },
+      {
+        "ruleId": "PWMO-REL-V009",
+        "description": "All relationship IDs must resolve in the RelationshipRegistry",
+        "severity": "ERROR"
+      },
+      {
+        "ruleId": "PWMO-REL-V010",
+        "description": "communicatesVia interface values must match a declared interface type in DataLink component ontology",
+        "severity": "WARNING"
+      }
+    ]
+  }
+}

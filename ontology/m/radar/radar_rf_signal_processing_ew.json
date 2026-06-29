@@ -1,0 +1,548 @@
+{
+  "@context": { "pwmo": "https://physworld.ai/ontology/radar#" },
+  "@id": "pwmo:RF_SignalProcessing_EW",
+
+  "FrequencyBands": {
+    "@id": "pwmo:FrequencyBandOntology",
+    "rdfs:label": "IEEE/NATO Radar Frequency Band Classification",
+    "bands": {
+      "HF": {
+        "@id": "pwmo:HF_Band",
+        "frequency_MHz": [3, 30],
+        "wavelength_m": [10, 100],
+        "primaryRadarUse": "Over-The-Horizon Radar (OTHR) exploiting ionospheric skywave propagation",
+        "propagationMode": "Skywave (ionospheric refraction) and groundwave",
+        "radarRange_km": [1000, 4000],
+        "advantages": ["Continental and ocean-scale detection", "Very long range", "Cannot be masked by terrain"],
+        "disadvantages": ["Very poor resolution", "Ionospheric variability", "Interference from civil HF users", "Very large antenna arrays (km scale)", "Slow update rate"],
+        "examples": ["Jindalee OTHR (Australia)", "AN/FPS-118 OTH-B (USA)", "Duga-3 (Russia, legacy)", "Sura (Russia)", "JORN (Australia)"]
+      },
+      "VHF": {
+        "@id": "pwmo:VHF_Band",
+        "frequency_MHz": [30, 300],
+        "wavelength_m": [1, 10],
+        "IEEEdesignation": "A/B",
+        "primaryRadarUse": "Long-range early warning; counter-stealth (resonance region for 2-10m objects)",
+        "stealthCounterCapability": "VHF wavelengths (1-10m) approach resonance region for typical combat aircraft wingspans (10-15m). Radar Absorbing Material (RAM) optimized for X-band is largely ineffective at VHF.",
+        "advantages": ["Counter-stealth capability", "Long range", "Low atmospheric absorption", "Difficult to jam (low frequency)"],
+        "disadvantages": ["Poor angular resolution (large beamwidth for aperture)", "Large antenna structures", "Susceptible to multipath", "IFF difficult to integrate"],
+        "examples": ["P-18 Spoon Rest (Russia/export)", "Nebo-M (Russia)", "JY-27A (China)", "P-15 Flat Face (legacy)", "AN/FPS-50 (USA, legacy)"]
+      },
+      "UHF": {
+        "@id": "pwmo:UHF_Band",
+        "frequency_MHz": [300, 1000],
+        "wavelength_m": [0.3, 1.0],
+        "IEEEdesignation": "B/C",
+        "primaryRadarUse": "Early warning, ballistic missile defense, space surveillance",
+        "advantages": ["Long range", "Good counter-stealth (partial)", "Manageable antenna size"],
+        "disadvantages": ["Moderate angular resolution", "Some ionospheric effect"],
+        "examples": ["AN/FPS-132 UEWR (USA, 420 MHz)", "ALTAIR (Kwajalein)", "Voronezh-M (Russia, 150-175 MHz)", "BMEWS (USA/UK)"]
+      },
+      "L_Band": {
+        "@id": "pwmo:L_Band",
+        "frequency_GHz": [1, 2],
+        "wavelength_cm": [15, 30],
+        "IEEEdesignation": "D",
+        "primaryRadarUse": "Long-range air route surveillance, ATC, naval air search",
+        "advantages": ["Good balance of range and resolution", "Low atmospheric attenuation", "IFF-compatible (near 1 GHz)", "Cost-effective large apertures"],
+        "disadvantages": ["Moderate resolution", "Larger than S-band for same gain"],
+        "examples": ["AN/TPS-75 (USAF)", "AN/FPS-117 (USA)", "Ground Master 200 (Thales)", "TPS-70 (Raytheon export)"]
+      },
+      "S_Band": {
+        "@id": "pwmo:S_Band",
+        "frequency_GHz": [2, 4],
+        "wavelength_cm": [7.5, 15],
+        "IEEEdesignation": "E/F",
+        "primaryRadarUse": "Medium-range air surveillance, naval volume search, weather radar",
+        "advantages": ["Good range and resolution balance", "Some weather capability", "Good clutter rejection"],
+        "disadvantages": ["Attenuation in heavy rain (2-4 dB/km extreme)"],
+        "examples": ["AN/SPY-1 (Aegis, 3 GHz)", "SPY-6 (AMDR)", "Ground Master 400 (Thales)", "Rezonans-N (Russia)", "SMART-L (Netherlands)"]
+      },
+      "C_Band": {
+        "@id": "pwmo:C_Band",
+        "frequency_GHz": [4, 8],
+        "wavelength_cm": [3.75, 7.5],
+        "IEEEdesignation": "G",
+        "primaryRadarUse": "Medium-range fire control, counter-battery, weather",
+        "advantages": ["Good resolution", "Good Doppler capability"],
+        "disadvantages": ["Rain attenuation moderately significant"],
+        "examples": ["COBRA (counter-battery)", "ARTHUR", "Swathi (India)", "Star-2000 (Turkey)", "AN/MPQ-64 Sentinel"]
+      },
+      "X_Band": {
+        "@id": "pwmo:X_Band",
+        "frequency_GHz": [8, 12],
+        "wavelength_cm": [2.5, 3.75],
+        "IEEEdesignation": "I/J",
+        "primaryRadarUse": "Fire control, airborne FCR, naval fire control, SAR, weapon guidance",
+        "advantages": ["High resolution (range and Doppler)", "Manageable aperture for high gain", "Good for SAR imaging", "Precise tracking"],
+        "disadvantages": ["Significant rain attenuation (>3 dB/km in heavy rain)", "Shorter range vs lower bands", "High cost TR modules"],
+        "examples": ["AN/APG-77 (F-22)", "AN/APG-81 (F-35)", "N035 Irbis-E (Su-35)", "Selex Vixen (Gripen)", "CAPTOR-E (Typhoon)", "RBE2 (Rafale)", "AN/SPY-3 (DDG-1000)", "Patriot MPQ-53 (X-band illuminator)"]
+      },
+      "Ku_Band": {
+        "@id": "pwmo:Ku_Band",
+        "frequency_GHz": [12, 18],
+        "wavelength_cm": [1.67, 2.5],
+        "IEEEdesignation": "J",
+        "primaryRadarUse": "Missile seekers, short-range surveillance, precision tracking, SHORAD",
+        "advantages": ["Very high resolution", "Compact aperture for good gain"],
+        "disadvantages": ["Significant atmospheric attenuation", "Limited range in bad weather"],
+        "examples": ["THAAD X-band (seeker)", "Hellfire MMW seeker", "Some SHORAD fire control radars"]
+      },
+      "Ka_Band": {
+        "@id": "pwmo:Ka_Band",
+        "frequency_GHz": [26.5, 40],
+        "wavelength_mm": [7.5, 11.3],
+        "IEEEdesignation": "K",
+        "primaryRadarUse": "Millimeter wave precision seekers, drone detection, police speed radar",
+        "examples": ["Brimstone MMW seeker", "Counter-UAS radars", "Vehicle-based point defense"]
+      },
+      "W_Band": {
+        "@id": "pwmo:W_Band",
+        "frequency_GHz": [75, 110],
+        "wavelength_mm": [2.7, 4.0],
+        "IEEEdesignation": "V/W",
+        "primaryRadarUse": "Very high resolution seekers, UAS detection, automotive radar, some counter-drone",
+        "advantages": ["Very high resolution", "Small aperture for high gain", "Can detect very small drones"],
+        "disadvantages": ["High atmospheric attenuation (especially rain, humidity)", "Short range", "Expensive components"],
+        "examples": ["Some Bofors/Rafael SHORAD seekers", "Counter-drone detection", "AMS landmine detection R&D"]
+      }
+    }
+  },
+
+  "WaveformTypes": {
+    "@id": "pwmo:WaveformOntology",
+    "rdfs:label": "Radar Waveform Classification",
+    "waveforms": {
+      "PulsedUnmodulated": {
+        "@id": "pwmo:PulsedUnmodulated",
+        "rdfs:label": "Simple Pulsed (Unmodulated)",
+        "description": "Short rectangular pulse. Range resolution = c*τ/2 where τ is pulse width.",
+        "rangeResolution_m": { "formula": "c * pulseWidth / 2", "example_1us_pulse": 150 },
+        "limitation": "Range-Doppler coupling; range resolution tied to pulse width (limits power)",
+        "historicalUse": "Pre-1950s and simple legacy radars"
+      },
+      "LFM_Chirp": {
+        "@id": "pwmo:LFM_Chirp",
+        "rdfs:label": "Linear Frequency Modulated (LFM) Chirp",
+        "description": "Pulse where frequency sweeps linearly across bandwidth B during pulse width τ. Enables pulse compression: output range resolution = c/(2B), independent of τ.",
+        "timebanwidthProduct": "Processing gain ≈ B*τ. Typical: 100-10000",
+        "pulseCompressionGain_dB": { "formula": "10*log10(B*tau)", "example_10MHz_100us": 30 },
+        "advantage": "High average power (long pulse) with fine range resolution (large bandwidth). Most common modern radar waveform.",
+        "peakSidelobe": "First sidelobe at -13.3 dB (rectangular window); -40 dB with Taylor weighting"
+      },
+      "NLFM": {
+        "@id": "pwmo:NLFM",
+        "rdfs:label": "Nonlinear FM",
+        "description": "FM sweep with nonlinear rate; designed to have low range sidelobes without amplitude weighting loss.",
+        "advantage": "Low sidelobes (-35 to -45 dB) with no processing gain loss"
+      },
+      "FMCW": {
+        "@id": "pwmo:FMCW",
+        "rdfs:label": "Frequency Modulated Continuous Wave (FMCW)",
+        "description": "Continuously transmits FM signal; range from beat frequency between TX and RX. No high-power pulsed transmitter required.",
+        "rangeFormula": "R = c * f_beat / (2 * slope)",
+        "advantages": ["No minimum range blind zone", "Low peak power", "Low probability of intercept", "Excellent for short-range applications", "Simple hardware for high resolution"],
+        "disadvantages": ["TX-RX isolation critical (same time operation)", "Range-Doppler coupling in simple FMCW"],
+        "examples": ["Counter-UAS radars", "Automotive radar (77 GHz)", "Millimeter wave seekers", "Active protection systems"]
+      },
+      "SteppedFrequency": {
+        "@id": "pwmo:SteppedFrequency",
+        "rdfs:label": "Stepped Frequency Waveform",
+        "description": "Sequence of pulses stepping across a wide bandwidth; coherent processing provides fine range resolution without instantaneous wide bandwidth hardware.",
+        "advantages": ["High range resolution without wide instantaneous bandwidth", "ECCM (frequency diversity)", "ISAR imaging application"],
+        "disadvantages": ["Long coherent processing time; target must not move significantly across stepped bandwidth"]
+      },
+      "OFDM": {
+        "@id": "pwmo:OFDM_Radar",
+        "rdfs:label": "OFDM Radar Waveform",
+        "description": "Orthogonal Frequency Division Multiplexing adapted for radar; simultaneous transmission across multiple subcarriers enabling simultaneous range, Doppler, and angle measurement.",
+        "advantages": ["Spectrum efficiency", "Interference resilience", "MIMO radar compatibility", "Cognitive radar waveform flexibility"],
+        "maturity": "Research/early experimental"
+      },
+      "PseudoRandom": {
+        "@id": "pwmo:PseudoRandomWaveform",
+        "rdfs:label": "Pseudo-Random / Phase-Coded Waveform",
+        "description": "Phase-coded pulse sequences (Barker, Golay, Gold codes) or pseudo-random waveforms for LPI radar; difficult to detect or replicate by hostile ESM.",
+        "codes": ["Barker (13-chip, sidelobe = -22.3 dB)", "Frank code", "P1/P2/P3/P4 codes", "Gold codes", "Costas codes"],
+        "LPI_advantage": "Wideband pseudo-random waveforms have low peak power spectral density, making them difficult to detect with narrowband receivers"
+      }
+    }
+  },
+
+  "SignalProcessingBlocks": {
+    "@id": "pwmo:SignalProcessingOntology",
+    "rdfs:label": "Complete Signal Processing Block Ontology",
+
+    "PulseCompression": {
+      "@id": "pwmo:PulseCompression",
+      "rdfs:label": "Pulse Compression",
+      "skos:definition": "Matched filtering of LFM or phase-coded waveform to concentrate energy into narrow peak, achieving simultaneous high range resolution and high energy (SNR).",
+      "implementation": ["Time-domain convolution", "Frequency-domain FFT multiply (most efficient)", "Digital FIR matched filter"],
+      "outputs": "Range-compressed signal with fine range resolution (c/2B)"
+    },
+    "FFT": {
+      "@id": "pwmo:FFT_Processing",
+      "rdfs:label": "Fast Fourier Transform (FFT) / Doppler Processing",
+      "skos:definition": "Coherent integration of N pulses via DFT/FFT across slow-time dimension. Creates range-Doppler map. Processing gain = 10*log10(N). Resolves targets by velocity.",
+      "slowTimeFFT_output": "Range-Doppler matrix: rows = range gates, columns = Doppler bins (velocity)",
+      "coherentIntegrationGain_dB": "10*log10(N_pulses)",
+      "velocityResolution_ms": { "formula": "lambda / (2 * T_CPI)", "description": "CPI = Coherent Processing Interval" }
+    },
+    "MTI": {
+      "@id": "pwmo:MTI",
+      "rdfs:label": "Moving Target Indicator (MTI)",
+      "skos:definition": "Cancellation filter removing stationary or slow-moving clutter by subtracting successive returns. Works on blind velocities where target Doppler matches PRF alias.",
+      "filterTypes": ["Single delay line canceller", "Double delay canceller", "Optimum MTI filter (Chebyshev)"],
+      "blindVelocities": "Targets with v = n * lambda * PRF / 2 (n=0,1,2...) are cancelled along with clutter",
+      "improvementFactor_dB": [20, 60],
+      "limitation": "Blind velocity problem; overcome by staggered PRF"
+    },
+    "MTD": {
+      "@id": "pwmo:MTD",
+      "rdfs:label": "Moving Target Detection (MTD)",
+      "skos:definition": "Enhancement of MTI combining Doppler filtering (DFT bank) with adaptive CFAR. Modern standard for pulse-Doppler radars. Overcomes blind velocity problem.",
+      "processing": "Doppler FFT bank following MTI canceller; each Doppler filter has its own CFAR threshold",
+      "improvement_over_MTI": "No blind velocities (with staggered PRF); better clutter-to-noise ratio handling"
+    },
+    "CFAR": {
+      "@id": "pwmo:CFAR",
+      "rdfs:label": "Constant False Alarm Rate (CFAR)",
+      "skos:definition": "Adaptive threshold detection algorithm maintaining constant probability of false alarm regardless of clutter level by estimating local noise/clutter power and setting threshold accordingly.",
+      "variants": {
+        "CA-CFAR": { "name": "Cell-Averaging CFAR", "description": "Averages training cells around cell under test; optimal in Gaussian noise" },
+        "GOCA-CFAR": { "name": "Greatest-of CA-CFAR", "description": "Selects max of leading/lagging averages; better at clutter edges" },
+        "SOCA-CFAR": { "name": "Smallest-of CA-CFAR", "description": "Selects min; better in target-rich environments" },
+        "OS-CFAR": { "name": "Ordered Statistics CFAR", "description": "Ranks training cells; robust to interfering targets in reference window" },
+        "VI-CFAR": { "name": "Variability Index CFAR", "description": "Switches algorithm based on clutter statistics" },
+        "AI-CFAR": { "name": "AI-based CFAR", "description": "Deep learning CFAR adapting to complex non-stationary clutter; state of research" }
+      },
+      "applicationToSARDespeckling": "CFAR detection in SAR images used for ship, vehicle, and change detection. Connected to StructDiff SAR-DDPM research: despeckling improves CFAR performance by reducing false alarms from speckle noise."
+    },
+    "STAP": {
+      "@id": "pwmo:STAP",
+      "rdfs:label": "Space-Time Adaptive Processing (STAP)",
+      "skos:definition": "Joint spatial-temporal adaptive processing using multi-channel (multi-element) phased array data across multiple pulses to cancel airborne clutter which has Doppler spread dependent on antenna look angle (clutter ridge in STAP space).",
+      "mathematicalFormulation": "Optimum STAP weight vector: w = R^{-1} * s / (s^H * R^{-1} * s), where R is the space-time clutter+noise covariance matrix and s is the target space-time steering vector.",
+      "requirement": "Multiple receive channels (array); coherent multi-pulse processing",
+      "MDV_improvement_over_MTI": "STAP can detect targets at 0.1-1 m/s vs MTI limit of ~5-10 m/s",
+      "computationalCost": "O(N^2 * M^2) for full STAP; reduced-rank approximations required (JDL, EFA, PRI-staggered)",
+      "challenges": ["Clutter non-stationarity", "Heterogeneous environment", "Jamming in training data", "Computational load"],
+      "examples": ["AN/APY-7 (JSTARS)", "E-8C", "All modern GMTI systems"]
+    },
+    "AdaptiveBeamforming": {
+      "@id": "pwmo:AdaptiveBeamforming",
+      "rdfs:label": "Adaptive Beamforming / Digital Beamforming (DBF)",
+      "skos:definition": "Real-time adaptation of antenna pattern weights to place nulls in the direction of jammers or interference while maintaining gain toward desired target.",
+      "algorithms": {
+        "MVDR": "Minimum Variance Distortionless Response; places deepest nulls but requires accurate signal direction",
+        "LCMV": "Linearly Constrained Minimum Variance; multiple simultaneous null constraints",
+        "SMI": "Sample Matrix Inversion; estimates covariance from received data",
+        "DiagonalLoading": "Regularization for poorly conditioned covariance matrix",
+        "DeepLearning_ABF": "CNN/RNN-based beamforming; handles coherent jammers and model mismatch"
+      },
+      "nullDepth_dB": [30, 60],
+      "convergenceTime_ms": [1, 100]
+    },
+    "PulseDopplerProcessing": {
+      "@id": "pwmo:PulseDopplerProcessing",
+      "rdfs:label": "Pulse-Doppler Processing",
+      "skos:definition": "Coherent detection exploiting Doppler frequency shift for clutter rejection and target velocity measurement in airborne and high-velocity environments.",
+      "PRFRegimes": {
+        "HighPRF": {
+          "description": "PRF chosen so maximum target Doppler is within first ambiguity; no Doppler ambiguities; range ambiguous",
+          "advantage": "Unambiguous velocity; excellent clutter rejection in head-on geometry",
+          "disadvantage": "Heavy range ambiguity; eclipse (blind zones)"
+        },
+        "MediumPRF": {
+          "description": "Compromise; both range and velocity ambiguous but manageable with multiple PRFs",
+          "advantage": "Good all-aspect performance",
+          "disadvantage": "Requires multiple PRF sequences to resolve ambiguities"
+        },
+        "LowPRF": {
+          "description": "Unambiguous range; highly Doppler ambiguous",
+          "advantage": "Clear range; simple",
+          "disadvantage": "Poor clutter rejection for airborne platforms"
+        }
+      }
+    },
+    "Tracking": {
+      "@id": "pwmo:TrackingOntology",
+      "rdfs:label": "Multi-Target Tracking Algorithms",
+      "algorithms": {
+        "KalmanFilter": {
+          "@id": "pwmo:KalmanFilter",
+          "description": "Optimal linear estimator for Gaussian noise; predicts next state and updates with measurement. Standard for constant velocity / constant acceleration targets.",
+          "stateVector": "Typically [x, y, z, vx, vy, vz] or extended with acceleration",
+          "motionModels": ["Constant Velocity (CV)", "Constant Acceleration (CA)", "Singer Model", "Current Statistical Model", "Coordinated Turn (CT)"]
+        },
+        "EKF": {
+          "@id": "pwmo:ExtendedKalmanFilter",
+          "description": "Linearized Kalman for nonlinear measurement equations (radar measurements in polar coords; state in Cartesian)"
+        },
+        "UKF": {
+          "@id": "pwmo:UnscentedKalmanFilter",
+          "description": "Sigma-point Kalman filter; better nonlinear handling than EKF without linearization"
+        },
+        "ParticleFilter": {
+          "@id": "pwmo:ParticleFilter",
+          "description": "Monte Carlo sequential importance sampling; handles arbitrary non-Gaussian distributions; computationally expensive but handles highly maneuvering targets and multimodal posteriors"
+        },
+        "IMM": {
+          "@id": "pwmo:IMM",
+          "description": "Interacting Multiple Model estimator; bank of filters with different motion models weighted by likelihood; handles mode-switching maneuvers",
+          "advantage": "Automatically switches between CV/CA/CT models; excellent for maneuvering targets"
+        },
+        "JPDA": {
+          "@id": "pwmo:JPDA",
+          "description": "Joint Probabilistic Data Association; handles measurement-to-track association uncertainty in cluttered environments",
+          "application": "Close formation tracking, dense target environments"
+        },
+        "MHT": {
+          "@id": "pwmo:MHT",
+          "description": "Multiple Hypothesis Tracking; maintains multiple association hypotheses pruned over time; Bayesian optimal multi-target tracker",
+          "advantage": "Handles track initiation/termination, crossing tracks, merged measurements",
+          "disadvantage": "Exponential hypothesis growth; requires pruning (N-scan, k-best)"
+        },
+        "PHD_Filter": {
+          "@id": "pwmo:PHD_Filter",
+          "description": "Probability Hypothesis Density filter (Random Finite Sets); propagates first moment of multi-target density; computationally efficient multi-target tracking",
+          "variants": ["PHD (particle)", "GM-PHD (Gaussian mixture)", "CPHD", "δ-GLMB"]
+        }
+      }
+    },
+    "TargetClassification": {
+      "@id": "pwmo:TargetClassification",
+      "rdfs:label": "Non-Cooperative Target Recognition (NCTR) / Classification",
+      "methods": {
+        "JetEngineModulation_JEM": {
+          "description": "Doppler modulation sidebands from rotating jet engine fan blades; unique signature per engine type",
+          "classification_capability": "Aircraft type identification"
+        },
+        "HelicopterBlade_Flash": {
+          "description": "Periodic returns from helicopter rotor blades; rate reveals rotor RPM; blade number reveals type"
+        },
+        "HighRangeResolutionProfile_HRRP": {
+          "description": "Range profile of target scattering centers at fine range resolution; matched against library",
+          "rangeResolution_required_m": [0.1, 1.0]
+        },
+        "ISAR_Imaging": {
+          "description": "2D radar image of target from relative motion; matched against 3D model library",
+          "application": "Ship classification, aircraft identification"
+        },
+        "MicroDoppler": {
+          "description": "Modulation of Doppler from rotating/vibrating sub-parts: helicopter blades, drone rotors, walking human limbs",
+          "application": "UAS vs bird discrimination; human activity recognition; vehicle type"
+        },
+        "PolSAR_Classification": {
+          "description": "Polarimetric decomposition of SAR returns (Pauli, Cloude-Pottier H/A/alpha) for terrain and target classification",
+          "application": "SAR image target classification; change detection; vehicle detection",
+          "connectionToStructDiff": "Direct connection to SAR research; polarimetric features can enhance StructDiff change detection pipeline"
+        },
+        "AI_DeepLearning": {
+          "description": "CNN, RNN, Transformer-based classifiers trained on radar signature libraries",
+          "inputFeatures": ["HRRP", "Range-Doppler map", "SAR image", "Micro-Doppler spectrogram", "Polarimetric features"],
+          "advantage": "Outperforms model-based methods for complex targets and clutter",
+          "challenges": ["Training data scarcity (especially classified targets)", "Adversarial examples", "Domain shift", "Explainability requirement for military use"]
+        }
+      }
+    }
+  },
+
+  "ElectronicWarfare": {
+    "@id": "pwmo:ElectronicWarfareOntology",
+    "rdfs:label": "Electronic Warfare: Countermeasures and Counter-Countermeasures",
+
+    "ECM_Jamming": {
+      "@id": "pwmo:ECM",
+      "rdfs:label": "Electronic Countermeasures (ECM) / Jamming",
+
+      "NoiseJamming": {
+        "SpotJamming": {
+          "@id": "pwmo:SpotJamming",
+          "description": "High-power noise concentrated on exact radar frequency. Maximum J/S ratio but requires precise knowledge of radar frequency.",
+          "advantage": "Maximum jamming power density at exact frequency",
+          "disadvantage": "Ineffective if radar frequency hops; requires precise frequency knowledge"
+        },
+        "BarrageJamming": {
+          "@id": "pwmo:BarrageJamming",
+          "description": "Noise spread across wide frequency band. Effective against frequency-agile radars but lower spectral power density per MHz.",
+          "J_S_penalty": "Power spread across B_jammer/B_radar bandwidth ratio"
+        },
+        "SweptJamming": {
+          "@id": "pwmo:SweptJamming",
+          "description": "Noise swept rapidly across target frequency range; compromise between spot and barrage efficiency."
+        },
+        "CoverPulseJamming": {
+          "@id": "pwmo:CoverPulseJamming",
+          "description": "High-power pulse covering the radar receiver when range/angle truth would be measured. Used for range denial."
+        }
+      },
+
+      "DeceptionJamming": {
+        "DRFM": {
+          "@id": "pwmo:DRFM",
+          "rdfs:label": "Digital Radio Frequency Memory (DRFM)",
+          "skos:definition": "Receives radar signal, stores digitally, and retransmits with modifications (time delay, Doppler shift, amplitude modulation) to create false target returns that appear coherent to the victim radar.",
+          "capabilities": ["Range gate pull-off (RGPO)", "Velocity gate pull-off (VGPO)", "False target generation (multiple)", "Angle deception (cross-eye, inverse gain)", "DRFM repeater for SAM guidance denial"],
+          "fidelity": "Modern DRFM can replicate radar signal with <1 ns timing accuracy and <0.1 Hz Doppler accuracy",
+          "limitation": "Coherent pulse compression radars can detect DRFM artifacts if processing is sophisticated",
+          "counterCountermeasure": "Randomized waveforms, high bandwidth LFM, polarization agility, cross-check across multiple radar"
+        },
+        "RangeGatePullOff_RGPO": {
+          "@id": "pwmo:RGPO",
+          "description": "DRFM repeater captures victim radar's range gate; generates delayed replica; slowly walks range gate away from truth target",
+          "effectOnMissile": "Missile seeker tracks false range gate; diverts from target"
+        },
+        "VelocityGatePullOff_VGPO": {
+          "@id": "pwmo:VGPO",
+          "description": "DRFM captures Doppler gate; slowly Doppler-shifts false return away from truth",
+          "effectOnMissile": "Missile notch filter tracks false Doppler; target appears stationary (clutter) and is rejected"
+        },
+        "FalseTargetGeneration": {
+          "@id": "pwmo:FalseTargetGeneration",
+          "description": "DRFM generates multiple simultaneous false targets with varied range, Doppler, and angle to saturate radar tracking and fire control",
+          "saturationTarget": "Modern DRFM can generate 50-200 simultaneous false targets"
+        },
+        "CrossEye": {
+          "@id": "pwmo:CrossEye",
+          "description": "Two-element jammer with controlled phase difference creates a glint-like angular error in monopulse angle measurement",
+          "effectOnMonopulse": "Monopulse angle error proportional to separation between cross-eye elements and amplitude/phase control",
+          "limitation": "Complex implementation; amplitude/phase balance critical"
+        }
+      },
+
+      "PhysicalDecoys": {
+        "Chaff": {
+          "@id": "pwmo:Chaff",
+          "description": "Dipole reflectors (typically cut aluminum foil or metalized glass fiber) dispensed in cloud; each dipole resonant at λ/2 of threat radar frequency",
+          "RCS_m2": [100, 10000],
+          "disadvantage": "Wind-dependent; known Doppler (zero radial velocity if not deployed from moving platform); modern radars discriminate by Doppler"
+        },
+        "AirborneDecoys": {
+          "@id": "pwmo:AirborneDecoy",
+          "description": "Powered or unpowered decoys mimicking aircraft radar signature. Active decoys include DRFM to enhance and modify returns.",
+          "types": {
+            "ADM-160_MALD": { "country": "USA", "type": "Miniature Air Launched Decoy; active RF emitter" },
+            "BriteCloud": { "country": "UK", "type": "Expendable active decoy (chaffless)", "note": "DRFM in tube dispensed from chaff/flare dispenser" },
+            "Delilah": { "country": "Israel", "type": "Active powered decoy/loitering munition hybrid" }
+          }
+        },
+        "InflatableDecoys": {
+          "description": "Corner reflectors or inflatable structures mimicking large vehicles or aircraft for deception of SAR and ground surveillance radars"
+        }
+      },
+
+      "AntiRadiationMissile_ARM": {
+        "@id": "pwmo:ARM",
+        "rdfs:label": "Anti-Radiation Missile (ARM)",
+        "skos:definition": "Missile homing passively on radar emissions. Primary kinetic threat to emitting radars.",
+        "guidanceMode": "Passive anti-radiation homing on radar RF emissions",
+        "examples": {
+          "AGM-88_HARM": { "country": "USA", "range_km": 150, "frequency_GHz": [0.5, 20], "status": "Operational" },
+          "AGM-88E_AARGM": { "country": "USA", "guidance": "HARM + GPS/INS + mmW seeker", "advantage": "Hits radar even after shutdown" },
+          "AARGM-ER": { "country": "USA", "range_km": 300, "status": "Operational (F-35 internal)" },
+          "Kh-31P": { "country": "Russia", "range_km": 110, "status": "Operational; export" },
+          "Kh-58UShKE": { "country": "Russia", "range_km": 245, "guidance": "Passive + GPS" },
+          "ALARM": { "country": "UK", "feature": "Loitering mode; parachutes then re-engages when radar re-activates" },
+          "ARMAT": { "country": "France", "status": "Legacy" },
+          "HAR": { "country": "Germany/France", "name": "Leuchtmarkierer" },
+          "RUDRAM-1": { "country": "India", "range_km": 250, "guidance": "Passive + INS/GPS" },
+          "CM-103": { "country": "China", "range_km": 100 }
+        },
+        "radarCountermeasures": ["Rapid shutdown (silent mode)", "Frequency agility", "Low-sidelobe antenna", "Decoy transmitters", "AESA spatial blanking", "Dispersed radar network (no single emitter target)"]
+      }
+    },
+
+    "ECCM": {
+      "@id": "pwmo:ECCM",
+      "rdfs:label": "Electronic Counter-Countermeasures (ECCM)",
+      "skos:definition": "Radar design features and operational techniques that reduce susceptibility to jamming, deception, and ARM attack.",
+      "techniques": {
+        "FrequencyAgility": {
+          "@id": "pwmo:FrequencyAgility",
+          "description": "Pulse-to-pulse or burst-to-burst frequency hopping across wide band. Forces barrage jamming or prevents spot jamming.",
+          "hoppingRange_percent": [5, 20],
+          "effectiveness": "Reduces DRFM effectiveness; forces barrage jamming (lower J/S)"
+        },
+        "PulseCompression": {
+          "ECCMbenefit": "High time-bandwidth product waveform raises threshold for coherent DRFM jamming; random waveforms prevent DRFM coherent replication"
+        },
+        "LowSidelobeLSL": {
+          "@id": "pwmo:LowSidelobe",
+          "description": "Ultra-low sidelobe antenna (-45 to -55 dB PSLL) prevents jamming entering through sidelobes",
+          "designComplexity": "Requires precise amplitude tapering; manufacturing tolerance critical"
+        },
+        "SidelobleCancellation_SLC": {
+          "@id": "pwmo:SidelobeCancellation",
+          "description": "Auxiliary antennas adaptively null jammers entering sidelobes of main antenna",
+          "numberOfAuxElements": [2, 8],
+          "nullDepth_dB": [30, 50]
+        },
+        "HomeOnJam_HOJ": {
+          "@id": "pwmo:HomeOnJam",
+          "description": "Missile guidance mode using jammer emissions as beacon when SARH illumination fails due to jamming",
+          "missiles": ["AIM-7 (partial)", "R-27 series", "PL-12"]
+        },
+        "BurnThrough": {
+          "@id": "pwmo:BurnThrough",
+          "description": "Operating at maximum power in reduced-coverage sector to overcome noise jamming; effective when J/S is marginal",
+          "burnThrough_range_typical": "Radar detection range in jamming = normal range / sqrt(J/S + 1)"
+        },
+        "LPI": {
+          "@id": "pwmo:LPI",
+          "rdfs:label": "Low Probability of Intercept (LPI)",
+          "description": "Radar design minimizing detectability by hostile ESM/RWR receivers through combination of low peak power, wide bandwidth, pseudo-random waveforms, and agile frequency/PRF",
+          "techniques": ["Low peak power + pulse compression", "Ultra-wideband waveforms", "Random PRF variation", "Frequency hopping", "Low sidelobes", "Narrow dwell time per angle"],
+          "figureFOfMerit": "LPI factor = (S/N)_radar / (S/N)_ESM_interceptor",
+          "examples": ["F-22 APG-77 (LPI AESA)", "Picosar (Israeli UAV LPI)", "Seaspray 7500E LPI", "AESAs with random waveform mode"]
+        },
+        "CognitiveECCM": {
+          "description": "AI/ML-based real-time ECCM: detect jamming type, select optimal counter, adapt waveform autonomously",
+          "maturity": "Research / early DARPA programs (2020s)"
+        },
+        "DRFM_Resistance": {
+          "techniques": ["Random LFM slope", "Noise-like waveforms", "Multiple simultaneous diverse waveforms per beam", "Out-of-band frequency checks", "Polarization diversity pulses"]
+        },
+        "SilentMode": {
+          "description": "Radar ceases emission when ARM attack detected (via RWR); relies on netted radar from different location to maintain track"
+        }
+      }
+    },
+
+    "Vulnerabilities": {
+      "@id": "pwmo:VulnerabilityOntology",
+      "rdfs:label": "Radar System Vulnerabilities",
+      "kinetic": {
+        "ARM_Attack": { "severity": "CRITICAL", "mitigation": "Silent mode, frequency agility, ARM-detecting RWR, dispersal" },
+        "DirectAttack": { "severity": "HIGH", "mitigation": "Hardening, dispersal, mobility, underground facilities" },
+        "EMP": { "severity": "HIGH", "mitigation": "Hardening, Faraday shielding, surge protection, offline storage" }
+      },
+      "electronic": {
+        "NoisJamming": { "severity": "MEDIUM-HIGH", "mitigation": "ECCM, burn-through, frequency agility, SLC" },
+        "DeceptionJamming": { "severity": "HIGH", "mitigation": "Waveform diversity, coherent processing, cross-check multiple sensors" },
+        "Spoofing_GPS": { "severity": "MEDIUM", "mitigation": "Multi-constellation GPS, INS backup, anti-spoof receivers, M-code" }
+      },
+      "cyber": {
+        "CyberAttack": { "severity": "HIGH", "mitigation": "Air gap, hardened OS, TEMPEST shielding, secure supply chain, regular patching" },
+        "SupplyChainCompromise": { "severity": "CRITICAL", "mitigation": "Trusted supplier chain, chip-level verification, hardware trojan detection" }
+      },
+      "physical": {
+        "WeatherDegradation": { "severity": "LOW-MEDIUM", "mitigation": "Environmental hardening, lower frequency selection, adaptive waveform" },
+        "RainFade": { "severity": "MEDIUM (X/Ku band)", "mitigation": "Power management, frequency selection, diversity" },
+        "Multipath": { "severity": "LOW", "mitigation": "Signal processing, STAP, frequency diversity" }
+      },
+      "operational": {
+        "StealthTargets": {
+          "severity": "HIGH",
+          "description": "Low-observable targets with RCS < 0.01 m² require significant additional transmitter power or specialized processing",
+          "mitigation": "Bistatic radar, VHF/UHF (resonance), multistatic netted radar, long dwell time, ISAR, very large aperture"
+        },
+        "DroneSwarm": {
+          "severity": "HIGH",
+          "description": "Large numbers of small, cheap drones with very low RCS; overwhelming sensor capacity and fire control",
+          "mitigation": "AI-based detection, high PRF, mmW radar, sensor fusion, networked C-UAS"
+        }
+      }
+    }
+  }
+}

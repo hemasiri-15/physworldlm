@@ -1,0 +1,330 @@
+{
+  "MissileOntology": {
+    "Missile": {
+      "BallisticMissile": {
+        "TacticalBallisticMissile": {
+          "BattlefieldBallisticMissile": {},
+          "CloseRangeBallistic": {}
+        },
+        "ShortRangeBallisticMissile": {
+          "SRBM_under300km": {},
+          "SRBM_300to1000km": {}
+        },
+        "MediumRangeBallisticMissile": {
+          "MRBM_1000to3000km": {}
+        },
+        "IntermediateRangeBallisticMissile": {
+          "IRBM_3000to5500km": {}
+        },
+        "IntercontinentalBallisticMissile": {
+          "SiloBasedICBM": {},
+          "RoadMobileICBM": {},
+          "RailMobileICBM": {}
+        },
+        "SubmarineLaunchedBallisticMissile": {
+          "SLBM_SSBN": {},
+          "SLBM_SSN": {}
+        },
+        "AntiShipBallisticMissile": {
+          "ASBM_MaRV": {},
+          "ASBM_HGV": {}
+        },
+        "ManeuveringReentryVehicle": {
+          "MaRV_Terminal": {},
+          "MaRV_Midcourse": {}
+        },
+        "MultipleIndependentlyTargetableReentryVehicle": {
+          "MIRV_ICBM": {},
+          "MIRV_SLBM": {}
+        },
+        "FractionalOrbitalBombardmentSystem": {
+          "FOBS_Classic": {},
+          "FOBS_HGV": {}
+        },
+        "DepressedTrajectoryMissile": {},
+        "QuasiBallisticMissile": {
+          "QBM_Low": {},
+          "QBM_VariableTrajectory": {}
+        }
+      },
+      "CruiseMissile": {
+        "LandAttackCruiseMissile": {
+          "LACM_Subsonic": {},
+          "LACM_Supersonic": {},
+          "LACM_Hypersonic": {},
+          "LACM_Stealth": {},
+          "LACM_Nuclear": {},
+          "LACM_ConventionalPrecision": {}
+        },
+        "AntiShipCruiseMissile": {
+          "ASCM_SeaSkimming": {},
+          "ASCM_Supersonic": {},
+          "ASCM_Hypersonic": {},
+          "ASCM_SubsonicLongRange": {}
+        },
+        "AntiSubmarineCruiseMissile": {},
+        "AirLaunchedCruiseMissile": {
+          "ALCM_Nuclear": {},
+          "ALCM_Conventional": {},
+          "ALCM_Stealth": {}
+        },
+        "GroundLaunchedCruiseMissile": {
+          "GLCM_Nuclear": {},
+          "GLCM_Conventional": {}
+        },
+        "ShipLaunchedCruiseMissile": {
+          "SLCM_VLS": {},
+          "SLCM_TorpedoTube": {}
+        },
+        "SubmarineLaunchedCruiseMissile": {
+          "SLCM_Sub_VLS": {},
+          "SLCM_Sub_TorpedoTube": {}
+        },
+        "NuclearCruiseMissile": {},
+        "TurbojetCruiseMissile": {},
+        "TurbofanCruiseMissile": {},
+        "RamjetCruiseMissile": {},
+        "TERCOMGuidedCruiseMissile": {}
+      },
+      "AirToAirMissile": {
+        "WithinVisualRangeMissile": {
+          "DogfightMissile": {
+            "HighOffBoresight": {},
+            "AllAspect": {}
+          },
+          "ShortRangeAAM": {
+            "SRAAM_IRHoming": {},
+            "SRAAM_RadarGuided": {}
+          }
+        },
+        "BeyondVisualRangeMissile": {
+          "MediumRangeAAM": {
+            "MRAAM_ActiveRadar": {},
+            "MRAAM_SemiActiveRadar": {}
+          },
+          "BeyondVisualRangeAAM": {
+            "BVRAAM_ActiveRadar": {},
+            "BVRAAM_DualMode": {}
+          },
+          "VeryLongRangeAAM": {
+            "VLRAAM_ActiveRadar": {},
+            "VLRAAM_ARH_INS": {}
+          }
+        },
+        "InterceptorMissileAAM": {
+          "ABM_Interceptor": {},
+          "SAM_Interceptor": {}
+        }
+      },
+      "SurfaceToAirMissile": {
+        "ManPortableAirDefenseSystem": {
+          "MANPADS_IRHoming": {},
+          "MANPADS_LaserBeamRiding": {},
+          "MANPADS_CommandGuidance": {}
+        },
+        "VeryShortRangeSAM": {
+          "VSHORAD_Mounted": {},
+          "VSHORAD_LaserGuided": {},
+          "VSHORAD_RadarGuided": {}
+        },
+        "ShortRangeSAM": {
+          "SHORAD_IR": {},
+          "SHORAD_Radar": {},
+          "SHORAD_Laser": {}
+        },
+        "MediumRangeSAM": {
+          "MRSAM_SemiActive": {},
+          "MRSAM_ActiveRadar": {},
+          "MRSAM_DualMode": {}
+        },
+        "LongRangeSAM": {
+          "LRSAM_AreaDefense": {},
+          "LRSAM_TBM_Capable": {}
+        },
+        "VeryLongRangeSAM": {
+          "VLRSAM_StrategicAreaDefense": {},
+          "VLRSAM_ABM_Capable": {}
+        },
+        "NavalSAM": {
+          "NavalSAM_PointDefense": {},
+          "NavalSAM_AreaDefense": {},
+          "NavalSAM_VLS": {},
+          "NavalSAM_CIWS": {}
+        },
+        "AntiBallisticMissileSAM": {
+          "ABM_Terminal": {},
+          "ABM_Midcourse": {},
+          "ABM_KineticKill": {}
+        },
+        "LayeredAirDefenseMissile": {
+          "LAD_TierLow": {},
+          "LAD_TierMid": {},
+          "LAD_TierHigh": {}
+        }
+      },
+      "AirToSurfaceMissile": {
+        "PrecisionGuidedMunition": {
+          "PGM_LaserGuided": {},
+          "PGM_GPSGuided": {},
+          "PGM_INSGuided": {},
+          "PGM_EOGuided": {},
+          "PGM_IIRGuided": {}
+        },
+        "AirLaunchedAntiShipMissile": {
+          "AASM_Supersonic": {},
+          "AASM_SeaSkimming": {},
+          "AASM_Subsonic": {}
+        },
+        "AirLaunchedAntiTankMissile": {
+          "AATM_Helicopter": {},
+          "AATM_FixedWing": {},
+          "AATM_UAV": {}
+        },
+        "AirLaunchedAntiRadiationMissile": {},
+        "StandoffMissile": {
+          "SORM_Glide": {},
+          "SORM_Powered": {}
+        },
+        "BunkerBusterMissile": {},
+        "AntiRunwayMissile": {}
+      },
+      "SurfaceToSurfaceMissile": {
+        "ShortRangeSSM": {},
+        "MediumRangeSSM": {},
+        "CoastalDefenseMissile": {
+          "CDM_AntiShip": {},
+          "CDM_LandAttack": {}
+        },
+        "FieldArtilleryMissile": {
+          "FAM_Guided": {},
+          "FAM_Unguided": {}
+        },
+        "TacticalSSM": {}
+      },
+      "AntiTankGuidedMissile": {
+        "FirstGenerationATGM": {
+          "ATGM_ManualCommandToLinOfSight": {}
+        },
+        "SecondGenerationATGM": {
+          "ATGM_SACLOS": {},
+          "ATGM_LaserBeamRiding": {},
+          "ATGM_RadioCommand": {}
+        },
+        "ThirdGenerationATGM": {
+          "ATGM_FireAndForget": {
+            "ATGM_IRHoming": {},
+            "ATGM_ActiveRadar": {},
+            "ATGM_DualMode": {}
+          },
+          "ATGM_TopAttack": {},
+          "ATGM_TandemWarhead": {}
+        },
+        "LauncherType": {
+          "ATGM_Dismounted": {},
+          "ATGM_VehicleMounted": {},
+          "ATGM_HelicopterLaunched": {},
+          "ATGM_UAVLaunched": {}
+        }
+      },
+      "AntiRadiationMissile": {
+        "ARM_BroadbandHoming": {},
+        "ARM_NarrowbandHoming": {},
+        "ARM_PassiveHoming": {},
+        "ARM_DualMode": {},
+        "ARM_MemoryGuidance": {},
+        "ARM_Loitering": {}
+      },
+      "AntiShipMissile": {
+        "AirLaunchedASM": {},
+        "SurfaceLaunchedASM": {},
+        "SubmarineLaunchedASM": {},
+        "SupersonicASM": {},
+        "HypersonicASM": {},
+        "SubsonicASM": {},
+        "SeaSkimmingASM": {},
+        "PopUpAttackASM": {},
+        "StealthASM": {},
+        "NuclearASM": {}
+      },
+      "AntiSubmarineMissile": {
+        "ASROC": {
+          "ASROC_Rocket": {},
+          "ASROC_Torpedo": {}
+        },
+        "AirLaunchedASW": {},
+        "ShipLaunchedASW": {},
+        "SubmarineLaunchedASW": {}
+      },
+      "HypersonicGlideVehicle": {
+        "HGV_ICBM_Launched": {},
+        "HGV_IRBM_Launched": {},
+        "HGV_AirLaunched": {},
+        "HGV_BoostGlide": {},
+        "HGV_MaRV": {},
+        "HGV_Nuclear": {},
+        "HGV_Conventional": {}
+      },
+      "HypersonicCruiseMissile": {
+        "HCM_Scramjet": {},
+        "HCM_Ramjet": {},
+        "HCM_AirLaunched": {},
+        "HCM_GroundLaunched": {},
+        "HCM_ShipLaunched": {}
+      },
+      "LoiteringMunition": {
+        "SuicideDrone": {},
+        "ScalpelMunition": {},
+        "SwarmMunition": {},
+        "LM_ManPackable": {},
+        "LM_VehicleLaunched": {},
+        "LM_AirLaunched": {},
+        "LM_AntiArmor": {},
+        "LM_AntiRadiation": {},
+        "LM_AntiPersonnel": {},
+        "LM_ISR_Strike": {}
+      },
+      "AntiSatelliteMissile": {
+        "ASAT_DirectAscent": {
+          "ASAT_KineticKill": {},
+          "ASAT_Nuclear": {}
+        },
+        "ASAT_CoOrbital": {},
+        "ASAT_GroundBased": {},
+        "ASAT_AirLaunched": {},
+        "ASAT_NavyShipLaunched": {}
+      },
+      "BallisticMissileDefense": {
+        "BMD_BoostPhase": {},
+        "BMD_MidcoursePhase": {
+          "BMD_GBI": {},
+          "BMD_SM3": {}
+        },
+        "BMD_TerminalPhase": {
+          "BMD_THAAD": {},
+          "BMD_Patriot": {},
+          "BMD_Arrow": {}
+        },
+        "BMD_KineticKill": {},
+        "BMD_HitToKill": {}
+      },
+      "DecoyMissile": {
+        "Decoy_RCS_Enhancing": {},
+        "Decoy_IREnhancing": {},
+        "Decoy_EMMitting": {},
+        "Decoy_AirLaunched": {},
+        "Decoy_GroundLaunched": {},
+        "Decoy_ShipLaunched": {}
+      },
+      "TrainingMissile": {
+        "InertMissile": {},
+        "CaptiveFlight": {},
+        "TelemetryMissile": {}
+      },
+      "ExperimentalMissile": {
+        "TechnologyDemonstrator": {},
+        "ResearchVehicle": {},
+        "PrototypeMissile": {}
+      }
+    }
+  }
+}

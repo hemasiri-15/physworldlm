@@ -1,0 +1,470 @@
+{
+  "ontology_id": "physworldlm:submarine:submarine_instances",
+  "version": "1.0.0",
+  "description": "Real-world submarine classes and variants with key specifications, classified by platform type. Intended for PhysWorldLM scenario initialization and digital twin parameterization. Data represents open-source publicly available specifications; simulation parameters should be validated against authoritative references.",
+  "namespace": "pwlm:sub:inst",
+  "note": "All specifications from open-source references. Values marked ~ are estimates.",
+
+  "instances": {
+
+    "USS_Virginia": {
+      "id": "pwlm:sub:inst:VirginiaClass",
+      "label": "Virginia-class SSN",
+      "operator": "United States Navy",
+      "class": "pwlm:sub:SSN",
+      "generation": "Gen4-Gen5",
+      "nation": "USA",
+      "status": "Active (production ongoing)",
+      "entered_service": 2004,
+      "count_built": 22,
+      "displacement_tonnes_submerged": 7900,
+      "length_m": 114.9,
+      "beam_m": 10.4,
+      "draft_m": 9.3,
+      "max_speed_kt_submerged": 25,
+      "test_depth_m": 240,
+      "crew": 135,
+      "propulsion": {
+        "type": "Nuclear",
+        "reactor": "S9G PWR",
+        "propulsor": "Pump-jet"
+      },
+      "weapons": {
+        "torpedo_tubes": 4,
+        "torpedo_tube_diameter_mm": 533,
+        "VLS_cells": 12,
+        "VLS_type": "ARSS (expandable to VPM 28-cell)",
+        "munitions": ["Mk 48 ADCAP", "Tomahawk SLCM", "Harpoon", "Mk 60 CAPTOR mine"]
+      },
+      "sonar": {
+        "bow": "AN/BQQ-10 spherical array",
+        "flank": "AN/BQG-5A wide aperture array",
+        "towed": "TB-29A / TB-16D",
+        "mine_avoidance": "AN/BQS-15"
+      },
+      "sim_profile": {
+        "acoustic_signature_category": "Very Low",
+        "TMA_quality": "High",
+        "UUV_capable": true,
+        "Block_variants": ["Block I-II", "Block III", "Block IV", "Block V (VPM)"]
+      }
+    },
+
+    "USS_Seawolf": {
+      "id": "pwlm:sub:inst:SeawolfClass",
+      "label": "Seawolf-class SSN",
+      "operator": "United States Navy",
+      "class": "pwlm:sub:SSN",
+      "generation": "Gen4",
+      "nation": "USA",
+      "status": "Active",
+      "entered_service": 1997,
+      "count_built": 3,
+      "displacement_tonnes_submerged": 9137,
+      "length_m": 107.6,
+      "beam_m": 12.1,
+      "max_speed_kt_submerged": 35,
+      "test_depth_m": 490,
+      "crew": 140,
+      "propulsion": {
+        "type": "Nuclear",
+        "reactor": "S6W PWR",
+        "propulsor": "Pump-jet"
+      },
+      "weapons": {
+        "torpedo_tubes": 8,
+        "torpedo_tube_diameter_mm": 660,
+        "munitions": ["Mk 48 ADCAP", "Tomahawk", "Harpoon", "CAPTOR mine"]
+      },
+      "sim_profile": {
+        "acoustic_signature_category": "Extremely Low",
+        "sprint_speed_kt": 35,
+        "note": "Designed as high-speed deep-water SSN; exceptional sprint capability."
+      }
+    },
+
+    "Ohio_SSBN": {
+      "id": "pwlm:sub:inst:OhioSSBN",
+      "label": "Ohio-class SSBN",
+      "operator": "United States Navy",
+      "class": "pwlm:sub:SSBN",
+      "generation": "Gen3-Gen4",
+      "nation": "USA",
+      "status": "Active (8 SSBN, 4 SSGN)",
+      "entered_service": 1981,
+      "displacement_tonnes_submerged": 18750,
+      "length_m": 170.7,
+      "beam_m": 12.8,
+      "max_speed_kt_submerged": 25,
+      "test_depth_m": 244,
+      "crew": 155,
+      "propulsion": { "type": "Nuclear", "reactor": "S8G PWR", "propulsor": "Single screw" },
+      "weapons": {
+        "missile_tubes": 24,
+        "SLBM": "Trident II D5",
+        "SLBM_range_km": 12000,
+        "warheads_per_missile_max": 8
+      },
+      "sim_profile": {
+        "acoustic_signature_category": "Low",
+        "strategic_deterrence": true,
+        "patrol_duration_days": 70
+      }
+    },
+
+    "Ohio_SSGN": {
+      "id": "pwlm:sub:inst:OhioSSGN",
+      "label": "Ohio-class SSGN (converted)",
+      "operator": "United States Navy",
+      "class": "pwlm:sub:SSGN",
+      "nation": "USA",
+      "status": "Active",
+      "count_built": 4,
+      "weapons": {
+        "VLS_cells": 154,
+        "munitions": ["Tomahawk TLAM", "SLCM payload"],
+        "SOF_lock_out_chambers": 2,
+        "SOF_capacity_persons": 66
+      },
+      "sim_profile": {
+        "strike_volume_TLAMs": 154,
+        "SOF_capable": true
+      }
+    },
+
+    "Borei": {
+      "id": "pwlm:sub:inst:BoréiClass",
+      "label": "Project 955 Borei-class SSBN",
+      "operator": "Russian Navy",
+      "class": "pwlm:sub:SSBN",
+      "generation": "Gen4-Gen5",
+      "nation": "Russia",
+      "status": "Active",
+      "entered_service": 2013,
+      "count_built": 4,
+      "displacement_tonnes_submerged": 24000,
+      "length_m": 170,
+      "beam_m": 13.5,
+      "max_speed_kt_submerged": 29,
+      "test_depth_m": 480,
+      "crew": 107,
+      "propulsion": { "type": "Nuclear", "reactor": "OK-650V PWR", "propulsor": "Pump-jet" },
+      "weapons": {
+        "missile_tubes": 16,
+        "SLBM": "RSM-56 Bulava",
+        "torpedo_tubes": 6,
+        "torpedo_tube_diameter_mm": 533
+      },
+      "sim_profile": {
+        "acoustic_signature_category": "Low",
+        "strategic_deterrence": true
+      }
+    },
+
+    "Yasen": {
+      "id": "pwlm:sub:inst:YasenClass",
+      "label": "Project 885M Yasen-M SSN/SSGN",
+      "operator": "Russian Navy",
+      "class": "pwlm:sub:SSN",
+      "generation": "Gen5",
+      "nation": "Russia",
+      "status": "Active",
+      "entered_service": 2014,
+      "displacement_tonnes_submerged": 13800,
+      "length_m": 139,
+      "beam_m": 13,
+      "max_speed_kt_submerged": 31,
+      "crew": 90,
+      "propulsion": { "type": "Nuclear", "reactor": "OK-650KPM", "propulsor": "Pump-jet" },
+      "weapons": {
+        "torpedo_tubes": 10,
+        "torpedo_tube_diameter_mm": 533,
+        "VLS_cells": 32,
+        "munitions": ["Kalibr SLCM", "Oniks anti-ship", "Tsirkon hypersonic (planned)", "Mk48 equivalent torpedoes"]
+      },
+      "sim_profile": {
+        "acoustic_signature_category": "Low-Medium",
+        "strike_capable": true
+      }
+    },
+
+    "Astute": {
+      "id": "pwlm:sub:inst:AstuteClass",
+      "label": "Astute-class SSN",
+      "operator": "Royal Navy",
+      "class": "pwlm:sub:SSN",
+      "generation": "Gen4-Gen5",
+      "nation": "UK",
+      "status": "Active",
+      "entered_service": 2010,
+      "count_built": 7,
+      "displacement_tonnes_submerged": 7800,
+      "length_m": 97,
+      "beam_m": 11.3,
+      "max_speed_kt_submerged": 30,
+      "crew": 98,
+      "propulsion": { "type": "Nuclear", "reactor": "PWR2", "propulsor": "Pump-jet" },
+      "weapons": {
+        "torpedo_tubes": 6,
+        "torpedo_tube_diameter_mm": 533,
+        "munitions": ["Spearfish torpedo", "Tomahawk Block IV SLCM", "Future Cruise Anti-Ship Weapon (FCASW)"]
+      },
+      "sim_profile": {
+        "acoustic_signature_category": "Very Low",
+        "note": "Considered among quietest submarines in operation."
+      }
+    },
+
+    "Vanguard": {
+      "id": "pwlm:sub:inst:VanguardClass",
+      "label": "Vanguard-class SSBN",
+      "operator": "Royal Navy",
+      "class": "pwlm:sub:SSBN",
+      "nation": "UK",
+      "status": "Active",
+      "entered_service": 1993,
+      "count_built": 4,
+      "displacement_tonnes_submerged": 15900,
+      "length_m": 149.9,
+      "max_speed_kt_submerged": 25,
+      "crew": 135,
+      "weapons": {
+        "missile_tubes": 16,
+        "SLBM": "Trident II D5LE",
+        "operational_warheads": 8
+      }
+    },
+
+    "LeTriomphant": {
+      "id": "pwlm:sub:inst:LeTriomphantClass",
+      "label": "Le Triomphant-class SSBN",
+      "operator": "Marine Nationale (France)",
+      "class": "pwlm:sub:SSBN",
+      "nation": "France",
+      "status": "Active",
+      "entered_service": 1997,
+      "count_built": 4,
+      "displacement_tonnes_submerged": 14335,
+      "length_m": 138,
+      "max_speed_kt_submerged": 25,
+      "crew": 111,
+      "propulsion": { "type": "Nuclear", "reactor": "K-15", "propulsor": "Pump-jet" },
+      "weapons": {
+        "missile_tubes": 16,
+        "SLBM": "M51.2",
+        "torpedo_tubes": 4
+      }
+    },
+
+    "Rubis_SNA": {
+      "id": "pwlm:sub:inst:RubisClass",
+      "label": "Rubis-class SSN (SNA)",
+      "operator": "Marine Nationale (France)",
+      "class": "pwlm:sub:SSN",
+      "nation": "France",
+      "status": "Active (being replaced by Suffren)",
+      "displacement_tonnes_submerged": 2600,
+      "length_m": 73.6,
+      "max_speed_kt_submerged": 25,
+      "crew": 70,
+      "weapons": { "torpedo_tubes": 4, "munitions": ["F17 torpedo", "Exocet SM39"] }
+    },
+
+    "Suffren_Barracuda": {
+      "id": "pwlm:sub:inst:SuffrenClass",
+      "label": "Suffren-class (Barracuda) SSN",
+      "operator": "Marine Nationale (France)",
+      "class": "pwlm:sub:SSN",
+      "generation": "Gen5",
+      "nation": "France",
+      "status": "Active",
+      "entered_service": 2020,
+      "displacement_tonnes_submerged": 5300,
+      "length_m": 99.5,
+      "max_speed_kt_submerged": 25,
+      "crew": 65,
+      "weapons": {
+        "torpedo_tubes": 4,
+        "munitions": ["F21 Artemis torpedo", "MdCN SCALP Naval SLCM", "Exocet SM39"]
+      }
+    },
+
+    "Type_212A": {
+      "id": "pwlm:sub:inst:Type212A",
+      "label": "Type 212A SSP (AIP)",
+      "operator": "German Navy / Italian Navy",
+      "class": "pwlm:sub:SSP",
+      "generation": "Gen4-Gen5",
+      "nation": "Germany / Italy",
+      "status": "Active",
+      "entered_service": 2005,
+      "displacement_tonnes_submerged": 1850,
+      "length_m": 56,
+      "beam_m": 7,
+      "max_speed_kt_submerged": 20,
+      "aip_speed_kt": 8,
+      "aip_endurance_days": 14,
+      "test_depth_m": 250,
+      "crew": 27,
+      "propulsion": {
+        "type": "AIP",
+        "aip_type": "Siemens PEM Fuel Cell (9 x 30-34 kW cells)",
+        "battery": "Lead-acid (upgrading to Li-ion)"
+      },
+      "weapons": {
+        "torpedo_tubes": 6,
+        "torpedo_tube_diameter_mm": 533,
+        "munitions": ["DM2A4 Seahake torpedo", "mines"]
+      },
+      "sim_profile": {
+        "acoustic_signature_category": "Extremely Low (AIP mode)",
+        "signature_note": "Near-zero mechanical noise on fuel cells; hull flow noise dominates at low speed."
+      }
+    },
+
+    "Soryu": {
+      "id": "pwlm:sub:inst:SoryuClass",
+      "label": "Sōryū-class SSP (AIP)",
+      "operator": "Japan Maritime Self-Defense Force",
+      "class": "pwlm:sub:SSP",
+      "generation": "Gen4-Gen5",
+      "nation": "Japan",
+      "status": "Active (later boats Taigei class)",
+      "entered_service": 2009,
+      "count_built": 12,
+      "displacement_tonnes_submerged": 4200,
+      "length_m": 84,
+      "max_speed_kt_submerged": 20,
+      "aip_endurance_days": 30,
+      "crew": 65,
+      "propulsion": { "type": "AIP", "aip_type": "Kawasaki-Kockums Stirling" },
+      "weapons": {
+        "torpedo_tubes": 6,
+        "torpedo_tube_diameter_mm": 533,
+        "munitions": ["Type 89 torpedo", "UGM-84 Harpoon"]
+      }
+    },
+
+    "KSS_III": {
+      "id": "pwlm:sub:inst:KSSIII",
+      "label": "KSS-III (Dosan Ahn Changho-class) SSP",
+      "operator": "Republic of Korea Navy",
+      "class": "pwlm:sub:SSP",
+      "generation": "Gen5",
+      "nation": "South Korea",
+      "status": "Active",
+      "entered_service": 2021,
+      "displacement_tonnes_submerged": 4000,
+      "length_m": 89,
+      "max_speed_kt_submerged": 20,
+      "crew": 50,
+      "propulsion": { "type": "AIP", "aip_type": "Li-ion battery + AIP" },
+      "weapons": {
+        "torpedo_tubes": 8,
+        "VLS_cells": 6,
+        "munitions": ["Hyunmoo-3 SLCM", "Cheongsan-O torpedo", "mines"]
+      }
+    },
+
+    "Scorpene": {
+      "id": "pwlm:sub:inst:Scorpene",
+      "label": "Scorpène-class SSK/SSP",
+      "operator": "Multiple (France export)",
+      "class": "pwlm:sub:SSK",
+      "generation": "Gen4",
+      "nation": "France (export: India, Brazil, Malaysia, Chile)",
+      "status": "Active",
+      "entered_service": 2005,
+      "displacement_tonnes_submerged": 1740,
+      "length_m": 66.4,
+      "max_speed_kt_submerged": 20,
+      "crew": 31,
+      "weapons": {
+        "torpedo_tubes": 6,
+        "torpedo_tube_diameter_mm": 533,
+        "munitions": ["F21 torpedo (India)", "Exocet SM39", "mines"]
+      }
+    },
+
+    "Arihant": {
+      "id": "pwlm:sub:inst:Arihant",
+      "label": "INS Arihant (S-2) SSBN",
+      "operator": "Indian Navy",
+      "class": "pwlm:sub:SSBN",
+      "generation": "Gen4",
+      "nation": "India",
+      "status": "Active",
+      "entered_service": 2016,
+      "displacement_tonnes_submerged": 6000,
+      "length_m": 111,
+      "max_speed_kt_submerged": 24,
+      "crew": 95,
+      "propulsion": { "type": "Nuclear", "reactor": "83 MW PWR (indigenous)" },
+      "weapons": {
+        "missile_tubes": 4,
+        "SLBM": "K-15 Sagarika (range ~750 km) / K-4 (range ~3500 km)",
+        "torpedo_tubes": 6
+      }
+    },
+
+    "Jin_Type094": {
+      "id": "pwlm:sub:inst:Type094",
+      "label": "Type 094 Jin-class SSBN",
+      "operator": "People's Liberation Army Navy",
+      "class": "pwlm:sub:SSBN",
+      "nation": "China",
+      "status": "Active",
+      "entered_service": 2007,
+      "count_built": 6,
+      "displacement_tonnes_submerged": 11000,
+      "length_m": 135,
+      "max_speed_kt_submerged": 26,
+      "crew": 120,
+      "weapons": {
+        "missile_tubes": 12,
+        "SLBM": "JL-2 / JL-3 (range ~9000 km / ~10000 km)"
+      }
+    },
+
+    "Shang_Type093": {
+      "id": "pwlm:sub:inst:Type093",
+      "label": "Type 093 Shang-class SSN",
+      "operator": "People's Liberation Army Navy",
+      "class": "pwlm:sub:SSN",
+      "nation": "China",
+      "status": "Active",
+      "entered_service": 2006,
+      "displacement_tonnes_submerged": 7000,
+      "length_m": 110,
+      "max_speed_kt_submerged": 30,
+      "crew": 100,
+      "weapons": {
+        "torpedo_tubes": 6,
+        "munitions": ["Yu-6 torpedo", "YJ-18 ASCM", "CJ-10 SLCM (export)"]
+      }
+    },
+
+    "OrcaXLUUV": {
+      "id": "pwlm:sub:inst:OrcaXLUUV",
+      "label": "Orca XLUUV",
+      "operator": "United States Navy",
+      "class": "pwlm:sub:SSA",
+      "generation": "Gen5",
+      "nation": "USA",
+      "status": "Development / Procurement",
+      "prime_contractor": "Boeing",
+      "displacement_tonnes": 50,
+      "length_m": 26,
+      "endurance_days": 90,
+      "max_speed_kt": 8,
+      "max_depth_m": 340,
+      "crew": 0,
+      "autonomy_level": "Fully autonomous with mission programming",
+      "payload_bay_options": ["mine countermeasures", "ISR", "anti-submarine", "electronic warfare"],
+      "sim_profile": {
+        "acoustic_signature_category": "Very Low",
+        "UUV_coordination_capable": true
+      }
+    }
+  }
+}

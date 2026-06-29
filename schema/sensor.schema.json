@@ -1,0 +1,1476 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/sensor.schema.json",
+  "title": "PhysWorldLM Sensor Schema (PW-WSF-800)",
+  "description": "Canonical, engine-independent universal sensor abstraction for PhysWorldLM WorldSpec. Represents any sensing system — imaging, radar, sonar, lidar, navigation, environmental, electronic-warfare, biomedical, industrial, or quantum — as a physics-driven perception model with shared common properties plus a modality-specific extension block. Integrates with entity.schema.json, component.schema.json, physics.schema.json, transform.schema.json, environment.schema.json, weather.schema.json, material.schema.json, metadata.schema.json, and world.schema.json.",
+  "committee": "PhysWorldLM Standards Working Group — Sensing & Perception Systems",
+  "publication": "PW-WSF-800",
+  "revision": "800.1.0",
+  "version": "1.0.0",
+  "status": "draft",
+  "authors": ["PhysWorldLM Standards Working Group"],
+  "license": "CC-BY-4.0",
+
+  "type": "object",
+  "required": ["metadata", "identity", "classification"],
+  "additionalProperties": false,
+
+  "properties": {
+    "metadata":            { "$ref": "#/$defs/SchemaMetadata" },
+    "identity":            { "$ref": "#/$defs/SensorIdentity" },
+    "classification":      { "$ref": "#/$defs/SensorClassification" },
+    "mounting":            { "$ref": "#/$defs/SensorMount" },
+    "geometry":            { "$ref": "#/$defs/SensorGeometry" },
+    "physical":            { "$ref": "#/$defs/PhysicalCharacteristics" },
+    "operating_principle": { "$ref": "#/$defs/OperatingPrinciple" },
+    "measurement_capabilities": { "$ref": "#/$defs/MeasurementCapabilities" },
+    "detection":           { "$ref": "#/$defs/DetectionCharacteristics" },
+    "field_of_view":       { "$ref": "#/$defs/FieldOfView" },
+    "sampling":            { "$ref": "#/$defs/SamplingConfiguration" },
+    "signal":              { "$ref": "#/$defs/SignalCharacteristics" },
+    "performance":         { "$ref": "#/$defs/PerformanceMetrics" },
+    "calibration":         { "$ref": "#/$defs/Calibration" },
+    "noise_models":        { "type": "array", "items": { "$ref": "#/$defs/NoiseModel" } },
+    "signal_processing":   { "$ref": "#/$defs/SignalProcessing" },
+    "environmental_limits":{ "$ref": "#/$defs/EnvironmentalLimits" },
+    "sensor_effects":      { "$ref": "#/$defs/SensorEnvironmentEffects" },
+    "power":               { "$ref": "#/$defs/PowerState" },
+    "timing":              { "$ref": "#/$defs/TimingConfiguration" },
+    "communications":      { "type": "array", "items": { "$ref": "#/$defs/CommunicationInterface" } },
+    "synchronization":     { "$ref": "#/$defs/Synchronization" },
+    "outputs":             { "$ref": "#/$defs/SensorOutputs" },
+    "ai_capabilities":     { "$ref": "#/$defs/AICapabilities" },
+    "failure_modes":       { "type": "array", "items": { "$ref": "#/$defs/FailureMode" } },
+    "health":              { "$ref": "#/$defs/SensorHealth" },
+    "maintenance":         { "$ref": "#/$defs/Maintenance" },
+    "runtime_state":       { "$ref": "#/$defs/RuntimeState" },
+    "fusion":              { "$ref": "#/$defs/SensorFusion" },
+    "modality":            { "$ref": "#/$defs/SensorModality" },
+    "ai_metadata":         { "$ref": "#/$defs/AIMetadata" },
+    "standards_refs":      { "type": "array", "items": { "$ref": "#/$defs/StandardReference" } },
+    "simulation_compat":   { "$ref": "#/$defs/SimulationCompatibility" },
+    "rendering_metadata":  { "$ref": "#/$defs/RenderingMetadata" },
+    "schema_integration":  { "$ref": "#/$defs/SchemaIntegration" },
+    "validation":          { "$ref": "#/$defs/ValidationRules" },
+    "examples_ref":        { "type": "string", "description": "Pointer to companion sensor_examples.json document." },
+    "extensions":          { "type": "object", "description": "Forward-compatible namespace for not-yet-modeled fields. Consumers MUST NOT reject unknown keys here." }
+  },
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier (RFC 4122)."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 / RFC 3339 timestamp, UTC unless tz offset given."
+    },
+
+    "Version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. 1.0.0."
+    },
+
+    "ScalarSI": {
+      "type": "object",
+      "description": "A single physical measurement expressed in SI units, with optional uncertainty and provenance.",
+      "required": ["value", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "value":       { "type": "number" },
+        "unit":        { "type": "string", "description": "SI unit symbol, e.g. 'Hz', 'm', 'rad', 'W'." },
+        "uncertainty": { "$ref": "#/$defs/ConfidenceInterval" },
+        "notes":       { "type": "string" }
+      }
+    },
+
+    "Vector2": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "unit": { "type": "string" }
+      }
+    },
+
+    "Vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "unit": { "type": "string" }
+      }
+    },
+
+    "Vector4": {
+      "type": "object",
+      "required": ["x", "y", "z", "w"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "w": { "type": "number" }
+      }
+    },
+
+    "Quaternion": {
+      "type": "object",
+      "required": ["x", "y", "z", "w"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "w": { "type": "number" }
+      }
+    },
+
+    "Matrix": {
+      "type": "object",
+      "description": "Generic row-major matrix for calibration, covariance, rotation, or distortion operators.",
+      "required": ["rows", "cols", "data"],
+      "additionalProperties": false,
+      "properties": {
+        "rows": { "type": "integer", "minimum": 1 },
+        "cols": { "type": "integer", "minimum": 1 },
+        "data": { "type": "array", "items": { "type": "number" } }
+      }
+    },
+
+    "Coordinate": {
+      "type": "object",
+      "description": "Generic coordinate, Cartesian or geographic, with explicit reference frame.",
+      "required": ["frame"],
+      "additionalProperties": false,
+      "properties": {
+        "frame": { "type": "string", "enum": ["ECEF", "ENU", "NED", "geo", "local", "body", "sensor"] },
+        "cartesian": { "$ref": "#/$defs/Vector3" },
+        "geo":       { "$ref": "#/$defs/GeoCoordinate" }
+      }
+    },
+
+    "GeoCoordinate": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":   { "type": "number", "minimum": -90, "maximum": 90 },
+        "longitude":  { "type": "number", "minimum": -180, "maximum": 180 },
+        "altitude_m": { "type": "number" },
+        "datum":      { "type": "string", "default": "WGS84" }
+      }
+    },
+
+    "BoundingBox": {
+      "type": "object",
+      "required": ["min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "min": { "$ref": "#/$defs/Vector3" },
+        "max": { "$ref": "#/$defs/Vector3" }
+      }
+    },
+
+    "Orientation": {
+      "type": "object",
+      "description": "Angular orientation expressed as quaternion and/or Euler angles (Euler provided for human readability only; quaternion is authoritative when both present).",
+      "additionalProperties": false,
+      "properties": {
+        "quaternion":   { "$ref": "#/$defs/Quaternion" },
+        "euler_deg": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "roll":  { "type": "number" },
+            "pitch": { "type": "number" },
+            "yaw":   { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "Pose": {
+      "type": "object",
+      "description": "Full 6-DOF pose: position plus orientation, in a named reference frame.",
+      "additionalProperties": false,
+      "properties": {
+        "position":       { "$ref": "#/$defs/Vector3" },
+        "orientation":    { "$ref": "#/$defs/Orientation" },
+        "geo_coordinate": { "$ref": "#/$defs/GeoCoordinate" },
+        "reference_frame": {
+          "type": "string",
+          "enum": ["world", "local", "geo", "body", "NED", "ENU", "ECEF", "sensor"],
+          "default": "body"
+        },
+        "parent_id": { "$ref": "#/$defs/UUID", "description": "Parent entity/component ID this pose is relative to." }
+      }
+    },
+
+    "QualityFlag": {
+      "type": "string",
+      "enum": ["measured", "estimated", "interpolated", "modeled", "simulated", "procedural", "suspect", "missing", "corrected"],
+      "description": "Provenance/quality indicator for a value."
+    },
+
+    "ConfidenceInterval": {
+      "type": "object",
+      "description": "Statistical uncertainty bound on a measurement or specification value.",
+      "additionalProperties": false,
+      "properties": {
+        "method": { "type": "string", "enum": ["stddev", "ci_68", "ci_95", "ci_99", "min_max", "rmse", "circular_error_probable"] },
+        "lower":  { "type": "number" },
+        "upper":  { "type": "number" },
+        "stddev": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "TimeSeries": {
+      "type": "object",
+      "description": "A sequence of timestamped scalar or vector samples, used for logged sensor output, drift history, and calibration trends.",
+      "required": ["samples"],
+      "additionalProperties": false,
+      "properties": {
+        "variable": { "type": "string" },
+        "unit":     { "type": "string" },
+        "samples": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["t", "value"],
+            "additionalProperties": false,
+            "properties": {
+              "t":       { "$ref": "#/$defs/Timestamp" },
+              "value":   { "type": ["number", "object"] },
+              "quality": { "$ref": "#/$defs/QualityFlag" }
+            }
+          }
+        },
+        "sample_rate_hz": { "type": "number", "minimum": 0 }
+      }
+    },
+
+    "ProbabilityDistribution": {
+      "type": "object",
+      "description": "Parametric or empirical probability distribution, used for noise models and detection-probability curves.",
+      "required": ["kind"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["normal", "lognormal", "poisson", "uniform", "rayleigh", "rician", "weibull", "empirical", "categorical", "custom"]
+        },
+        "mean":   { "type": "number" },
+        "stddev": { "type": "number", "minimum": 0 },
+        "shape":  { "type": "number" },
+        "scale":  { "type": "number" },
+        "min":    { "type": "number" },
+        "max":    { "type": "number" },
+        "empirical_samples": { "type": "array", "items": { "type": "number" } }
+      }
+    },
+
+    "Measurement": {
+      "type": "object",
+      "description": "A single sensor reading: value, unit, timestamp, and associated error/quality.",
+      "required": ["timestamp", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "timestamp": { "$ref": "#/$defs/Timestamp" },
+        "variable":  { "type": "string" },
+        "value":     { "type": ["number", "object", "array"] },
+        "unit":      { "type": "string" },
+        "error":     { "$ref": "#/$defs/MeasurementError" },
+        "quality":   { "$ref": "#/$defs/QualityFlag" },
+        "frame":     { "type": "string" }
+      }
+    },
+
+    "MeasurementError": {
+      "type": "object",
+      "description": "Decomposed error model for a measurement: systematic bias plus random component plus full covariance where applicable.",
+      "additionalProperties": false,
+      "properties": {
+        "bias":              { "type": "number" },
+        "random_stddev":     { "type": "number", "minimum": 0 },
+        "covariance_matrix": { "$ref": "#/$defs/Matrix" },
+        "confidence":        { "$ref": "#/$defs/ConfidenceInterval" }
+      }
+    },
+
+    "NoiseModel": {
+      "type": "object",
+      "description": "A single named noise process affecting sensor output, composable with others (a sensor may have several concurrent noise sources).",
+      "required": ["noise_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":         { "$ref": "#/$defs/UUID" },
+        "noise_type": {
+          "type": "string",
+          "enum": ["gaussian", "poisson", "speckle", "salt_and_pepper", "shot", "thermal",
+                   "quantization", "bias_drift", "random_walk", "flicker", "colored", "custom"]
+        },
+        "affected_variable": { "type": "string", "description": "Which measured quantity this noise process applies to, e.g. 'range', 'pixel_intensity'." },
+        "mean":       { "type": "number" },
+        "variance":   { "type": "number", "minimum": 0 },
+        "stddev":     { "type": "number", "minimum": 0 },
+        "distribution": { "$ref": "#/$defs/ProbabilityDistribution" },
+        "correlation_time_s": { "type": "number", "minimum": 0, "description": "Autocorrelation time for colored/flicker/random-walk noise." },
+        "psd_curve": {
+          "type": "array",
+          "description": "Power spectral density samples (frequency_hz, density) for colored-noise characterization.",
+          "items": {
+            "type": "object",
+            "required": ["frequency_hz", "density"],
+            "additionalProperties": false,
+            "properties": {
+              "frequency_hz": { "type": "number", "minimum": 0 },
+              "density":      { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+
+    "Calibration": {
+      "type": "object",
+      "description": "Calibration state of a sensor: intrinsic/extrinsic parameters, distortion models, and validity tracking.",
+      "additionalProperties": false,
+      "properties": {
+        "factory_calibration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "date":      { "$ref": "#/$defs/Timestamp" },
+            "parameters": { "type": "object" }
+          }
+        },
+        "field_calibration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "date":      { "$ref": "#/$defs/Timestamp" },
+            "method":    { "type": "string" },
+            "parameters": { "type": "object" }
+          }
+        },
+        "intrinsic_parameters": {
+          "type": "object",
+          "description": "Sensor-internal calibration parameters, e.g. camera focal length/principal point, radar internal delay.",
+          "additionalProperties": true
+        },
+        "extrinsic_parameters": {
+          "type": "object",
+          "description": "Sensor-to-platform/body-frame calibration: typically a Pose plus covariance.",
+          "additionalProperties": false,
+          "properties": {
+            "pose":       { "$ref": "#/$defs/Pose" },
+            "covariance": { "$ref": "#/$defs/Matrix" }
+          }
+        },
+        "calibration_matrix":   { "$ref": "#/$defs/Matrix" },
+        "distortion_model": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "model_type": { "type": "string", "enum": ["none", "radial_tangential", "fisheye", "rational_polynomial", "custom"] },
+            "coefficients": { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "temperature_compensation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":     { "type": "boolean", "default": false },
+            "coefficients": { "type": "array", "items": { "type": "number" } }
+          }
+        },
+        "drift_compensation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "model":   { "type": "string" }
+          }
+        },
+        "calibration_date":     { "$ref": "#/$defs/Timestamp" },
+        "calibration_validity_days": { "type": "number", "minimum": 0 },
+        "calibration_history":  { "type": "array", "items": { "$ref": "#/$defs/TimeSeries" } },
+        "self_calibration_supported": { "type": "boolean", "default": false }
+      }
+    },
+
+    "SensorMount": {
+      "type": "object",
+      "description": "Physical and kinematic mounting of a sensor on its host platform, including gimbal/stabilization and mechanical limits.",
+      "additionalProperties": false,
+      "properties": {
+        "host_entity_id":    { "$ref": "#/$defs/UUID" },
+        "host_component_id": { "$ref": "#/$defs/UUID" },
+        "mount_type": {
+          "type": "string",
+          "enum": ["fixed", "gimbaled", "turret", "pan_tilt", "rail", "handheld", "towed", "wearable", "implanted", "free_floating", "custom"]
+        },
+        "mount_pose":  { "$ref": "#/$defs/Pose" },
+        "field_of_regard": {
+          "type": "object",
+          "description": "Total angular volume the sensor can be slewed/gimbaled to cover, distinct from its instantaneous field_of_view.",
+          "additionalProperties": false,
+          "properties": {
+            "azimuth_min_deg":   { "type": "number" },
+            "azimuth_max_deg":   { "type": "number" },
+            "elevation_min_deg": { "type": "number" },
+            "elevation_max_deg": { "type": "number" }
+          }
+        },
+        "gimbal": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "degrees_of_freedom": { "type": "integer", "minimum": 0, "maximum": 3 },
+            "pan_range_deg":  { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+            "tilt_range_deg": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+            "roll_range_deg": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+            "max_slew_rate_deg_per_s": { "type": "number", "minimum": 0 },
+            "stabilization": {
+              "type": "string",
+              "enum": ["none", "mechanical", "electronic", "hybrid"]
+            },
+            "stabilization_accuracy_mrad": { "type": "number", "minimum": 0 }
+          }
+        },
+        "mechanical_constraints": { "type": "string" }
+      }
+    },
+
+    "PowerState": {
+      "type": "object",
+      "description": "Electrical power characteristics and current operating power state.",
+      "additionalProperties": false,
+      "properties": {
+        "voltage_v":            { "$ref": "#/$defs/ScalarSI" },
+        "current_a":            { "$ref": "#/$defs/ScalarSI" },
+        "power_consumption_w":  { "$ref": "#/$defs/ScalarSI" },
+        "standby_power_w":      { "$ref": "#/$defs/ScalarSI" },
+        "peak_power_w":         { "$ref": "#/$defs/ScalarSI" },
+        "battery_type":         { "type": "string", "enum": ["none", "li_ion", "li_poly", "nimh", "lead_acid", "thermal_battery", "solar", "external_supply", "custom"] },
+        "battery_level_pct":    { "type": "number", "minimum": 0, "maximum": 100 },
+        "energy_usage_wh":      { "$ref": "#/$defs/ScalarSI" },
+        "thermal_output_w":     { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "SamplingConfiguration": {
+      "type": "object",
+      "description": "Temporal sampling/acquisition configuration shared across sensor modalities.",
+      "additionalProperties": false,
+      "properties": {
+        "sampling_rate_hz":   { "$ref": "#/$defs/ScalarSI" },
+        "frame_rate_hz":      { "$ref": "#/$defs/ScalarSI" },
+        "scan_rate_hz":       { "$ref": "#/$defs/ScalarSI" },
+        "refresh_rate_hz":    { "$ref": "#/$defs/ScalarSI" },
+        "integration_time_s": { "$ref": "#/$defs/ScalarSI" },
+        "exposure_time_s":    { "$ref": "#/$defs/ScalarSI" },
+        "pulse_width_s":      { "$ref": "#/$defs/ScalarSI" },
+        "pulse_repetition_frequency_hz": { "$ref": "#/$defs/ScalarSI" },
+        "duty_cycle_pct":     { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+
+    "Synchronization": {
+      "type": "object",
+      "description": "Time synchronization method and accuracy for a sensor, critical for multi-sensor fusion.",
+      "additionalProperties": false,
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["gps_time", "ptp_ieee1588", "ntp", "pps", "hardware_trigger", "software_trigger", "free_running", "custom"]
+        },
+        "timestamp_accuracy_s": { "$ref": "#/$defs/ScalarSI" },
+        "clock_accuracy_ppm":   { "$ref": "#/$defs/ScalarSI" },
+        "multi_sensor_sync_group": { "type": "string", "description": "Identifier of a shared synchronization domain across multiple sensors." }
+      }
+    },
+
+    "CommunicationInterface": {
+      "type": "object",
+      "description": "A physical/logical communication interface exposed by the sensor.",
+      "required": ["interface_type"],
+      "additionalProperties": false,
+      "properties": {
+        "interface_type": {
+          "type": "string",
+          "enum": ["ethernet", "can", "rs232", "rs422", "rs485", "usb", "spi", "i2c",
+                   "mil_std_1553", "arinc429", "spacewire", "fibre_channel", "rf", "wifi",
+                   "bluetooth", "satcom", "optical", "custom"]
+        },
+        "protocol": {
+          "type": "string",
+          "enum": ["dds", "ros2", "mavlink", "tcp", "udp", "mqtt", "opc_ua", "proprietary", "none"]
+        },
+        "bandwidth_bps":  { "$ref": "#/$defs/ScalarSI" },
+        "latency_s":      { "$ref": "#/$defs/ScalarSI" },
+        "endpoint":       { "type": "string", "description": "e.g. IP:port, topic name, or bus address." }
+      }
+    },
+
+    "DataStream": {
+      "type": "object",
+      "description": "A logical output data stream produced by the sensor (one sensor may expose several, e.g. raw + processed).",
+      "required": ["stream_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/UUID" },
+        "stream_type": {
+          "type": "string",
+          "enum": ["raw_data", "point_cloud", "image", "video", "tracks", "target_list",
+                   "measurements", "detection_list", "classification", "spectrogram",
+                   "waveform", "telemetry", "custom"]
+        },
+        "format":        { "type": "string", "description": "e.g. 'pointcloud2', 'png', 'h264', 'json'." },
+        "rate_hz":       { "$ref": "#/$defs/ScalarSI" },
+        "bandwidth_bps": { "$ref": "#/$defs/ScalarSI" },
+        "interface":     { "$ref": "#/$defs/CommunicationInterface" }
+      }
+    },
+
+    "QualityMetrics": {
+      "type": "object",
+      "description": "Aggregate data-quality metrics for a sensor's output stream.",
+      "additionalProperties": false,
+      "properties": {
+        "completeness_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "validity_pct":     { "type": "number", "minimum": 0, "maximum": 100 },
+        "dropout_rate_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "latency_jitter_s": { "$ref": "#/$defs/ScalarSI" },
+        "overall_confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "SchemaMetadata": {
+      "type": "object",
+      "description": "Document-level metadata for this sensor document.",
+      "required": ["schema_version"],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version":      { "$ref": "#/$defs/Version" },
+        "generated_at":        { "$ref": "#/$defs/Timestamp" },
+        "generator":           { "type": "string" },
+        "metadata_schema_ref": { "type": "string", "default": "metadata.schema.json" }
+      }
+    },
+
+    "SensorIdentity": {
+      "type": "object",
+      "description": "Canonical identity block for a sensor instance or sensor model definition.",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id":               { "$ref": "#/$defs/UUID" },
+        "sensor_id":        { "type": "string", "description": "Human-readable stable identifier, e.g. 'SNS-EO-CAM-014'." },
+        "name":             { "type": "string" },
+        "namespace":        { "type": "string", "description": "Logical grouping namespace, e.g. ROS-style 'platform/sensor_suite'." },
+        "description":      { "type": "string" },
+        "version":          { "$ref": "#/$defs/Version" },
+        "revision":         { "type": "string" },
+        "manufacturer":     { "type": "string" },
+        "model":            { "type": "string" },
+        "serial_number":    { "type": "string" },
+        "firmware_version": { "type": "string" },
+        "hardware_revision": { "type": "string" },
+        "creator":          { "type": "string" },
+        "source":           { "type": "string" },
+        "license":          { "type": "string" },
+        "aliases":          { "type": "array", "items": { "type": "string" } },
+        "tags":             { "type": "array", "items": { "type": "string" } },
+        "created":          { "$ref": "#/$defs/Timestamp" },
+        "updated":          { "$ref": "#/$defs/Timestamp" },
+        "ontology_uri":          { "type": "string", "format": "uri" },
+        "knowledge_graph_uri":   { "type": "string", "format": "uri" },
+        "classification_marking": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret", "simulation_only"],
+          "default": "unclassified"
+        }
+      }
+    },
+
+    "SensorClassification": {
+      "type": "object",
+      "description": "Hierarchical classification of the sensor: category, subcategory, technology, and operating-principle axes. The category/subcategory pair is intentionally open (string enums plus 'custom') so new sensor families can be added without structural changes.",
+      "required": ["category"],
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "imaging", "radar", "sonar", "lidar", "navigation", "environmental",
+            "electronic_warfare", "biomedical", "industrial", "quantum",
+            "acoustic", "seismic", "chemical", "biological", "radiological",
+            "gravimetric", "magnetic", "optical_non_imaging", "custom"
+          ]
+        },
+        "subcategory": {
+          "type": "string",
+          "description": "Free-form within category, e.g. for category='imaging': 'rgb_camera','monochrome_camera','stereo_camera','multispectral_camera','hyperspectral_camera','thermal_camera','infrared_camera','uv_camera','event_camera'. For category='radar': 'pulse','pulse_doppler','aesa','pesa','fmcw','sar','isar','gmti','ground_penetrating','weather','fire_control','counter_battery','over_the_horizon','passive_radar'. For category='sonar': 'active','passive','towed_array','side_scan','forward_looking','sas','hull_mounted','dipping'. For category='lidar': 'mechanical','solid_state','flash','fmcw_lidar','airborne','bathymetric'. For category='navigation': 'gps','gnss','rtk_gps','ins','imu','gyroscope','accelerometer','magnetometer','compass','barometer','altimeter','doppler_velocity_log','star_tracker'. For category='environmental': 'temperature','humidity','pressure','wind','rain','air_quality','radiation','current_meter','ocean_sensor'. For category='electronic_warfare': 'rf_receiver','elint','comint','sigint','spectrum_analyzer','direction_finder','radar_warning_receiver','missile_warning_receiver'. For category='biomedical': 'ecg','eeg','pulse_oximeter','blood_pressure','glucose'. For category='industrial': 'vibration','flow','force','torque','strain','proximity','encoder'. For category='quantum': 'quantum_magnetometer','atomic_clock','quantum_gravimeter'."
+        },
+        "technology":        { "type": "string", "description": "Specific underlying technology, e.g. 'CMOS', 'microbolometer', 'MEMS', 'fiber_optic_gyro', 'photomultiplier_tube'." },
+        "operating_principle_class": {
+          "type": "string",
+          "enum": ["passive", "active", "hybrid"]
+        },
+        "imaging_class": {
+          "type": "string",
+          "enum": ["imaging", "non_imaging"]
+        },
+        "domain_class": {
+          "type": "string",
+          "enum": ["military", "civilian", "scientific", "dual_use"]
+        },
+        "platform_domains": {
+          "type": "array",
+          "description": "Applicable operating domains for this sensor instance/model.",
+          "items": {
+            "type": "string",
+            "enum": ["ground", "maritime_surface", "maritime_subsurface", "air", "space",
+                     "man_portable", "fixed_installation", "industrial", "medical", "indoor", "custom"]
+          }
+        }
+      }
+    },
+
+    "SensorGeometry": {
+      "type": "object",
+      "description": "Geometric reference: transform, boresight, beam direction, and coordinate frame used to interpret all other sensor measurements.",
+      "additionalProperties": false,
+      "properties": {
+        "transform":        { "$ref": "#/$defs/Pose" },
+        "boresight_vector": { "$ref": "#/$defs/Vector3", "description": "Unit vector defining the sensor's primary look direction in its own body frame." },
+        "beam_direction":   { "$ref": "#/$defs/Vector3" },
+        "reference_frame": {
+          "type": "string",
+          "enum": ["world", "local", "geo", "body", "NED", "ENU", "ECEF", "sensor"],
+          "default": "sensor"
+        },
+        "coordinate_system_notes": { "type": "string" }
+      }
+    },
+
+    "PhysicalCharacteristics": {
+      "type": "object",
+      "description": "Physical hardware properties: size, mass, housing, and environmental protection ratings.",
+      "additionalProperties": false,
+      "properties": {
+        "dimensions_m":   { "$ref": "#/$defs/Vector3" },
+        "mass_kg":        { "$ref": "#/$defs/ScalarSI" },
+        "volume_m3":      { "$ref": "#/$defs/ScalarSI" },
+        "material_ref":   { "type": "string", "description": "Reference into material.schema.json describing the housing material." },
+        "housing_type":   { "type": "string", "enum": ["sealed", "vented", "pressurized", "ruggedized", "consumer_grade", "custom"] },
+        "ip_rating":      { "type": "string", "pattern": "^IP[0-9X]{2}$", "description": "IEC 60529 Ingress Protection rating, e.g. 'IP67'." },
+        "shock_resistance_g":     { "$ref": "#/$defs/ScalarSI" },
+        "vibration_resistance":   { "type": "string", "description": "e.g. 'MIL-STD-810G Method 514.6 Category 24'." },
+        "radiation_hardening":    { "type": "string", "enum": ["none", "commercial", "rad_tolerant", "rad_hardened", "custom"] },
+        "waterproof_rating":      { "type": "string" }
+      }
+    },
+
+    "OperatingPrinciple": {
+      "type": "object",
+      "description": "How the sensor physically senses: passive vs active, emission characteristics, and waveform/scan parameters where applicable.",
+      "additionalProperties": false,
+      "properties": {
+        "mode": { "type": "string", "enum": ["passive", "active", "hybrid"] },
+        "emission_type": {
+          "type": "string",
+          "enum": ["none", "electromagnetic", "acoustic", "optical_laser", "particle", "custom"]
+        },
+        "illumination_source": { "type": "string", "description": "e.g. 'laser_diode_905nm', 'internal_magnetron', 'ambient_sunlight'." },
+        "wavelength_m":     { "$ref": "#/$defs/ScalarSI" },
+        "frequency_hz":     { "$ref": "#/$defs/ScalarSI" },
+        "polarization": {
+          "type": "string",
+          "enum": ["none", "horizontal", "vertical", "circular_left", "circular_right", "dual_polarized", "custom"]
+        },
+        "modulation": {
+          "type": "string",
+          "enum": ["none", "amplitude", "frequency", "phase", "pulse", "chirp", "fmcw", "ofdm", "custom"]
+        },
+        "pulse_characteristics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pulse_width_s":  { "$ref": "#/$defs/ScalarSI" },
+            "pulse_repetition_frequency_hz": { "$ref": "#/$defs/ScalarSI" },
+            "duty_cycle_pct": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "scanning_method": {
+          "type": "string",
+          "enum": ["none", "mechanical_rotation", "electronic_steering", "raster", "push_broom", "whisk_broom", "staring", "conical", "lissajous", "custom"]
+        }
+      }
+    },
+
+    "MeasurementCapabilities": {
+      "type": "object",
+      "description": "What physical quantities this sensor is capable of measuring, with capability-specific resolution/range/units. Each capability is optional; presence indicates the sensor supports that measurement type.",
+      "additionalProperties": false,
+      "properties": {
+        "distance":     { "$ref": "#/$defs/PhysicalRange" },
+        "velocity":     { "$ref": "#/$defs/PhysicalRange" },
+        "acceleration": { "$ref": "#/$defs/PhysicalRange" },
+        "temperature":  { "$ref": "#/$defs/PhysicalRange" },
+        "pressure":     { "$ref": "#/$defs/PhysicalRange" },
+        "orientation":  { "$ref": "#/$defs/PhysicalRange" },
+        "position":     { "$ref": "#/$defs/PhysicalRange" },
+        "humidity":     { "$ref": "#/$defs/PhysicalRange" },
+        "radiation":    { "$ref": "#/$defs/PhysicalRange" },
+        "chemical_concentration": { "$ref": "#/$defs/PhysicalRange" },
+        "biological_detection": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "agent_classes":    { "type": "array", "items": { "type": "string" } },
+            "sensitivity_threshold": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "magnetic_field": { "$ref": "#/$defs/PhysicalRange" },
+        "electric_field":  { "$ref": "#/$defs/PhysicalRange" },
+        "acoustic_pressure": { "$ref": "#/$defs/PhysicalRange" },
+        "image_capture": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "resolution_px":   { "type": "object", "additionalProperties": false, "properties": { "width": { "type": "integer" }, "height": { "type": "integer" } } },
+            "bit_depth":       { "type": "integer" },
+            "color_model":     { "type": "string", "enum": ["mono", "bayer_rgb", "rgb", "rgba", "yuv", "raw", "custom"] }
+          }
+        },
+        "spectral_response": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "bands": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "center_wavelength_m": { "type": "number" },
+                  "bandwidth_m":         { "type": "number" },
+                  "label":               { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "PhysicalRange": {
+      "type": "object",
+      "description": "Measurable range and resolution for a single capability axis.",
+      "additionalProperties": false,
+      "properties": {
+        "min":        { "type": "number" },
+        "max":        { "type": "number" },
+        "unit":       { "type": "string" },
+        "resolution": { "type": "number" }
+      }
+    },
+
+    "DetectionCharacteristics": {
+      "type": "object",
+      "description": "Range/resolution/probabilistic detection performance, the core specification axis for radar, sonar, lidar, and EO/IR search sensors.",
+      "additionalProperties": false,
+      "properties": {
+        "maximum_range_m":      { "$ref": "#/$defs/ScalarSI" },
+        "minimum_range_m":      { "$ref": "#/$defs/ScalarSI" },
+        "detection_range_m":    { "$ref": "#/$defs/ScalarSI" },
+        "recognition_range_m":  { "$ref": "#/$defs/ScalarSI" },
+        "identification_range_m": { "$ref": "#/$defs/ScalarSI" },
+        "tracking_range_m":     { "$ref": "#/$defs/ScalarSI" },
+        "angular_resolution_rad":  { "$ref": "#/$defs/ScalarSI" },
+        "spatial_resolution_m":    { "$ref": "#/$defs/ScalarSI" },
+        "temporal_resolution_s":   { "$ref": "#/$defs/ScalarSI" },
+        "spectral_resolution_m":   { "$ref": "#/$defs/ScalarSI" },
+        "range_resolution_m":      { "$ref": "#/$defs/ScalarSI" },
+        "doppler_resolution_mps":  { "$ref": "#/$defs/ScalarSI" },
+        "velocity_resolution_mps": { "$ref": "#/$defs/ScalarSI" },
+        "elevation_resolution_rad": { "$ref": "#/$defs/ScalarSI" },
+        "bearing_accuracy_rad":    { "$ref": "#/$defs/ScalarSI" },
+        "elevation_coverage_deg": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "azimuth_coverage_deg":   { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "probability_of_detection": { "type": "number", "minimum": 0, "maximum": 1 },
+        "probability_of_false_alarm": { "type": "number", "minimum": 0, "maximum": 1 },
+        "sensitivity":   { "$ref": "#/$defs/ScalarSI" },
+        "noise_floor":   { "$ref": "#/$defs/ScalarSI" },
+        "dynamic_range_db": { "$ref": "#/$defs/ScalarSI" },
+        "tracking_capacity": { "type": "integer", "minimum": 0, "description": "Maximum number of simultaneous tracks the sensor/processing chain can maintain." }
+      }
+    },
+
+    "FieldOfView": {
+      "type": "object",
+      "description": "Instantaneous and scan-volume angular coverage of the sensor.",
+      "additionalProperties": false,
+      "properties": {
+        "horizontal_fov_deg":   { "$ref": "#/$defs/ScalarSI" },
+        "vertical_fov_deg":     { "$ref": "#/$defs/ScalarSI" },
+        "instantaneous_fov_rad": { "$ref": "#/$defs/ScalarSI", "description": "Instantaneous Field of View (IFOV) — the angular extent of a single detector element." },
+        "beam_width_deg":       { "$ref": "#/$defs/ScalarSI" },
+        "scan_volume": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "azimuth_range_deg":   { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+            "elevation_range_deg": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+            "range_m":             { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } }
+          }
+        },
+        "coverage_polygon": {
+          "type": "array",
+          "description": "Optional explicit angular/spatial coverage footprint vertices.",
+          "items": { "$ref": "#/$defs/Vector3" }
+        },
+        "search_sector_deg": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "blind_zone": {
+          "type": "array",
+          "description": "Angular or range sectors where the sensor cannot detect (e.g. behind mount, near-range dead zone).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "azimuth_range_deg":   { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+              "range_range_m":       { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+              "reason": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "SignalCharacteristics": {
+      "type": "object",
+      "description": "Transmit/receive signal-domain parameters for active/RF/acoustic sensors.",
+      "additionalProperties": false,
+      "properties": {
+        "operating_frequency_hz": { "$ref": "#/$defs/ScalarSI" },
+        "bandwidth_hz":           { "$ref": "#/$defs/ScalarSI" },
+        "pulse_compression": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "method":  { "type": "string", "enum": ["linear_chirp", "barker_code", "costas_code", "nonlinear_chirp", "custom"] },
+            "compression_ratio": { "type": "number", "minimum": 1 }
+          }
+        },
+        "waveform": {
+          "type": "string",
+          "enum": ["cw", "pulsed", "fmcw", "chirp", "ofdm", "noise_modulated", "custom"]
+        },
+        "transmission_power_w":  { "$ref": "#/$defs/ScalarSI" },
+        "receiver_gain_db":      { "$ref": "#/$defs/ScalarSI" },
+        "antenna_gain_db":       { "$ref": "#/$defs/ScalarSI" },
+        "noise_figure_db":       { "$ref": "#/$defs/ScalarSI" },
+        "effective_radiated_power_w": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "PerformanceMetrics": {
+      "type": "object",
+      "description": "Top-level performance characterization spanning accuracy, timing, and signal quality, applicable across all sensor modalities.",
+      "additionalProperties": false,
+      "properties": {
+        "accuracy":       { "$ref": "#/$defs/ConfidenceInterval" },
+        "precision":      { "$ref": "#/$defs/ScalarSI" },
+        "repeatability":  { "$ref": "#/$defs/ScalarSI" },
+        "resolution":     { "$ref": "#/$defs/ScalarSI" },
+        "sensitivity":    { "$ref": "#/$defs/ScalarSI" },
+        "specificity":    { "type": "number", "minimum": 0, "maximum": 1 },
+        "dynamic_range_db": { "$ref": "#/$defs/ScalarSI" },
+        "linearity_pct_fs": { "type": "number" },
+        "drift_per_year":  { "$ref": "#/$defs/ScalarSI" },
+        "stability":       { "$ref": "#/$defs/ScalarSI" },
+        "bandwidth_hz":    { "$ref": "#/$defs/ScalarSI" },
+        "latency_s":       { "$ref": "#/$defs/ScalarSI" },
+        "update_rate_hz":  { "$ref": "#/$defs/ScalarSI" },
+        "frame_rate_hz":   { "$ref": "#/$defs/ScalarSI" },
+        "refresh_rate_hz": { "$ref": "#/$defs/ScalarSI" },
+        "signal_to_noise_ratio_db": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "SignalProcessing": {
+      "type": "object",
+      "description": "On-board or downstream signal-processing chain applied to raw sensor data.",
+      "additionalProperties": false,
+      "properties": {
+        "stages": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["filtering", "fft", "wavelet_transform", "beamforming", "pulse_compression",
+                     "cfar", "matched_filter", "pulse_doppler_processing", "target_tracking",
+                     "object_detection", "feature_extraction", "ai_inference", "sensor_fusion",
+                     "compression", "encryption", "custom"]
+          }
+        },
+        "cfar_parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "method":          { "type": "string", "enum": ["cell_averaging", "ordered_statistic", "guard_band", "custom"] },
+            "guard_cells":     { "type": "integer", "minimum": 0 },
+            "training_cells":  { "type": "integer", "minimum": 0 },
+            "probability_of_false_alarm": { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "compression_codec":  { "type": "string" },
+        "encryption_standard": { "type": "string", "description": "e.g. 'AES-256-GCM'." },
+        "processing_latency_s": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "EnvironmentalLimits": {
+      "type": "object",
+      "description": "Hardware-rated environmental operating and survival limits, independent of dynamic weather effects (see SensorEnvironmentEffects for runtime degradation).",
+      "additionalProperties": false,
+      "properties": {
+        "operating_temperature_k": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "storage_temperature_k":   { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "operating_humidity_pct":  { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "operating_altitude_m":    { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "operating_depth_m":       { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "operating_pressure_pa":   { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "shock_rating_g":          { "$ref": "#/$defs/ScalarSI" },
+        "vibration_rating":        { "type": "string" },
+        "emi_emc_rating":          { "type": "string", "description": "e.g. 'MIL-STD-461F'." },
+        "dust_rating":             { "type": "string" },
+        "water_rating":            { "type": "string" },
+        "salt_fog_rating":         { "type": "string" },
+        "corrosion_resistance":    { "type": "string" },
+        "radiation_tolerance_gy":  { "$ref": "#/$defs/ScalarSI" },
+        "vacuum_rated":            { "type": "boolean", "default": false }
+      }
+    },
+
+    "SensorEnvironmentEffects": {
+      "type": "object",
+      "description": "Runtime degradation of sensor performance due to weather, terrain, lighting, and electromagnetic conditions. Mirrors and is intended to be driven by weather.schema.json's SensorDegradationModel; values here are the resolved, sensor-specific outcome.",
+      "additionalProperties": false,
+      "properties": {
+        "weather_ref": { "type": "string", "description": "Pointer/reference into a weather.schema.json document instance supplying the environmental drivers." },
+        "attenuation_coefficient_per_m": { "$ref": "#/$defs/ScalarSI" },
+        "noise_increase_factor":         { "$ref": "#/$defs/ScalarSI" },
+        "visibility_reduction_pct":      { "$ref": "#/$defs/ScalarSI" },
+        "detection_probability_factor":  { "$ref": "#/$defs/ScalarSI" },
+        "false_alarm_rate_increase":     { "$ref": "#/$defs/ScalarSI" },
+        "primary_causes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["rain", "fog", "snow", "dust", "smoke", "humidity", "sea_state",
+                     "ionospheric", "tropospheric", "sea_clutter", "foliage", "terrain_occlusion",
+                     "lighting_glare", "low_light", "thermal_crossover", "custom"]
+          }
+        },
+        "terrain_effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "line_of_sight_blocked": { "type": "boolean", "default": false },
+            "multipath_risk":        { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+            "ground_clutter_level":  { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "lighting_effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "illumination_lux":      { "$ref": "#/$defs/ScalarSI" },
+            "glare_risk":            { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+            "low_light_performance_factor": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "electromagnetic_effects": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "jamming_detected":      { "type": "boolean", "default": false },
+            "jamming_to_signal_ratio_db": { "$ref": "#/$defs/ScalarSI" },
+            "interference_sources": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+
+    "TimingConfiguration": {
+      "type": "object",
+      "description": "Timestamping and clock characteristics for a sensor's output, complementing SamplingConfiguration with accuracy/sync detail.",
+      "additionalProperties": false,
+      "properties": {
+        "timestamp_accuracy_s": { "$ref": "#/$defs/ScalarSI" },
+        "clock_accuracy_ppm":   { "$ref": "#/$defs/ScalarSI" },
+        "synchronization_method": { "$ref": "#/$defs/Synchronization/properties/method" },
+        "warmup_time_s":  { "$ref": "#/$defs/ScalarSI" },
+        "settling_time_s": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "SensorOutputs": {
+      "type": "object",
+      "description": "Declares the output data streams, formats, and metadata a sensor produces.",
+      "additionalProperties": false,
+      "properties": {
+        "streams": { "type": "array", "items": { "$ref": "#/$defs/DataStream" } },
+        "metadata_fields": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Names of metadata fields accompanying each output record, e.g. ['timestamp','confidence','sensor_id']."
+        },
+        "quality_metrics": { "$ref": "#/$defs/QualityMetrics" }
+      }
+    },
+
+    "AICapabilities": {
+      "type": "object",
+      "description": "On-board or associated AI/perception processing capabilities for this sensor's data.",
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["object_detection", "object_classification", "object_tracking",
+                     "semantic_segmentation", "instance_segmentation", "pose_estimation",
+                     "slam", "sensor_fusion", "target_recognition", "threat_detection",
+                     "anomaly_detection", "change_detection", "custom"]
+          }
+        },
+        "model_refs": { "type": "array", "items": { "type": "string" }, "description": "References to AI model identifiers/artifacts implementing the above capabilities." },
+        "inference_latency_s": { "$ref": "#/$defs/ScalarSI" },
+        "inference_location": { "type": "string", "enum": ["onboard_edge", "onboard_gpu", "offboard_local", "offboard_cloud", "none"] }
+      }
+    },
+
+    "FailureMode": {
+      "type": "object",
+      "description": "A possible failure or degradation mode this sensor can exhibit, for simulation of realistic sensor faults.",
+      "required": ["failure_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":            { "$ref": "#/$defs/UUID" },
+        "failure_type": {
+          "type": "string",
+          "enum": ["sensor_failure", "calibration_drift", "noise_increase", "signal_loss",
+                   "occlusion", "jamming", "spoofing", "saturation", "blindness",
+                   "overheating", "hardware_failure", "software_failure", "custom"]
+        },
+        "probability_per_hour": { "type": "number", "minimum": 0, "maximum": 1 },
+        "severity":   { "type": "string", "enum": ["degraded", "intermittent", "total_loss"] },
+        "detectable": { "type": "boolean", "default": true, "description": "Whether the failure is self-reported via health monitoring or silent." },
+        "recovery": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "automatic": { "type": "boolean", "default": false },
+            "recovery_time_s": { "$ref": "#/$defs/ScalarSI" }
+          }
+        }
+      }
+    },
+
+    "SensorHealth": {
+      "type": "object",
+      "description": "Current health/diagnostic state of the sensor.",
+      "additionalProperties": false,
+      "properties": {
+        "status": { "type": "string", "enum": ["nominal", "degraded", "fault", "offline", "unknown"] },
+        "diagnostics": { "type": "object", "additionalProperties": true },
+        "internal_temperature_k": { "$ref": "#/$defs/ScalarSI" },
+        "supply_voltage_v":       { "$ref": "#/$defs/ScalarSI" },
+        "fault_codes": { "type": "array", "items": { "type": "string" } },
+        "last_self_test": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "timestamp": { "$ref": "#/$defs/Timestamp" },
+            "result":    { "type": "string", "enum": ["pass", "fail", "warning"] },
+            "details":   { "type": "string" }
+          }
+        },
+        "remaining_useful_life_hours": { "$ref": "#/$defs/ScalarSI" },
+        "reliability": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mtbf_hours": { "$ref": "#/$defs/ScalarSI", "description": "Mean Time Between Failures." },
+            "mttr_hours": { "$ref": "#/$defs/ScalarSI", "description": "Mean Time To Repair." }
+          }
+        }
+      }
+    },
+
+    "Maintenance": {
+      "type": "object",
+      "description": "Maintenance scheduling and history.",
+      "additionalProperties": false,
+      "properties": {
+        "last_maintenance_date": { "$ref": "#/$defs/Timestamp" },
+        "next_scheduled_maintenance": { "$ref": "#/$defs/Timestamp" },
+        "maintenance_interval_hours": { "$ref": "#/$defs/ScalarSI" },
+        "maintenance_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "date":   { "$ref": "#/$defs/Timestamp" },
+              "action": { "type": "string" },
+              "technician": { "type": "string" },
+              "notes":  { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "RuntimeState": {
+      "type": "object",
+      "description": "Current operational state of the sensor at simulation/runtime.",
+      "additionalProperties": false,
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": ["operational", "offline", "warmup", "standby", "searching", "tracking",
+                   "recording", "fault", "destroyed", "jammed", "spoofed", "calibrating"]
+        },
+        "state_since": { "$ref": "#/$defs/Timestamp" },
+        "state_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "state": { "$ref": "#/$defs/RuntimeState/properties/state" },
+              "at":    { "$ref": "#/$defs/Timestamp" }
+            }
+          }
+        }
+      }
+    },
+
+    "SensorFusion": {
+      "type": "object",
+      "description": "Multi-sensor fusion grouping and association parameters for this sensor's participation in a fusion architecture.",
+      "additionalProperties": false,
+      "properties": {
+        "fusion_group_id": { "type": "string" },
+        "fusion_algorithm": {
+          "type": "string",
+          "enum": ["kalman_filter", "extended_kalman_filter", "unscented_kalman_filter",
+                   "particle_filter", "covariance_intersection", "bayesian", "dempster_shafer",
+                   "deep_fusion", "custom"]
+        },
+        "time_synchronization_ref": { "$ref": "#/$defs/Synchronization" },
+        "coordinate_registration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "reference_frame": { "type": "string" },
+            "registration_error_m": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "track_association_method": { "type": "string", "enum": ["nearest_neighbor", "gnn", "jpda", "mht", "custom"] },
+        "measurement_covariance": { "$ref": "#/$defs/Matrix" },
+        "shared_tracks": { "type": "boolean", "default": false }
+      }
+    },
+
+    "RadarSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for radar sensors (pulse, pulse-Doppler, AESA/PESA, SAR/ISAR, GMTI, ground-penetrating, weather, fire-control, counter-battery, OTH, passive).",
+      "additionalProperties": false,
+      "properties": {
+        "radar_type": {
+          "type": "string",
+          "enum": ["pulse", "pulse_doppler", "aesa", "pesa", "fmcw", "sar", "isar", "gmti",
+                   "ground_penetrating", "weather", "fire_control", "counter_battery",
+                   "over_the_horizon", "passive_radar", "custom"]
+        },
+        "antenna": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type":          { "type": "string", "enum": ["parabolic", "phased_array", "slotted_array", "horn", "patch", "yagi", "custom"] },
+            "aperture_m2":   { "$ref": "#/$defs/ScalarSI" },
+            "element_count": { "type": "integer", "minimum": 0 },
+            "beam_steering_range_deg": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } }
+          }
+        },
+        "sar_parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode":          { "type": "string", "enum": ["stripmap", "spotlight", "scansar", "tops", "custom"] },
+            "synthetic_aperture_length_m": { "$ref": "#/$defs/ScalarSI" },
+            "ground_resolution_m": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "gmti_minimum_detectable_velocity_mps": { "$ref": "#/$defs/ScalarSI" },
+        "clutter_rejection_db": { "$ref": "#/$defs/ScalarSI" },
+        "radar_cross_section_sensitivity_m2": { "$ref": "#/$defs/ScalarSI", "description": "Smallest RCS the radar can reliably detect at a reference range." }
+      }
+    },
+
+    "SonarSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for sonar sensors (active/passive, towed array, side-scan, forward-looking, SAS, hull-mounted, dipping).",
+      "additionalProperties": false,
+      "properties": {
+        "sonar_type": {
+          "type": "string",
+          "enum": ["active", "passive", "towed_array", "side_scan", "forward_looking",
+                   "synthetic_aperture_sonar", "hull_mounted", "dipping", "custom"]
+        },
+        "source_level_db": { "$ref": "#/$defs/ScalarSI" },
+        "transducer_array": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "element_count": { "type": "integer", "minimum": 0 },
+            "aperture_m":    { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "depth_rating_m":        { "$ref": "#/$defs/ScalarSI" },
+        "tow_cable_length_m":    { "$ref": "#/$defs/ScalarSI" },
+        "sound_velocity_profile_dependence": { "type": "boolean", "default": true }
+      }
+    },
+
+    "EOIRSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for electro-optical/infrared imaging sensors (RGB, monochrome, stereo, multispectral, hyperspectral, thermal, IR, UV, event cameras, night vision, laser rangefinder/designator).",
+      "additionalProperties": false,
+      "properties": {
+        "eo_ir_type": {
+          "type": "string",
+          "enum": ["rgb_camera", "monochrome_camera", "stereo_camera", "depth_camera",
+                   "multispectral_camera", "hyperspectral_camera", "thermal_camera",
+                   "infrared_camera", "uv_camera", "event_camera", "night_vision",
+                   "laser_rangefinder", "laser_designator", "custom"]
+        },
+        "detector": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "technology":   { "type": "string", "enum": ["cmos", "ccd", "microbolometer", "ingaas", "mct", "ingaas_apd", "intensified_tube", "custom"] },
+            "pixel_pitch_m": { "$ref": "#/$defs/ScalarSI" },
+            "array_size_px": { "type": "object", "additionalProperties": false, "properties": { "width": { "type": "integer" }, "height": { "type": "integer" } } },
+            "cooled":        { "type": "boolean", "default": false },
+            "cooling_type":  { "type": "string", "enum": ["none", "stirling_cycle", "thermoelectric", "cryogenic", "custom"] }
+          }
+        },
+        "optics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "focal_length_m": { "$ref": "#/$defs/ScalarSI" },
+            "aperture_f_number": { "type": "number" },
+            "zoom_range": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } }
+          }
+        },
+        "ntsh_or_nedt_k": { "$ref": "#/$defs/ScalarSI", "description": "Noise-Equivalent Differential Temperature (thermal sensitivity), for thermal/IR sensors." },
+        "stereo_baseline_m": { "$ref": "#/$defs/ScalarSI" },
+        "laser_parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "wavelength_m": { "$ref": "#/$defs/ScalarSI" },
+            "pulse_energy_j": { "$ref": "#/$defs/ScalarSI" },
+            "eye_safety_class": { "type": "string", "enum": ["1", "1M", "2", "2M", "3R", "3B", "4"] }
+          }
+        }
+      }
+    },
+
+    "LidarSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for LiDAR sensors (mechanical, solid-state, flash, FMCW, airborne, bathymetric).",
+      "additionalProperties": false,
+      "properties": {
+        "lidar_type": {
+          "type": "string",
+          "enum": ["mechanical", "solid_state", "flash", "fmcw_lidar", "airborne", "bathymetric", "custom"]
+        },
+        "laser_wavelength_m": { "$ref": "#/$defs/ScalarSI" },
+        "channel_count":      { "type": "integer", "minimum": 1 },
+        "points_per_second":  { "$ref": "#/$defs/ScalarSI" },
+        "returns_per_pulse":  { "type": "integer", "minimum": 1, "description": "Number of discrete returns captured per emitted pulse (single/dual/multi-return)." },
+        "eye_safety_class":   { "type": "string", "enum": ["1", "1M", "2", "2M", "3R", "3B", "4"] }
+      }
+    },
+
+    "NavigationSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for navigation/inertial sensors (GPS/GNSS/RTK, INS, IMU, gyroscope, accelerometer, magnetometer, compass, barometer, altimeter, DVL, star tracker).",
+      "additionalProperties": false,
+      "properties": {
+        "navigation_type": {
+          "type": "string",
+          "enum": ["gps", "gnss", "rtk_gps", "ins", "imu", "gyroscope", "accelerometer",
+                   "magnetometer", "compass", "barometer", "altimeter", "doppler_velocity_log",
+                   "star_tracker", "custom"]
+        },
+        "constellations": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["gps", "glonass", "galileo", "beidou", "qzss", "irnss", "custom"] }
+        },
+        "position_accuracy_m":   { "$ref": "#/$defs/ConfidenceInterval" },
+        "velocity_accuracy_mps": { "$ref": "#/$defs/ConfidenceInterval" },
+        "attitude_accuracy_rad": { "$ref": "#/$defs/ConfidenceInterval" },
+        "bias_stability": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "gyro_bias_stability_deg_per_hr": { "type": "number" },
+            "accel_bias_stability_mg":        { "type": "number" }
+          }
+        },
+        "time_to_first_fix_s": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "EnvironmentalSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for environmental/meteorological/oceanographic sensors. Intended to compose with weather.schema.json's Observation/MeasurementSource for downstream weather-state ingestion.",
+      "additionalProperties": false,
+      "properties": {
+        "environmental_type": {
+          "type": "string",
+          "enum": ["temperature", "humidity", "pressure", "wind", "rain", "air_quality",
+                   "radiation", "current_meter", "ocean_sensor", "custom"]
+        },
+        "weather_schema_variable_mapping": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Names of weather.schema.json AtmosphericState/OceanWeather fields this sensor's output feeds, e.g. ['air_temperature_k','relative_humidity_pct']."
+        }
+      }
+    },
+
+    "ElectronicWarfareSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for electronic-warfare receive systems (RF receiver, ELINT/COMINT/SIGINT, spectrum analyzer, direction finder, radar/missile warning receivers). Purely receive/detection characteristics — no jamming or attack payload content.",
+      "additionalProperties": false,
+      "properties": {
+        "ew_type": {
+          "type": "string",
+          "enum": ["rf_receiver", "elint", "comint", "sigint", "spectrum_analyzer",
+                   "direction_finder", "radar_warning_receiver", "missile_warning_receiver", "custom"]
+        },
+        "frequency_coverage_hz": { "type": "object", "additionalProperties": false, "properties": { "min": { "type": "number" }, "max": { "type": "number" } } },
+        "instantaneous_bandwidth_hz": { "$ref": "#/$defs/ScalarSI" },
+        "direction_finding_accuracy_rad": { "$ref": "#/$defs/ScalarSI" },
+        "signal_classification_library_ref": { "type": "string", "description": "Reference to an external emitter/signal library used for classification; this schema stores only the reference, not signal content." }
+      }
+    },
+
+    "BiomedicalSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for biomedical monitoring sensors (ECG, EEG, pulse oximeter, blood pressure, glucose).",
+      "additionalProperties": false,
+      "properties": {
+        "biomedical_type": {
+          "type": "string",
+          "enum": ["ecg", "eeg", "pulse_oximeter", "blood_pressure", "glucose", "custom"]
+        },
+        "lead_count":      { "type": "integer", "minimum": 0, "description": "For ECG/EEG: number of electrode leads/channels." },
+        "measurement_site": { "type": "string", "description": "e.g. 'finger', 'wrist', 'scalp_10_20_system'." },
+        "regulatory_clearance": { "type": "array", "items": { "type": "string" }, "description": "e.g. ['FDA_510k','CE_MDR']." }
+      }
+    },
+
+    "IndustrialSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for industrial process sensors (vibration, flow, force, torque, strain, proximity, encoders).",
+      "additionalProperties": false,
+      "properties": {
+        "industrial_type": {
+          "type": "string",
+          "enum": ["vibration", "flow", "force", "torque", "strain", "proximity", "encoder", "custom"]
+        },
+        "encoder_resolution_counts_per_rev": { "type": "integer", "minimum": 0 },
+        "load_rating_n":  { "$ref": "#/$defs/ScalarSI" },
+        "proximity_switching_distance_m": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "QuantumSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for quantum sensors (quantum magnetometer, atomic clock, quantum gravimeter), and an explicit extension point for future quantum/exotic sensing technologies.",
+      "additionalProperties": false,
+      "properties": {
+        "quantum_type": {
+          "type": "string",
+          "enum": ["quantum_magnetometer", "atomic_clock", "quantum_gravimeter", "nv_diamond_sensor", "atom_interferometer", "custom"]
+        },
+        "sensitivity": { "$ref": "#/$defs/ScalarSI", "description": "e.g. fT/sqrt(Hz) for magnetometers, fractional frequency stability for clocks." },
+        "operating_temperature_k": { "$ref": "#/$defs/ScalarSI", "description": "Quantum sensors frequently require cryogenic or laser-cooled operation." },
+        "coherence_time_s": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "AcousticSeismicChemBioRadSensor": {
+      "type": "object",
+      "description": "Modality-specific extension for acoustic, seismic, chemical, biological, and radiological detection sensors. Detection-only specification (sensitivity, agent/isotope classes monitored, alarm thresholds) — does not describe synthesis, production, or weaponization of any agent or material.",
+      "additionalProperties": false,
+      "properties": {
+        "detector_class": {
+          "type": "string",
+          "enum": ["acoustic", "seismic", "chemical", "biological", "radiological", "custom"]
+        },
+        "monitored_classes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "High-level hazard classes the detector is calibrated for, e.g. ['volatile_organic_compound','gamma_emitter','seismic_p_wave']. Free-text category labels only; not a targeting or synthesis reference."
+        },
+        "alarm_threshold": { "$ref": "#/$defs/ScalarSI" },
+        "response_time_s": { "$ref": "#/$defs/ScalarSI" },
+        "isotope_identification_supported": { "type": "boolean", "default": false }
+      }
+    },
+
+    "SensorModality": {
+      "type": "object",
+      "description": "Polymorphic container for the modality-specific extension applicable to this sensor, selected by classification.category. Exactly one extension block should be populated, matching the parent classification.",
+      "additionalProperties": false,
+      "properties": {
+        "radar":           { "$ref": "#/$defs/RadarSensor" },
+        "sonar":           { "$ref": "#/$defs/SonarSensor" },
+        "eo_ir":           { "$ref": "#/$defs/EOIRSensor" },
+        "lidar":           { "$ref": "#/$defs/LidarSensor" },
+        "navigation":      { "$ref": "#/$defs/NavigationSensor" },
+        "environmental":   { "$ref": "#/$defs/EnvironmentalSensor" },
+        "electronic_warfare": { "$ref": "#/$defs/ElectronicWarfareSensor" },
+        "biomedical":      { "$ref": "#/$defs/BiomedicalSensor" },
+        "industrial":      { "$ref": "#/$defs/IndustrialSensor" },
+        "quantum":         { "$ref": "#/$defs/QuantumSensor" },
+        "acoustic_seismic_chem_bio_rad": { "$ref": "#/$defs/AcousticSeismicChemBioRadSensor" },
+        "custom":          { "type": "object", "description": "Free-form extension for sensor categories not yet enumerated, preserving forward compatibility." }
+      }
+    }
+  }
+}

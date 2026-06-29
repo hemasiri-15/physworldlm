@@ -1,0 +1,957 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/event.schema.json",
+  "title": "EventSpec",
+  "description": "PhysWorldLM World Specification Event Standard (PW-WSF-700) v1.0. Universal representation of every discrete occurrence that changes, influences, observes, or records the state of a PhysWorldLM simulated world.",
+  "$comment": "committee: PhysWorldLM Architecture Board | status: ACTIVE | license: MIT | revision: 1.0.0",
+  "type": "object",
+  "required": ["id", "event_type", "timestamp_utc"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier (RFC 4122)."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+
+    "Vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+
+    "GeoCoordinate": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90  },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "altitude":  { "type": "number", "description": "Meters above sea level." }
+      }
+    },
+
+    "GeoPolygon": {
+      "type": "object",
+      "required": ["vertices"],
+      "additionalProperties": false,
+      "properties": {
+        "vertices": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/GeoCoordinate" },
+          "minItems": 3
+        }
+      }
+    },
+
+    "SecurityClassification": {
+      "type": "string",
+      "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret", "custom"]
+    },
+
+    "EventRef": {
+      "type": "object",
+      "description": "Lightweight reference to another event.",
+      "required": ["event_id"],
+      "additionalProperties": false,
+      "properties": {
+        "event_id":   { "$ref": "#/$defs/UUID" },
+        "event_name": { "type": "string" },
+        "relation":   {
+          "type": "string",
+          "enum": ["parent", "child", "trigger", "caused_by", "causes", "precedes", "follows",
+                   "parallel", "cancels", "overrides", "synchronizes", "mutually_exclusive", "related"]
+        }
+      }
+    },
+
+    "EntityRef": {
+      "type": "object",
+      "description": "Reference to a world entity.",
+      "required": ["entity_id"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": { "$ref": "#/$defs/UUID" },
+        "label":     { "type": "string" },
+        "role": {
+          "type": "string",
+          "enum": ["source", "target", "affected", "observer", "mediator", "custom"]
+        }
+      }
+    },
+
+    "SpatialContext": {
+      "type": "object",
+      "description": "Where the event occurred.",
+      "additionalProperties": false,
+      "properties": {
+        "position":          { "$ref": "#/$defs/Vector3",      "description": "World-space position (m)." },
+        "geo_coordinate":    { "$ref": "#/$defs/GeoCoordinate" },
+        "orientation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "x": { "type": "number" },
+            "y": { "type": "number" },
+            "z": { "type": "number" },
+            "w": { "type": "number" }
+          },
+          "description": "Quaternion orientation."
+        },
+        "reference_frame": {
+          "type": "string",
+          "enum": ["world", "local", "geo", "body", "NED", "ENU", "ECEF"],
+          "default": "world"
+        },
+        "affected_area":     { "$ref": "#/$defs/GeoPolygon" },
+        "affected_radius_m": { "type": "number", "description": "Spherical blast/effect radius (m)." },
+        "altitude_m":        { "type": "number" },
+        "depth_m":           { "type": "number" },
+        "usd_prim_path":     { "type": "string", "description": "OpenUSD prim path of the event origin." },
+        "scene_layer":       { "type": "string" }
+      }
+    },
+
+    "TemporalContext": {
+      "type": "object",
+      "description": "Timing information for the event.",
+      "additionalProperties": false,
+      "properties": {
+        "start_time_utc":       { "$ref": "#/$defs/Timestamp" },
+        "end_time_utc":         { "$ref": "#/$defs/Timestamp" },
+        "duration_s":           { "type": "number", "description": "Duration in seconds." },
+        "sim_time_s":           { "type": "number", "description": "Simulation clock time at event (s)." },
+        "mission_time_s":       { "type": "number", "description": "Mission elapsed time (s)." },
+        "frame_number":         { "type": "integer", "minimum": 0 },
+        "tick_number":          { "type": "integer", "minimum": 0 },
+        "scheduled_time_utc":   { "$ref": "#/$defs/Timestamp" },
+        "delay_s":              { "type": "number", "description": "Execution delay from scheduled time (s)." },
+        "expiry_time_utc":      { "$ref": "#/$defs/Timestamp" },
+        "prediction_horizon_s": { "type": "number", "description": "How far ahead this event was predicted (s)." }
+      }
+    },
+
+    "PhysicsPayload": {
+      "type": "object",
+      "description": "Physical quantities associated with the event.",
+      "additionalProperties": false,
+      "properties": {
+        "force_n":            { "$ref": "#/$defs/Vector3", "description": "Applied force (N)." },
+        "impulse_ns":         { "$ref": "#/$defs/Vector3", "description": "Impulse (N·s)." },
+        "torque_nm":          { "$ref": "#/$defs/Vector3", "description": "Torque (N·m)." },
+        "velocity_mps":       { "$ref": "#/$defs/Vector3", "description": "Velocity at event (m/s)." },
+        "acceleration_mps2":  { "$ref": "#/$defs/Vector3", "description": "Acceleration (m/s²)." },
+        "energy_j":           { "type": "number", "description": "Energy released or transferred (J)." },
+        "momentum_kgmps":     { "$ref": "#/$defs/Vector3", "description": "Momentum (kg·m/s)." },
+        "mass_kg":            { "type": "number" },
+        "pressure_pa":        { "type": "number", "description": "Overpressure (Pa) e.g. from explosion." },
+        "temperature_k":      { "type": "number", "description": "Temperature (K)." },
+        "collision_normal":   { "$ref": "#/$defs/Vector3" },
+        "contact_points": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Vector3" }
+        },
+        "penetration_depth_m":{ "type": "number" },
+        "damage_hp":          { "type": "number", "description": "Damage dealt in HP units." },
+        "friction":           { "type": "number", "minimum": 0 },
+        "restitution":        { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "SensorPayload": {
+      "type": "object",
+      "description": "Sensor observation data produced by or associated with the event.",
+      "additionalProperties": false,
+      "properties": {
+        "sensor_entity_id":    { "$ref": "#/$defs/UUID" },
+        "sensor_type": {
+          "type": "string",
+          "enum": ["camera_eo", "camera_ir", "radar", "lidar", "sonar", "sar", "gps",
+                   "imu", "ins", "altimeter", "barometer", "magnetometer", "acoustic",
+                   "sigint", "comint", "elint", "rfid", "chemical", "nuclear",
+                   "biological", "seismic", "hyperspectral", "multispectral", "custom"]
+        },
+        "detection_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "range_m":              { "type": "number" },
+        "bearing_deg":          { "type": "number", "minimum": 0, "maximum": 360 },
+        "elevation_deg":        { "type": "number", "minimum": -90, "maximum": 90 },
+        "signal_strength_dbm":  { "type": "number" },
+        "noise_level_db":       { "type": "number" },
+        "snr_db":               { "type": "number" },
+        "frequency_mhz":        { "type": "number" },
+        "resolution_m":         { "type": "number" },
+        "track_id":             { "type": "string" },
+        "raw_data_ref":         { "type": "string", "description": "URI/path to raw sensor frame." }
+      }
+    },
+
+    "WeaponPayload": {
+      "type": "object",
+      "description": "Weapon system event data.",
+      "additionalProperties": false,
+      "properties": {
+        "weapon_entity_id":     { "$ref": "#/$defs/UUID" },
+        "munition_entity_id":   { "$ref": "#/$defs/UUID" },
+        "weapon_type":          { "type": "string" },
+        "ammunition_type":      { "type": "string" },
+        "warhead_type":         { "type": "string" },
+        "fuse_type":            { "type": "string" },
+        "guidance_mode":        { "type": "string" },
+        "launch_platform_id":   { "$ref": "#/$defs/UUID" },
+        "target_entity_id":     { "$ref": "#/$defs/UUID" },
+        "target_position":      { "$ref": "#/$defs/Vector3" },
+        "muzzle_velocity_mps":  { "type": "number" },
+        "time_of_flight_s":     { "type": "number" },
+        "rounds_fired":         { "type": "integer" },
+        "ammunition_remaining": { "type": "integer" },
+        "hit":                  { "type": "boolean" },
+        "miss_distance_m":      { "type": "number" },
+        "probability_of_kill":  { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "CommunicationPayload": {
+      "type": "object",
+      "description": "Communication event data.",
+      "additionalProperties": false,
+      "properties": {
+        "sender_entity_id":    { "$ref": "#/$defs/UUID" },
+        "receiver_entity_ids": { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "network_id":          { "$ref": "#/$defs/UUID" },
+        "protocol":            { "type": "string" },
+        "message_type":        { "type": "string" },
+        "message_id":          { "$ref": "#/$defs/UUID" },
+        "payload_bytes":       { "type": "integer" },
+        "latency_ms":          { "type": "number" },
+        "packet_loss_pct":     { "type": "number", "minimum": 0, "maximum": 100 },
+        "bandwidth_kbps":      { "type": "number" },
+        "encrypted":           { "type": "boolean", "default": false },
+        "encryption_standard": { "type": "string" },
+        "authentication_ok":   { "type": "boolean" },
+        "message_content_ref": { "type": "string", "description": "URI or inline content reference." }
+      }
+    },
+
+    "EWPayload": {
+      "type": "object",
+      "description": "Electronic Warfare event data.",
+      "additionalProperties": false,
+      "properties": {
+        "ew_type": {
+          "type": "string",
+          "enum": ["radar_jamming", "gps_jamming", "comms_jamming", "spoofing",
+                   "drfm_attack", "chaff_release", "flare_release",
+                   "spectrum_scan", "rf_attack", "cyber_ew", "custom"]
+        },
+        "jammer_entity_id":  { "$ref": "#/$defs/UUID" },
+        "target_entity_id":  { "$ref": "#/$defs/UUID" },
+        "frequency_band_mhz":{ "type": "number" },
+        "power_w":           { "type": "number" },
+        "effective_radius_m":{ "type": "number" },
+        "jamming_success":   { "type": "boolean" },
+        "affected_systems":  { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "AIPayload": {
+      "type": "object",
+      "description": "AI agent decision, planning, or behavior event data.",
+      "additionalProperties": false,
+      "properties": {
+        "agent_entity_id":   { "$ref": "#/$defs/UUID" },
+        "decision_id":       { "$ref": "#/$defs/UUID" },
+        "controller_type": {
+          "type": "string",
+          "enum": ["behavior_tree", "state_machine", "planner", "rl_policy",
+                   "llm_agent", "rule_based", "hybrid", "custom"]
+        },
+        "previous_state":    { "type": "string" },
+        "new_state":         { "type": "string" },
+        "goal":              { "type": "string" },
+        "task":              { "type": "string" },
+        "utility_score":     { "type": "number" },
+        "confidence":        { "type": "number", "minimum": 0, "maximum": 1 },
+        "plan_ref":          { "type": "string" },
+        "reasoning_trace":   { "type": "string", "description": "Human-readable decision trace." },
+        "target_entity_id":  { "$ref": "#/$defs/UUID" }
+      }
+    },
+
+    "MissionPayload": {
+      "type": "object",
+      "description": "Mission-level event data.",
+      "additionalProperties": false,
+      "properties": {
+        "mission_id":        { "$ref": "#/$defs/UUID" },
+        "objective_id":      { "$ref": "#/$defs/UUID" },
+        "task_id":           { "$ref": "#/$defs/UUID" },
+        "mission_phase":     { "type": "string" },
+        "assigned_unit_id":  { "$ref": "#/$defs/UUID" },
+        "priority": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low", "routine"]
+        },
+        "success_probability":{ "type": "number", "minimum": 0, "maximum": 1 },
+        "waypoint_index":    { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "LogisticsPayload": {
+      "type": "object",
+      "description": "Logistics, supply, and maintenance event data.",
+      "additionalProperties": false,
+      "properties": {
+        "resource_type": {
+          "type": "string",
+          "enum": ["fuel", "ammunition", "food", "water", "medical", "spare_parts",
+                   "cargo", "personnel", "equipment", "custom"]
+        },
+        "quantity_before":   { "type": "number" },
+        "quantity_after":    { "type": "number" },
+        "unit":              { "type": "string" },
+        "supplier_entity_id":{ "$ref": "#/$defs/UUID" },
+        "receiver_entity_id":{ "$ref": "#/$defs/UUID" },
+        "maintenance_type":  { "type": "string", "enum": ["field", "organizational", "depot", "contractor", "custom"] },
+        "repair_duration_s": { "type": "number" }
+      }
+    },
+
+    "EnvironmentPayload": {
+      "type": "object",
+      "description": "Environmental or weather event data.",
+      "additionalProperties": false,
+      "properties": {
+        "env_event_type": {
+          "type": "string",
+          "enum": [
+            "weather_change", "rain_start", "rain_end", "snow_start", "snow_end",
+            "fog_form", "fog_clear", "wind_change", "storm_begin", "storm_end",
+            "temperature_change", "visibility_change", "lightning_strike",
+            "earthquake", "flood", "wildfire", "avalanche",
+            "volcanic_eruption", "tsunami", "hurricane",
+            "chemical_leak", "radiation_leak", "biological_release",
+            "emp", "solar_flare", "custom"
+          ]
+        },
+        "previous_value":    { "type": "number" },
+        "new_value":         { "type": "number" },
+        "unit":              { "type": "string" },
+        "magnitude":         { "type": "number", "description": "e.g. Richter scale, Saffir-Simpson, Beaufort." },
+        "wind_speed_mps":    { "type": "number" },
+        "wind_direction_deg":{ "type": "number", "minimum": 0, "maximum": 360 },
+        "temperature_k":     { "type": "number" },
+        "visibility_m":      { "type": "number" },
+        "precipitation_mm_hr":{ "type": "number" },
+        "radiation_gy":      { "type": "number", "description": "Radiation dose (Gray)." },
+        "affected_area":     { "$ref": "#/$defs/GeoPolygon" }
+      }
+    },
+
+    "OrganizationPayload": {
+      "type": "object",
+      "description": "Organization-level event data.",
+      "additionalProperties": false,
+      "properties": {
+        "org_id":              { "$ref": "#/$defs/UUID" },
+        "unit_id":             { "$ref": "#/$defs/UUID" },
+        "org_event_type": {
+          "type": "string",
+          "enum": [
+            "unit_created", "unit_activated", "unit_destroyed", "unit_disbanded",
+            "commander_changed", "reinforcement_arrived", "unit_assigned",
+            "unit_detached", "readiness_changed", "alert_level_changed", "custom"
+          ]
+        },
+        "previous_commander_id": { "$ref": "#/$defs/UUID" },
+        "new_commander_id":      { "$ref": "#/$defs/UUID" },
+        "readiness_before":      { "type": "string" },
+        "readiness_after":       { "type": "string" }
+      }
+    },
+
+    "HumanPayload": {
+      "type": "object",
+      "description": "Human casualty, medical, or morale event data.",
+      "additionalProperties": false,
+      "properties": {
+        "person_entity_id": { "$ref": "#/$defs/UUID" },
+        "human_event_type": {
+          "type": "string",
+          "enum": ["injury", "death", "fatigue", "medical_treatment",
+                   "evacuation", "morale_change", "capture", "escape",
+                   "promotion", "relief_of_command", "custom"]
+        },
+        "injury_type":      { "type": "string" },
+        "severity": {
+          "type": "string",
+          "enum": ["minor", "moderate", "severe", "critical", "fatal"]
+        },
+        "morale_delta":     { "type": "number", "description": "Change in morale (-100 to +100)." },
+        "treatment_type":   { "type": "string" },
+        "treatment_duration_s": { "type": "number" }
+      }
+    },
+
+    "CyberPayload": {
+      "type": "object",
+      "description": "Cyber attack, defense, or access event data.",
+      "additionalProperties": false,
+      "properties": {
+        "cyber_event_type": {
+          "type": "string",
+          "enum": ["attack", "defense", "authentication", "authorization",
+                   "access_granted", "access_denied", "intrusion_detected",
+                   "data_exfiltrated", "malware_deployed", "ddos",
+                   "ransomware", "zero_day_exploit", "patch_applied", "custom"]
+        },
+        "attacker_entity_id":  { "$ref": "#/$defs/UUID" },
+        "target_entity_id":    { "$ref": "#/$defs/UUID" },
+        "target_system":       { "type": "string" },
+        "vulnerability_cve":   { "type": "string" },
+        "attack_vector":       { "type": "string" },
+        "success":             { "type": "boolean" },
+        "data_volume_bytes":   { "type": "integer" },
+        "detection_latency_s": { "type": "number" }
+      }
+    },
+
+    "StateTransition": {
+      "type": "object",
+      "description": "State before and after this event.",
+      "additionalProperties": false,
+      "properties": {
+        "previous_state":     { "type": "string" },
+        "new_state":          { "type": "string" },
+        "transition_type": {
+          "type": "string",
+          "enum": ["instantaneous", "gradual", "conditional", "probabilistic", "custom"]
+        },
+        "affected_properties":{
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "JSON property paths that changed."
+        },
+        "delta": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Key-value pairs of property deltas."
+        },
+        "rollback_supported": { "type": "boolean", "default": false }
+      }
+    },
+
+    "CausalityInfo": {
+      "type": "object",
+      "description": "Causal chain and evidence for the event.",
+      "additionalProperties": false,
+      "properties": {
+        "root_cause_event_id": { "$ref": "#/$defs/UUID" },
+        "cause_chain": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "Ordered list of event UUIDs leading to this event."
+        },
+        "reason":             { "type": "string" },
+        "decision_basis":     { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "probability":        { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence":         { "type": "number", "minimum": 0, "maximum": 1 },
+        "inference_method":   { "type": "string" }
+      }
+    },
+
+    "ReliabilityInfo": {
+      "type": "object",
+      "description": "Data quality and reliability metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "confidence":         { "type": "number", "minimum": 0, "maximum": 1 },
+        "accuracy_m":         { "type": "number", "description": "Spatial accuracy in meters." },
+        "timestamp_quality": {
+          "type": "string",
+          "enum": ["precise", "estimated", "degraded", "unknown"]
+        },
+        "source_reliability": {
+          "type": "string",
+          "enum": ["A_completely_reliable", "B_usually_reliable", "C_fairly_reliable",
+                   "D_not_usually_reliable", "E_unreliable", "F_unknown"]
+        },
+        "information_credibility": {
+          "type": "string",
+          "enum": ["1_confirmed", "2_probably_true", "3_possibly_true",
+                   "4_doubtfully_true", "5_improbable", "6_cannot_be_judged"]
+        },
+        "verified":           { "type": "boolean", "default": false },
+        "validation_method":  { "type": "string" }
+      }
+    },
+
+    "LoggingInfo": {
+      "type": "object",
+      "description": "Logging and audit trail metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "log_level": {
+          "type": "string",
+          "enum": ["debug", "info", "warning", "error", "critical"],
+          "default": "info"
+        },
+        "message":            { "type": "string" },
+        "error_code":         { "type": "string" },
+        "stack_trace":        { "type": "string" },
+        "replay_supported":   { "type": "boolean", "default": true },
+        "checksum":           { "type": "string" },
+        "hash_algorithm":     { "type": "string", "enum": ["sha256", "sha512", "md5", "none"], "default": "sha256" },
+        "signature":          { "type": "string", "description": "Digital signature for non-repudiation." },
+        "recorded_by":        { "type": "string" },
+        "audit_trail_id":     { "$ref": "#/$defs/UUID" }
+      }
+    },
+
+    "VisualizationHints": {
+      "type": "object",
+      "description": "Hints for rendering engines and digital twin platforms.",
+      "additionalProperties": false,
+      "properties": {
+        "usd_prim_path":       { "type": "string" },
+        "animation_clip_ref":  { "type": "string" },
+        "particle_effect_ref": { "type": "string" },
+        "sound_effect_ref":    { "type": "string" },
+        "camera_trigger":      { "type": "boolean", "default": false },
+        "lighting_change":     { "type": "boolean", "default": false },
+        "render_priority":     { "type": "integer", "minimum": 0, "maximum": 100 },
+        "debug_draw":          { "type": "boolean", "default": false },
+        "debug_color": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "r": { "type": "number", "minimum": 0, "maximum": 1 },
+            "g": { "type": "number", "minimum": 0, "maximum": 1 },
+            "b": { "type": "number", "minimum": 0, "maximum": 1 },
+            "a": { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0 }
+          }
+        },
+        "hud_notification":    { "type": "boolean", "default": false },
+        "hud_message":         { "type": "string" }
+      }
+    },
+
+    "AIMetadata": {
+      "type": "object",
+      "description": "AI, ontology, and knowledge-graph metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "ontology_class":       { "type": "string" },
+        "ontology_uri":         { "type": "string", "format": "uri" },
+        "knowledge_graph_node": { "type": "string", "format": "uri" },
+        "semantic_tags":        { "type": "array", "items": { "type": "string" } },
+        "military_tags":        { "type": "array", "items": { "type": "string" } },
+        "mission_tags":         { "type": "array", "items": { "type": "string" } },
+        "reasoning_tags":       { "type": "array", "items": { "type": "string" } },
+        "nl_description":       { "type": "string", "description": "Natural language event summary for LLM context." },
+        "llm_summary":          { "type": "string" },
+        "embedding_model":      { "type": "string" },
+        "embedding_vector": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "importance_score":     { "type": "number", "minimum": 0, "maximum": 1 },
+        "analytics_weight":     { "type": "number" }
+      }
+    },
+
+    "SimulationContext": {
+      "type": "object",
+      "description": "Simulation-level identifiers for the event.",
+      "additionalProperties": false,
+      "properties": {
+        "simulation_id":   { "$ref": "#/$defs/UUID" },
+        "world_id":        { "$ref": "#/$defs/UUID" },
+        "scenario_id":     { "$ref": "#/$defs/UUID" },
+        "random_seed":     { "type": "integer" },
+        "physics_step_s":  { "type": "number" },
+        "sim_mode": {
+          "type": "string",
+          "enum": ["live", "replay", "synthetic", "training", "red_team", "digital_twin", "custom"]
+        },
+        "ros2_topic":      { "type": "string" },
+        "replay_frame":    { "type": "integer" },
+        "save_state_ref":  { "type": "string" }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "id": {
+      "$ref": "#/$defs/UUID",
+      "description": "Globally unique event identifier."
+    },
+
+    "event_id": {
+      "type": "string",
+      "description": "Human-readable event identifier (e.g. EVT-COLLISION-0042)."
+    },
+
+    "name": {
+      "type": "string",
+      "description": "Short display name for the event."
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of what occurred."
+    },
+
+    "version": { "$ref": "#/$defs/VersionString" },
+
+    "ontology_uri": {
+      "type": "string",
+      "format": "uri"
+    },
+
+    "knowledge_graph_uri": {
+      "type": "string",
+      "format": "uri"
+    },
+
+    "event_type": {
+      "type": "string",
+      "description": "Primary event type.",
+      "enum": [
+        "spawn", "despawn", "create", "delete", "activate", "deactivate",
+        "power_on", "power_off",
+        "move", "waypoint_arrival", "dock", "undock", "land", "takeoff",
+        "orbit_change", "submerge", "surface",
+        "weapon_fire", "missile_launch", "rocket_launch", "bomb_release",
+        "torpedo_launch", "artillery_fire", "mortar_fire", "laser_fire",
+        "railgun_fire", "loitering_munition_release",
+        "explosion", "collision", "impact", "penetration", "ricochet",
+        "structural_failure", "fracture", "deformation",
+        "damage", "repair", "failure", "maintenance",
+        "fuel_consumption", "battery_drain", "refuel", "recharge", "reload",
+        "sensor_scan", "sensor_detection", "sensor_tracking", "sensor_id",
+        "radar_lock", "target_lock", "radar_illumination",
+        "ew_jamming", "ew_spoofing", "ew_chaff", "ew_flare", "ew_drfm",
+        "cyber_attack", "cyber_defense", "cyber_authentication",
+        "cyber_authorization", "cyber_intrusion", "cyber_data_exfil",
+        "comm_send", "comm_receive", "comm_link_up", "comm_link_down",
+        "comm_encryption_failure", "comm_auth_failure", "comm_jamming",
+        "mission_start", "mission_pause", "mission_resume",
+        "mission_complete", "mission_failed", "mission_abort",
+        "objective_complete", "objective_failed",
+        "ai_decision", "ai_plan", "ai_goal_create", "ai_behavior_change",
+        "ai_target_select", "ai_route_plan",
+        "alarm", "warning", "threat_detection",
+        "medical_event", "injury", "death", "evacuation",
+        "unit_create", "unit_destroy", "unit_assign", "unit_detach",
+        "commander_change", "readiness_change",
+        "logistics_fuel_low", "logistics_ammo_low", "logistics_resupply",
+        "logistics_repair", "logistics_maintenance",
+        "logistics_cargo_load", "logistics_cargo_unload",
+        "environment_weather_change", "environment_earthquake",
+        "environment_flood", "environment_wildfire",
+        "environment_chemical_leak", "environment_radiation_leak",
+        "environment_emp", "environment_volcanic_eruption",
+        "environment_lightning", "environment_tsunami",
+        "fire_start", "fire_spread", "fire_extinguish",
+        "custom"
+      ]
+    },
+
+    "category": {
+      "type": "string",
+      "description": "Broad category grouping for filtering and analytics.",
+      "enum": [
+        "physics", "kinematics", "weapon_system", "sensor_isr", "ew",
+        "cyber", "communication", "mission", "ai_behavior",
+        "logistics_supply", "environment_weather", "organization_c2",
+        "human_medical", "lifecycle", "custom"
+      ]
+    },
+
+    "priority": {
+      "type": "string",
+      "enum": ["critical", "high", "medium", "low", "informational"],
+      "default": "medium"
+    },
+
+    "severity": {
+      "type": "string",
+      "enum": ["catastrophic", "critical", "major", "moderate", "minor", "negligible"],
+      "default": "minor"
+    },
+
+    "domain": {
+      "type": "string",
+      "enum": ["military", "civilian", "space", "maritime", "cyber", "environment", "ai", "custom"]
+    },
+
+    "classification": {
+      "$ref": "#/$defs/SecurityClassification"
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["created", "queued", "scheduled", "running", "paused",
+               "completed", "cancelled", "failed", "expired", "archived"],
+      "default": "created"
+    },
+
+    "timestamp_utc": {
+      "$ref": "#/$defs/Timestamp",
+      "description": "Primary event timestamp (UTC). Required."
+    },
+
+    "temporal": { "$ref": "#/$defs/TemporalContext" },
+
+    "spatial": { "$ref": "#/$defs/SpatialContext" },
+
+    "participants": {
+      "type": "object",
+      "description": "All entities, organizations, and systems participating in this event.",
+      "additionalProperties": false,
+      "properties": {
+        "source_entity":      { "$ref": "#/$defs/EntityRef" },
+        "target_entity":      { "$ref": "#/$defs/EntityRef" },
+        "affected_entities": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/EntityRef" }
+        },
+        "source_org_id":      { "$ref": "#/$defs/UUID" },
+        "target_org_id":      { "$ref": "#/$defs/UUID" },
+        "sensor_entity_id":   { "$ref": "#/$defs/UUID" },
+        "weapon_entity_id":   { "$ref": "#/$defs/UUID" },
+        "environment_zone_id":{ "$ref": "#/$defs/UUID" }
+      }
+    },
+
+    "trigger": {
+      "type": "object",
+      "description": "What caused or scheduled this event.",
+      "additionalProperties": false,
+      "properties": {
+        "trigger_type": {
+          "type": "string",
+          "enum": ["manual", "scheduled", "conditional", "threshold",
+                   "collision_detection", "proximity", "timer", "message",
+                   "rule_engine", "ai_decision", "random", "external_api", "custom"]
+        },
+        "condition":     { "type": "string", "description": "Logical condition expression." },
+        "threshold": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "property": { "type": "string" },
+            "operator": { "type": "string", "enum": ["lt", "lte", "eq", "gte", "gt", "ne"] },
+            "value":    {}
+          }
+        },
+        "rule_ref":      { "type": "string" },
+        "preconditions": { "type": "array", "items": { "type": "string" } },
+        "postconditions":{ "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "dependencies": {
+      "type": "object",
+      "description": "Relationships to other events in the causal/dependency graph.",
+      "additionalProperties": false,
+      "properties": {
+        "parent_event_id":  { "$ref": "#/$defs/UUID" },
+        "child_event_ids":  { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "depends_on":       { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "triggers":         { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "blocks":           { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "cancels":          { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "overrides":        { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "synchronizes_with":{ "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "mutually_exclusive_with": { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "related_events": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/EventRef" }
+        }
+      }
+    },
+
+    "state_transition": { "$ref": "#/$defs/StateTransition" },
+
+    "causality":         { "$ref": "#/$defs/CausalityInfo" },
+
+    "reliability":       { "$ref": "#/$defs/ReliabilityInfo" },
+
+    "payload": {
+      "type": "object",
+      "description": "Domain-specific event payload. Populate the sub-object matching the event category.",
+      "additionalProperties": false,
+      "properties": {
+        "physics":       { "$ref": "#/$defs/PhysicsPayload" },
+        "sensor":        { "$ref": "#/$defs/SensorPayload" },
+        "weapon":        { "$ref": "#/$defs/WeaponPayload" },
+        "communication": { "$ref": "#/$defs/CommunicationPayload" },
+        "ew":            { "$ref": "#/$defs/EWPayload" },
+        "ai":            { "$ref": "#/$defs/AIPayload" },
+        "mission":       { "$ref": "#/$defs/MissionPayload" },
+        "logistics":     { "$ref": "#/$defs/LogisticsPayload" },
+        "environment":   { "$ref": "#/$defs/EnvironmentPayload" },
+        "organization":  { "$ref": "#/$defs/OrganizationPayload" },
+        "human":         { "$ref": "#/$defs/HumanPayload" },
+        "cyber":         { "$ref": "#/$defs/CyberPayload" },
+        "telemetry": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Arbitrary telemetry key-value pairs."
+        },
+        "custom": {
+          "type": "object",
+          "additionalProperties": true,
+          "description": "Domain-specific extension payload."
+        }
+      }
+    },
+
+    "effects": {
+      "type": "object",
+      "description": "Observable downstream effects of this event.",
+      "additionalProperties": false,
+      "properties": {
+        "damage_dealt":       { "type": "number" },
+        "entities_destroyed": { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "entities_spawned":   { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "terrain_modified":   { "type": "boolean", "default": false },
+        "weather_modified":   { "type": "boolean", "default": false },
+        "sensor_degraded":    { "type": "boolean", "default": false },
+        "comm_disrupted":     { "type": "boolean", "default": false },
+        "mission_impacted":   { "type": "boolean", "default": false },
+        "org_impacted":       { "type": "boolean", "default": false },
+        "behavior_changed":   { "type": "boolean", "default": false },
+        "narrative":          { "type": "string", "description": "Human-readable effect summary." }
+      }
+    },
+
+    "logging":     { "$ref": "#/$defs/LoggingInfo" },
+
+    "visualization":{ "$ref": "#/$defs/VisualizationHints" },
+
+    "simulation":  { "$ref": "#/$defs/SimulationContext" },
+
+    "ai_metadata": { "$ref": "#/$defs/AIMetadata" },
+
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+
+    "custom_properties": {
+      "type": "object",
+      "additionalProperties": true
+    }
+
+  },
+
+  "dependentRequired": {
+    "payload": ["event_type"]
+  },
+
+  "examples": [
+    {
+      "id": "b1c2d3e4-0001-0001-0001-000000000001",
+      "event_id": "EVT-COLLISION-0001",
+      "name": "Vehicle Collision",
+      "description": "T-72 collided with concrete barrier at grid 441521.",
+      "event_type": "collision",
+      "category": "physics",
+      "priority": "high",
+      "severity": "major",
+      "domain": "military",
+      "classification": "unclassified",
+      "status": "completed",
+      "timestamp_utc": "2025-06-01T14:32:10Z",
+      "participants": {
+        "source_entity": { "entity_id": "aaaa-0001-0001-0001-000000000001", "role": "source" },
+        "affected_entities": [{ "entity_id": "aaaa-0002-0001-0001-000000000002", "role": "affected" }]
+      },
+      "payload": {
+        "physics": {
+          "velocity_mps": { "x": 12.5, "y": 0.0, "z": 0.0 },
+          "energy_j": 450000,
+          "damage_hp": 35,
+          "collision_normal": { "x": -1.0, "y": 0.0, "z": 0.0 }
+        }
+      },
+      "effects": { "damage_dealt": 35, "terrain_modified": false }
+    },
+    {
+      "id": "b1c2d3e4-0002-0001-0001-000000000002",
+      "event_id": "EVT-MISSILELCH-0099",
+      "name": "BrahMos Launch",
+      "event_type": "missile_launch",
+      "category": "weapon_system",
+      "priority": "critical",
+      "severity": "catastrophic",
+      "domain": "military",
+      "classification": "secret",
+      "status": "completed",
+      "timestamp_utc": "2025-06-01T14:45:00Z",
+      "participants": {
+        "source_entity": { "entity_id": "cccc-0001-0001-0001-000000000001", "role": "source" },
+        "target_entity":  { "entity_id": "dddd-0001-0001-0001-000000000001", "role": "target" }
+      },
+      "payload": {
+        "weapon": {
+          "weapon_type": "cruise_missile",
+          "ammunition_type": "BrahMos-ER",
+          "guidance_mode": "active_radar",
+          "muzzle_velocity_mps": 960,
+          "ammunition_remaining": 3
+        }
+      }
+    },
+    {
+      "id": "b1c2d3e4-0003-0001-0001-000000000003",
+      "event_id": "EVT-WEATHER-0011",
+      "name": "Visibility Drop — Sandstorm",
+      "event_type": "environment_weather_change",
+      "category": "environment_weather",
+      "priority": "high",
+      "severity": "major",
+      "domain": "military",
+      "classification": "unclassified",
+      "status": "completed",
+      "timestamp_utc": "2025-06-01T15:00:00Z",
+      "payload": {
+        "environment": {
+          "env_event_type": "weather_change",
+          "previous_value": 12000,
+          "new_value": 200,
+          "unit": "visibility_m",
+          "wind_speed_mps": 22.0,
+          "wind_direction_deg": 135
+        }
+      },
+      "effects": { "sensor_degraded": true, "mission_impacted": true }
+    }
+  ]
+}

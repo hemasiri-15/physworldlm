@@ -1,0 +1,2997 @@
+{
+  "MissileInstances": {
+    "UnitedStates": [
+      {
+        "name": "AIM-9X Sidewinder Block II",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Air-to-Air SRAAM",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "USAF",
+          "USN",
+          "USMC",
+          "Export"
+        ],
+        "yearIntroduced": 2003,
+        "status": "Operational",
+        "range_km": 35,
+        "speed_mach": 2.5,
+        "guidance": "IIR with HOBS",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "F-15",
+          "F-16",
+          "F/A-18",
+          "F-22",
+          "F-35"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Helicopter",
+          "UAV"
+        ],
+        "family": "AIM-9",
+        "variants": [
+          "AIM-9X Block I",
+          "AIM-9X Block II",
+          "AIM-9X Block III"
+        ],
+        "predecessors": [
+          "AIM-9M"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Australia",
+          "Canada",
+          "Denmark",
+          "Finland",
+          "Germany",
+          "Japan",
+          "Norway",
+          "Portugal",
+          "Saudi Arabia",
+          "Singapore",
+          "South Korea",
+          "Turkey",
+          "UAE"
+        ],
+        "notes": "High Off-Boresight with Helmet Cued Targeting"
+      },
+      {
+        "name": "AIM-120D AMRAAM",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Air-to-Air BVRAAM",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "USAF",
+          "USN",
+          "USMC",
+          "Export"
+        ],
+        "yearIntroduced": 2015,
+        "status": "Operational",
+        "range_km": 180,
+        "speed_mach": 4.0,
+        "guidance": "INS+GPS midcourse, Active Radar terminal",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "F-15",
+          "F-16",
+          "F/A-18",
+          "F-22",
+          "F-35",
+          "B-52"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "UAV"
+        ],
+        "family": "AIM-120",
+        "variants": [
+          "AIM-120A",
+          "AIM-120B",
+          "AIM-120C",
+          "AIM-120C-7",
+          "AIM-120D"
+        ],
+        "predecessors": [
+          "AIM-7 Sparrow"
+        ],
+        "successors": [
+          "AIM-260 JATM"
+        ],
+        "exportUsers": [
+          "UK",
+          "Germany",
+          "Japan",
+          "Australia",
+          "South Korea",
+          "Norway",
+          "Poland",
+          "UAE",
+          "Saudi Arabia"
+        ],
+        "notes": "Fire-and-forget beyond visual range"
+      },
+      {
+        "name": "AIM-260 JATM",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Air-to-Air VLRAAM",
+        "manufacturer": "Lockheed Martin",
+        "country": "USA",
+        "operators": [
+          "USAF",
+          "USN"
+        ],
+        "yearIntroduced": 2023,
+        "status": "Operational",
+        "range_km": 260,
+        "speed_mach": 5.0,
+        "guidance": "Multimode Active Radar + INS + GPS",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "F-22",
+          "F-35",
+          "F-15EX"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "Hypersonic Glide Vehicle"
+        ],
+        "family": "AIM-260",
+        "variants": [],
+        "predecessors": [
+          "AIM-120D"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Counter to PL-15; classified range"
+      },
+      {
+        "name": "AIM-174B",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Air-to-Air VLRAAM / Naval SAM",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "USN"
+        ],
+        "yearIntroduced": 2024,
+        "status": "Operational",
+        "range_km": 370,
+        "speed_mach": 3.5,
+        "guidance": "Active Radar + INS + GPS",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "F/A-18E/F Super Hornet"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "UAV"
+        ],
+        "family": "SM-6",
+        "variants": [],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Air-launched SM-6 derivative"
+      },
+      {
+        "name": "AGM-158B JASSM-ER",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Air-to-Surface LACM",
+        "manufacturer": "Lockheed Martin",
+        "country": "USA",
+        "operators": [
+          "USAF",
+          "USN"
+        ],
+        "yearIntroduced": 2014,
+        "status": "Operational",
+        "range_km": 925,
+        "speed_mach": 0.9,
+        "guidance": "INS+GPS+IIR terminal",
+        "propulsion": "Turbofan (Williams F107)",
+        "warhead": "1000 lb penetrating blast fragmentation",
+        "launchPlatforms": [
+          "B-52",
+          "B-2",
+          "F-15",
+          "F-16",
+          "F-35",
+          "B-21"
+        ],
+        "targetTypes": [
+          "Fixed Fortified Targets",
+          "Bunkers",
+          "Ships"
+        ],
+        "family": "JASSM",
+        "variants": [
+          "AGM-158A JASSM",
+          "AGM-158B JASSM-ER",
+          "AGM-158C LRASM",
+          "AGM-158D JASSM-XR"
+        ],
+        "predecessors": [],
+        "successors": [
+          "AGM-158D JASSM-XR"
+        ],
+        "exportUsers": [
+          "Australia",
+          "Poland",
+          "Finland",
+          "Netherlands"
+        ],
+        "notes": "Low observable cruise missile"
+      },
+      {
+        "name": "AGM-158C LRASM",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Anti-Ship Air-Launched",
+        "manufacturer": "Lockheed Martin",
+        "country": "USA",
+        "operators": [
+          "USAF",
+          "USN"
+        ],
+        "yearIntroduced": 2019,
+        "status": "Operational",
+        "range_km": 930,
+        "speed_mach": 0.9,
+        "guidance": "INS+GPS+IIR+RF seeker multimode",
+        "propulsion": "Turbofan",
+        "warhead": "1000 lb penetrating",
+        "launchPlatforms": [
+          "B-1B",
+          "F/A-18E/F",
+          "MK 41 VLS"
+        ],
+        "targetTypes": [
+          "Surface Ships",
+          "Aircraft Carriers"
+        ],
+        "family": "JASSM",
+        "variants": [],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Autonomous anti-ship capability"
+      },
+      {
+        "name": "BGM-109 Tomahawk",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Land Attack Cruise Missile",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "USN",
+          "USAF",
+          "UK RN"
+        ],
+        "yearIntroduced": 1983,
+        "status": "Operational",
+        "range_km": 2500,
+        "speed_mach": 0.75,
+        "guidance": "INS+TERCOM+DSMAC+GPS",
+        "propulsion": "Turbofan (Williams F107-WR-402)",
+        "warhead": "450 kg conventional or nuclear (retired)",
+        "launchPlatforms": [
+          "Submarines",
+          "Surface Ships",
+          "MK 41 VLS",
+          "B-52"
+        ],
+        "targetTypes": [
+          "Fixed Land Targets",
+          "Infrastructure",
+          "SAM Sites"
+        ],
+        "family": "Tomahawk",
+        "variants": [
+          "TLAM-C",
+          "TLAM-D",
+          "TLAM-N",
+          "Block IV Tomahawk",
+          "Block V (Maritime Strike)"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "UK"
+        ],
+        "notes": "Gold standard land attack cruise missile"
+      },
+      {
+        "name": "RIM-174 SM-6 ERAM",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Naval SAM / ABM",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "USN"
+        ],
+        "yearIntroduced": 2013,
+        "status": "Operational",
+        "range_km": 370,
+        "speed_mach": 3.5,
+        "guidance": "Active Radar homing + INS + Datalink",
+        "propulsion": "Solid Rocket (dual stage)",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "Ticonderoga CG",
+          "Arleigh Burke DDG"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "ASBM",
+          "TBM terminal phase"
+        ],
+        "family": "Standard Missile",
+        "variants": [
+          "SM-6 Block I",
+          "SM-6 Block IA"
+        ],
+        "predecessors": [
+          "SM-2"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Australia",
+          "Japan",
+          "South Korea"
+        ],
+        "notes": "Cooperative Engagement Capability integration"
+      },
+      {
+        "name": "RIM-161 SM-3 Block IIA",
+        "domesticName": null,
+        "natoName": null,
+        "type": "BMD Interceptor",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "USN"
+        ],
+        "yearIntroduced": 2017,
+        "status": "Operational",
+        "range_km": 2500,
+        "speed_mach": 15,
+        "guidance": "INS+GPS midcourse, KKV terminal",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "Kinetic Kill Vehicle (EKV)",
+        "launchPlatforms": [
+          "Arleigh Burke DDG",
+          "Ticonderoga CG",
+          "Aegis Ashore"
+        ],
+        "targetTypes": [
+          "MRBM",
+          "IRBM",
+          "limited ICBM"
+        ],
+        "family": "Standard Missile",
+        "variants": [
+          "SM-3 Block I",
+          "SM-3 Block IA",
+          "SM-3 Block IB",
+          "SM-3 Block IIA"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "Japan"
+        ],
+        "notes": "Co-developed with Japan; EPAA Phase 3 interceptor"
+      },
+      {
+        "name": "FIM-92 Stinger",
+        "domesticName": null,
+        "natoName": null,
+        "type": "MANPADS",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "US Army",
+          "Export"
+        ],
+        "yearIntroduced": 1981,
+        "status": "Operational",
+        "range_km": 8,
+        "speed_mach": 2.2,
+        "guidance": "Dual IR/UV seeker",
+        "propulsion": "Solid Rocket",
+        "warhead": "Hit to Kill + Proximity",
+        "launchPlatforms": [
+          "Shoulder-fired",
+          "HMMWV",
+          "Apache"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Helicopter",
+          "UAV",
+          "Cruise Missile"
+        ],
+        "family": "Stinger",
+        "variants": [
+          "FIM-92A",
+          "FIM-92B POST",
+          "FIM-92C RMP",
+          "FIM-92D",
+          "FIM-92E Block I"
+        ],
+        "predecessors": [
+          "Redeye"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "46+ countries"
+        ],
+        "notes": "Most widely exported MANPADS"
+      },
+      {
+        "name": "AGM-114 Hellfire II",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Air-to-Surface Anti-Armor",
+        "manufacturer": "Lockheed Martin / Northrop Grumman",
+        "country": "USA",
+        "operators": [
+          "US Army",
+          "Export"
+        ],
+        "yearIntroduced": 1984,
+        "status": "Operational",
+        "range_km": 8,
+        "speed_mach": 1.3,
+        "guidance": "Semi-active laser",
+        "propulsion": "Solid Rocket",
+        "warhead": "Shaped Charge Tandem HEAT",
+        "launchPlatforms": [
+          "AH-64 Apache",
+          "OH-58 Kiowa",
+          "Predator",
+          "Reaper",
+          "MQ-9"
+        ],
+        "targetTypes": [
+          "Tank",
+          "Armored Vehicle",
+          "Bunker",
+          "Building",
+          "Small Boat"
+        ],
+        "family": "Hellfire",
+        "variants": [
+          "AGM-114A",
+          "AGM-114B",
+          "AGM-114K",
+          "AGM-114L Longbow",
+          "AGM-114N",
+          "AGM-114R",
+          "AGM-179 JAGM"
+        ],
+        "predecessors": [],
+        "successors": [
+          "AGM-179 JAGM"
+        ],
+        "exportUsers": [
+          "Egypt",
+          "India",
+          "Iraq",
+          "Jordan",
+          "Korea",
+          "Kuwait",
+          "Malaysia",
+          "Qatar",
+          "Saudi Arabia",
+          "UAE",
+          "UK"
+        ],
+        "notes": "Standard US attack helicopter missile"
+      },
+      {
+        "name": "LGM-30G Minuteman III",
+        "domesticName": null,
+        "natoName": null,
+        "type": "ICBM",
+        "manufacturer": "Boeing",
+        "country": "USA",
+        "operators": [
+          "USAF"
+        ],
+        "yearIntroduced": 1970,
+        "status": "Operational",
+        "range_km": 13000,
+        "speed_mach": 23,
+        "guidance": "INS with stellar update",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "W87-1 or W78 (MIRV capable, single deployed)",
+        "launchPlatforms": [
+          "Underground Silo"
+        ],
+        "targetTypes": [
+          "Strategic Targets",
+          "Cities",
+          "Military Installations"
+        ],
+        "family": "Minuteman",
+        "variants": [
+          "Minuteman I",
+          "Minuteman II",
+          "Minuteman III"
+        ],
+        "predecessors": [],
+        "successors": [
+          "LGM-35A Sentinel"
+        ],
+        "exportUsers": [],
+        "notes": "450 deployed; being replaced by Sentinel"
+      },
+      {
+        "name": "LGM-35A Sentinel",
+        "domesticName": null,
+        "natoName": null,
+        "type": "ICBM",
+        "manufacturer": "Northrop Grumman",
+        "country": "USA",
+        "operators": [
+          "USAF"
+        ],
+        "yearIntroduced": 2029,
+        "status": "Development",
+        "range_km": 13000,
+        "speed_mach": 23,
+        "guidance": "Advanced INS+GPS",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "W87-1 Mk21A RV",
+        "launchPlatforms": [
+          "Underground Silo"
+        ],
+        "targetTypes": [
+          "Strategic Targets"
+        ],
+        "family": "Sentinel",
+        "variants": [],
+        "predecessors": [
+          "LGM-30G Minuteman III"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "GBSD program replacement for Minuteman III"
+      },
+      {
+        "name": "UGM-133A Trident II D5",
+        "domesticName": null,
+        "natoName": null,
+        "type": "SLBM",
+        "manufacturer": "Lockheed Martin",
+        "country": "USA",
+        "operators": [
+          "USN",
+          "UK RN"
+        ],
+        "yearIntroduced": 1990,
+        "status": "Operational",
+        "range_km": 11300,
+        "speed_mach": 24,
+        "guidance": "Inertial with stellar navigation",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "W88/W76 MIRV (up to 8 RVs)",
+        "launchPlatforms": [
+          "Ohio-class SSBN",
+          "Vanguard-class SSBN"
+        ],
+        "targetTypes": [
+          "Strategic Hard Targets",
+          "Cities",
+          "Military Installations"
+        ],
+        "family": "Trident",
+        "variants": [
+          "Trident II D5 Life Extended"
+        ],
+        "predecessors": [
+          "Trident I C4"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "UK"
+        ],
+        "notes": "Backbone of US and UK SLBN deterrent"
+      },
+      {
+        "name": "AGM-88 HARM",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Anti-Radiation Missile",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "USAF",
+          "USN",
+          "Export"
+        ],
+        "yearIntroduced": 1985,
+        "status": "Operational",
+        "range_km": 150,
+        "speed_mach": 2.0,
+        "guidance": "Passive Radar Homing + INS+GPS (AARGM)",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "F-16",
+          "F/A-18",
+          "EA-6B",
+          "F-35",
+          "Tornado ECR",
+          "F-16 (Ukraine)"
+        ],
+        "targetTypes": [
+          "SAM Radars",
+          "EW Radars",
+          "GCI Radars"
+        ],
+        "family": "HARM",
+        "variants": [
+          "AGM-88A",
+          "AGM-88B",
+          "AGM-88C",
+          "AGM-88D",
+          "AGM-88E AARGM"
+        ],
+        "predecessors": [
+          "AGM-45 Shrike"
+        ],
+        "successors": [
+          "AGM-88G AARGM-ER"
+        ],
+        "exportUsers": [
+          "Australia",
+          "Germany",
+          "Greece",
+          "Italy",
+          "Saudi Arabia",
+          "Spain",
+          "Turkey",
+          "Ukraine"
+        ],
+        "notes": "Premier anti-radiation missile"
+      },
+      {
+        "name": "AGM-65 Maverick",
+        "domesticName": null,
+        "natoName": null,
+        "type": "Air-to-Surface Tactical",
+        "manufacturer": "Raytheon",
+        "country": "USA",
+        "operators": [
+          "USAF",
+          "USN",
+          "Export"
+        ],
+        "yearIntroduced": 1972,
+        "status": "Operational",
+        "range_km": 27,
+        "speed_mach": 1.2,
+        "guidance": "TV/EO/IIR/Laser",
+        "propulsion": "Solid Rocket",
+        "warhead": "125 kg shaped charge / penetrating",
+        "launchPlatforms": [
+          "A-10",
+          "F-16",
+          "F/A-18",
+          "AH-1",
+          "Harrier"
+        ],
+        "targetTypes": [
+          "Tank",
+          "Armored Vehicle",
+          "Radar",
+          "Ship",
+          "Bunker"
+        ],
+        "family": "Maverick",
+        "variants": [
+          "AGM-65A/B",
+          "AGM-65D",
+          "AGM-65G",
+          "AGM-65H",
+          "AGM-65K",
+          "AGM-65L"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "30+ countries"
+        ],
+        "notes": "Most widely used air-to-ground tactical missile"
+      }
+    ],
+    "Russia": [
+      {
+        "name": "R-77 (AA-12 Adder)",
+        "domesticName": "\u0420\u0412\u0412-\u0410\u0415",
+        "natoName": "AA-12 Adder",
+        "type": "Air-to-Air BVRAAM",
+        "manufacturer": "Vympel",
+        "country": "Russia",
+        "operators": [
+          "RuAF",
+          "Export"
+        ],
+        "yearIntroduced": 1994,
+        "status": "Operational",
+        "range_km": 110,
+        "speed_mach": 4.0,
+        "guidance": "INS midcourse, Active Radar terminal",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "Su-27",
+          "Su-30",
+          "Su-35",
+          "MiG-29",
+          "MiG-35",
+          "Su-57"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "UAV"
+        ],
+        "family": "R-77",
+        "variants": [
+          "R-77",
+          "R-77-1",
+          "R-77PD",
+          "R-77M"
+        ],
+        "predecessors": [
+          "R-27"
+        ],
+        "successors": [
+          "R-77M"
+        ],
+        "exportUsers": [
+          "China",
+          "India",
+          "Algeria",
+          "Belarus"
+        ],
+        "notes": "Grid-fin stabilization"
+      },
+      {
+        "name": "R-37M (AA-13 Axehead)",
+        "domesticName": "\u0420\u0412\u0412-\u0411\u0414",
+        "natoName": "AA-13 Axehead",
+        "type": "Air-to-Air VLRAAM",
+        "manufacturer": "Vympel",
+        "country": "Russia",
+        "operators": [
+          "RuAF"
+        ],
+        "yearIntroduced": 2019,
+        "status": "Operational",
+        "range_km": 300,
+        "speed_mach": 6.0,
+        "guidance": "INS+Datalink midcourse, Active Radar terminal",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "Su-57",
+          "MiG-31BM"
+        ],
+        "targetTypes": [
+          "AWACS",
+          "Tankers",
+          "Aircraft",
+          "UAV"
+        ],
+        "family": "R-37",
+        "variants": [
+          "R-37",
+          "R-37M"
+        ],
+        "predecessors": [
+          "R-33"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Designed to engage high-value airborne assets from extreme range"
+      },
+      {
+        "name": "R-73 (AA-11 Archer)",
+        "domesticName": "\u0420-73",
+        "natoName": "AA-11 Archer",
+        "type": "Air-to-Air SRAAM WVR",
+        "manufacturer": "Vympel",
+        "country": "Russia",
+        "operators": [
+          "RuAF",
+          "Export"
+        ],
+        "yearIntroduced": 1984,
+        "status": "Operational",
+        "range_km": 40,
+        "speed_mach": 2.5,
+        "guidance": "IR all-aspect, HOBS capable",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "MiG-29",
+          "Su-27",
+          "Su-35",
+          "Su-57",
+          "Yak-130"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Helicopter",
+          "UAV"
+        ],
+        "family": "R-73",
+        "variants": [
+          "R-73",
+          "R-73M",
+          "RVV-MD",
+          "R-74M"
+        ],
+        "predecessors": [
+          "R-60"
+        ],
+        "successors": [
+          "RVV-MD2"
+        ],
+        "exportUsers": [
+          "China",
+          "India",
+          "Algeria",
+          "Ukraine (Soviet era)"
+        ],
+        "notes": "Soviet/Russian counterpart to AIM-9"
+      },
+      {
+        "name": "Kh-101 / Kh-102",
+        "domesticName": "\u0425-101 / \u0425-102",
+        "natoName": null,
+        "type": "Air-Launched Cruise Missile",
+        "manufacturer": "Raduga",
+        "country": "Russia",
+        "operators": [
+          "RuAF"
+        ],
+        "yearIntroduced": 2016,
+        "status": "Operational",
+        "range_km": 5500,
+        "speed_mach": 0.75,
+        "guidance": "INS+GLONASS+TERCOM+DSMAC+EO",
+        "propulsion": "Turbofan",
+        "warhead": "400 kg conventional (Kh-101) / Thermonuclear (Kh-102)",
+        "launchPlatforms": [
+          "Tu-95MS",
+          "Tu-160"
+        ],
+        "targetTypes": [
+          "Strategic Targets",
+          "C2 Infrastructure",
+          "Air Bases"
+        ],
+        "family": "Kh-101",
+        "variants": [
+          "Kh-101",
+          "Kh-102"
+        ],
+        "predecessors": [
+          "Kh-55"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Stealthy; used extensively in Ukraine conflict"
+      },
+      {
+        "name": "Kalibr 3M14 (SS-N-30A)",
+        "domesticName": "\u041a\u0430\u043b\u0438\u0431\u0440",
+        "natoName": "SS-N-30A Sagaris",
+        "type": "Ship/Sub-Launched Land Attack Cruise Missile",
+        "manufacturer": "Novator",
+        "country": "Russia",
+        "operators": [
+          "Russian Navy"
+        ],
+        "yearIntroduced": 2012,
+        "status": "Operational",
+        "range_km": 2000,
+        "speed_mach": 0.9,
+        "guidance": "INS+GLONASS+TERCOM",
+        "propulsion": "Turbofan sustainer + Solid Boost",
+        "warhead": "450 kg conventional or nuclear option",
+        "launchPlatforms": [
+          "Submarines",
+          "Frigates",
+          "Corvettes"
+        ],
+        "targetTypes": [
+          "Fixed Land Targets",
+          "Infrastructure"
+        ],
+        "family": "Kalibr",
+        "variants": [
+          "3M14T",
+          "3M14K",
+          "3M54 anti-ship",
+          "91RT ASROC"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "India (BrahMos partnership)"
+        ],
+        "notes": "Russia's primary sea-launched precision strike weapon"
+      },
+      {
+        "name": "9M96E2",
+        "domesticName": "9\u041c96\u04152",
+        "natoName": null,
+        "type": "SAM Medium-Long Range",
+        "manufacturer": "Fakel",
+        "country": "Russia",
+        "operators": [
+          "Russian Army",
+          "Export"
+        ],
+        "yearIntroduced": 2014,
+        "status": "Operational",
+        "range_km": 120,
+        "speed_mach": 3.0,
+        "guidance": "Active Radar + INS + Datalink",
+        "propulsion": "Solid Rocket dual pulse",
+        "warhead": "24 kg active blast fragmentation",
+        "launchPlatforms": [
+          "S-400 Triumf",
+          "S-350 Polyana"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "TBM",
+          "Helicopter"
+        ],
+        "family": "9M96",
+        "variants": [
+          "9M96E",
+          "9M96E2"
+        ],
+        "predecessors": [
+          "48N6"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Active radar seeker; hit-to-kill option"
+      },
+      {
+        "name": "48N6E3 (S-400)",
+        "domesticName": "48\u041d6\u04153",
+        "natoName": null,
+        "type": "SAM Long Range",
+        "manufacturer": "Fakel",
+        "country": "Russia",
+        "operators": [
+          "Russia",
+          "China",
+          "India",
+          "Turkey"
+        ],
+        "yearIntroduced": 2007,
+        "status": "Operational",
+        "range_km": 250,
+        "speed_mach": 6.0,
+        "guidance": "Semi-active radar + command update + ARH",
+        "propulsion": "Solid Rocket",
+        "warhead": "180 kg blast fragmentation",
+        "launchPlatforms": [
+          "S-400 Triumf TEL"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "ALCM",
+          "SRBM",
+          "Hypersonic (limited)"
+        ],
+        "family": "S-400",
+        "variants": [],
+        "predecessors": [
+          "S-300PM"
+        ],
+        "successors": [
+          "S-500"
+        ],
+        "exportUsers": [
+          "China",
+          "India",
+          "Turkey"
+        ],
+        "notes": "Russia's most widely exported modern SAM"
+      },
+      {
+        "name": "RS-28 Sarmat",
+        "domesticName": "\u0420\u0421-28 \u0421\u0430\u0440\u043c\u0430\u0442",
+        "natoName": "SS-X-30 Satan 2",
+        "type": "ICBM Heavy",
+        "manufacturer": "Makeyev",
+        "country": "Russia",
+        "operators": [
+          "RVSN"
+        ],
+        "yearIntroduced": 2023,
+        "status": "Operational (limited)",
+        "range_km": 18000,
+        "speed_mach": 25,
+        "guidance": "INS+GLONASS+ASAT",
+        "propulsion": "Liquid rocket (four stages)",
+        "warhead": "10+ MIRV / HGV Avangard option",
+        "launchPlatforms": [
+          "Silo"
+        ],
+        "targetTypes": [
+          "Strategic Targets"
+        ],
+        "family": "Sarmat",
+        "variants": [],
+        "predecessors": [
+          "R-36M Voevoda"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Heavy ICBM; can fly over South Pole"
+      },
+      {
+        "name": "RS-24 Yars",
+        "domesticName": "\u0420\u0421-24 \u042f\u0440\u0441",
+        "natoName": "SS-27 Mod 2",
+        "type": "ICBM Mobile",
+        "manufacturer": "MIT",
+        "country": "Russia",
+        "operators": [
+          "RVSN"
+        ],
+        "yearIntroduced": 2010,
+        "status": "Operational",
+        "range_km": 12000,
+        "speed_mach": 22,
+        "guidance": "INS + GLONASS",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "4-6 MIRV (150 kT each)",
+        "launchPlatforms": [
+          "Road Mobile TEL",
+          "Silo"
+        ],
+        "targetTypes": [
+          "Strategic Targets"
+        ],
+        "family": "Topol",
+        "variants": [
+          "RS-24 Yars",
+          "RS-24 Yars-M"
+        ],
+        "predecessors": [
+          "Topol-M"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Most deployed Russian ICBM"
+      },
+      {
+        "name": "Kh-47M2 Kinzhal",
+        "domesticName": "\u0425-47\u041c2 \u041a\u0438\u043d\u0436\u0430\u043b",
+        "natoName": null,
+        "type": "Air-Launched Hypersonic Ballistic Missile",
+        "manufacturer": "State",
+        "country": "Russia",
+        "operators": [
+          "RuAF"
+        ],
+        "yearIntroduced": 2018,
+        "status": "Operational",
+        "range_km": 2000,
+        "speed_mach": 10,
+        "guidance": "INS+GLONASS+maneuvering",
+        "propulsion": "Solid Rocket (air-launched ballistic)",
+        "warhead": "480 kg conventional or nuclear option",
+        "launchPlatforms": [
+          "MiG-31K",
+          "Tu-22M3",
+          "Su-34"
+        ],
+        "targetTypes": [
+          "Fixed Hardened Targets",
+          "Ships",
+          "Air Defense Systems"
+        ],
+        "family": "Iskander",
+        "variants": [],
+        "predecessors": [
+          "Kh-15"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Aero-ballistic; semi-hypersonic terminal"
+      },
+      {
+        "name": "3M22 Zircon",
+        "domesticName": "3\u041c22 \u0426\u0438\u0440\u043a\u043e\u043d",
+        "natoName": "SS-N-33",
+        "type": "Hypersonic Anti-Ship Cruise Missile",
+        "manufacturer": "NPO Mashinostroyeniya",
+        "country": "Russia",
+        "operators": [
+          "Russian Navy"
+        ],
+        "yearIntroduced": 2023,
+        "status": "Operational",
+        "range_km": 1000,
+        "speed_mach": 8,
+        "guidance": "INS+GLONASS+ARH terminal",
+        "propulsion": "Scramjet/Ramjet",
+        "warhead": "300-400 kg",
+        "launchPlatforms": [
+          "Submarines",
+          "Frigates (Admiral Gorshkov class)"
+        ],
+        "targetTypes": [
+          "Aircraft Carriers",
+          "Surface Ships",
+          "Coastal Targets"
+        ],
+        "family": "Zircon",
+        "variants": [],
+        "predecessors": [
+          "P-700 Granit"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "First operational hypersonic ship-launched ASM"
+      },
+      {
+        "name": "Iskander-M (9M723)",
+        "domesticName": "\u0418\u0441\u043a\u0430\u043d\u0434\u0435\u0440-\u041c",
+        "natoName": "SS-26 Stone",
+        "type": "Short Range Ballistic Missile",
+        "manufacturer": "KBM",
+        "country": "Russia",
+        "operators": [
+          "Russian Army"
+        ],
+        "yearIntroduced": 2006,
+        "status": "Operational",
+        "range_km": 500,
+        "speed_mach": 7,
+        "guidance": "INS+GLONASS+DSMAC+ARH",
+        "propulsion": "Solid Rocket",
+        "warhead": "480 kg conventional / nuclear option",
+        "launchPlatforms": [
+          "TEL 8x8 truck"
+        ],
+        "targetTypes": [
+          "C2 Nodes",
+          "Air Bases",
+          "Troop Concentrations",
+          "SAM Sites"
+        ],
+        "family": "Iskander",
+        "variants": [
+          "Iskander-M",
+          "Iskander-K (cruise)",
+          "Iskander-E (export)"
+        ],
+        "predecessors": [
+          "OTR-23 Oka"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Algeria",
+          "Armenia (export-limited)"
+        ],
+        "notes": "Highly maneuverable quasi-ballistic trajectory"
+      },
+      {
+        "name": "9M96DM",
+        "domesticName": "9\u041c96\u0414\u041c",
+        "natoName": null,
+        "type": "SAM Very Long Range",
+        "manufacturer": "Fakel",
+        "country": "Russia",
+        "operators": [
+          "Russia"
+        ],
+        "yearIntroduced": 2021,
+        "status": "Operational",
+        "range_km": 400,
+        "speed_mach": 4.5,
+        "guidance": "ARH + INS + Datalink",
+        "propulsion": "Solid Rocket",
+        "warhead": "Active blast fragmentation",
+        "launchPlatforms": [
+          "S-500 Prometheus"
+        ],
+        "targetTypes": [
+          "Hypersonic Glide Vehicles",
+          "ICBM RVs",
+          "Aircraft",
+          "Satellites"
+        ],
+        "family": "9M96",
+        "variants": [],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "S-500 interceptor; ABM-capable"
+      }
+    ],
+    "China": [
+      {
+        "name": "PL-15",
+        "domesticName": "\u9739\u96f3-15",
+        "natoName": null,
+        "type": "Air-to-Air BVRAAM",
+        "manufacturer": "CASIC",
+        "country": "China",
+        "operators": [
+          "PLAAF",
+          "PLANAF"
+        ],
+        "yearIntroduced": 2016,
+        "status": "Operational",
+        "range_km": 200,
+        "speed_mach": 5.0,
+        "guidance": "INS+BeiDou midcourse, Dual Pulse ARH terminal",
+        "propulsion": "Solid Rocket dual pulse",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "J-10C",
+          "J-11B",
+          "J-16",
+          "J-20",
+          "J-35"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "AWACS",
+          "Tankers",
+          "Cruise Missiles"
+        ],
+        "family": "PL",
+        "variants": [
+          "PL-15",
+          "PL-15E export",
+          "PL-15B (VLRAAM)"
+        ],
+        "predecessors": [
+          "PL-12"
+        ],
+        "successors": [
+          "PL-17"
+        ],
+        "exportUsers": [
+          "Pakistan (export grade)"
+        ],
+        "notes": "Competes with AIM-120D; dual-pulse motor extends no-escape zone"
+      },
+      {
+        "name": "PL-17",
+        "domesticName": "\u9739\u96f3-17",
+        "natoName": null,
+        "type": "Air-to-Air VLRAAM",
+        "manufacturer": "CASIC",
+        "country": "China",
+        "operators": [
+          "PLAAF"
+        ],
+        "yearIntroduced": 2023,
+        "status": "Operational",
+        "range_km": 400,
+        "speed_mach": 6.0,
+        "guidance": "ARH + IR + Datalink",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "J-20"
+        ],
+        "targetTypes": [
+          "AWACS",
+          "Tankers",
+          "AEW Aircraft"
+        ],
+        "family": "PL",
+        "variants": [],
+        "predecessors": [
+          "PL-15"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Dedicated AWACs/tanker killer; extreme range"
+      },
+      {
+        "name": "PL-10",
+        "domesticName": "\u9739\u96f3-10",
+        "natoName": null,
+        "type": "Air-to-Air SRAAM",
+        "manufacturer": "CASIC",
+        "country": "China",
+        "operators": [
+          "PLAAF",
+          "PLANAF"
+        ],
+        "yearIntroduced": 2015,
+        "status": "Operational",
+        "range_km": 20,
+        "speed_mach": 3.0,
+        "guidance": "Dual band IIR with HOBS",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "J-10C",
+          "J-11B",
+          "J-16",
+          "J-20",
+          "J-35"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "UAV"
+        ],
+        "family": "PL",
+        "variants": [
+          "PL-10",
+          "PL-10E"
+        ],
+        "predecessors": [
+          "PL-9"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "China's ASRAAM equivalent"
+      },
+      {
+        "name": "DF-41",
+        "domesticName": "\u4e1c\u98ce-41",
+        "natoName": "CSS-X-20",
+        "type": "ICBM Road Mobile",
+        "manufacturer": "CASC",
+        "country": "China",
+        "operators": [
+          "PLA Rocket Force"
+        ],
+        "yearIntroduced": 2017,
+        "status": "Operational",
+        "range_km": 15000,
+        "speed_mach": 25,
+        "guidance": "INS+BeiDou+stellar",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "Up to 10 MIRV 150 kT each",
+        "launchPlatforms": [
+          "TEL",
+          "Rail Mobile",
+          "Silo (DF-41A)"
+        ],
+        "targetTypes": [
+          "Strategic Targets"
+        ],
+        "family": "DF",
+        "variants": [
+          "DF-41",
+          "DF-41A silo"
+        ],
+        "predecessors": [
+          "DF-31A"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "China's most capable ICBM"
+      },
+      {
+        "name": "DF-21D",
+        "domesticName": "\u4e1c\u98ce-21D",
+        "natoName": "CSS-5 Mod 4",
+        "type": "Anti-Ship Ballistic Missile",
+        "manufacturer": "CASC",
+        "country": "China",
+        "operators": [
+          "PLA Rocket Force"
+        ],
+        "yearIntroduced": 2010,
+        "status": "Operational",
+        "range_km": 1800,
+        "speed_mach": 10,
+        "guidance": "INS+BeiDou+MaRV terminal seeker",
+        "propulsion": "Two-stage solid rocket",
+        "warhead": "Conventional maneuvering RV",
+        "launchPlatforms": [
+          "TEL"
+        ],
+        "targetTypes": [
+          "Aircraft Carriers",
+          "Large Surface Ships"
+        ],
+        "family": "DF-21",
+        "variants": [
+          "DF-21",
+          "DF-21A",
+          "DF-21C",
+          "DF-21D",
+          "DF-21E"
+        ],
+        "predecessors": [
+          "DF-21"
+        ],
+        "successors": [
+          "DF-26"
+        ],
+        "exportUsers": [],
+        "notes": "World's first ASBM; carrier killer"
+      },
+      {
+        "name": "DF-26",
+        "domesticName": "\u4e1c\u98ce-26",
+        "natoName": "CSS-18",
+        "type": "IRBM / Anti-Ship Ballistic Missile",
+        "manufacturer": "CASC",
+        "country": "China",
+        "operators": [
+          "PLA Rocket Force"
+        ],
+        "yearIntroduced": 2016,
+        "status": "Operational",
+        "range_km": 4000,
+        "speed_mach": 18,
+        "guidance": "INS+BeiDou+MaRV terminal",
+        "propulsion": "Two-stage solid rocket",
+        "warhead": "Conventional or Nuclear MaRV",
+        "launchPlatforms": [
+          "TEL"
+        ],
+        "targetTypes": [
+          "Guam",
+          "Aircraft Carriers",
+          "Land Targets"
+        ],
+        "family": "DF-26",
+        "variants": [
+          "DF-26",
+          "DF-26B"
+        ],
+        "predecessors": [
+          "DF-21D"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Dubbed 'Guam Killer'; dual-capable"
+      },
+      {
+        "name": "YJ-18",
+        "domesticName": "\u9e70\u51fb-18",
+        "natoName": "CH-SS-NX-13",
+        "type": "Anti-Ship Cruise Missile",
+        "manufacturer": "HAIG",
+        "country": "China",
+        "operators": [
+          "PLAN"
+        ],
+        "yearIntroduced": 2015,
+        "status": "Operational",
+        "range_km": 540,
+        "speed_mach": 3.0,
+        "guidance": "INS+BeiDou midcourse, ARH terminal",
+        "propulsion": "Turbofan subsonic + solid sprint",
+        "warhead": "300 kg semi-AP",
+        "launchPlatforms": [
+          "Submarines",
+          "Destroyers",
+          "Frigates"
+        ],
+        "targetTypes": [
+          "Aircraft Carriers",
+          "Surface Ships"
+        ],
+        "family": "YJ",
+        "variants": [
+          "YJ-18",
+          "YJ-18A"
+        ],
+        "predecessors": [
+          "YJ-62"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Club-like architecture; Mach 3 sprint terminal"
+      },
+      {
+        "name": "HQ-9B",
+        "domesticName": "\u7ea2\u65d7-9B",
+        "natoName": null,
+        "type": "Long Range SAM",
+        "manufacturer": "CASIC",
+        "country": "China",
+        "operators": [
+          "PLA Air Force",
+          "PLA Navy"
+        ],
+        "yearIntroduced": 2018,
+        "status": "Operational",
+        "range_km": 200,
+        "speed_mach": 4.2,
+        "guidance": "TVM + ARH + INS + Datalink",
+        "propulsion": "Solid Rocket dual-stage",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "TEL"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "TBM"
+        ],
+        "family": "HQ-9",
+        "variants": [
+          "HQ-9",
+          "HQ-9A",
+          "HQ-9B",
+          "FD-2000 export"
+        ],
+        "predecessors": [
+          "HQ-2"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Uzbekistan",
+          "Turkmenistan (FD-2000)"
+        ],
+        "notes": "S-300 derivative with indigenous evolution"
+      },
+      {
+        "name": "DF-17",
+        "domesticName": "\u4e1c\u98ce-17",
+        "natoName": "CSS-22",
+        "type": "Hypersonic Glide Vehicle + MRBM",
+        "manufacturer": "CASC",
+        "country": "China",
+        "operators": [
+          "PLA Rocket Force"
+        ],
+        "yearIntroduced": 2019,
+        "status": "Operational",
+        "range_km": 2500,
+        "speed_mach": 10,
+        "guidance": "INS+BeiDou+terminal HGV guidance",
+        "propulsion": "Solid two-stage rocket + HGV glide",
+        "warhead": "Conventional precision + nuclear option",
+        "launchPlatforms": [
+          "TEL"
+        ],
+        "targetTypes": [
+          "Aircraft Carriers",
+          "Theater Targets",
+          "THAAD sites"
+        ],
+        "family": "DF-17",
+        "variants": [],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "First operational HGV weapon system in the world"
+      },
+      {
+        "name": "CM-400AKG",
+        "domesticName": "CM-400AKG",
+        "natoName": null,
+        "type": "Air-to-Surface High Speed",
+        "manufacturer": "CASIC",
+        "country": "China",
+        "operators": [
+          "Pakistan PAF"
+        ],
+        "yearIntroduced": 2015,
+        "status": "Operational",
+        "range_km": 200,
+        "speed_mach": 4.0,
+        "guidance": "INS+BeiDou+SAR/IIR terminal",
+        "propulsion": "Solid Rocket",
+        "warhead": "480 kg penetrating",
+        "launchPlatforms": [
+          "JF-17 Thunder"
+        ],
+        "targetTypes": [
+          "Aircraft Carriers",
+          "Surface Ships",
+          "Hardened Targets"
+        ],
+        "family": "CM",
+        "variants": [],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "Pakistan"
+        ],
+        "notes": "Super-sonic ASM for carrier denial"
+      }
+    ],
+    "India": [
+      {
+        "name": "BrahMos",
+        "domesticName": "\u092c\u094d\u0930\u0939\u094d\u092e\u094b\u0938",
+        "natoName": null,
+        "type": "Supersonic Anti-Ship / Land Attack Cruise Missile",
+        "manufacturer": "BrahMos Aerospace (DRDO+NPO Mashinostroyeniya)",
+        "country": "India/Russia",
+        "operators": [
+          "Indian Army",
+          "Indian Navy",
+          "IAF"
+        ],
+        "yearIntroduced": 2005,
+        "status": "Operational",
+        "range_km": 500,
+        "speed_mach": 2.8,
+        "guidance": "INS+GLONASS+ARH terminal",
+        "propulsion": "Ramjet sustainer + Solid booster",
+        "warhead": "200 kg conventional semi-AP",
+        "launchPlatforms": [
+          "Su-30MKI",
+          "INS Rajput",
+          "Mobile TEL",
+          "Submarines"
+        ],
+        "targetTypes": [
+          "Ships",
+          "Land Targets",
+          "Fortifications"
+        ],
+        "family": "BrahMos",
+        "variants": [
+          "BrahMos-I",
+          "BrahMos-ER",
+          "BrahMos-NG",
+          "BrahMos-II Hypersonic (dev)",
+          "BrahMos-A air version"
+        ],
+        "predecessors": [],
+        "successors": [
+          "BrahMos-II"
+        ],
+        "exportUsers": [
+          "Philippines",
+          "Vietnam (prospective)"
+        ],
+        "notes": "World's fastest operational cruise missile"
+      },
+      {
+        "name": "Astra Mk1",
+        "domesticName": "\u0905\u0938\u094d\u0924\u094d\u0930",
+        "natoName": null,
+        "type": "Air-to-Air BVRAAM",
+        "manufacturer": "DRDO",
+        "country": "India",
+        "operators": [
+          "IAF"
+        ],
+        "yearIntroduced": 2019,
+        "status": "Operational",
+        "range_km": 110,
+        "speed_mach": 4.5,
+        "guidance": "INS midcourse, Active Radar terminal",
+        "propulsion": "Solid Rocket dual-pulse",
+        "warhead": "15 kg blast-fragmentation",
+        "launchPlatforms": [
+          "Su-30MKI",
+          "Tejas Mk1A"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missiles"
+        ],
+        "family": "Astra",
+        "variants": [
+          "Astra Mk1",
+          "Astra Mk2",
+          "Astra Mk3 (VLRAAM dev)"
+        ],
+        "predecessors": [],
+        "successors": [
+          "Astra Mk2"
+        ],
+        "exportUsers": [],
+        "notes": "India's first indigenous BVR missile"
+      },
+      {
+        "name": "Agni-V",
+        "domesticName": "\u0905\u0917\u094d\u0928\u093f-V",
+        "natoName": null,
+        "type": "ICBM",
+        "manufacturer": "DRDO",
+        "country": "India",
+        "operators": [
+          "SFC"
+        ],
+        "yearIntroduced": 2018,
+        "status": "Operational",
+        "range_km": 8000,
+        "speed_mach": 24,
+        "guidance": "Ring Laser Gyro INS + IRNSS",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "1500 kg conventional/nuclear MIRV capable",
+        "launchPlatforms": [
+          "Canisterized TEL",
+          "Silo"
+        ],
+        "targetTypes": [
+          "Strategic Targets"
+        ],
+        "family": "Agni",
+        "variants": [
+          "Agni-V Block I",
+          "Agni-V MIRV (Mission Divyastra)"
+        ],
+        "predecessors": [
+          "Agni-IV"
+        ],
+        "successors": [
+          "Agni-VI"
+        ],
+        "exportUsers": [],
+        "notes": "India's only ICBM-range missile; MIRV tested 2024"
+      },
+      {
+        "name": "K-15 Sagarika",
+        "domesticName": "\u0938\u093e\u0917\u0930\u093f\u0915\u093e",
+        "natoName": null,
+        "type": "SLBM SSBN",
+        "manufacturer": "DRDO",
+        "country": "India",
+        "operators": [
+          "Indian Navy"
+        ],
+        "yearIntroduced": 2018,
+        "status": "Operational",
+        "range_km": 750,
+        "speed_mach": 7,
+        "guidance": "INS + IRNSS",
+        "propulsion": "Two-stage solid rocket",
+        "warhead": "Nuclear",
+        "launchPlatforms": [
+          "INS Arihant",
+          "INS Arighat"
+        ],
+        "targetTypes": [
+          "Strategic Targets"
+        ],
+        "family": "K-series",
+        "variants": [
+          "K-15",
+          "K-4"
+        ],
+        "predecessors": [],
+        "successors": [
+          "K-4",
+          "K-5"
+        ],
+        "exportUsers": [],
+        "notes": "India's first sea-based nuclear deterrent"
+      },
+      {
+        "name": "Nag",
+        "domesticName": "\u0928\u093e\u0917",
+        "natoName": null,
+        "type": "Anti-Tank Guided Missile Fire and Forget",
+        "manufacturer": "DRDO",
+        "country": "India",
+        "operators": [
+          "Indian Army"
+        ],
+        "yearIntroduced": 2018,
+        "status": "Operational",
+        "range_km": 4,
+        "speed_mach": 0.5,
+        "guidance": "IIR imaging fire-and-forget",
+        "propulsion": "Solid Rocket",
+        "warhead": "Tandem HEAT",
+        "launchPlatforms": [
+          "BMP-2 Sarath (NAMICA)",
+          "Helicopter (HeliNa)",
+          "Wheeled Launcher"
+        ],
+        "targetTypes": [
+          "MBT",
+          "Armored Vehicles"
+        ],
+        "family": "Nag",
+        "variants": [
+          "Nag",
+          "MPATGM",
+          "HeliNa/Dhruvastra",
+          "Man Portable Nag"
+        ],
+        "predecessors": [],
+        "successors": [
+          "MPATGM"
+        ],
+        "exportUsers": [],
+        "notes": "3rd gen ATGM; top attack capable"
+      },
+      {
+        "name": "Akash Mk2",
+        "domesticName": "\u0906\u0915\u093e\u0936",
+        "natoName": null,
+        "type": "Medium Range SAM",
+        "manufacturer": "DRDO / BEL",
+        "country": "India",
+        "operators": [
+          "IAF",
+          "Indian Army"
+        ],
+        "yearIntroduced": 2022,
+        "status": "Operational",
+        "range_km": 80,
+        "speed_mach": 3.5,
+        "guidance": "Command guidance + ARH terminal",
+        "propulsion": "Integrated Ramjet-Rocket",
+        "warhead": "60 kg blast fragmentation",
+        "launchPlatforms": [
+          "TEL",
+          "Trailer Mounted"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Helicopter",
+          "Cruise Missile",
+          "UAV"
+        ],
+        "family": "Akash",
+        "variants": [
+          "Akash Mk1",
+          "Akash Mk1S",
+          "Akash-NG",
+          "Akash Mk2"
+        ],
+        "predecessors": [
+          "Akash Mk1"
+        ],
+        "successors": [
+          "Akash-NG"
+        ],
+        "exportUsers": [
+          "Armenia (Akash-NG)"
+        ],
+        "notes": "Indigenously developed; Ramjet propulsion"
+      }
+    ],
+    "Pakistan": [
+      {
+        "name": "Shaheen-III",
+        "domesticName": "\u0634\u0627\u06c1\u06cc\u0646",
+        "natoName": null,
+        "type": "MRBM",
+        "manufacturer": "NESCOM",
+        "country": "Pakistan",
+        "operators": [
+          "SPD"
+        ],
+        "yearIntroduced": 2015,
+        "status": "Operational",
+        "range_km": 2750,
+        "speed_mach": 12,
+        "guidance": "INS",
+        "propulsion": "Two-stage solid rocket",
+        "warhead": "Nuclear / Conventional",
+        "launchPlatforms": [
+          "TEL"
+        ],
+        "targetTypes": [
+          "Strategic Targets"
+        ],
+        "family": "Shaheen",
+        "variants": [
+          "Shaheen-I",
+          "Shaheen-IA",
+          "Shaheen-II",
+          "Shaheen-III"
+        ],
+        "predecessors": [
+          "Shaheen-II"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Can reach entire Indian subcontinent"
+      },
+      {
+        "name": "Babur (Hatf-7)",
+        "domesticName": "\u0628\u0627\u0628\u0631",
+        "natoName": null,
+        "type": "Land Attack Cruise Missile",
+        "manufacturer": "NESCOM",
+        "country": "Pakistan",
+        "operators": [
+          "Pakistan Army",
+          "Pakistan Navy"
+        ],
+        "yearIntroduced": 2005,
+        "status": "Operational",
+        "range_km": 700,
+        "speed_mach": 0.8,
+        "guidance": "INS+TERCOM+DSMAC",
+        "propulsion": "Turbofan",
+        "warhead": "Conventional / Nuclear",
+        "launchPlatforms": [
+          "TEL",
+          "Ships",
+          "Submarines (Harbah)"
+        ],
+        "targetTypes": [
+          "Fixed Land Targets"
+        ],
+        "family": "Babur",
+        "variants": [
+          "Babur-1",
+          "Babur-1B",
+          "Babur-2",
+          "Babur-3 SLCM"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Pakistan's Tomahawk-equivalent"
+      },
+      {
+        "name": "Ababeel",
+        "domesticName": "\u0627\u0628\u0627\u0628\u06cc\u0644",
+        "natoName": null,
+        "type": "MRBM MIRV",
+        "manufacturer": "NESCOM",
+        "country": "Pakistan",
+        "operators": [
+          "SPD"
+        ],
+        "yearIntroduced": 2017,
+        "status": "Development/Testing",
+        "range_km": 2200,
+        "speed_mach": 15,
+        "guidance": "INS + MIRV bus",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "MIRV (3-10 RVs)",
+        "launchPlatforms": [
+          "TEL"
+        ],
+        "targetTypes": [
+          "Strategic Targets"
+        ],
+        "family": "Ababeel",
+        "variants": [],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Pakistan's first MIRV-capable missile"
+      }
+    ],
+    "France": [
+      {
+        "name": "SCALP-EG / Storm Shadow",
+        "domesticName": "SCALP-EG",
+        "natoName": null,
+        "type": "Air-Launched Cruise Missile",
+        "manufacturer": "MBDA",
+        "country": "France/UK",
+        "operators": [
+          "FAF",
+          "RAF",
+          "IRAF",
+          "Saudi Arabia",
+          "Export"
+        ],
+        "yearIntroduced": 2003,
+        "status": "Operational",
+        "range_km": 560,
+        "speed_mach": 0.9,
+        "guidance": "INS+GPS+TERCOM+DSMAC+IIR terminal",
+        "propulsion": "Turbofan (Microturbo TRI 60)",
+        "warhead": "450 kg BROACH dual-stage",
+        "launchPlatforms": [
+          "Rafale",
+          "Tornado GR4",
+          "Eurofighter (UK)",
+          "Mirage 2000",
+          "Su-24 (Ukraine)"
+        ],
+        "targetTypes": [
+          "Bunkers",
+          "C2 Infrastructure",
+          "Air Bases",
+          "Hardened Targets"
+        ],
+        "family": "SCALP/Storm Shadow",
+        "variants": [
+          "SCALP-EG",
+          "Storm Shadow",
+          "SCALP Naval"
+        ],
+        "predecessors": [
+          "Apache"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Greece",
+          "Italy",
+          "Saudi Arabia",
+          "UAE",
+          "Ukraine"
+        ],
+        "notes": "Stealthy deep strike; dual stage BROACH warhead"
+      },
+      {
+        "name": "MICA",
+        "domesticName": "MICA",
+        "natoName": null,
+        "type": "Air-to-Air WVR/BVR",
+        "manufacturer": "MBDA",
+        "country": "France",
+        "operators": [
+          "FAF",
+          "Export"
+        ],
+        "yearIntroduced": 1997,
+        "status": "Operational",
+        "range_km": 80,
+        "speed_mach": 4.0,
+        "guidance": "ARH or IIR",
+        "propulsion": "Solid Rocket",
+        "warhead": "12 kg blast fragmentation",
+        "launchPlatforms": [
+          "Rafale",
+          "Mirage 2000-5",
+          "Mirage 2000-9"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Helicopter",
+          "UAV"
+        ],
+        "family": "MICA",
+        "variants": [
+          "MICA-RF (ARH)",
+          "MICA-IR",
+          "MICA-NG"
+        ],
+        "predecessors": [
+          "Super 530D"
+        ],
+        "successors": [
+          "MICA-NG"
+        ],
+        "exportUsers": [
+          "UAE",
+          "Qatar",
+          "India",
+          "Greece",
+          "Taiwan",
+          "Morocco"
+        ],
+        "notes": "Dual mode seeker variant"
+      },
+      {
+        "name": "Meteor",
+        "domesticName": "Meteor",
+        "natoName": null,
+        "type": "Air-to-Air BVRAAM",
+        "manufacturer": "MBDA",
+        "country": "Europe (UK/France/Germany/Spain/Italy/Sweden)",
+        "operators": [
+          "RAF",
+          "FAF",
+          "Eurofighter Operators",
+          "Gripen Operators"
+        ],
+        "yearIntroduced": 2016,
+        "status": "Operational",
+        "range_km": 200,
+        "speed_mach": 4.0,
+        "guidance": "INS+Datalink midcourse, ARH terminal",
+        "propulsion": "Solid-fuel ramjet (throttleable)",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "Typhoon",
+          "Rafale",
+          "Gripen E",
+          "F-35 (future)",
+          "Tempest"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "UAV",
+          "Cruise Missile"
+        ],
+        "family": "Meteor",
+        "variants": [],
+        "predecessors": [
+          "AMRAAM",
+          "MICA"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Germany",
+          "Italy",
+          "Spain",
+          "Sweden",
+          "Greece"
+        ],
+        "notes": "Throttleable ramjet gives largest no-escape zone of any BVR missile"
+      },
+      {
+        "name": "Exocet AM39",
+        "domesticName": "Exocet",
+        "natoName": null,
+        "type": "Air-Launched Anti-Ship Missile",
+        "manufacturer": "MBDA",
+        "country": "France",
+        "operators": [
+          "FAF",
+          "Export"
+        ],
+        "yearIntroduced": 1979,
+        "status": "Operational",
+        "range_km": 70,
+        "speed_mach": 0.93,
+        "guidance": "INS + ARH terminal",
+        "propulsion": "Solid Rocket + Turbojet",
+        "warhead": "165 kg semi-armour piercing",
+        "launchPlatforms": [
+          "Super Etendard",
+          "Atlantique",
+          "Rafale M"
+        ],
+        "targetTypes": [
+          "Ships",
+          "Frigates",
+          "Corvettes"
+        ],
+        "family": "Exocet",
+        "variants": [
+          "MM38",
+          "MM40 Block 3",
+          "AM39",
+          "SM39",
+          "RGM-84 style"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "Argentina",
+          "Brazil",
+          "Pakistan",
+          "Peru",
+          "Qatar"
+        ],
+        "notes": "Famous for Falklands War sinkings"
+      }
+    ],
+    "UnitedKingdom": [
+      {
+        "name": "Brimstone 3",
+        "domesticName": "Brimstone",
+        "natoName": null,
+        "type": "Air-to-Surface Anti-Armor",
+        "manufacturer": "MBDA",
+        "country": "UK",
+        "operators": [
+          "RAF",
+          "Export"
+        ],
+        "yearIntroduced": 2005,
+        "status": "Operational",
+        "range_km": 12,
+        "speed_mach": 1.3,
+        "guidance": "Millimeter-wave ARH + INS (dual mode option laser)",
+        "propulsion": "Solid Rocket",
+        "warhead": "Tandem HEAT",
+        "launchPlatforms": [
+          "Tornado GR4",
+          "Typhoon",
+          "Reaper",
+          "Protector",
+          "F/A-18 (US eval)"
+        ],
+        "targetTypes": [
+          "MBT",
+          "Armored Vehicle",
+          "Fast Patrol Boat"
+        ],
+        "family": "Brimstone",
+        "variants": [
+          "Brimstone 1",
+          "Brimstone 2",
+          "Brimstone 3",
+          "Sea Spear"
+        ],
+        "predecessors": [
+          "Hellfire"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Saudi Arabia",
+          "Ukraine"
+        ],
+        "notes": "MMW seeker enables targeting of fast mobile vehicles"
+      }
+    ],
+    "Israel": [
+      {
+        "name": "Python-5",
+        "domesticName": "\u05e4\u05d9\u05d9\u05ea\u05d5\u05df 5",
+        "natoName": null,
+        "type": "Air-to-Air SRAAM",
+        "manufacturer": "Rafael",
+        "country": "Israel",
+        "operators": [
+          "IAF",
+          "Export"
+        ],
+        "yearIntroduced": 2003,
+        "status": "Operational",
+        "range_km": 20,
+        "speed_mach": 4.0,
+        "guidance": "Dual-band IIR + CCD Imaging",
+        "propulsion": "Solid Rocket",
+        "warhead": "11 kg blast fragmentation",
+        "launchPlatforms": [
+          "F-16",
+          "F-15",
+          "F-35I",
+          "Gripen",
+          "JF-17"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "UAV",
+          "Helicopter"
+        ],
+        "family": "Python",
+        "variants": [
+          "Python-1",
+          "Python-2",
+          "Python-3",
+          "Python-4",
+          "Python-5"
+        ],
+        "predecessors": [
+          "Python-4"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "India",
+          "Singapore",
+          "Romania",
+          "Chile",
+          "Ecuador"
+        ],
+        "notes": "Dual band IIR enables IRCCM against advanced flares"
+      },
+      {
+        "name": "Derby (I-Derby ER)",
+        "domesticName": "\u05d3\u05e8\u05d1\u05d9",
+        "natoName": null,
+        "type": "Air-to-Air BVR / SAM",
+        "manufacturer": "Rafael",
+        "country": "Israel",
+        "operators": [
+          "IAF",
+          "Export"
+        ],
+        "yearIntroduced": 1998,
+        "status": "Operational",
+        "range_km": 100,
+        "speed_mach": 4.0,
+        "guidance": "ARH + INS + Datalink",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "F-16",
+          "Gripen",
+          "JF-17",
+          "Barak-8 (SAM)"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "UAV",
+          "Cruise Missile"
+        ],
+        "family": "Derby",
+        "variants": [
+          "Derby",
+          "I-Derby ER",
+          "Barak-8 surface"
+        ],
+        "predecessors": [
+          "Shafrir"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "India",
+          "Singapore",
+          "Chile",
+          "Colombia"
+        ],
+        "notes": "Also used as surface-to-air in Barak-8"
+      },
+      {
+        "name": "Barak-8 (LR-SAM / MR-SAM)",
+        "domesticName": "\u05d1\u05e8\u05e7-8",
+        "natoName": null,
+        "type": "Naval and Land-Based SAM",
+        "manufacturer": "IAI + DRDO",
+        "country": "Israel/India",
+        "operators": [
+          "Indian Navy",
+          "Indian Army",
+          "IAF",
+          "Israeli Navy"
+        ],
+        "yearIntroduced": 2015,
+        "status": "Operational",
+        "range_km": 100,
+        "speed_mach": 2.0,
+        "guidance": "ARH + TVM + Datalink",
+        "propulsion": "Solid Rocket",
+        "warhead": "60 kg blast fragmentation",
+        "launchPlatforms": [
+          "VLS (ships)",
+          "CAMM launcher (land)"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "UAV",
+          "TBM"
+        ],
+        "family": "Barak",
+        "variants": [
+          "Barak-1",
+          "Barak-8",
+          "Barak MX",
+          "Barak-LRAD"
+        ],
+        "predecessors": [
+          "Barak-1"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "India"
+        ],
+        "notes": "Joint India-Israel development; primary IAF-N air defense"
+      },
+      {
+        "name": "Delilah",
+        "domesticName": "\u05d3\u05dc\u05d9\u05dc\u05d4",
+        "natoName": null,
+        "type": "Air-Launched Loitering Missile",
+        "manufacturer": "IMI / Elbit",
+        "country": "Israel",
+        "operators": [
+          "IAF",
+          "Export"
+        ],
+        "yearIntroduced": 2005,
+        "status": "Operational",
+        "range_km": 250,
+        "speed_mach": 0.3,
+        "guidance": "INS+GPS+EO/IIR datalink",
+        "propulsion": "Turbojet",
+        "warhead": "30 kg",
+        "launchPlatforms": [
+          "F-16",
+          "C-130"
+        ],
+        "targetTypes": [
+          "C2 Nodes",
+          "Radar Sites",
+          "Mobile Targets"
+        ],
+        "family": "Delilah",
+        "variants": [
+          "Delilah-AL",
+          "Delilah-GL"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "USA (evaluated)"
+        ],
+        "notes": "Man-in-the-loop loitering munition with abort capability"
+      }
+    ],
+    "Turkey": [
+      {
+        "name": "SOM-J",
+        "domesticName": "SOM-J",
+        "natoName": null,
+        "type": "Air-Launched Cruise Missile",
+        "manufacturer": "Roketsan",
+        "country": "Turkey",
+        "operators": [
+          "TurAF"
+        ],
+        "yearIntroduced": 2019,
+        "status": "Operational",
+        "range_km": 250,
+        "speed_mach": 0.9,
+        "guidance": "INS+GPS+IIR terminal",
+        "propulsion": "Turbojet (TJ90)",
+        "warhead": "230 kg",
+        "launchPlatforms": [
+          "F-16",
+          "F-35A (internal bay)"
+        ],
+        "targetTypes": [
+          "Fixed Fortified Targets",
+          "Air Defense Systems"
+        ],
+        "family": "SOM",
+        "variants": [
+          "SOM-A",
+          "SOM-B1",
+          "SOM-B2",
+          "SOM-J",
+          "SOM-J2"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "First Turkish developed cruise missile; fits F-35 internal bay"
+      },
+      {
+        "name": "HISAR-O+",
+        "domesticName": "HISAR-O+",
+        "natoName": null,
+        "type": "Short Range SAM",
+        "manufacturer": "Aselsan/Roketsan",
+        "country": "Turkey",
+        "operators": [
+          "Turkish Army"
+        ],
+        "yearIntroduced": 2019,
+        "status": "Operational",
+        "range_km": 15,
+        "speed_mach": 2.5,
+        "guidance": "Command + semi-active radar + ARH",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "wheeled launcher"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Helicopter",
+          "UAV",
+          "Cruise Missile"
+        ],
+        "family": "HISAR",
+        "variants": [
+          "HISAR-A",
+          "HISAR-O",
+          "HISAR-O+",
+          "HISAR-U"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Fully indigenous Turkish air defense system"
+      }
+    ],
+    "Germany": [
+      {
+        "name": "IRIS-T",
+        "domesticName": "IRIS-T",
+        "natoName": null,
+        "type": "Air-to-Air SRAAM / SAM",
+        "manufacturer": "Diehl BGT",
+        "country": "Germany",
+        "operators": [
+          "Luftwaffe",
+          "Export"
+        ],
+        "yearIntroduced": 2005,
+        "status": "Operational",
+        "range_km": 25,
+        "speed_mach": 3.0,
+        "guidance": "Dual-band IIR imaging seeker",
+        "propulsion": "Solid Rocket",
+        "warhead": "11.4 kg blast fragmentation",
+        "launchPlatforms": [
+          "Typhoon",
+          "Tornado",
+          "JAS-39",
+          "F-16",
+          "AMX"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Helicopter",
+          "Cruise Missile",
+          "UAV"
+        ],
+        "family": "IRIS-T",
+        "variants": [
+          "IRIS-T A2A",
+          "IRIS-T SL",
+          "IRIS-T SLM",
+          "IRIS-T SLX"
+        ],
+        "predecessors": [
+          "AIM-9"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Austria",
+          "Sweden",
+          "Spain",
+          "Italy",
+          "Norway",
+          "South Korea",
+          "Thailand",
+          "Ukraine"
+        ],
+        "notes": "Led consortium; imaging IIR seeker"
+      },
+      {
+        "name": "IRIS-T SLM",
+        "domesticName": "IRIS-T SLM",
+        "natoName": null,
+        "type": "SAM Medium Range",
+        "manufacturer": "Diehl BGT",
+        "country": "Germany",
+        "operators": [
+          "Bundeswehr",
+          "Export"
+        ],
+        "yearIntroduced": 2022,
+        "status": "Operational",
+        "range_km": 40,
+        "speed_mach": 3.0,
+        "guidance": "IIR + Datalink",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "Ground Vehicle",
+          "Containerized launcher"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile",
+          "UAV",
+          "Loitering Munition"
+        ],
+        "family": "IRIS-T SL",
+        "variants": [
+          "IRIS-T SL",
+          "IRIS-T SLM",
+          "IRIS-T SLX"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "Ukraine",
+          "Egypt",
+          "Sweden"
+        ],
+        "notes": "Containerized; rapid deployment; successful Ukraine combat use"
+      }
+    ],
+    "Japan": [
+      {
+        "name": "Type 12 SSM (Kai)",
+        "domesticName": "12\u5f0f\u5730\u5bfe\u8266\u8a98\u5c0e\u5f3e",
+        "natoName": null,
+        "type": "Surface-to-Ship / Land Attack Cruise Missile",
+        "manufacturer": "Mitsubishi",
+        "country": "Japan",
+        "operators": [
+          "JGSDF"
+        ],
+        "yearIntroduced": 2012,
+        "status": "Operational",
+        "range_km": 1200,
+        "speed_mach": 0.9,
+        "guidance": "INS+GPS+TERCOM+ARH terminal",
+        "propulsion": "Turbojet + Solid Booster",
+        "warhead": "Penetrating blast fragmentation",
+        "launchPlatforms": [
+          "Truck-mounted TEL",
+          "Ships",
+          "Aircraft (future)"
+        ],
+        "targetTypes": [
+          "Surface Ships",
+          "Land Targets"
+        ],
+        "family": "Type 12",
+        "variants": [
+          "Type 12 original",
+          "Type 12 Kai (Stand-off extended range)"
+        ],
+        "predecessors": [
+          "Type 88"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Extended range version for island defense; targets PLA Navy"
+      },
+      {
+        "name": "AAM-4B",
+        "domesticName": "99\u5f0f\u7a7a\u5bfe\u7a7a\u8a98\u5c0e\u5f3e\u6539",
+        "natoName": null,
+        "type": "Air-to-Air BVRAAM",
+        "manufacturer": "Mitsubishi Electric",
+        "country": "Japan",
+        "operators": [
+          "JASDF"
+        ],
+        "yearIntroduced": 2010,
+        "status": "Operational",
+        "range_km": 120,
+        "speed_mach": 4.0,
+        "guidance": "INS+Datalink midcourse, ARH terminal (AESA seeker)",
+        "propulsion": "Solid Rocket",
+        "warhead": "Blast Fragmentation",
+        "launchPlatforms": [
+          "F-15J/DJ",
+          "F-2"
+        ],
+        "targetTypes": [
+          "Aircraft",
+          "Cruise Missile"
+        ],
+        "family": "AAM-4",
+        "variants": [
+          "AAM-4",
+          "AAM-4B"
+        ],
+        "predecessors": [
+          "AAM-3"
+        ],
+        "successors": [
+          "AAM-6 (dev)"
+        ],
+        "exportUsers": [],
+        "notes": "AESA active radar seeker; Japan's primary BVR missile"
+      }
+    ],
+    "SouthKorea": [
+      {
+        "name": "Hyunmoo-4",
+        "domesticName": "\ud604\ubb34-4",
+        "natoName": null,
+        "type": "Short Range Ballistic Missile",
+        "manufacturer": "ADD",
+        "country": "South Korea",
+        "operators": [
+          "ROK Army"
+        ],
+        "yearIntroduced": 2020,
+        "status": "Operational",
+        "range_km": 800,
+        "speed_mach": 8,
+        "guidance": "INS+GPS",
+        "propulsion": "Solid Rocket",
+        "warhead": "2000 kg conventional mass destruction",
+        "launchPlatforms": [
+          "Mobile TEL"
+        ],
+        "targetTypes": [
+          "Underground Bunkers",
+          "Command Posts",
+          "Missile Bases"
+        ],
+        "family": "Hyunmoo",
+        "variants": [
+          "Hyunmoo-1",
+          "Hyunmoo-2",
+          "Hyunmoo-3",
+          "Hyunmoo-4"
+        ],
+        "predecessors": [
+          "Hyunmoo-2"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "2 tonne warhead for massive retaliation doctrine"
+      }
+    ],
+    "NorthKorea": [
+      {
+        "name": "Hwasong-17",
+        "domesticName": "\ud654\uc131-17\ud615",
+        "natoName": "KN-28",
+        "type": "ICBM Heavy",
+        "manufacturer": "MPAF",
+        "country": "North Korea",
+        "operators": [
+          "KPA Missile Forces"
+        ],
+        "yearIntroduced": 2022,
+        "status": "Operational",
+        "range_km": 15000,
+        "speed_mach": 22,
+        "guidance": "INS + stellar (estimated)",
+        "propulsion": "Liquid rocket (two stage)",
+        "warhead": "Multiple RV MIRV capable (assessed)",
+        "launchPlatforms": [
+          "TEL 22-wheeled"
+        ],
+        "targetTypes": [
+          "Continental US Targets"
+        ],
+        "family": "Hwasong",
+        "variants": [
+          "Hwasong-17"
+        ],
+        "predecessors": [
+          "Hwasong-15"
+        ],
+        "successors": [
+          "Hwasong-18 (solid)"
+        ],
+        "exportUsers": [],
+        "notes": "World's largest road-mobile ICBM"
+      },
+      {
+        "name": "Hwasong-18",
+        "domesticName": "\ud654\uc131-18\ud615",
+        "natoName": null,
+        "type": "ICBM Solid Fuel",
+        "manufacturer": "MPAF",
+        "country": "North Korea",
+        "operators": [
+          "KPA"
+        ],
+        "yearIntroduced": 2023,
+        "status": "Operational",
+        "range_km": 15000,
+        "speed_mach": 22,
+        "guidance": "INS",
+        "propulsion": "Three-stage solid rocket",
+        "warhead": "Nuclear (single or MIRV)",
+        "launchPlatforms": [
+          "Canisterized TEL"
+        ],
+        "targetTypes": [
+          "Continental US Targets"
+        ],
+        "family": "Hwasong",
+        "variants": [],
+        "predecessors": [
+          "Hwasong-17"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "North Korea's first solid-fueled ICBM; faster launch readiness"
+      }
+    ],
+    "Iran": [
+      {
+        "name": "Shahab-3",
+        "domesticName": "\u0634\u0647\u0627\u0628-\u06f3",
+        "natoName": null,
+        "type": "MRBM",
+        "manufacturer": "Iran AIO",
+        "country": "Iran",
+        "operators": [
+          "IRGC Aerospace"
+        ],
+        "yearIntroduced": 2003,
+        "status": "Operational",
+        "range_km": 2000,
+        "speed_mach": 10,
+        "guidance": "INS",
+        "propulsion": "Liquid rocket",
+        "warhead": "750-1200 kg conventional/nuclear capable",
+        "launchPlatforms": [
+          "TEL"
+        ],
+        "targetTypes": [
+          "Regional Strategic Targets",
+          "Israel",
+          "US Bases"
+        ],
+        "family": "Shahab",
+        "variants": [
+          "Shahab-1",
+          "Shahab-2",
+          "Shahab-3",
+          "Ghadr-1",
+          "Emad",
+          "Khorramshahr"
+        ],
+        "predecessors": [],
+        "successors": [
+          "Khorramshahr"
+        ],
+        "exportUsers": [
+          "Houthi (Burkan derivative)"
+        ],
+        "notes": "North Korean Nodong derivative"
+      },
+      {
+        "name": "Fatah-1",
+        "domesticName": "\u0641\u0627\u062a\u062d-\u06f1",
+        "natoName": null,
+        "type": "Hypersonic Short Range Ballistic Missile",
+        "manufacturer": "IRGC",
+        "country": "Iran",
+        "operators": [
+          "IRGC"
+        ],
+        "yearIntroduced": 2023,
+        "status": "Operational",
+        "range_km": 1400,
+        "speed_mach": 13,
+        "guidance": "INS + maneuvering terminal",
+        "propulsion": "Solid Rocket",
+        "warhead": "Conventional 400 kg maneuvering",
+        "launchPlatforms": [
+          "TEL"
+        ],
+        "targetTypes": [
+          "Air Bases",
+          "Naval Bases",
+          "C2"
+        ],
+        "family": "Fatah",
+        "variants": [
+          "Fatah-1",
+          "Fatah-2"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Iran's claimed first hypersonic missile"
+      }
+    ],
+    "Sweden": [
+      {
+        "name": "RBS-15 Mk4",
+        "domesticName": "RBS-15",
+        "natoName": null,
+        "type": "Anti-Ship / Land Attack Cruise Missile",
+        "manufacturer": "Saab",
+        "country": "Sweden",
+        "operators": [
+          "Swedish AF",
+          "Export"
+        ],
+        "yearIntroduced": 2022,
+        "status": "Operational",
+        "range_km": 300,
+        "speed_mach": 0.9,
+        "guidance": "INS+GPS+TERCOM+ARH",
+        "propulsion": "Turbojet",
+        "warhead": "200 kg",
+        "launchPlatforms": [
+          "JAS-39 Gripen",
+          "Ships",
+          "Coastal launchers"
+        ],
+        "targetTypes": [
+          "Ships",
+          "Land Targets"
+        ],
+        "family": "RBS-15",
+        "variants": [
+          "RBS-15 Mk1",
+          "RBS-15 Mk2",
+          "RBS-15 Mk3",
+          "RBS-15 Mk4"
+        ],
+        "predecessors": [],
+        "successors": [],
+        "exportUsers": [
+          "Germany",
+          "Finland",
+          "Poland"
+        ],
+        "notes": "Extended range with land-attack added in Mk4"
+      }
+    ],
+    "Norway": [
+      {
+        "name": "JSM (Joint Strike Missile)",
+        "domesticName": "JSM",
+        "natoName": null,
+        "type": "Air-Launched Anti-Ship / Land Attack",
+        "manufacturer": "Kongsberg",
+        "country": "Norway",
+        "operators": [
+          "RNoAF",
+          "Japan",
+          "Export"
+        ],
+        "yearIntroduced": 2023,
+        "status": "Operational",
+        "range_km": 550,
+        "speed_mach": 0.95,
+        "guidance": "INS+GPS+IIR scene matching",
+        "propulsion": "Turbojet",
+        "warhead": "120 kg semi-AP",
+        "launchPlatforms": [
+          "F-35A (internal bay)"
+        ],
+        "targetTypes": [
+          "Ships",
+          "Land Targets"
+        ],
+        "family": "NSM/JSM",
+        "variants": [],
+        "predecessors": [
+          "NSM"
+        ],
+        "successors": [],
+        "exportUsers": [
+          "Japan",
+          "Australia"
+        ],
+        "notes": "Only anti-ship missile that fits F-35 internal weapons bay"
+      }
+    ],
+    "Ukraine": [
+      {
+        "name": "Neptun R-360",
+        "domesticName": "\u041d\u0435\u043f\u0442\u0443\u043d \u0420-360",
+        "natoName": null,
+        "type": "Anti-Ship Cruise Missile",
+        "manufacturer": "Luch",
+        "country": "Ukraine",
+        "operators": [
+          "Ukrainian Navy"
+        ],
+        "yearIntroduced": 2021,
+        "status": "Operational",
+        "range_km": 280,
+        "speed_mach": 0.85,
+        "guidance": "INS+GLONASS+ARH terminal",
+        "propulsion": "Turbofan (MS-400)",
+        "warhead": "150 kg semi-AP",
+        "launchPlatforms": [
+          "Coastal Mobile Launcher"
+        ],
+        "targetTypes": [
+          "Surface Ships"
+        ],
+        "family": "Neptun",
+        "variants": [
+          "R-360 Neptun",
+          "Increased range variant"
+        ],
+        "predecessors": [
+          "Kh-35 (derivative)"
+        ],
+        "successors": [],
+        "exportUsers": [],
+        "notes": "Sank Moskva cruiser April 2022"
+      }
+    ]
+  }
+}

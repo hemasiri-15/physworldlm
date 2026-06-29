@@ -1,0 +1,1205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/organization.schema.json",
+  "title": "OrganizationSpec",
+  "description": "PhysWorldLM World Specification Organization Standard (PW-WSF-900) v1.0. Universal representation of any structured organization — military, government, civilian, robotic, AI, or otherwise — within a PhysWorldLM simulated world.",
+  "$comment": "committee: PhysWorldLM Architecture Board | status: ACTIVE | license: MIT | revision: 1.0.0",
+  "type": "object",
+  "required": ["id", "name", "classification"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier (RFC 4122)."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version e.g. 1.0.0."
+    },
+
+    "GeoCoordinate": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90 },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "altitude":  { "type": "number", "description": "Meters above sea level." }
+      }
+    },
+
+    "GeoPolygon": {
+      "type": "object",
+      "description": "Geographic area defined by a list of coordinate vertices (closed ring).",
+      "required": ["vertices"],
+      "additionalProperties": false,
+      "properties": {
+        "vertices": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/GeoCoordinate" },
+          "minItems": 3
+        },
+        "crs": {
+          "type": "string",
+          "default": "WGS84",
+          "description": "Coordinate Reference System."
+        }
+      }
+    },
+
+    "EntityRef": {
+      "type": "object",
+      "description": "Lightweight reference to an Entity in world.schema.json.",
+      "required": ["entity_id"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": { "$ref": "#/$defs/UUID" },
+        "label":     { "type": "string", "description": "Human-readable label for this reference." }
+      }
+    },
+
+    "OrganizationRef": {
+      "type": "object",
+      "description": "Lightweight reference to another Organization.",
+      "required": ["org_id"],
+      "additionalProperties": false,
+      "properties": {
+        "org_id": { "$ref": "#/$defs/UUID" },
+        "name":   { "type": "string" },
+        "role":   { "type": "string", "description": "Role this org plays in the referencing context." }
+      }
+    },
+
+    "PersonRef": {
+      "type": "object",
+      "description": "Reference to a person entity.",
+      "required": ["entity_id"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id": { "$ref": "#/$defs/UUID" },
+        "name":      { "type": "string" },
+        "rank":      { "type": "string" },
+        "role_title":{ "type": "string" }
+      }
+    },
+
+    "ContactInformation": {
+      "type": "object",
+      "description": "Communication contact details for an organization.",
+      "additionalProperties": false,
+      "properties": {
+        "phone":      { "type": "string" },
+        "email":      { "type": "string", "format": "email" },
+        "address":    { "type": "string" },
+        "website":    { "type": "string", "format": "uri" },
+        "callsign":   { "type": "string" },
+        "icao_code":  { "type": "string" },
+        "imo_number": { "type": "string" },
+        "custom":     { "type": "object" }
+      }
+    },
+
+    "SecurityClassification": {
+      "type": "string",
+      "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret", "cosmic_top_secret", "custom"],
+      "description": "Information security classification level."
+    },
+
+    "ReadinessLevel": {
+      "type": "string",
+      "enum": ["C1_fully_ready", "C2_substantially_ready", "C3_marginally_ready", "C4_not_ready", "unknown"],
+      "description": "NATO-inspired combat/operational readiness rating."
+    },
+
+    "RankStructure": {
+      "type": "object",
+      "description": "Defines a single rank tier within the organization.",
+      "required": ["rank_code", "rank_name"],
+      "additionalProperties": false,
+      "properties": {
+        "rank_code":      { "type": "string", "description": "e.g. OF-6, OR-9, GS-15, custom." },
+        "rank_name":      { "type": "string" },
+        "rank_abbrev":    { "type": "string" },
+        "pay_grade":      { "type": "string" },
+        "authority_level":{ "type": "integer", "minimum": 0 },
+        "nato_code":      { "type": "string", "description": "NATO rank code e.g. OF-5." }
+      }
+    },
+
+    "CommandRelationship": {
+      "type": "object",
+      "description": "Formal command authority link between two organizations.",
+      "required": ["relationship_type", "target_org_id"],
+      "additionalProperties": false,
+      "properties": {
+        "relationship_type": {
+          "type": "string",
+          "enum": [
+            "OPCON", "TACON", "ADCON", "OPCON_delegated",
+            "attached", "detached", "in_support_of", "direct_support",
+            "general_support", "reinforcing", "coordinating",
+            "administrative", "functional", "matrix", "dotted_line", "custom"
+          ],
+          "description": "Command/support relationship type (NATO C2 terminology where applicable)."
+        },
+        "target_org_id": { "$ref": "#/$defs/UUID" },
+        "valid_from":    { "$ref": "#/$defs/Timestamp" },
+        "valid_until":   { "$ref": "#/$defs/Timestamp" },
+        "delegated_by":  { "$ref": "#/$defs/UUID", "description": "UUID of authority granting this relationship." },
+        "notes":         { "type": "string" }
+      }
+    },
+
+    "Capability": {
+      "type": "object",
+      "description": "A specific operational or functional capability the organization possesses.",
+      "required": ["capability_id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "capability_id":  { "$ref": "#/$defs/UUID" },
+        "name":           { "type": "string" },
+        "category": {
+          "type": "string",
+          "enum": [
+            "combat", "fires", "maneuver", "isr", "ew_electronic_warfare",
+            "cyber", "logistics", "engineering", "medical", "cbrn",
+            "communications", "intelligence", "space", "aviation",
+            "maritime", "special_operations", "psyops", "civil_affairs",
+            "disaster_response", "humanitarian", "search_and_rescue",
+            "research", "manufacturing", "transportation", "ai_ml",
+            "robotics", "autonomous_systems", "custom"
+          ]
+        },
+        "proficiency": {
+          "type": "string",
+          "enum": ["none", "basic", "limited", "full", "expert"],
+          "default": "full"
+        },
+        "readiness":        { "$ref": "#/$defs/ReadinessLevel" },
+        "asset_entity_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "Entity UUIDs that enable this capability."
+        },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "Responsibility": {
+      "type": "object",
+      "description": "An assigned duty or area of responsibility.",
+      "required": ["responsibility_id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "responsibility_id": { "$ref": "#/$defs/UUID" },
+        "title":             { "type": "string" },
+        "description":       { "type": "string" },
+        "jurisdiction_area": { "$ref": "#/$defs/GeoPolygon" },
+        "population_served": { "type": "integer" },
+        "legal_basis":       { "type": "string" },
+        "delegated_to":      { "$ref": "#/$defs/UUID" }
+      }
+    },
+
+    "MissionRef": {
+      "type": "object",
+      "description": "Reference to a Mission defined in world.schema.json.",
+      "required": ["mission_id"],
+      "additionalProperties": false,
+      "properties": {
+        "mission_id":  { "$ref": "#/$defs/UUID" },
+        "title":       { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["planned", "active", "suspended", "complete", "failed", "cancelled"]
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["critical", "high", "medium", "low", "routine"]
+        }
+      }
+    },
+
+    "ResourceAllocation": {
+      "type": "object",
+      "description": "Quantified resource the organization holds or has been allocated.",
+      "required": ["resource_type", "quantity"],
+      "additionalProperties": false,
+      "properties": {
+        "resource_type": {
+          "type": "string",
+          "enum": [
+            "personnel_headcount", "vehicles", "aircraft", "ships", "uav",
+            "fuel_liters", "ammunition_rounds", "food_rations_kg",
+            "water_liters", "medical_supplies_kg", "spare_parts_kg",
+            "power_kwh", "bandwidth_mbps", "compute_tflops",
+            "currency_usd", "currency_local", "custom"
+          ]
+        },
+        "quantity":       { "type": "number" },
+        "unit":           { "type": "string" },
+        "allocated_from": { "$ref": "#/$defs/UUID", "description": "Source organization or depot." },
+        "valid_from":     { "$ref": "#/$defs/Timestamp" },
+        "valid_until":    { "$ref": "#/$defs/Timestamp" },
+        "replenishment_rate_per_day": { "type": "number" },
+        "current_level_pct":          { "type": "number", "minimum": 0, "maximum": 100 }
+      }
+    },
+
+    "Budget": {
+      "type": "object",
+      "description": "Financial budget and cost structure.",
+      "additionalProperties": false,
+      "properties": {
+        "fiscal_year":         { "type": "integer" },
+        "currency":            { "type": "string", "default": "USD" },
+        "total_budget":        { "type": "number" },
+        "operating_costs":     { "type": "number" },
+        "capital_expenditure": { "type": "number" },
+        "personnel_costs":     { "type": "number" },
+        "r_and_d_budget":      { "type": "number" },
+        "procurement_budget":  { "type": "number" },
+        "contingency_reserve": { "type": "number" },
+        "spent_to_date":       { "type": "number" },
+        "funding_sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source_name", "amount"],
+            "additionalProperties": false,
+            "properties": {
+              "source_name":  { "type": "string" },
+              "source_type":  { "type": "string", "enum": ["government_appropriation", "grant", "contract", "endowment", "donation", "internal", "custom"] },
+              "amount":       { "type": "number" },
+              "currency":     { "type": "string" },
+              "valid_until":  { "$ref": "#/$defs/Timestamp" }
+            }
+          }
+        }
+      }
+    },
+
+    "FacilityRef": {
+      "type": "object",
+      "description": "Reference to a facility entity with its operational role.",
+      "required": ["entity_id"],
+      "additionalProperties": false,
+      "properties": {
+        "entity_id":       { "$ref": "#/$defs/UUID" },
+        "facility_name":   { "type": "string" },
+        "facility_role": {
+          "type": "string",
+          "enum": [
+            "headquarters", "forward_operating_base", "main_base", "air_base",
+            "naval_base", "port", "airfield", "depot", "warehouse",
+            "research_center", "factory", "hospital", "data_center",
+            "command_center", "training_area", "launch_facility",
+            "border_post", "checkpoint", "relay_station", "custom"
+          ]
+        },
+        "location": { "$ref": "#/$defs/GeoCoordinate" },
+        "owned_by":       { "$ref": "#/$defs/UUID" },
+        "shared_with":    { "type": "array", "items": { "$ref": "#/$defs/UUID" } }
+      }
+    },
+
+    "SupplyChainNode": {
+      "type": "object",
+      "description": "Single node in an organizational supply chain.",
+      "required": ["node_id", "node_type"],
+      "additionalProperties": false,
+      "properties": {
+        "node_id":      { "$ref": "#/$defs/UUID" },
+        "node_type": {
+          "type": "string",
+          "enum": ["supplier", "manufacturer", "warehouse", "distributor", "consumer", "transshipment", "custom"]
+        },
+        "entity_id":    { "$ref": "#/$defs/UUID" },
+        "location":     { "$ref": "#/$defs/GeoCoordinate" },
+        "downstream":   { "type": "array", "items": { "$ref": "#/$defs/UUID" }, "description": "UUIDs of downstream nodes." },
+        "lead_time_days":  { "type": "number" },
+        "throughput_per_day": { "type": "number" }
+      }
+    },
+
+    "CommunicationNetwork": {
+      "type": "object",
+      "description": "A communication network operated or used by the organization.",
+      "required": ["network_id", "network_type"],
+      "additionalProperties": false,
+      "properties": {
+        "network_id":   { "$ref": "#/$defs/UUID" },
+        "name":         { "type": "string" },
+        "network_type": {
+          "type": "string",
+          "enum": [
+            "radio_vhf", "radio_uhf", "radio_hf", "satcom", "link16", "link22",
+            "ethernet_lan", "wan", "internet", "mesh", "fiber_optic",
+            "acoustic_underwater", "laser_comm", "tactical_data_link",
+            "cellular_4g", "cellular_5g", "lpwan", "custom"
+          ]
+        },
+        "classification":   { "$ref": "#/$defs/SecurityClassification" },
+        "encryption":       { "type": "boolean", "default": false },
+        "encryption_standard": { "type": "string" },
+        "bandwidth_mbps":   { "type": "number" },
+        "latency_ms":       { "type": "number" },
+        "coverage_area":    { "$ref": "#/$defs/GeoPolygon" },
+        "node_entity_ids":  { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "protocol":         { "type": "string" },
+        "frequency_mhz":    { "type": "number" },
+        "redundancy_level": { "type": "integer", "minimum": 0, "description": "Number of redundant paths." }
+      }
+    },
+
+    "IntelligenceAsset": {
+      "type": "object",
+      "description": "An ISR or intelligence collection/analysis asset.",
+      "required": ["asset_id", "asset_type"],
+      "additionalProperties": false,
+      "properties": {
+        "asset_id":    { "$ref": "#/$defs/UUID" },
+        "asset_type": {
+          "type": "string",
+          "enum": [
+            "humint", "sigint", "imint", "masint", "osint", "geoint",
+            "cyber_intel", "technical_intelligence", "all_source", "custom"
+          ]
+        },
+        "entity_id":        { "$ref": "#/$defs/UUID", "description": "Entity that represents this asset." },
+        "classification":   { "$ref": "#/$defs/SecurityClassification" },
+        "collection_cycle_h": { "type": "number" },
+        "area_of_interest":   { "$ref": "#/$defs/GeoPolygon" }
+      }
+    },
+
+    "Partnership": {
+      "type": "object",
+      "description": "Formal or informal relationship with another organization.",
+      "required": ["partnership_id", "partner_org_id", "partnership_type"],
+      "additionalProperties": false,
+      "properties": {
+        "partnership_id": { "$ref": "#/$defs/UUID" },
+        "partner_org_id": { "$ref": "#/$defs/UUID" },
+        "partnership_type": {
+          "type": "string",
+          "enum": [
+            "alliance", "coalition", "mutual_defense", "mou", "contract",
+            "joint_venture", "interoperability_agreement", "mutual_aid",
+            "vendor", "sponsor", "donor", "observer", "adversary",
+            "competitor", "neutral", "custom"
+          ]
+        },
+        "classification":  { "$ref": "#/$defs/SecurityClassification" },
+        "treaty_ref":      { "type": "string" },
+        "effective_date":  { "$ref": "#/$defs/Timestamp" },
+        "expiry_date":     { "$ref": "#/$defs/Timestamp" },
+        "conditions":      { "type": "string" }
+      }
+    },
+
+    "PerformanceMetrics": {
+      "type": "object",
+      "description": "Quantitative KPIs for the organization.",
+      "additionalProperties": false,
+      "properties": {
+        "readiness_pct":          { "type": "number", "minimum": 0, "maximum": 100 },
+        "mission_success_rate_pct":{ "type": "number", "minimum": 0, "maximum": 100 },
+        "availability_pct":       { "type": "number", "minimum": 0, "maximum": 100 },
+        "response_time_s":        { "type": "number", "description": "Mean time to respond to a tasking (seconds)." },
+        "maintenance_backlog_pct":{ "type": "number", "minimum": 0, "maximum": 100 },
+        "training_completion_pct":{ "type": "number", "minimum": 0, "maximum": 100 },
+        "attrition_rate_pct_per_month": { "type": "number" },
+        "operational_tempo":      { "type": "string", "enum": ["low", "normal", "high", "surge", "crisis"] },
+        "custom_kpis": {
+          "type": "object",
+          "additionalProperties": { "type": "number" }
+        }
+      }
+    },
+
+    "LifecycleEvent": {
+      "type": "object",
+      "description": "A significant lifecycle event in the organization's history.",
+      "required": ["event_type", "timestamp"],
+      "additionalProperties": false,
+      "properties": {
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "established", "activated", "reactivated", "reorganized",
+            "renamed", "expanded", "reduced", "merged", "split",
+            "transferred", "deactivated", "disbanded", "custom"
+          ]
+        },
+        "timestamp":    { "$ref": "#/$defs/Timestamp" },
+        "description":  { "type": "string" },
+        "authority_ref":{ "type": "string", "description": "Document, order, or regulation that authorized this event." }
+      }
+    },
+
+    "SecurityPolicy": {
+      "type": "object",
+      "description": "Physical and cyber security policy governing the organization.",
+      "additionalProperties": false,
+      "properties": {
+        "classification_default": { "$ref": "#/$defs/SecurityClassification" },
+        "minimum_clearance_required": { "$ref": "#/$defs/SecurityClassification" },
+        "physical_security_level": {
+          "type": "string",
+          "enum": ["open", "controlled", "restricted", "exclusion", "custom"]
+        },
+        "authentication_required":  { "type": "boolean", "default": true },
+        "mfa_required":             { "type": "boolean", "default": false },
+        "zero_trust":               { "type": "boolean", "default": false },
+        "audit_logging":            { "type": "boolean", "default": true },
+        "cybersecurity_framework":  { "type": "string", "description": "e.g. NIST CSF, ISO 27001, CMMC." },
+        "threat_level": {
+          "type": "string",
+          "enum": ["low", "guarded", "elevated", "high", "severe", "critical"]
+        },
+        "last_audit_date": { "$ref": "#/$defs/Timestamp" }
+      }
+    },
+
+    "AIMetadata": {
+      "type": "object",
+      "description": "AI, ontology, and knowledge-graph metadata for the organization.",
+      "additionalProperties": false,
+      "properties": {
+        "ontology_class":      { "type": "string", "description": "e.g. owl:Organization, schema:Organization." },
+        "ontology_uri":        { "type": "string", "format": "uri" },
+        "knowledge_graph_node":{ "type": "string", "format": "uri" },
+        "semantic_tags":       { "type": "array", "items": { "type": "string" } },
+        "embedding_model":     { "type": "string" },
+        "embedding_vector": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Dense embedding for similarity search."
+        },
+        "nl_description":      { "type": "string", "description": "Natural language description for LLM context." },
+        "military_tags":       { "type": "array", "items": { "type": "string" } },
+        "civilian_tags":       { "type": "array", "items": { "type": "string" } },
+        "simulation_tags":     { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "SimulationParameters": {
+      "type": "object",
+      "description": "PhysWorldLM simulation-specific parameters for the organization.",
+      "additionalProperties": false,
+      "properties": {
+        "simulation_engine_hint": {
+          "type": "string",
+          "enum": ["omniverse", "physx", "mujoco", "gazebo", "unreal", "unity", "cesium", "custom", "none"]
+        },
+        "ai_controller_type": {
+          "type": "string",
+          "enum": ["none", "scripted", "behavior_tree", "planner", "llm_agent", "rule_based", "hybrid", "custom"]
+        },
+        "ai_policy_ref":     { "type": "string", "description": "Reference to AI policy file or URI." },
+        "decision_latency_s":{ "type": "number", "description": "Mean decision-making latency (seconds)." },
+        "communication_latency_ms": { "type": "number" },
+        "friendly_fire_enabled": { "type": "boolean", "default": false },
+        "attrition_model": {
+          "type": "string",
+          "enum": ["none", "lanchester_linear", "lanchester_square", "stochastic", "custom"]
+        },
+        "spawn_region": { "$ref": "#/$defs/GeoPolygon" },
+        "despawn_on_destruction": { "type": "boolean", "default": false },
+        "ros2_namespace":  { "type": "string", "description": "ROS 2 namespace for multi-agent coordination." },
+        "usd_prim_path":   { "type": "string", "description": "OpenUSD prim path for digital twin integration." },
+        "interop_mappings": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "stanag_app6_symbol_id":   { "type": "string" },
+            "nato_side":               { "type": "string", "enum": ["friend", "hostile", "neutral", "unknown"] },
+            "c2_system_id":            { "type": "string" },
+            "gis_feature_id":          { "type": "string" },
+            "digital_twin_asset_id":   { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "OrganizationalUnit": {
+      "type": "object",
+      "description": "A subordinate subunit within an organization (recursive).",
+      "required": ["unit_id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "unit_id":      { "$ref": "#/$defs/UUID" },
+        "name":         { "type": "string" },
+        "short_name":   { "type": "string" },
+        "unit_type": {
+          "type": "string",
+          "enum": [
+            "department", "division", "branch", "section", "team",
+            "battalion", "company", "platoon", "squad", "cell",
+            "squadron", "flight", "task_force", "working_group",
+            "committee", "directorate", "bureau", "office", "custom"
+          ]
+        },
+        "commander":    { "$ref": "#/$defs/PersonRef" },
+        "entity_ids":   { "type": "array", "items": { "$ref": "#/$defs/UUID" }, "description": "Entities assigned to this subunit." },
+        "capabilities": { "type": "array", "items": { "$ref": "#/$defs/Capability" } },
+        "readiness":    { "$ref": "#/$defs/ReadinessLevel" },
+        "strength": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "authorized": { "type": "integer" },
+            "assigned":   { "type": "integer" },
+            "present":    { "type": "integer" }
+          }
+        },
+        "location":     { "$ref": "#/$defs/GeoCoordinate" },
+        "subunits": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OrganizationalUnit" },
+          "description": "Nested subunits (recursive)."
+        }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "id": {
+      "$ref": "#/$defs/UUID",
+      "description": "Globally unique organization identifier."
+    },
+
+    "org_id": {
+      "type": "string",
+      "description": "Human-readable organization identifier (e.g. ORG-US-ARMY-XVIII)."
+    },
+
+    "name": {
+      "type": "string",
+      "description": "Official full name of the organization."
+    },
+
+    "short_name": {
+      "type": "string",
+      "description": "Abbreviated or common name."
+    },
+
+    "aliases": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Alternative names, historical names, or code names."
+    },
+
+    "acronym": {
+      "type": "string",
+      "description": "Primary acronym (e.g. NATO, USAF, WHO)."
+    },
+
+    "callsign": {
+      "type": "string",
+      "description": "Radio or operational callsign."
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the organization's purpose."
+    },
+
+    "version": { "$ref": "#/$defs/VersionString" },
+
+    "ontology_uri": {
+      "type": "string",
+      "format": "uri",
+      "description": "URI in a formal ontology (e.g. OWL, DOLCE) for this organization instance."
+    },
+
+    "knowledge_graph_uri": {
+      "type": "string",
+      "format": "uri"
+    },
+
+    "classification": {
+      "type": "object",
+      "description": "Type, sector, and domain classification.",
+      "required": ["org_type", "sector"],
+      "additionalProperties": false,
+      "properties": {
+
+        "org_type": {
+          "type": "string",
+          "enum": [
+            "nation_state", "supranational", "alliance", "coalition",
+            "ministry_of_defence", "joint_command", "combatant_command",
+            "army", "navy", "air_force", "marine_corps", "space_force",
+            "cyber_command", "special_operations_command",
+            "corps", "division", "brigade", "regiment", "battalion",
+            "company", "platoon", "squad", "task_force",
+            "naval_fleet", "naval_squadron", "air_wing", "air_squadron", "flight",
+            "government_agency", "intelligence_agency", "police", "coast_guard",
+            "fire_department", "emergency_management", "civil_defence",
+            "hospital", "hospital_network", "medical_unit",
+            "university", "research_institute", "laboratory",
+            "private_company", "defense_contractor", "ngo",
+            "humanitarian_organization", "international_organization",
+            "space_agency", "utility_company", "transportation_authority",
+            "logistics_company", "port_authority", "airport_authority",
+            "factory", "industrial_complex", "mining_company",
+            "financial_institution", "media_organization",
+            "autonomous_robot_fleet", "drone_swarm", "ai_organization",
+            "custom"
+          ]
+        },
+
+        "sector": {
+          "type": "string",
+          "enum": [
+            "military", "government", "intelligence", "law_enforcement",
+            "emergency_services", "healthcare", "academia", "research",
+            "private_commercial", "defense_industrial", "ngo_humanitarian",
+            "international", "space", "transportation", "energy",
+            "telecommunications", "financial", "media", "robotics",
+            "autonomous_systems", "ai", "custom"
+          ]
+        },
+
+        "domain": {
+          "type": "string",
+          "enum": [
+            "land", "maritime", "air", "space", "cyber",
+            "joint", "civil", "mixed", "custom"
+          ]
+        },
+
+        "military_echelon": {
+          "type": "string",
+          "enum": [
+            "strategic", "operational", "tactical",
+            "team_squad", "platoon_troop", "company_battery_troop",
+            "battalion_squadron", "regiment_group", "brigade_regiment",
+            "division", "corps", "army", "army_group", "theater", "custom"
+          ],
+          "description": "Applicable to military organizations."
+        },
+
+        "nato_app6_symbol": {
+          "type": "string",
+          "description": "NATO APP-6 symbol identifier (SIDC)."
+        },
+
+        "un_classification": {
+          "type": "string",
+          "description": "UN organizational classification code if applicable."
+        },
+
+        "is_state_actor":   { "type": "boolean" },
+        "is_non_state_actor":{ "type": "boolean" },
+        "is_multinational": { "type": "boolean" },
+        "is_autonomous":    { "type": "boolean", "description": "Whether this is a fully autonomous AI/robotic org." }
+      }
+    },
+
+    "legal": {
+      "type": "object",
+      "description": "Legal identity, jurisdiction, and compliance information.",
+      "additionalProperties": false,
+      "properties": {
+        "country_code":         { "type": "string", "description": "ISO 3166-1 alpha-2 country code." },
+        "countries_of_operation":{ "type": "array", "items": { "type": "string" } },
+        "jurisdiction":         { "type": "string" },
+        "legal_status":         {
+          "type": "string",
+          "enum": ["governmental", "intergovernmental", "statutory", "corporate", "non_profit", "informal", "custom"]
+        },
+        "registration_number":  { "type": "string" },
+        "treaties":             { "type": "array", "items": { "type": "string" } },
+        "governing_law":        { "type": "string" },
+        "standards_compliance": { "type": "array", "items": { "type": "string" }, "description": "e.g. ISO 9001, CMMC Level 2." },
+        "licenses":             { "type": "array", "items": { "type": "string" } },
+        "classification_authority": { "type": "string" }
+      }
+    },
+
+    "ownership": {
+      "type": "object",
+      "description": "Ownership, parentage, and affiliation structure.",
+      "additionalProperties": false,
+      "properties": {
+        "owner_entity_id":     { "$ref": "#/$defs/UUID", "description": "Top-level owning entity or person." },
+        "parent_org_id":       { "$ref": "#/$defs/UUID", "description": "Immediate parent organization." },
+        "root_org_id":         { "$ref": "#/$defs/UUID", "description": "Root of the organizational tree." },
+        "subsidiary_org_ids":  { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "affiliated_org_ids":  { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "joint_org_ids":       { "type": "array", "items": { "$ref": "#/$defs/UUID" }, "description": "Organizations that co-own or co-govern this org." },
+        "coalition_ids":       { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "sponsor_org_ids":     { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "ownership_pct": {
+          "type": "number", "minimum": 0, "maximum": 100,
+          "description": "Ownership percentage held by parent, if applicable."
+        }
+      }
+    },
+
+    "hierarchy": {
+      "type": "object",
+      "description": "Internal command and organizational structure.",
+      "additionalProperties": false,
+      "properties": {
+        "superior_org_id":    { "$ref": "#/$defs/UUID" },
+        "subordinate_org_ids":{ "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "command_relationships": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CommandRelationship" }
+        },
+        "subunits": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OrganizationalUnit" },
+          "description": "Top-level subunits (departments, branches, divisions, etc.)."
+        },
+        "succession_order": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PersonRef" },
+          "description": "Ordered list of command succession."
+        },
+        "span_of_control": {
+          "type": "integer",
+          "description": "Number of direct subordinate units under command."
+        }
+      }
+    },
+
+    "leadership": {
+      "type": "object",
+      "description": "Key leadership and authority figures.",
+      "additionalProperties": false,
+      "properties": {
+        "commander":        { "$ref": "#/$defs/PersonRef" },
+        "deputy_commander": { "$ref": "#/$defs/PersonRef" },
+        "chief_of_staff":   { "$ref": "#/$defs/PersonRef" },
+        "director":         { "$ref": "#/$defs/PersonRef" },
+        "ceo":              { "$ref": "#/$defs/PersonRef" },
+        "board_members": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PersonRef" }
+        },
+        "key_personnel": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["person", "role_title"],
+            "additionalProperties": false,
+            "properties": {
+              "person":       { "$ref": "#/$defs/PersonRef" },
+              "role_title":   { "type": "string" },
+              "department":   { "type": "string" },
+              "clearance":    { "$ref": "#/$defs/SecurityClassification" }
+            }
+          }
+        }
+      }
+    },
+
+    "personnel": {
+      "type": "object",
+      "description": "Personnel manning, roles, and strength.",
+      "additionalProperties": false,
+      "properties": {
+        "authorized_strength":  { "type": "integer", "description": "Table of organization authorized headcount." },
+        "assigned_strength":    { "type": "integer" },
+        "present_for_duty":     { "type": "integer" },
+        "civilian_count":       { "type": "integer" },
+        "contractor_count":     { "type": "integer" },
+        "robot_count":          { "type": "integer", "description": "Autonomous robotic agents." },
+        "rank_structure": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/RankStructure" }
+        },
+        "personnel_entity_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "Entity UUIDs for individual personnel."
+        },
+        "training_level": {
+          "type": "string",
+          "enum": ["untrained", "basic", "proficient", "advanced", "expert"]
+        },
+        "clearance_distribution": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "unclassified":    { "type": "integer" },
+            "secret":          { "type": "integer" },
+            "top_secret":      { "type": "integer" },
+            "top_secret_sci":  { "type": "integer" }
+          }
+        }
+      }
+    },
+
+    "assets": {
+      "type": "object",
+      "description": "Equipment, vehicles, weapons, and systems owned by the organization.",
+      "additionalProperties": false,
+      "properties": {
+        "vehicle_ids":      { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "aircraft_ids":     { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "ship_ids":         { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "submarine_ids":    { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "uav_ids":          { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "satellite_ids":    { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "weapon_system_ids":{ "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "sensor_ids":       { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "robot_ids":        { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "compute_node_ids": { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "other_asset_ids":  { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "total_asset_value_usd": { "type": "number" }
+      }
+    },
+
+    "facilities": {
+      "type": "array",
+      "description": "Facilities owned, operated, or used by the organization.",
+      "items": { "$ref": "#/$defs/FacilityRef" }
+    },
+
+    "geographic_presence": {
+      "type": "object",
+      "description": "Geographic footprint and areas of responsibility.",
+      "additionalProperties": false,
+      "properties": {
+        "headquarters_location": { "$ref": "#/$defs/GeoCoordinate" },
+        "areas_of_responsibility": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["aor_id", "name", "area"],
+            "additionalProperties": false,
+            "properties": {
+              "aor_id":    { "$ref": "#/$defs/UUID" },
+              "name":      { "type": "string" },
+              "area":      { "$ref": "#/$defs/GeoPolygon" },
+              "aor_type":  { "type": "string", "enum": ["combat", "support", "administrative", "joint", "custom"] },
+              "priority":  { "type": "integer" }
+            }
+          }
+        },
+        "countries_present": { "type": "array", "items": { "type": "string" } },
+        "deployment_locations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/GeoCoordinate" }
+        }
+      }
+    },
+
+    "capabilities": {
+      "type": "array",
+      "description": "Operational and functional capabilities.",
+      "items": { "$ref": "#/$defs/Capability" }
+    },
+
+    "responsibilities": {
+      "type": "array",
+      "description": "Assigned duties and areas of responsibility.",
+      "items": { "$ref": "#/$defs/Responsibility" }
+    },
+
+    "missions": {
+      "type": "array",
+      "description": "Missions assigned to or owned by this organization.",
+      "items": { "$ref": "#/$defs/MissionRef" }
+    },
+
+    "operations": {
+      "type": "object",
+      "description": "Current, historical, and planned operations.",
+      "additionalProperties": false,
+      "properties": {
+        "current_operation_ids":  { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "historical_operation_ids":{ "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "planned_operation_ids":  { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "active_deployments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["deployment_id", "location"],
+            "additionalProperties": false,
+            "properties": {
+              "deployment_id": { "$ref": "#/$defs/UUID" },
+              "location":      { "$ref": "#/$defs/GeoCoordinate" },
+              "deployed_since":{ "$ref": "#/$defs/Timestamp" },
+              "unit_ids":      { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+              "mission_id":    { "$ref": "#/$defs/UUID" }
+            }
+          }
+        },
+        "exercises_scheduled": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "exercise_id":    { "$ref": "#/$defs/UUID" },
+              "name":           { "type": "string" },
+              "start_time":     { "$ref": "#/$defs/Timestamp" },
+              "end_time":       { "$ref": "#/$defs/Timestamp" },
+              "participating_org_ids": { "type": "array", "items": { "$ref": "#/$defs/UUID" } }
+            }
+          }
+        }
+      }
+    },
+
+    "resources": {
+      "type": "array",
+      "description": "Allocated and available resources.",
+      "items": { "$ref": "#/$defs/ResourceAllocation" }
+    },
+
+    "logistics": {
+      "type": "object",
+      "description": "Supply chain, maintenance, inventory, and distribution.",
+      "additionalProperties": false,
+      "properties": {
+        "supply_class": {
+          "type": "array",
+          "description": "NATO supply class readiness (Classes I–X).",
+          "items": {
+            "type": "object",
+            "required": ["class_code", "fill_pct"],
+            "additionalProperties": false,
+            "properties": {
+              "class_code":  { "type": "string", "description": "e.g. CLASS_I, CLASS_III, CLASS_V, CLASS_IX." },
+              "description": { "type": "string" },
+              "fill_pct":    { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          }
+        },
+        "supply_chain_nodes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SupplyChainNode" }
+        },
+        "maintenance_status": {
+          "type": "string",
+          "enum": ["full_maintenance", "limited_maintenance", "field_expedient", "degraded", "no_maintenance"]
+        },
+        "days_of_supply":   { "type": "number", "description": "Estimated days of supply on hand." },
+        "logistics_hubs":   { "type": "array", "items": { "$ref": "#/$defs/UUID" }, "description": "Depot/warehouse entity IDs." }
+      }
+    },
+
+    "budget": { "$ref": "#/$defs/Budget" },
+
+    "communications": {
+      "type": "object",
+      "description": "Communication networks and systems.",
+      "additionalProperties": false,
+      "properties": {
+        "primary_network":     { "$ref": "#/$defs/CommunicationNetwork" },
+        "backup_networks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CommunicationNetwork" }
+        },
+        "reporting_channel":   { "type": "string" },
+        "primary_frequency_mhz":{ "type": "number" },
+        "emergency_freq_mhz":  { "type": "number" }
+      }
+    },
+
+    "security": { "$ref": "#/$defs/SecurityPolicy" },
+
+    "intelligence": {
+      "type": "object",
+      "description": "Intelligence collection, analysis, and sharing.",
+      "additionalProperties": false,
+      "properties": {
+        "isr_assets": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/IntelligenceAsset" }
+        },
+        "threat_level": {
+          "type": "string",
+          "enum": ["negligible", "low", "medium", "high", "critical"]
+        },
+        "threat_actors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OrganizationRef" }
+        },
+        "information_sharing_partners": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/OrganizationRef" }
+        },
+        "current_intel_products": {
+          "type": "array",
+          "items": { "type": "string", "description": "Report title or ID." }
+        }
+      }
+    },
+
+    "partnerships": {
+      "type": "array",
+      "description": "Formal partnerships, alliances, contracts, and MoUs.",
+      "items": { "$ref": "#/$defs/Partnership" }
+    },
+
+    "performance": { "$ref": "#/$defs/PerformanceMetrics" },
+
+    "lifecycle": {
+      "type": "object",
+      "description": "Organizational lifecycle dates and history.",
+      "additionalProperties": false,
+      "properties": {
+        "established_date":  { "$ref": "#/$defs/Timestamp" },
+        "activated_date":    { "$ref": "#/$defs/Timestamp" },
+        "deactivated_date":  { "$ref": "#/$defs/Timestamp" },
+        "disbanded_date":    { "$ref": "#/$defs/Timestamp" },
+        "status": {
+          "type": "string",
+          "enum": ["proposed", "forming", "active", "reorganizing", "reduced_capacity", "suspended", "deactivated", "disbanded"],
+          "default": "active"
+        },
+        "lifecycle_events": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/LifecycleEvent" }
+        }
+      }
+    },
+
+    "contact": { "$ref": "#/$defs/ContactInformation" },
+
+    "ai_metadata": { "$ref": "#/$defs/AIMetadata" },
+
+    "simulation": { "$ref": "#/$defs/SimulationParameters" },
+
+    "doctrine": {
+      "type": "object",
+      "description": "Operational doctrine and rules of engagement.",
+      "additionalProperties": false,
+      "properties": {
+        "doctrine_refs":  { "type": "array", "items": { "type": "string" }, "description": "Doctrine publication references (e.g. FM 3-0, ATP-3.2)." },
+        "roe": {
+          "type": "string",
+          "enum": ["peacetime", "hold_fire", "return_fire", "fire_at_will", "custom"],
+          "description": "Rules of engagement standing order."
+        },
+        "roe_details":    { "type": "string" },
+        "autonomy_policy":{ "type": "string", "enum": ["full_human_control", "human_on_loop", "human_in_loop", "supervised_autonomous", "full_autonomous"] },
+        "loac_compliance":{ "type": "boolean", "default": true, "description": "Law of Armed Conflict compliance." }
+      }
+    },
+
+    "standards": {
+      "type": "object",
+      "description": "Standards and interoperability certifications.",
+      "additionalProperties": false,
+      "properties": {
+        "iso_standards":   { "type": "array", "items": { "type": "string" } },
+        "mil_standards":   { "type": "array", "items": { "type": "string" } },
+        "stanag_refs":     { "type": "array", "items": { "type": "string" } },
+        "nato_app6_refs":  { "type": "array", "items": { "type": "string" } },
+        "icao_refs":       { "type": "array", "items": { "type": "string" } },
+        "imo_refs":        { "type": "array", "items": { "type": "string" } },
+        "ros2_compatible": { "type": "boolean", "default": false },
+        "usd_compatible":  { "type": "boolean", "default": false }
+      }
+    },
+
+    "custom_properties": {
+      "type": "object",
+      "description": "Domain-specific extension fields. No schema restriction.",
+      "additionalProperties": true
+    }
+
+  },
+
+  "dependentRequired": {
+    "hierarchy": ["classification"]
+  },
+
+  "examples": [
+    {
+      "id": "a1b2c3d4-0001-0001-0001-000000000001",
+      "org_id": "ORG-US-ARMY-XVIII-ABC",
+      "name": "XVIII Airborne Corps",
+      "short_name": "XVIII ABN CORPS",
+      "acronym": "XVIII",
+      "callsign": "WARLORD",
+      "description": "US Army rapid deployment corps based at Fort Liberty.",
+      "version": "1.0.0",
+      "classification": {
+        "org_type": "corps",
+        "sector": "military",
+        "domain": "land",
+        "military_echelon": "corps",
+        "nato_app6_symbol": "SFGPU----------",
+        "is_state_actor": true,
+        "is_multinational": false,
+        "is_autonomous": false
+      },
+      "legal": {
+        "country_code": "US",
+        "jurisdiction": "United States Federal",
+        "legal_status": "governmental"
+      },
+      "ownership": {
+        "parent_org_id": "a1b2c3d4-0001-0000-0000-000000000001"
+      },
+      "lifecycle": { "status": "active" }
+    },
+    {
+      "id": "a1b2c3d4-0002-0001-0001-000000000002",
+      "org_id": "ORG-WHO-GLOBAL",
+      "name": "World Health Organization",
+      "short_name": "WHO",
+      "acronym": "WHO",
+      "description": "UN specialized agency for international public health.",
+      "version": "1.0.0",
+      "classification": {
+        "org_type": "international_organization",
+        "sector": "international",
+        "domain": "civil",
+        "is_state_actor": false,
+        "is_multinational": true,
+        "is_autonomous": false
+      },
+      "legal": {
+        "jurisdiction": "International",
+        "legal_status": "intergovernmental"
+      },
+      "lifecycle": { "status": "active" }
+    },
+    {
+      "id": "a1b2c3d4-0003-0001-0001-000000000003",
+      "org_id": "ORG-ROBOTFLEET-ALPHA",
+      "name": "Alpha Autonomous Logistics Fleet",
+      "short_name": "ALPHA-ALF",
+      "description": "Fully autonomous robot fleet for forward logistics resupply.",
+      "version": "1.0.0",
+      "classification": {
+        "org_type": "autonomous_robot_fleet",
+        "sector": "autonomous_systems",
+        "domain": "land",
+        "is_state_actor": false,
+        "is_autonomous": true
+      },
+      "lifecycle": { "status": "active" },
+      "simulation": {
+        "ai_controller_type": "llm_agent",
+        "autonomy_policy": "supervised_autonomous",
+        "ros2_namespace": "/alpha_alf"
+      }
+    }
+  ]
+}

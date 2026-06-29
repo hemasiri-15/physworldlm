@@ -1,0 +1,1075 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/world.schema.json",
+  "title": "WorldSpec",
+  "description": "PhysWorldLM World Specification Format (PW-WSF) v1.0. Simulator-independent, physics-aware world representation standard.",
+  "type": "object",
+  "required": ["metadata", "world", "entities"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp."
+    },
+
+    "Vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+
+    "Quaternion": {
+      "type": "object",
+      "required": ["x", "y", "z", "w"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "w": { "type": "number" }
+      }
+    },
+
+    "GeoCoordinate": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90  },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "altitude":  { "type": "number", "description": "Meters above sea level." }
+      }
+    },
+
+    "BoundingBox": {
+      "type": "object",
+      "required": ["min", "max"],
+      "additionalProperties": false,
+      "properties": {
+        "min": { "$ref": "#/$defs/Vector3" },
+        "max": { "$ref": "#/$defs/Vector3" }
+      }
+    },
+
+    "ColorRGBA": {
+      "type": "object",
+      "required": ["r", "g", "b"],
+      "additionalProperties": false,
+      "properties": {
+        "r": { "type": "number", "minimum": 0, "maximum": 1 },
+        "g": { "type": "number", "minimum": 0, "maximum": 1 },
+        "b": { "type": "number", "minimum": 0, "maximum": 1 },
+        "a": { "type": "number", "minimum": 0, "maximum": 1, "default": 1.0 }
+      }
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. 1.0.0"
+    },
+
+    "Transform": {
+      "type": "object",
+      "description": "Spatial transform in world or local space.",
+      "additionalProperties": false,
+      "properties": {
+        "position":        { "$ref": "#/$defs/Vector3" },
+        "rotation":        { "$ref": "#/$defs/Quaternion" },
+        "scale":           { "$ref": "#/$defs/Vector3" },
+        "geo_coordinate":  { "$ref": "#/$defs/GeoCoordinate" },
+        "reference_frame": {
+          "type": "string",
+          "enum": ["world", "local", "geo", "body", "NED", "ENU", "ECEF"],
+          "default": "world"
+        },
+        "parent_id": {
+          "$ref": "#/$defs/UUID",
+          "description": "Parent entity ID for hierarchical transforms."
+        }
+      }
+    },
+
+    "Material": {
+      "type": "object",
+      "description": "Physical and visual surface material.",
+      "additionalProperties": false,
+      "properties": {
+        "id":               { "$ref": "#/$defs/UUID" },
+        "name":             { "type": "string" },
+        "type": {
+          "type": "string",
+          "enum": ["metal", "composite", "rubber", "glass", "concrete", "soil", "water",
+                   "vegetation", "fabric", "ceramic", "explosive", "fuel", "custom"]
+        },
+        "density":          { "type": "number", "description": "kg/m³" },
+        "hardness":         { "type": "number" },
+        "friction":         { "type": "number", "minimum": 0 },
+        "restitution":      { "type": "number", "minimum": 0, "maximum": 1 },
+        "thermal_conductivity": { "type": "number" },
+        "emissivity":       { "type": "number", "minimum": 0, "maximum": 1 },
+        "radar_cross_section": { "type": "number", "description": "m²" },
+        "ir_signature":     { "type": "number" },
+        "color":            { "$ref": "#/$defs/ColorRGBA" },
+        "albedo":           { "type": "number", "minimum": 0, "maximum": 1 },
+        "roughness":        { "type": "number", "minimum": 0, "maximum": 1 },
+        "metallic":         { "type": "number", "minimum": 0, "maximum": 1 },
+        "opacity":          { "type": "number", "minimum": 0, "maximum": 1 },
+        "texture_refs":     { "type": "array", "items": { "type": "string" } },
+        "custom_properties": { "type": "object" }
+      }
+    },
+
+    "Geometry": {
+      "type": "object",
+      "description": "Shape and spatial extent of an entity. WorldSpec never stores raw mesh data.",
+      "additionalProperties": false,
+      "properties": {
+        "primitive": {
+          "type": "string",
+          "enum": ["box", "sphere", "capsule", "cylinder", "cone", "plane", "convex_hull", "trimesh", "custom"]
+        },
+        "dimensions":    { "$ref": "#/$defs/Vector3" },
+        "radius":        { "type": "number" },
+        "height":        { "type": "number" },
+        "bounding_box":  { "$ref": "#/$defs/BoundingBox" },
+        "asset_ref":     { "type": "string", "description": "Reference to external mesh asset (USD, GLB, FBX, OBJ)." },
+        "lod_refs":      { "type": "array", "items": { "type": "string" }, "description": "Level-of-detail asset references." },
+        "collision_geometry": {
+          "type": "string",
+          "enum": ["exact", "convex_hull", "bounding_box", "none"],
+          "default": "convex_hull"
+        }
+      }
+    },
+
+    "PhysicsBody": {
+      "type": "object",
+      "description": "Physics simulation properties for an entity.",
+      "additionalProperties": false,
+      "properties": {
+        "body_type": {
+          "type": "string",
+          "enum": ["static", "kinematic", "dynamic", "soft", "particle", "fluid", "cloth", "rope"]
+        },
+        "mass":               { "type": "number", "description": "kg" },
+        "inertia":            { "$ref": "#/$defs/Vector3", "description": "Principal moments of inertia." },
+        "center_of_mass":     { "$ref": "#/$defs/Vector3" },
+        "linear_velocity":    { "$ref": "#/$defs/Vector3", "description": "m/s" },
+        "angular_velocity":   { "$ref": "#/$defs/Vector3", "description": "rad/s" },
+        "linear_damping":     { "type": "number", "minimum": 0 },
+        "angular_damping":    { "type": "number", "minimum": 0 },
+        "drag_coefficient":   { "type": "number" },
+        "lift_coefficient":   { "type": "number" },
+        "buoyancy":           { "type": "boolean" },
+        "gravity_scale":      { "type": "number", "default": 1.0 },
+        "collision_enabled":  { "type": "boolean", "default": true },
+        "collision_group":    { "type": "string" },
+        "collision_mask":     { "type": "array", "items": { "type": "string" } },
+        "continuous_collision_detection": { "type": "boolean", "default": false },
+        "sleeping_enabled":   { "type": "boolean", "default": true }
+      }
+    },
+
+    "SensorSpec": {
+      "type": "object",
+      "description": "Generic sensor attached to an entity.",
+      "required": ["id", "sensor_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/UUID" },
+        "name":        { "type": "string" },
+        "sensor_type": {
+          "type": "string",
+          "enum": ["camera_eo", "camera_ir", "radar", "lidar", "sonar", "sar", "gps",
+                   "imu", "ins", "altimeter", "barometer", "magnetometer", "acoustic",
+                   "sigint", "comint", "elint", "rfid", "chemical", "nuclear",
+                   "biological", "seismic", "hyperspectral", "multispectral", "custom"]
+        },
+        "mount_transform": { "$ref": "#/$defs/Transform" },
+        "field_of_view": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "horizontal_deg": { "type": "number" },
+            "vertical_deg":   { "type": "number" },
+            "min_range_m":    { "type": "number" },
+            "max_range_m":    { "type": "number" }
+          }
+        },
+        "resolution": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "width":  { "type": "integer" },
+            "height": { "type": "integer" }
+          }
+        },
+        "frame_rate_hz":       { "type": "number" },
+        "spectral_band":       { "type": "string" },
+        "noise_model":         { "type": "string" },
+        "latency_ms":          { "type": "number" },
+        "power_consumption_w": { "type": "number" },
+        "output_topic":        { "type": "string" },
+        "enabled":             { "type": "boolean", "default": true },
+        "custom_properties":   { "type": "object" }
+      }
+    },
+
+    "WeaponSpec": {
+      "type": "object",
+      "description": "Weapon system attached to an entity.",
+      "required": ["id", "weapon_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":            { "$ref": "#/$defs/UUID" },
+        "name":          { "type": "string" },
+        "weapon_type": {
+          "type": "string",
+          "enum": ["gun", "cannon", "missile", "rocket", "torpedo", "bomb", "grenade",
+                   "laser", "directed_energy", "mine", "loitering_munition", "custom"]
+        },
+        "mount_transform":     { "$ref": "#/$defs/Transform" },
+        "ammunition_count":    { "type": "integer" },
+        "rate_of_fire_rpm":    { "type": "number" },
+        "muzzle_velocity_mps": { "type": "number" },
+        "effective_range_m":   { "type": "number" },
+        "max_range_m":         { "type": "number" },
+        "warhead_type":        { "type": "string" },
+        "guidance_type": {
+          "type": "string",
+          "enum": ["unguided", "laser_guided", "radar_guided", "ir_homing",
+                   "gps_inertial", "wire_guided", "active_radar", "passive_ir", "custom"]
+        },
+        "reload_time_s":       { "type": "number" },
+        "state": {
+          "type": "string",
+          "enum": ["ready", "reloading", "jammed", "expended", "safety_on"],
+          "default": "ready"
+        },
+        "enabled":             { "type": "boolean", "default": true },
+        "custom_properties":   { "type": "object" }
+      }
+    },
+
+    "CommunicationSpec": {
+      "type": "object",
+      "description": "Communication system attached to an entity.",
+      "required": ["id", "comm_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":             { "$ref": "#/$defs/UUID" },
+        "name":           { "type": "string" },
+        "comm_type": {
+          "type": "string",
+          "enum": ["radio_vhf", "radio_uhf", "radio_hf", "radio_satcom", "data_link",
+                   "link16", "link22", "mesh_network", "laser_comm", "acoustic_uw",
+                   "wifi", "cellular", "custom"]
+        },
+        "frequency_mhz":       { "type": "number" },
+        "bandwidth_khz":       { "type": "number" },
+        "range_km":            { "type": "number" },
+        "data_rate_kbps":      { "type": "number" },
+        "encryption":          { "type": "boolean", "default": false },
+        "encryption_standard": { "type": "string" },
+        "power_w":             { "type": "number" },
+        "latency_ms":          { "type": "number" },
+        "protocol":            { "type": "string" },
+        "enabled":             { "type": "boolean", "default": true },
+        "custom_properties":   { "type": "object" }
+      }
+    },
+
+    "PowerSpec": {
+      "type": "object",
+      "description": "Power system of an entity.",
+      "additionalProperties": false,
+      "properties": {
+        "source_type": {
+          "type": "string",
+          "enum": ["diesel", "gasoline", "turbine", "electric_battery", "electric_fuel_cell",
+                   "nuclear", "solar", "hybrid", "external", "custom"]
+        },
+        "capacity_kwh":        { "type": "number" },
+        "current_charge_pct":  { "type": "number", "minimum": 0, "maximum": 100 },
+        "output_kw":           { "type": "number" },
+        "consumption_kw":      { "type": "number" },
+        "fuel_type":           { "type": "string" },
+        "fuel_capacity_liters":{ "type": "number" },
+        "fuel_remaining_liters":{ "type": "number" },
+        "range_km":            { "type": "number" },
+        "endurance_hours":     { "type": "number" }
+      }
+    },
+
+    "HealthSpec": {
+      "type": "object",
+      "description": "Structural health and damage state of an entity.",
+      "additionalProperties": false,
+      "properties": {
+        "hp_max":          { "type": "number", "default": 100 },
+        "hp_current":      { "type": "number" },
+        "armor_rating":    { "type": "number" },
+        "damage_model": {
+          "type": "string",
+          "enum": ["none", "simple_hp", "component_based", "fcs", "custom"],
+          "default": "simple_hp"
+        },
+        "damaged_components": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "is_destroyed":    { "type": "boolean", "default": false },
+        "destruction_effect": { "type": "string" }
+      }
+    },
+
+    "AIBehavior": {
+      "type": "object",
+      "description": "AI control and behavior specification for an entity.",
+      "additionalProperties": false,
+      "properties": {
+        "controller_type": {
+          "type": "string",
+          "enum": ["none", "scripted", "behavior_tree", "state_machine", "planner",
+                   "rl_policy", "llm_agent", "rule_based", "hybrid", "custom"]
+        },
+        "behavior_tree_ref":  { "type": "string" },
+        "state_machine_ref":  { "type": "string" },
+        "policy_ref":         { "type": "string" },
+        "current_state":      { "type": "string" },
+        "current_task":       { "type": "string" },
+        "goals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["goal_type"],
+            "properties": {
+              "goal_type":   { "type": "string" },
+              "priority":    { "type": "integer" },
+              "target_id":   { "$ref": "#/$defs/UUID" },
+              "target_position": { "$ref": "#/$defs/Vector3" },
+              "parameters":  { "type": "object" }
+            }
+          }
+        },
+        "perception_radius_m": { "type": "number" },
+        "faction":             { "type": "string" },
+        "team_id":             { "type": "string" },
+        "rules_of_engagement": { "type": "string" },
+        "threat_awareness":    { "type": "boolean", "default": true },
+        "autonomous_level": {
+          "type": "string",
+          "enum": ["manual", "assisted", "semi_autonomous", "supervised_autonomous", "fully_autonomous"],
+          "default": "manual"
+        },
+        "custom_properties":   { "type": "object" }
+      }
+    },
+
+    "PropulsionSpec": {
+      "type": "object",
+      "description": "Propulsion and mobility system of an entity.",
+      "additionalProperties": false,
+      "properties": {
+        "propulsion_type": {
+          "type": "string",
+          "enum": ["tracked", "wheeled", "legged", "rotary_wing", "fixed_wing", "jet",
+                   "rocket", "electric_motor", "propeller", "waterjet", "screw",
+                   "sail", "ion_thruster", "none", "custom"]
+        },
+        "max_speed_mps":    { "type": "number" },
+        "max_altitude_m":   { "type": "number" },
+        "max_depth_m":      { "type": "number" },
+        "acceleration_mps2":{ "type": "number" },
+        "max_climb_rate_mps":{ "type": "number" },
+        "max_turn_rate_dps":{ "type": "number" },
+        "thrust_n":         { "type": "number" },
+        "engine_count":     { "type": "integer" }
+      }
+    },
+
+    "Entity": {
+      "type": "object",
+      "description": "Universal entity — the atomic unit of every WorldSpec simulation.",
+      "required": ["id", "entity_type"],
+      "additionalProperties": false,
+      "properties": {
+
+        "id":          { "$ref": "#/$defs/UUID" },
+        "name":        { "type": "string" },
+        "label":       { "type": "string", "description": "Human-readable display label." },
+        "description": { "type": "string" },
+
+        "entity_type": {
+          "type": "string",
+          "enum": [
+            "aircraft", "rotorcraft", "uav", "ucav", "balloon", "airship", "spacecraft", "satellite", "missile_air",
+            "ground_vehicle", "tank", "apc", "ifv", "artillery", "mlrs", "air_defense_system",
+            "ugv", "robot_ground", "infantry", "crew_member",
+            "naval_vessel", "submarine", "uuv", "torpedo",
+            "missile", "rocket", "projectile", "bomb", "loitering_munition", "decoy",
+            "radar_system", "sensor_platform", "surveillance_tower", "communication_node",
+            "building", "structure", "bridge", "runway", "fortification",
+            "terrain_feature", "vegetation", "water_body",
+            "explosion", "fire", "smoke", "debris", "particle_system",
+            "waypoint", "zone", "boundary", "spawn_point",
+            "generic", "custom"
+          ]
+        },
+
+        "subtype":  { "type": "string", "description": "Domain-specific subtype e.g. 'F-16C', 'T-90M'." },
+        "category": { "type": "string" },
+        "tags":     { "type": "array", "items": { "type": "string" } },
+
+        "transform":    { "$ref": "#/$defs/Transform" },
+        "geometry":     { "$ref": "#/$defs/Geometry" },
+        "physics_body": { "$ref": "#/$defs/PhysicsBody" },
+        "materials":    { "type": "array", "items": { "$ref": "#/$defs/Material" } },
+
+        "health":      { "$ref": "#/$defs/HealthSpec" },
+        "power":       { "$ref": "#/$defs/PowerSpec" },
+        "propulsion":  { "$ref": "#/$defs/PropulsionSpec" },
+        "ai_behavior": { "$ref": "#/$defs/AIBehavior" },
+
+        "sensors":         { "type": "array", "items": { "$ref": "#/$defs/SensorSpec" } },
+        "weapons":         { "type": "array", "items": { "$ref": "#/$defs/WeaponSpec" } },
+        "communications":  { "type": "array", "items": { "$ref": "#/$defs/CommunicationSpec" } },
+
+        "state": {
+          "type": "object",
+          "description": "Runtime state — any key-value pairs describing current entity state.",
+          "additionalProperties": true,
+          "properties": {
+            "lifecycle": {
+              "type": "string",
+              "enum": ["inactive", "spawning", "active", "engaged", "evading", "damaged",
+                       "retreating", "destroyed", "despawning", "custom"],
+              "default": "active"
+            },
+            "visibility": {
+              "type": "string",
+              "enum": ["visible", "hidden", "stealth", "cloaked"],
+              "default": "visible"
+            },
+            "is_active":      { "type": "boolean", "default": true },
+            "is_collidable":  { "type": "boolean", "default": true }
+          }
+        },
+
+        "relationships": {
+          "type": "array",
+          "description": "Typed relationships to other entities.",
+          "items": { "$ref": "#/$defs/Relationship" }
+        },
+
+        "parent_id": {
+          "$ref": "#/$defs/UUID",
+          "description": "Logical parent entity (e.g. aircraft carrier owns an aircraft)."
+        },
+        "child_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" },
+          "description": "Logical children of this entity."
+        },
+
+        "owner_faction":       { "type": "string" },
+        "owner_organization":  { "type": "string" },
+        "callsign":            { "type": "string" },
+
+        "semantic_labels":     { "type": "array", "items": { "type": "string" } },
+        "ontology_class":      { "type": "string", "description": "Ontology class URI or key e.g. 'pw:Fighter'." },
+
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "created_at":  { "$ref": "#/$defs/Timestamp" },
+            "modified_at": { "$ref": "#/$defs/Timestamp" },
+            "source":      { "type": "string" },
+            "notes":       { "type": "string" }
+          }
+        },
+
+        "custom_extensions": {
+          "type": "object",
+          "description": "Domain-specific fields not covered by the base schema.",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "Relationship": {
+      "type": "object",
+      "description": "A typed directional relationship between two entities.",
+      "required": ["relation_type", "target_id"],
+      "additionalProperties": false,
+      "properties": {
+        "relation_type": {
+          "type": "string",
+          "enum": [
+            "hasComponent", "partOf", "contains", "mountedOn", "attachedTo",
+            "integratedWith", "connectedTo", "tetheredTo", "dockedWith",
+            "communicatesWith", "poweredBy", "controlledBy", "commandedBy",
+            "tracks", "detects", "identifies", "classifies", "targets",
+            "fires_at", "escorting", "following", "engaging", "evading",
+            "refuels_from", "suppliedBy", "belongsTo", "owns",
+            "allyOf", "enemyOf", "neutralTo",
+            "spatiallyNear", "inside", "above", "below",
+            "providesDataTo", "receivesDataFrom", "interfacesWith",
+            "custom"
+          ]
+        },
+        "target_id":   { "$ref": "#/$defs/UUID" },
+        "weight":      { "type": "number", "description": "Relationship strength 0-1." },
+        "bidirectional": { "type": "boolean", "default": false },
+        "valid_from":  { "$ref": "#/$defs/Timestamp" },
+        "valid_until": { "$ref": "#/$defs/Timestamp" },
+        "properties":  { "type": "object", "additionalProperties": true }
+      }
+    },
+
+    "Event": {
+      "type": "object",
+      "description": "A discrete event that occurs during simulation.",
+      "required": ["id", "event_type", "timestamp"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/UUID" },
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "spawn", "despawn", "move", "stop",
+            "fire", "impact", "explosion", "destruction",
+            "missile_launch", "missile_impact", "bomb_drop",
+            "detection", "radar_lock", "target_acquired", "target_lost",
+            "communication_sent", "communication_received",
+            "fuel_depleted", "power_failure", "damage_received",
+            "repair", "reload", "refuel",
+            "mission_start", "mission_complete", "mission_abort",
+            "weather_change", "terrain_change",
+            "collision", "near_miss",
+            "surrender", "retreat", "reinforcement",
+            "custom"
+          ]
+        },
+        "timestamp":    { "type": "number", "description": "Simulation time in seconds from epoch." },
+        "source_id":    { "$ref": "#/$defs/UUID", "description": "Entity that triggered the event." },
+        "target_id":    { "$ref": "#/$defs/UUID", "description": "Entity affected by the event." },
+        "position":     { "$ref": "#/$defs/Vector3" },
+        "parameters":   { "type": "object", "additionalProperties": true },
+        "effects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "effect_type": { "type": "string" },
+              "magnitude":   { "type": "number" },
+              "radius_m":    { "type": "number" },
+              "duration_s":  { "type": "number" }
+            }
+          }
+        },
+        "triggered_by_event_id": { "$ref": "#/$defs/UUID" },
+        "notes":        { "type": "string" }
+      }
+    },
+
+    "TimelineEntry": {
+      "type": "object",
+      "description": "A scheduled action or trigger on the simulation timeline.",
+      "required": ["time_s", "action_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/UUID" },
+        "time_s":      { "type": "number", "description": "Simulation seconds from start." },
+        "action_type": {
+          "type": "string",
+          "enum": ["spawn_entity", "despawn_entity", "trigger_event", "set_state",
+                   "send_command", "change_weather", "set_objective", "play_audio",
+                   "camera_cut", "custom"]
+        },
+        "entity_id":   { "$ref": "#/$defs/UUID" },
+        "parameters":  { "type": "object", "additionalProperties": true },
+        "condition":   { "type": "string", "description": "Optional condition expression to evaluate." },
+        "label":       { "type": "string" }
+      }
+    },
+
+    "Mission": {
+      "type": "object",
+      "description": "A mission assigned to one or more entities.",
+      "required": ["id", "mission_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/UUID" },
+        "name":        { "type": "string" },
+        "mission_type": {
+          "type": "string",
+          "enum": [
+            "patrol", "attack", "defend", "escort", "recon", "isr",
+            "strike", "cas", "sead", "cap", "intercept",
+            "search_and_rescue", "supply", "transport", "extraction",
+            "mine_laying", "mine_clearing", "surveillance",
+            "border_security", "counter_uav", "bda",
+            "maritime_patrol", "anti_submarine", "amphibious",
+            "space_surveillance", "custom"
+          ]
+        },
+        "assigned_entity_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" }
+        },
+        "primary_objective":  { "type": "string" },
+        "secondary_objectives": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "area_of_operation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "center":  { "$ref": "#/$defs/GeoCoordinate" },
+            "radius_km": { "type": "number" },
+            "polygon": {
+              "type": "array",
+              "items": { "$ref": "#/$defs/GeoCoordinate" }
+            }
+          }
+        },
+        "waypoints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id":       { "$ref": "#/$defs/UUID" },
+              "position": { "$ref": "#/$defs/GeoCoordinate" },
+              "action":   { "type": "string" },
+              "altitude_m": { "type": "number" },
+              "speed_mps":  { "type": "number" }
+            }
+          }
+        },
+        "start_condition": { "type": "string" },
+        "end_condition":   { "type": "string" },
+        "time_on_target":  { "type": "number" },
+        "roe":             { "type": "string", "description": "Rules of engagement." },
+        "status": {
+          "type": "string",
+          "enum": ["planned", "briefed", "active", "paused", "complete", "abort", "failed"],
+          "default": "planned"
+        },
+        "priority":        { "type": "integer", "minimum": 1 },
+        "custom_properties": { "type": "object" }
+      }
+    },
+
+    "Organization": {
+      "type": "object",
+      "description": "Military or civilian organizational unit.",
+      "required": ["id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/UUID" },
+        "name":        { "type": "string" },
+        "org_type": {
+          "type": "string",
+          "enum": ["nation", "alliance", "service_branch", "corps", "division", "brigade",
+                   "regiment", "battalion", "company", "platoon", "squad", "team",
+                   "naval_fleet", "air_wing", "squadron", "flight", "civilian", "custom"]
+        },
+        "faction":       { "type": "string" },
+        "parent_org_id": { "$ref": "#/$defs/UUID" },
+        "child_org_ids": { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "entity_ids":    { "type": "array", "items": { "$ref": "#/$defs/UUID" } },
+        "commander_id":  { "$ref": "#/$defs/UUID" },
+        "callsign":      { "type": "string" },
+        "country_code":  { "type": "string" }
+      }
+    },
+
+    "Constraint": {
+      "type": "object",
+      "description": "Physical or logical joint/constraint between entities.",
+      "required": ["id", "constraint_type", "entity_a_id"],
+      "additionalProperties": false,
+      "properties": {
+        "id":               { "$ref": "#/$defs/UUID" },
+        "constraint_type": {
+          "type": "string",
+          "enum": ["fixed", "hinge", "prismatic", "ball_socket", "universal", "spring",
+                   "distance", "gear", "rack_pinion", "exclusion_zone", "logical", "custom"]
+        },
+        "entity_a_id":      { "$ref": "#/$defs/UUID" },
+        "entity_b_id":      { "$ref": "#/$defs/UUID" },
+        "anchor_a":         { "$ref": "#/$defs/Vector3" },
+        "anchor_b":         { "$ref": "#/$defs/Vector3" },
+        "axis":             { "$ref": "#/$defs/Vector3" },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "lower": { "type": "number" },
+            "upper": { "type": "number" }
+          }
+        },
+        "stiffness":  { "type": "number" },
+        "damping":    { "type": "number" },
+        "breakable":  { "type": "boolean", "default": false },
+        "break_force":{ "type": "number" },
+        "enabled":    { "type": "boolean", "default": true }
+      }
+    }
+  },
+
+  "properties": {
+
+    "metadata": {
+      "type": "object",
+      "description": "WorldSpec document metadata.",
+      "required": ["worldspec_version", "scene_name", "uuid"],
+      "additionalProperties": false,
+      "properties": {
+        "worldspec_version": { "$ref": "#/$defs/VersionString", "description": "PW-WSF schema version." },
+        "scene_name":        { "type": "string" },
+        "uuid":              { "$ref": "#/$defs/UUID" },
+        "author":            { "type": "string" },
+        "organization":      { "type": "string" },
+        "created_at":        { "$ref": "#/$defs/Timestamp" },
+        "modified_at":       { "$ref": "#/$defs/Timestamp" },
+        "simulation_engine_hint": {
+          "type": "string",
+          "enum": ["omniverse", "physx", "mujoco", "gazebo", "unreal", "unity", "custom", "none"],
+          "description": "Preferred simulation backend — hints only, not a dependency."
+        },
+        "ontology_version":  { "$ref": "#/$defs/VersionString" },
+        "coordinate_system": {
+          "type": "string",
+          "enum": ["ENU", "NED", "ECEF", "local_cartesian"],
+          "default": "ENU"
+        },
+        "units": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "length":      { "type": "string", "enum": ["meters", "feet"], "default": "meters" },
+            "mass":        { "type": "string", "enum": ["kg", "lb"], "default": "kg" },
+            "time":        { "type": "string", "enum": ["seconds"], "default": "seconds" },
+            "angle":       { "type": "string", "enum": ["radians", "degrees"], "default": "radians" },
+            "temperature": { "type": "string", "enum": ["celsius", "kelvin", "fahrenheit"], "default": "celsius" }
+          }
+        },
+        "description": { "type": "string" },
+        "tags":        { "type": "array", "items": { "type": "string" } },
+        "classification_level": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret"],
+          "default": "unclassified"
+        },
+        "domain": {
+          "type": "string",
+          "enum": ["military", "civilian", "space", "maritime", "robotics", "mixed"],
+          "default": "military"
+        },
+        "scenario_type": {
+          "type": "string",
+          "enum": ["training", "exercise", "wargame", "red_team", "synthetic_data",
+                   "digital_twin", "planning", "analysis", "custom"]
+        }
+      }
+    },
+
+    "world": {
+      "type": "object",
+      "description": "Global simulation world parameters.",
+      "additionalProperties": false,
+      "properties": {
+        "physics_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "gravity":              { "$ref": "#/$defs/Vector3", "description": "m/s². Default (0, -9.81, 0)." },
+            "air_density_kg_m3":    { "type": "number", "default": 1.225 },
+            "speed_of_sound_mps":   { "type": "number", "default": 343.0 },
+            "physics_step_s":       { "type": "number", "default": 0.01 },
+            "substeps":             { "type": "integer", "default": 4 },
+            "solver":               { "type": "string", "enum": ["euler", "rk4", "pbd", "custom"] },
+            "collision_detection":  { "type": "string", "enum": ["discrete", "continuous", "speculative"] },
+            "enable_fluid":         { "type": "boolean", "default": false },
+            "enable_soft_body":     { "type": "boolean", "default": false },
+            "enable_cloth":         { "type": "boolean", "default": false },
+            "enable_particles":     { "type": "boolean", "default": true }
+          }
+        },
+        "simulation_config": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "duration_s":       { "type": "number", "description": "Total sim duration in seconds." },
+            "time_scale":       { "type": "number", "default": 1.0 },
+            "random_seed":      { "type": "integer" },
+            "deterministic":    { "type": "boolean", "default": true },
+            "tick_rate_hz":     { "type": "number", "default": 60 },
+            "render_rate_hz":   { "type": "number", "default": 30 },
+            "sensor_rate_hz":   { "type": "number", "default": 10 },
+            "log_level":        { "type": "string", "enum": ["debug", "info", "warning", "error"] },
+            "enable_replay":    { "type": "boolean", "default": false }
+          }
+        },
+        "reference_frame": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "origin_geo":       { "$ref": "#/$defs/GeoCoordinate" },
+            "origin_cartesian": { "$ref": "#/$defs/Vector3" },
+            "up_axis":          { "type": "string", "enum": ["Y", "Z"], "default": "Z" },
+            "planet": {
+              "type": "string",
+              "enum": ["Earth", "Moon", "Mars", "custom"],
+              "default": "Earth"
+            }
+          }
+        }
+      }
+    },
+
+    "environment": {
+      "type": "object",
+      "description": "Environment, weather, and time-of-day conditions.",
+      "additionalProperties": false,
+      "properties": {
+        "setting": {
+          "type": "string",
+          "enum": ["land", "urban", "desert", "arctic", "jungle", "mountain",
+                   "ocean", "littoral", "underground", "space", "multi", "custom"]
+        },
+        "time_of_day": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "simulation_start_utc": { "$ref": "#/$defs/Timestamp" },
+            "time_of_day_s":        { "type": "number", "description": "Seconds since midnight." },
+            "day_of_year":          { "type": "integer", "minimum": 1, "maximum": 366 },
+            "year":                 { "type": "integer" }
+          }
+        },
+        "weather": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "temperature_c":     { "type": "number" },
+            "humidity_pct":      { "type": "number", "minimum": 0, "maximum": 100 },
+            "pressure_hpa":      { "type": "number" },
+            "wind": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "speed_mps":     { "type": "number" },
+                "direction_deg": { "type": "number", "minimum": 0, "maximum": 360 },
+                "gusts_mps":     { "type": "number" },
+                "shear_profile": { "type": "array", "items": {
+                  "type": "object",
+                  "properties": {
+                    "altitude_m": { "type": "number" },
+                    "speed_mps":  { "type": "number" }
+                  }
+                }}
+              }
+            },
+            "precipitation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "type":           { "type": "string", "enum": ["none", "rain", "snow", "hail", "sleet", "drizzle"] },
+                "intensity_mm_hr":{ "type": "number" }
+              }
+            },
+            "fog":  {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled":          { "type": "boolean" },
+                "density":          { "type": "number", "minimum": 0, "maximum": 1 },
+                "visibility_m":     { "type": "number" }
+              }
+            },
+            "cloud_cover_pct":   { "type": "number", "minimum": 0, "maximum": 100 },
+            "cloud_base_m":      { "type": "number" },
+            "cloud_ceiling_m":   { "type": "number" },
+            "visibility_km":     { "type": "number" },
+            "solar_irradiance_wm2": { "type": "number" },
+            "sea_state":         { "type": "integer", "minimum": 0, "maximum": 9 },
+            "wave_height_m":     { "type": "number" },
+            "dust_density":      { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        },
+        "terrain": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "dem_ref":          { "type": "string", "description": "Reference to a Digital Elevation Model file or URL." },
+            "tile_source":      { "type": "string", "description": "Cesium, WMS, or custom tile source URL." },
+            "bounds": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "southwest": { "$ref": "#/$defs/GeoCoordinate" },
+                "northeast": { "$ref": "#/$defs/GeoCoordinate" }
+              }
+            },
+            "features": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "feature_type": {
+                    "type": "string",
+                    "enum": ["road", "building", "bridge", "runway", "railway", "river",
+                             "lake", "forest", "urban_block", "port", "airfield", "dam", "custom"]
+                  },
+                  "geometry_ref": { "type": "string" },
+                  "properties":   { "type": "object" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "entities": {
+      "type": "array",
+      "description": "All entities in the simulation world.",
+      "items": { "$ref": "#/$defs/Entity" },
+      "minItems": 0
+    },
+
+    "relationships": {
+      "type": "array",
+      "description": "Global relationship graph — relationships not captured inside entities.",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "relation_type", "target_id"],
+        "additionalProperties": false,
+        "properties": {
+          "id":            { "$ref": "#/$defs/UUID" },
+          "source_id":     { "$ref": "#/$defs/UUID" },
+          "relation_type": { "$ref": "#/$defs/Relationship/properties/relation_type" },
+          "target_id":     { "$ref": "#/$defs/UUID" },
+          "weight":        { "type": "number" },
+          "bidirectional": { "type": "boolean", "default": false },
+          "valid_from":    { "$ref": "#/$defs/Timestamp" },
+          "valid_until":   { "$ref": "#/$defs/Timestamp" },
+          "properties":    { "type": "object", "additionalProperties": true }
+        }
+      }
+    },
+
+    "events": {
+      "type": "array",
+      "description": "All discrete events that occur during the simulation.",
+      "items": { "$ref": "#/$defs/Event" }
+    },
+
+    "timeline": {
+      "type": "array",
+      "description": "Ordered list of scheduled actions and triggers.",
+      "items": { "$ref": "#/$defs/TimelineEntry" }
+    },
+
+    "missions": {
+      "type": "array",
+      "description": "All missions assigned to entities in this world.",
+      "items": { "$ref": "#/$defs/Mission" }
+    },
+
+    "organizations": {
+      "type": "array",
+      "description": "Organizational hierarchy of all factions and units.",
+      "items": { "$ref": "#/$defs/Organization" }
+    },
+
+    "constraints": {
+      "type": "array",
+      "description": "Physical joints and logical constraints between entities.",
+      "items": { "$ref": "#/$defs/Constraint" }
+    },
+
+    "assets": {
+      "type": "object",
+      "description": "Asset registry. WorldSpec only stores references, never raw geometry.",
+      "additionalProperties": false,
+      "properties": {
+        "base_url": { "type": "string", "description": "Root URL/path for all asset references." },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "path"],
+            "additionalProperties": false,
+            "properties": {
+              "id":       { "$ref": "#/$defs/UUID" },
+              "name":     { "type": "string" },
+              "path":     { "type": "string" },
+              "format":   { "type": "string", "enum": ["usd", "glb", "fbx", "obj", "ply", "custom"] },
+              "checksum": { "type": "string" },
+              "tags":     { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+
+    "outputs": {
+      "type": "object",
+      "description": "Requested simulation outputs and export targets.",
+      "additionalProperties": false,
+      "properties": {
+        "formats": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["json_telemetry", "csv_telemetry", "rtx_render", "physics_log",
+                     "sensor_frames", "video_mp4", "ground_truth", "ros_bag",
+                     "onnx_observations", "custom"]
+          }
+        },
+        "output_path":    { "type": "string" },
+        "record_physics": { "type": "boolean", "default": false },
+        "record_sensors": { "type": "boolean", "default": false },
+        "record_events":  { "type": "boolean", "default": true },
+        "render_config": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "validation": {
+      "type": "object",
+      "description": "Validation rules and integrity checks for this WorldSpec document.",
+      "additionalProperties": false,
+      "properties": {
+        "require_unique_ids":       { "type": "boolean", "default": true },
+        "require_valid_transforms": { "type": "boolean", "default": true },
+        "require_physics_on_dynamic": { "type": "boolean", "default": false },
+        "max_entities":             { "type": "integer" },
+        "custom_validators":        { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

@@ -1,0 +1,716 @@
+{
+  "ontology_id": "PWMO-AIRCRAFT-AVIONICS-PROPULSION",
+  "version": "1.0.0",
+  "description": "Complete avionics, navigation, mission systems, electronic warfare, radar, communications, and AI systems ontology for military aircraft.",
+  "schema_version": "PWMO-2025",
+
+  "avionics": {
+
+    "FlightComputers": {
+      "id": "AV-FC",
+      "label": "Flight Computers",
+      "description": "Computational systems for flight control, stability, and vehicle management.",
+      "subcomponents": {
+
+        "FlyByWireSystem": {
+          "id": "AV-FC-FBW",
+          "label": "Fly-By-Wire Flight Control System",
+          "description": "Electronic flight control system replacing mechanical linkages. Computers interpret pilot input and command actuators.",
+          "types": {
+            "AnalogFBW": { "id": "AV-FC-FBW-ANA", "label": "Analog FBW", "description": "First-generation FBW using analog electronics." },
+            "DigitalFBW": { "id": "AV-FC-FBW-DIG", "label": "Digital FBW", "description": "Modern digital flight control computers (DFCC)." },
+            "OpticalFBW": { "id": "AV-FC-FBW-OPT", "label": "Fly-By-Light", "description": "Fiber optic signal transmission replacing copper wire." }
+          },
+          "subcomponents": {
+            "DFCC": {
+              "id": "AV-FC-FBW-DFCC",
+              "label": "Digital Flight Control Computer",
+              "redundancy": "quadruple_redundant",
+              "processing": "dissimilar_hardware",
+              "functions": [
+                "control_law_computation",
+                "structural_load_limiting",
+                "carefree_handling",
+                "departure_prevention",
+                "gust_alleviation",
+                "auto_throttle_interface",
+                "autopilot_integration"
+              ]
+            },
+            "ActuatorControlElectronics": { "id": "AV-FC-FBW-ACE", "label": "Actuator Control Electronics (ACE)", "description": "Local computer controlling flight control actuator." },
+            "ControlLawSoftware": {
+              "id": "AV-FC-FBW-CLW",
+              "label": "Control Law Software",
+              "modes": ["normal_law", "alternate_law", "direct_law", "mechanical_backup"],
+              "functions": ["static_stability_augmentation", "dynamic_stability_augmentation", "high_AoA_protection", "g_limiting", "bank_angle_limiting", "overspeed_protection"]
+            },
+            "AerodynamicModel": { "id": "AV-FC-FBW-ADM", "label": "Aerodynamic Model / Lookup Tables", "description": "Internal aero model used for control law computation." }
+          }
+        },
+
+        "StabilityAugmentationSystem": {
+          "id": "AV-FC-SAS",
+          "label": "Stability Augmentation System (SAS)",
+          "description": "Provides artificial stability to inherently unstable aircraft.",
+          "axes": ["pitch_SAS", "roll_SAS", "yaw_damper"]
+        },
+
+        "AutopilotSystem": {
+          "id": "AV-FC-AP",
+          "label": "Autopilot System",
+          "modes": [
+            "heading_hold",
+            "altitude_hold",
+            "vertical_speed",
+            "speed_control",
+            "track_mode",
+            "approach_mode",
+            "auto_land",
+            "terrain_following",
+            "terrain_avoidance",
+            "GCAS",
+            "auto_GCAS"
+          ],
+          "subcomponents": {
+            "FlightDirector": { "id": "AV-FC-AP-FD", "label": "Flight Director", "description": "Commands pilot inputs to follow computed flight path." },
+            "GCAS": { "id": "AV-FC-AP-GCAS", "label": "Ground Collision Avoidance System", "description": "Automatically recovers aircraft from CFIT situations." },
+            "ACAS_TCAS": { "id": "AV-FC-AP-ACAS", "label": "Traffic Collision Avoidance System (TCAS / ACAS)", "description": "Detects and avoids midair collision with other aircraft." }
+          }
+        },
+
+        "VehicleManagementSystem": {
+          "id": "AV-FC-VMS",
+          "label": "Vehicle Management System (VMS)",
+          "description": "Integrated computer managing all aircraft subsystems including fuel, hydraulic, electrical, and ECS.",
+          "examples": ["F-22 VMS", "F-35 ICP", "Rafale SIMMAD"]
+        },
+
+        "MissionComputer": {
+          "id": "AV-FC-MC",
+          "label": "Mission Computer",
+          "description": "Central processing system integrating sensor data, navigation, fire control, and mission management.",
+          "subcomponents": {
+            "SensorFusionProcessor": { "id": "AV-FC-MC-SFP", "label": "Sensor Fusion Processor", "description": "Fuses radar, IRST, EW, and datalink tracks into single recognized air picture." },
+            "ThreatLibrary": { "id": "AV-FC-MC-TL", "label": "Threat Emitter Library", "description": "Database of enemy radar and threat signatures for EW system." },
+            "WeaponManagement": { "id": "AV-FC-MC-WMS", "label": "Weapon Management System", "description": "Controls weapon selection, arming, release sequencing, and employment modes." },
+            "MissionData": { "id": "AV-FC-MC-MD", "label": "Mission Data Files", "description": "Threat data, routes, targets, IFF codes loaded pre-mission." }
+          }
+        }
+      }
+    },
+
+    "Displays": {
+      "id": "AV-DSP",
+      "label": "Cockpit Display Systems",
+      "description": "All visual information presentation systems in the cockpit.",
+      "subcomponents": {
+
+        "HUD": {
+          "id": "AV-DSP-HUD",
+          "label": "Head Up Display (HUD)",
+          "description": "Projects flight and weapon symbology onto a combiner glass in pilot's forward field of view.",
+          "types": {
+            "CRT_HUD": { "id": "AV-DSP-HUD-CRT", "label": "CRT-Based HUD", "description": "Older cathode ray tube based HUD." },
+            "WaveGuide_HUD": { "id": "AV-DSP-HUD-WG", "label": "Waveguide Holographic HUD", "description": "Holographic combiner for wider field of view." }
+          },
+          "symbology": ["airspeed", "altitude", "heading", "AoA", "vertical_speed", "g_meter", "weapon_reticle", "FLIR_video_overlay", "boresight_cross", "velocity_vector"]
+        },
+
+        "HMD": {
+          "id": "AV-DSP-HMD",
+          "label": "Helmet Mounted Display / Sight",
+          "description": "Weapon aiming and flight symbology projected onto helmet visor.",
+          "types": {
+            "JHMCS": { "id": "AV-DSP-HMD-JHM", "label": "Joint Helmet Mounted Cueing System", "platforms": ["F-15C/D/E", "F-16C/D", "F/A-18C/D/E/F", "F-35 (via DAS)"] },
+            "JHMCS_II": { "id": "AV-DSP-HMD-JH2", "label": "JHMCS II (Digital)" },
+            "Typhoon_HMD": { "id": "AV-DSP-HMD-TYP", "label": "Typhoon HMD" },
+            "Scorpion_HMCS": { "id": "AV-DSP-HMD-SCO", "label": "Scorpion Helmet Mounted Cueing System" },
+            "HMDS_F35": { "id": "AV-DSP-HMD-F35", "label": "F-35 Helmet Mounted Display System", "description": "Full sphere awareness DAS-fed display." }
+          },
+          "functions": ["off_boresight_missile_cueing", "target_designation", "NVG_integration", "DAS_imagery", "flight_symbology"]
+        },
+
+        "MultiFunction_Display": {
+          "id": "AV-DSP-MFD",
+          "label": "Multi-Function Display (MFD)",
+          "description": "Reconfigurable color display presenting tactical, navigation, and system status information.",
+          "types": {
+            "LCD_MFD": { "id": "AV-DSP-MFD-LCD", "label": "LCD MFD" },
+            "AMLCD_MFD": { "id": "AV-DSP-MFD-AML", "label": "Active Matrix LCD MFD", "description": "Sunlight-readable high-brightness AMLCD." },
+            "TouchMFD": { "id": "AV-DSP-MFD-TCH", "label": "Touch-Screen MFD" }
+          },
+          "typical_pages": ["radar_page", "tactical_page", "navigation_page", "weapon_page", "EW_page", "engine_page", "fuel_page", "caution_advisory_page", "comms_page", "sensor_page"]
+        },
+
+        "WideFovDisplay": {
+          "id": "AV-DSP-WFD",
+          "label": "Wide Field of View Display / Large Area Display",
+          "description": "Single large screen replacing multiple MFDs. F-35, F-22 style.",
+          "examples": ["F-35 50x20cm panoramic cockpit display", "F-22 6x8 in MFDs"]
+        },
+
+        "UpFrontController": {
+          "id": "AV-DSP-UFC",
+          "label": "Up Front Controller (UFC)",
+          "description": "Primary data entry device for radios, frequencies, IFF codes, navigation data."
+        },
+
+        "DataRecorder": {
+          "id": "AV-DSP-DR",
+          "label": "Mission / Flight Data Recorder",
+          "types": {
+            "CSMU": { "id": "AV-DSP-DR-CSM", "label": "Crash Survivable Memory Unit", "description": "Records aircraft parameters and communications." },
+            "MPDR": { "id": "AV-DSP-DR-MPD", "label": "Mission Payload Data Recorder", "description": "Records ISR sensor data." },
+            "ACMI": { "id": "AV-DSP-DR-ACM", "label": "Air Combat Maneuvering Instrumentation Pod", "description": "Records 3D position and weapon events for debrief." }
+          }
+        }
+      }
+    },
+
+    "Navigation": {
+      "id": "AV-NAV",
+      "label": "Navigation Systems",
+      "description": "All systems providing aircraft position, attitude, and course guidance.",
+      "subcomponents": {
+
+        "INS": {
+          "id": "AV-NAV-INS",
+          "label": "Inertial Navigation System",
+          "description": "Self-contained navigation using accelerometers and gyroscopes.",
+          "types": {
+            "RLG_INS": { "id": "AV-NAV-INS-RLG", "label": "Ring Laser Gyro INS", "description": "High accuracy INS using laser gyros." },
+            "MEMS_INS": { "id": "AV-NAV-INS-MEM", "label": "MEMS INS", "description": "Micro-electromechanical sensor based INS for UAVs." },
+            "FiberOpticGyro": { "id": "AV-NAV-INS-FOG", "label": "Fiber Optic Gyro INS" },
+            "NuclearINS": { "id": "AV-NAV-INS-NUC", "label": "Nuclear Safe Inertial Platform", "description": "Platform that survives EMP of nuclear detonation." }
+          },
+          "subcomponents": {
+            "Accelerometers": { "id": "AV-NAV-INS-ACC", "label": "Linear Accelerometer Triad" },
+            "Gyroscopes": { "id": "AV-NAV-INS-GYR", "label": "Angular Rate Gyro Triad" },
+            "NavigationComputer": { "id": "AV-NAV-INS-NVC", "label": "Navigation Filter / Kalman Filter", "description": "Optimal state estimator combining INS, GPS, and other aiding." }
+          }
+        },
+
+        "GPS": {
+          "id": "AV-NAV-GPS",
+          "label": "GPS Receiver",
+          "description": "Satellite-based absolute position and time reference.",
+          "types": {
+            "SAASM": { "id": "AV-NAV-GPS-SAA", "label": "Selective Availability Anti-Spoofing Module (SAASM)", "description": "Military P(Y) code GPS receiver with anti-jam and anti-spoof." },
+            "M_Code": { "id": "AV-NAV-GPS-MCO", "label": "M-Code GPS", "description": "New military GPS signal with improved jam resistance." },
+            "CRPA": { "id": "AV-NAV-GPS-CRP", "label": "Controlled Reception Pattern Antenna", "description": "Adaptive null-steering antenna rejecting jamming signals." },
+            "GLONASS_Capable": { "id": "AV-NAV-GPS-GLN", "label": "GLONASS Capable Receiver" },
+            "Multi_Constellation": { "id": "AV-NAV-GPS-MC", "label": "Multi-Constellation GNSS", "description": "Capable of GPS, GLONASS, BeiDou, Galileo, NavIC signals." }
+          }
+        },
+
+        "GNSS_Systems": {
+          "id": "AV-NAV-GNSS",
+          "label": "Global Navigation Satellite Systems",
+          "description": "All satellite navigation systems globally.",
+          "systems": {
+            "GPS": { "id": "AV-NAV-GNSS-GPS", "label": "GPS (US)", "operator": "USAF", "satellites": 31, "frequency_bands": ["L1_1575.42MHz", "L2_1227.60MHz", "L5_1176.45MHz"] },
+            "GLONASS": { "id": "AV-NAV-GNSS-GLN", "label": "GLONASS (Russia)", "operator": "Russian_MoD", "satellites": 24, "frequency_bands": ["L1_1598-1606MHz", "L2_1242-1249MHz"] },
+            "BeiDou": { "id": "AV-NAV-GNSS-BDS", "label": "BeiDou / BDS (China)", "operator": "PLA", "satellites": 35, "frequency_bands": ["B1_1575.42MHz", "B2_1207.14MHz", "B3_1268.52MHz"] },
+            "Galileo": { "id": "AV-NAV-GNSS-GAL", "label": "Galileo (EU)", "operator": "EU_EUSPA", "satellites": 30 },
+            "NavIC": { "id": "AV-NAV-GNSS-NIC", "label": "NavIC (India)", "operator": "ISRO", "satellites": 8, "coverage": "South_Asia_region" },
+            "QZSS": { "id": "AV-NAV-GNSS-QZS", "label": "QZSS (Japan)", "operator": "JAXA", "satellites": 4 }
+          }
+        },
+
+        "AirDataSystem": {
+          "id": "AV-NAV-ADS",
+          "label": "Air Data System",
+          "description": "Measures ambient pressure, temperature, and derived airspeed parameters.",
+          "subcomponents": {
+            "AirDataComputer": { "id": "AV-NAV-ADS-ADC", "label": "Air Data Computer (ADC)", "outputs": ["IAS", "CAS", "TAS", "Mach", "altitude", "vertical_speed", "OAT"] },
+            "PitotStaticSystem": {
+              "id": "AV-NAV-ADS-PSS",
+              "label": "Pitot-Static System",
+              "subcomponents": {
+                "PitotProbe": { "id": "AV-NAV-ADS-PSS-PP", "label": "Pitot Probe" },
+                "StaticPorts": { "id": "AV-NAV-ADS-PSS-SP", "label": "Static Pressure Ports" },
+                "FlushedAirDataSystem": { "id": "AV-NAV-ADS-PSS-FAD", "label": "Flush Air Data System (FADS)", "description": "Multi-port orifice system replacing pitot probe for stealth aircraft." }
+              }
+            },
+            "RadarAltimeter": { "id": "AV-NAV-ADS-RA", "label": "Radar Altimeter", "description": "Measures absolute height above terrain via radar reflection.", "range_ft": "0-5000", "accuracy_ft": "1" }
+          }
+        },
+
+        "TerrainFollowing": {
+          "id": "AV-NAV-TF",
+          "label": "Terrain Following / Terrain Avoidance",
+          "description": "Automatic low-level flight system maintaining safe clearance above terrain.",
+          "types": {
+            "RadarTF": { "id": "AV-NAV-TF-RDR", "label": "Radar-Based Terrain Following", "description": "Forward-looking radar scans terrain and feeds autopilot." },
+            "TERPROM": { "id": "AV-NAV-TF-TRP", "label": "TERPROM (Terrain Profile Matching)", "description": "Compares digital terrain database to radar altimeter readout." },
+            "DigitalTerrainMap": { "id": "AV-NAV-TF-DTM", "label": "Digital Terrain Map System" }
+          }
+        },
+
+        "ILS_TACAN": {
+          "id": "AV-NAV-ILS",
+          "label": "Radio Navigation Aids",
+          "subcomponents": {
+            "TACAN": { "id": "AV-NAV-ILS-TCN", "label": "Tactical Air Navigation (TACAN)", "description": "UHF bearing and distance measurement from ground/ship beacon." },
+            "ILS": { "id": "AV-NAV-ILS-ILS", "label": "Instrument Landing System", "components": ["localizer", "glideslope", "marker_beacons"] },
+            "VOR": { "id": "AV-NAV-ILS-VOR", "label": "VHF Omnidirectional Range" },
+            "PILS": { "id": "AV-NAV-ILS-PIL", "label": "Precision Approach Landing System (PALS)", "description": "JPALS for carrier operations." }
+          }
+        }
+      }
+    },
+
+    "RadarSystems": {
+      "id": "AV-RDR",
+      "label": "Airborne Radar Systems",
+      "description": "All airborne radar types including fire control, weather, terrain, and SAR/GMTI.",
+      "subcomponents": {
+
+        "AESA": {
+          "id": "AV-RDR-AESA",
+          "label": "Active Electronically Scanned Array (AESA)",
+          "description": "Radar using thousands of Transmit/Receive modules. No mechanical scanning. Simultaneous multiple beams, very fast scan, high reliability.",
+          "advantages": ["simultaneous_multi-function", "very_low_probability_of_intercept", "graceful_degradation", "electronic_beam_steering", "no_mechanical_scan"],
+          "examples_airborne": {
+            "AN_APG-81": { "platform": "F-35", "manufacturer": "Northrop Grumman" },
+            "AN_APG-77v1": { "platform": "F-22A", "manufacturer": "Raytheon" },
+            "AN_APG-79": { "platform": "F/A-18E/F Block II", "manufacturer": "Raytheon" },
+            "AN_APG-82v1": { "platform": "F-15E/EX", "manufacturer": "Raytheon" },
+            "AN_APG-83_SABR": { "platform": "F-16V", "manufacturer": "Northrop Grumman" },
+            "PESA_Irbis-E": { "platform": "Su-35S", "type": "PESA_plus_AESA", "manufacturer": "NIIP Tikhomirov" },
+            "Zhuk-AE": { "platform": "MiG-35", "manufacturer": "NIIR Fazotron" },
+            "RBE2-AA": { "platform": "Rafale F3+", "manufacturer": "Thales" },
+            "CAPTOR-E": { "platform": "Eurofighter Tranche 3+", "manufacturer": "Leonardo_Hensoldt_Indra_ECA" },
+            "ES-05_Raven": { "platform": "Gripen E", "manufacturer": "Selex_ES" },
+            "J-KJ": { "platform": "J-20", "manufacturer": "CETC_614_Institute" },
+            "AESA_Tejas": { "platform": "Tejas Mk2", "manufacturer": "DRDO_LRDE" }
+          },
+          "subcomponents": {
+            "TRModule": { "id": "AV-RDR-AESA-TRM", "label": "Transmit/Receive (T/R) Module", "description": "Individual solid-state RF transmitter/receiver element in array.", "quantity_per_radar": "1000-2000+" },
+            "AntennaArray": { "id": "AV-RDR-AESA-ANT", "label": "Antenna Array / Face", "description": "Full array of T/R modules forming beam." },
+            "RadarDataProcessor": { "id": "AV-RDR-AESA-RDP", "label": "Radar Data Processor", "description": "Signal and data processing computer." },
+            "ExciterUnit": { "id": "AV-RDR-AESA-EXC", "label": "Exciter / Waveform Generator" },
+            "BeamSteering": { "id": "AV-RDR-AESA-BSC", "label": "Beam Steering Computer" }
+          },
+          "operating_modes": {
+            "RWS": { "id": "AV-RDR-AESA-RWS", "label": "Range While Search", "description": "Wide area air search with range indication." },
+            "TWS": { "id": "AV-RDR-AESA-TWS", "label": "Track While Scan", "description": "Maintains tracks on multiple targets while continuing search." },
+            "STT": { "id": "AV-RDR-AESA-STT", "label": "Single Target Track", "description": "Dedicated high accuracy track of single target." },
+            "VS": { "id": "AV-RDR-AESA-VS", "label": "Velocity Search", "description": "Long range detection emphasizing closing velocity." },
+            "ACM": { "id": "AV-RDR-AESA-ACM", "label": "Air Combat Maneuvering Modes", "submodes": ["boresight", "vertical_scan", "HMD_slaved", "auto_acquisition"] },
+            "SAR": { "id": "AV-RDR-AESA-SAR", "label": "Synthetic Aperture Radar Mode", "description": "High resolution ground mapping for strike targeting." },
+            "GMTI": { "id": "AV-RDR-AESA-GMTI", "label": "Ground Moving Target Indicator", "description": "Detects moving vehicles on ground." },
+            "SEA": { "id": "AV-RDR-AESA-SEA", "label": "Sea Surface Search Mode" },
+            "LPI": { "id": "AV-RDR-AESA-LPI", "label": "Low Probability of Intercept Mode", "description": "Wide bandwidth frequency hopping to avoid radar warning detection." },
+            "EW": { "id": "AV-RDR-AESA-EW", "label": "Electronic Attack Mode", "description": "AESA used as spot jammer." }
+          }
+        },
+
+        "PESA": {
+          "id": "AV-RDR-PESA",
+          "label": "Passive Electronically Scanned Array (PESA)",
+          "description": "Single transmitter feeding array of phase shifters. Electronic beam steering without mechanical rotation.",
+          "examples": ["N011M Bars (Su-30MKI)", "N001 (Su-27)", "Irbis-E (Su-35S, near-AESA)"]
+        },
+
+        "PulseDopplerRadar": {
+          "id": "AV-RDR-PD",
+          "label": "Pulse Doppler Radar",
+          "description": "Uses Doppler shift to separate moving targets from ground clutter.",
+          "prf_modes": {
+            "HPRF": { "id": "AV-RDR-PD-HPR", "label": "High PRF", "description": "Best velocity resolution, range ambiguous. Lookdown/shootdown." },
+            "MPRF": { "id": "AV-RDR-PD-MPR", "label": "Medium PRF", "description": "Balanced velocity and range. Used for TWS." },
+            "LPRF": { "id": "AV-RDR-PD-LPR", "label": "Low PRF", "description": "Unambiguous range. Lookup only." }
+          }
+        },
+
+        "WeatherRadar": {
+          "id": "AV-RDR-WX",
+          "label": "Weather Radar",
+          "description": "Detects precipitation and storm cells for routing.",
+          "examples": ["APS-143", "AN/APN-235"]
+        },
+
+        "ISAR": {
+          "id": "AV-RDR-ISAR",
+          "label": "Inverse SAR",
+          "description": "Uses relative motion of a ship to form high-resolution radar image.",
+          "use": "maritime_targeting"
+        }
+      }
+    },
+
+    "ElectroOptical": {
+      "id": "AV-EO",
+      "label": "Electro-Optical / Infrared Systems",
+      "description": "Passive and active optical and infrared sensor systems.",
+      "subcomponents": {
+
+        "IRST": {
+          "id": "AV-EO-IRST",
+          "label": "Infrared Search and Track (IRST)",
+          "description": "Passive wide-area infrared surveillance for air target detection without emitting radar. Impossible to trigger RWR.",
+          "capabilities": ["long_range_detection", "passive_tracking", "target_cueing", "angular_measurement"],
+          "examples": {
+            "OLS-35": { "platform": "Su-35S" },
+            "OLS-50M": { "platform": "Su-57" },
+            "OLS-27": { "platform": "Su-27/30 baseline" },
+            "PIRATE": { "platform": "Eurofighter", "manufacturer": "Leonardo" },
+            "OSF": { "platform": "Rafale", "manufacturer": "Thales" },
+            "EOTS": { "platform": "F-35 (fwd)", "manufacturer": "Lockheed Martin" },
+            "Legion_Pod": { "platform": "F-15C/D/E, F-16", "manufacturer": "Lockheed Martin" },
+            "IRST21": { "platform": "F/A-18E/F Block III", "manufacturer": "L3Harris" }
+          }
+        },
+
+        "FLIR": {
+          "id": "AV-EO-FLIR",
+          "label": "Forward Looking Infrared (FLIR)",
+          "description": "Infrared imaging for night navigation and targeting.",
+          "types": {
+            "NavigationFLIR": { "id": "AV-EO-FLIR-NAV", "label": "Navigation FLIR", "description": "Wide FOV thermal imagery for night flight." },
+            "TargetingFLIR": { "id": "AV-EO-FLIR-TGT", "label": "Targeting FLIR", "description": "Narrow FOV high resolution thermal targeting." }
+          }
+        },
+
+        "TargetingPod": {
+          "id": "AV-EO-TP",
+          "label": "Targeting Pod",
+          "description": "Gyro-stabilized multi-sensor pod for precision targeting, laser designation, and BDA.",
+          "examples": {
+            "AN_AAQ-33_Sniper": { "manufacturer": "Lockheed Martin", "platforms": ["F-15E", "F-16", "B-1B", "A-10C"] },
+            "AN_AAQ-28_LITENING": { "manufacturer": "Northrop Grumman / Rafael", "platforms": ["F-16", "AV-8B", "F/A-18", "Gripen"] },
+            "AN_ASQ-228_ATFLIR": { "manufacturer": "Raytheon", "platforms": ["F/A-18C/D/E/F"] },
+            "DAMOCLES": { "manufacturer": "Thales", "platforms": ["Rafale", "Mirage_2000D"] },
+            "LASER_VIPER": { "manufacturer": "Rafael", "platforms": ["export"] },
+            "RECCELITE": { "manufacturer": "Rafael", "description": "Recce pod with EO and IR sensors." },
+            "TALIOS": { "manufacturer": "Thales", "platforms": ["Rafale F3R+"] }
+          },
+          "subcomponents": {
+            "LaserDesignator": { "id": "AV-EO-TP-LD", "label": "Laser Designator", "description": "Illuminates target for laser-guided weapon." },
+            "LaserRangefinder": { "id": "AV-EO-TP-LRF", "label": "Laser Rangefinder" },
+            "LaserSpotTracker": { "id": "AV-EO-TP-LST", "label": "Laser Spot Tracker" },
+            "HDEO_Camera": { "id": "AV-EO-TP-EO", "label": "HD EO Camera" },
+            "MWIR_Camera": { "id": "AV-EO-TP-IR", "label": "MWIR IR Camera" },
+            "Gimbal": { "id": "AV-EO-TP-GBL", "label": "Stabilized Gimbal Platform", "description": "Gyro-stabilized mount isolating sensor from aircraft motion." }
+          }
+        },
+
+        "DAS": {
+          "id": "AV-EO-DAS",
+          "label": "Distributed Aperture System (DAS)",
+          "description": "Multiple IR cameras providing full spherical situational awareness around aircraft.",
+          "examples": ["AN/AAQ-37 (F-35)", "Elbit J-MUSIC (partial)"],
+          "functions": ["missile_launch_detection", "aircraft_detection", "navigation_night_vision", "360_deg_SA", "HMDS_cueing"]
+        },
+
+        "ReconnaissancePod": {
+          "id": "AV-EO-RP",
+          "label": "Reconnaissance Pod",
+          "examples": {
+            "LANTIRN": "AN/AAQ-14 target + AN/AAQ-13 nav",
+            "DB-110": "BAE dual-band reconnaissance sensor",
+            "RECCELITE": "Rafael pod",
+            "RAPTOR": "Raytheon Advanced Airborne Recce System",
+            "TARPS": "Tactical Air Recce Pod System"
+          }
+        }
+      }
+    },
+
+    "ElectronicWarfare": {
+      "id": "AV-EW",
+      "label": "Electronic Warfare Systems",
+      "description": "Systems for electronic attack, electronic protection, and electronic support.",
+      "subcomponents": {
+
+        "RadarWarningReceiver": {
+          "id": "AV-EW-RWR",
+          "label": "Radar Warning Receiver (RWR)",
+          "description": "Detects, classifies, and locates radar emissions threatening aircraft.",
+          "examples": {
+            "AN_ALR-94": { "platform": "F-22A", "capability": "AESA-grade sensitivity, passive track" },
+            "AN_ALR-56M": { "platform": "F-15E" },
+            "AN_ALR-69A": { "platform": "F-16C/D" },
+            "AN_ALR-67v3": { "platform": "F/A-18C/D/E/F" },
+            "Spectra_RWR": { "platform": "Rafale", "manufacturer": "Thales" },
+            "DASS_RWR": { "platform": "Eurofighter", "manufacturer": "BAE Systems / ECA Group" },
+            "SPO-32_Pastel": { "platform": "Su-27/30/35" }
+          },
+          "subcomponents": {
+            "SpiralAntennas": { "id": "AV-EW-RWR-ANT", "label": "Wideband RWR Antennas" },
+            "ReceiverModule": { "id": "AV-EW-RWR-RCV", "label": "Crystal Video / Superheterodyne Receiver" },
+            "ThreatProcessor": { "id": "AV-EW-RWR-THP", "label": "Threat Identification Processor" },
+            "EmitterLibrary": { "id": "AV-EW-RWR-ELB", "label": "Emitter Library / Threat Database" }
+          }
+        },
+
+        "MissileWarningSystem": {
+          "id": "AV-EW-MWS",
+          "label": "Missile Approach Warning System (MAWS)",
+          "description": "UV or IR sensors detecting missile launch and approach.",
+          "types": {
+            "UV_MAWS": { "id": "AV-EW-MWS-UV", "label": "UV MAWS", "examples": ["AN/AAR-54", "MILDS AN/AAR-60"] },
+            "IR_MAWS": { "id": "AV-EW-MWS-IR", "label": "IR MAWS", "examples": ["AN/AAR-56 (F-22)", "DAS (F-35)"] }
+          }
+        },
+
+        "JammingSystem": {
+          "id": "AV-EW-JAM",
+          "label": "Electronic Jamming System",
+          "description": "Active RF transmitters denying or degrading enemy radar capability.",
+          "types": {
+            "InternalJammer": {
+              "id": "AV-EW-JAM-INT",
+              "label": "Internal EW Suite Jammer",
+              "examples": {
+                "AN_ALQ-250_EPAWSS": { "platform": "F-15EX", "manufacturer": "BAE Systems" },
+                "AN_ALQ-214_IDECM": { "platform": "F/A-18E/F", "manufacturer": "ITT Exelis" },
+                "AN_ALQ-165_ASPJ": { "platform": "F/A-18", "manufacturer": "ITT / Raytheon" },
+                "Spectra_ECM": { "platform": "Rafale", "manufacturer": "Thales" },
+                "DASS_ECM": { "platform": "Eurofighter", "manufacturer": "BAE/Leonardo" }
+              }
+            },
+            "JammingPod": {
+              "id": "AV-EW-JAM-POD",
+              "label": "External EW Jamming Pod",
+              "examples": {
+                "AN_ALQ-99": { "platform": "EA-18G (legacy)", "manufacturer": "ITT" },
+                "NGJ-MB": { "platform": "EA-18G (AESA jammer)", "manufacturer": "Raytheon" },
+                "NGJ-LB": { "platform": "EA-18G low band", "manufacturer": "L3Harris" },
+                "AN_ALQ-184": { "platform": "F-16", "manufacturer": "L3Harris" },
+                "AN_ALQ-131": { "platform": "F-16A/B", "manufacturer": "Westinghouse" },
+                "Khibiny_L175V": { "platform": "Su-35S/Su-34", "manufacturer": "KNIRTI" }
+              }
+            },
+            "DRFM": {
+              "id": "AV-EW-JAM-DRF",
+              "label": "Digital Radio Frequency Memory (DRFM)",
+              "description": "Records and replicates radar signal to create false targets or deny range/Doppler information.",
+              "techniques": ["range_gate_pull_off", "velocity_gate_pull_off", "false_target_generation", "deception_jamming", "noise_jamming"]
+            }
+          }
+        },
+
+        "Countermeasures": {
+          "id": "AV-EW-CM",
+          "label": "Expendable Countermeasures",
+          "description": "Dispensed decoys disrupting IR and RF guided weapons.",
+          "subcomponents": {
+            "Flares": {
+              "id": "AV-EW-CM-FLR",
+              "label": "Infrared Decoy Flares",
+              "types": {
+                "Pyrotechnic": { "id": "AV-EW-CM-FLR-PYR", "label": "Pyrotechnic Flare", "description": "Burning magnesium/MTV flare producing broadband IR." },
+                "Kinematic": { "id": "AV-EW-CM-FLR-KIN", "label": "Kinematic Flare", "description": "Aerodynamically maneuvering flare with programmed flight path." },
+                "POET": { "id": "AV-EW-CM-FLR-POE", "label": "Paired Omni Expendable Transponder" }
+              }
+            },
+            "Chaff": {
+              "id": "AV-EW-CM-CHF",
+              "label": "Chaff",
+              "description": "Clouds of metal-coated fibers returning false radar echoes.",
+              "types": { "Band_specific": "Dipoles cut to target wavelength", "Wideband": "Range of dipole lengths" }
+            },
+            "TowedDecoy": {
+              "id": "AV-EW-CM-TD",
+              "label": "Towed Radar Decoy",
+              "description": "Electronic repeater towed behind aircraft attracting radar-guided missiles.",
+              "examples": ["AN/ALE-50", "AN/ALE-55 FOTD (fiber optic)", "BriteCloud (internal DRFM decoy)"]
+            },
+            "DIRCM": {
+              "id": "AV-EW-CM-DIR",
+              "label": "Directed Infrared Countermeasures (DIRCM)",
+              "description": "Laser system defeating IR-guided missiles by dazzling or burning seeker.",
+              "examples": ["AN/AAQ-24 Nemesis", "CIRCM", "LOTUS (IAI)"],
+              "subcomponents": {
+                "TrackingUnit": { "id": "AV-EW-CM-DIR-TRK", "label": "MAWS/Tracking Sensor" },
+                "LaserJammer": { "id": "AV-EW-CM-DIR-LZR", "label": "Laser Jamming Head" },
+                "ContolUnit": { "id": "AV-EW-CM-DIR-CTL", "label": "DIRCM Control Unit" }
+              }
+            },
+            "CMSDispenser": {
+              "id": "AV-EW-CM-DIS",
+              "label": "Countermeasure Dispenser System",
+              "examples": ["AN/ALE-47", "AN/ALE-45", "BOZ-101 (Eurofighter)", "BOP-L (Su-35)"],
+              "subcomponents": {
+                "Programmer": { "id": "AV-EW-CM-DIS-PRG", "label": "Dispenser Programmer / CMDS Computer" },
+                "CartridgeHolder": { "id": "AV-EW-CM-DIS-CRT", "label": "Cartridge Holding Assembly" },
+                "AdaptiveDispenser": { "id": "AV-EW-CM-DIS-ADP", "label": "Adaptive CMDS", "description": "AI-driven threat-reactive dispensing program selection." }
+              }
+            }
+          }
+        },
+
+        "ESM": {
+          "id": "AV-EW-ESM",
+          "label": "Electronic Support Measures (ESM)",
+          "description": "Passive collection and analysis of electromagnetic emissions for intelligence.",
+          "functions": ["emitter_detection", "frequency_measurement", "pulse_width_measurement", "PRI_analysis", "emitter_location", "library_correlation"]
+        },
+
+        "ECM": {
+          "id": "AV-EW-ECM",
+          "label": "Electronic Countermeasures (ECM)",
+          "description": "Active measures to deny, degrade, or deceive enemy electronics.",
+          "techniques": ["noise_jamming", "deception_jamming", "false_target_injection", "communications_jamming", "datalink_spoofing"]
+        },
+
+        "ECCM": {
+          "id": "AV-EW-ECCM",
+          "label": "Electronic Counter-Countermeasures (ECCM)",
+          "description": "Protective measures ensuring own radar and communications function in jammed environment.",
+          "techniques": ["frequency_agility", "pulse_compression", "spread_spectrum", "sidelobe_cancellation", "CFAR_processing"]
+        }
+      }
+    },
+
+    "Communications": {
+      "id": "AV-COM",
+      "label": "Communications Systems",
+      "description": "All voice, data, and network communications systems.",
+      "subcomponents": {
+
+        "RadioSystems": {
+          "id": "AV-COM-RDO",
+          "label": "Radio Systems",
+          "subcomponents": {
+            "UHF_Radio": { "id": "AV-COM-RDO-UHF", "label": "UHF Radio (AN/ARC-210, -164)", "range_MHz": "225-400" },
+            "VHF_Radio": { "id": "AV-COM-RDO-VHF", "label": "VHF Radio", "range_MHz": "116-174" },
+            "HF_Radio": { "id": "AV-COM-RDO-HF", "label": "HF Radio", "use": "long_range_BLOS_voice" },
+            "SatcomRadio": { "id": "AV-COM-RDO-SAT", "label": "SATCOM Radio (UHF/SHF)", "use": "satellite_voice_and_data" },
+            "SecureVoice": { "id": "AV-COM-RDO-SCV", "label": "Secure Voice Module (KY-58, KY-100)", "description": "Encrypts voice communications." }
+          }
+        },
+
+        "DataLink": {
+          "id": "AV-COM-DL",
+          "label": "Tactical Data Links",
+          "subcomponents": {
+            "Link16": {
+              "id": "AV-COM-DL-L16",
+              "label": "Link 16 (TADIL-J)",
+              "description": "NATO standard TDMA data link for air picture sharing, targeting, voice.",
+              "frequency": "960-1215_MHz_JTIDS/MIDS",
+              "data_rate_kbps": "28.8-238",
+              "features": ["JTIDS", "MIDS-LVT", "relative_navigation", "J-series_messages"]
+            },
+            "Link22": {
+              "id": "AV-COM-DL-L22",
+              "label": "Link 22 (NATO J)",
+              "description": "HF/UHF supplement to Link 16 for BLOS operations."
+            },
+            "Link4A": { "id": "AV-COM-DL-L4A", "label": "Link 4A", "use": "carrier_controlled_approach" },
+            "MADL": {
+              "id": "AV-COM-DL-MDL",
+              "label": "Multifunction Advanced Data Link (MADL)",
+              "description": "High-capacity, low probability of intercept data link for F-35 formation operations.",
+              "platform": "F-35"
+            },
+            "IFDL": {
+              "id": "AV-COM-DL-IFD",
+              "label": "Intra-Flight Data Link (IFDL)",
+              "description": "F-22 specific encrypted tactical data link.",
+              "platform": "F-22A"
+            },
+            "CDL": {
+              "id": "AV-COM-DL-CDL",
+              "label": "Common Data Link",
+              "description": "Wideband video and ISR data downlink from sensors to ground."
+            },
+            "BeiDou_RDSS": { "id": "AV-COM-DL-BDS", "label": "BeiDou RDSS Data Link (China)", "description": "Short message service and navigation combined in BeiDou for PLA platforms." },
+            "Datalink_11": { "id": "AV-COM-DL-L11", "label": "Link 11 (TADIL-A)", "description": "Legacy HF/UHF data link." }
+          }
+        },
+
+        "IFF": {
+          "id": "AV-COM-IFF",
+          "label": "Identification Friend or Foe (IFF)",
+          "description": "Secondary radar transponder system for friend/foe identification.",
+          "modes": {
+            "Mode1": { "id": "AV-COM-IFF-M1", "label": "Mode 1", "description": "Military mission code." },
+            "Mode2": { "id": "AV-COM-IFF-M2", "label": "Mode 2", "description": "Military unit code." },
+            "Mode3A": { "id": "AV-COM-IFF-M3", "label": "Mode 3/A", "description": "Shared civil/military transponder code." },
+            "Mode4": { "id": "AV-COM-IFF-M4", "label": "Mode 4", "description": "Encrypted military-only challenge-response." },
+            "Mode5": { "id": "AV-COM-IFF-M5", "label": "Mode 5", "description": "Encrypted next-gen military IFF, interoperable with Mark XII." },
+            "ModeC": { "id": "AV-COM-IFF-MC", "label": "Mode C", "description": "Altitude encoding." },
+            "ModeS": { "id": "AV-COM-IFF-MS", "label": "Mode S", "description": "Selective interrogation. ACAS/TCAS backbone." }
+          }
+        },
+
+        "SATCOM": {
+          "id": "AV-COM-SAT",
+          "label": "Satellite Communications (SATCOM)",
+          "types": {
+            "UHF_SATCOM": { "id": "AV-COM-SAT-UHF", "label": "UHF SATCOM", "description": "Legacy voice and low data rate. MILSTAR, AEHF, UFO." },
+            "SHF_SATCOM": { "id": "AV-COM-SAT-SHF", "label": "SHF SATCOM", "description": "Higher bandwidth. WGS." },
+            "EHF_SATCOM": { "id": "AV-COM-SAT-EHF", "label": "EHF SATCOM (AEHF)", "description": "Anti-jam, nuclear survivable. AEHF." },
+            "VSAT": { "id": "AV-COM-SAT-VST", "label": "Ka-Band VSAT", "description": "Commercial SATCOM for non-classified data." }
+          }
+        }
+      }
+    },
+
+    "AIandAutonomous": {
+      "id": "AV-AI",
+      "label": "AI and Autonomous Systems",
+      "description": "Artificial intelligence, machine learning, and autonomous decision-support systems integrated into military aircraft.",
+      "subcomponents": {
+
+        "SensorFusionAI": {
+          "id": "AV-AI-SF",
+          "label": "AI Sensor Fusion",
+          "description": "Machine learning algorithms fusing multi-source sensor data into a common recognized picture.",
+          "inputs": ["AESA_radar_tracks", "IRST_tracks", "RWR_emitters", "ESM_data", "datalink_tracks", "GPS_position"],
+          "outputs": ["fused_air_picture", "track_quality_estimates", "threat_prioritization"]
+        },
+
+        "TargetRecognition": {
+          "id": "AV-AI-TR",
+          "label": "AI Target Recognition / NCTR",
+          "description": "Non-Cooperative Target Recognition using AESA JEM and high-range resolution profiles.",
+          "techniques": ["JEM_jet_engine_modulation", "HRR_profiling", "SAR_ISAR_imaging", "neural_network_classification"]
+        },
+
+        "ThreatAssessment": {
+          "id": "AV-AI-TA",
+          "label": "AI Threat Assessment and Prioritization",
+          "description": "Automated ranking of threats by lethal range, timeline, and kinematic capability."
+        },
+
+        "MissionPlanning_AI": {
+          "id": "AV-AI-MP",
+          "label": "AI Mission Planning",
+          "description": "Machine-assisted route planning, target selection, and contingency analysis.",
+          "functions": ["route_optimization", "threat_avoidance", "weapon_selection", "TOT_computation"]
+        },
+
+        "CognitivePilotAssist": {
+          "id": "AV-AI-CPA",
+          "label": "Cognitive Pilot Assistant",
+          "description": "AI system monitoring pilot state, reducing cognitive load, recommending actions.",
+          "functions": ["workload_monitoring", "tactical_recommendation", "system_anomaly_alerting", "fuel_management_advisory"]
+        },
+
+        "AutonomousFlight": {
+          "id": "AV-AI-AF",
+          "label": "Autonomous Flight Management",
+          "description": "For UCAV and optionally manned platforms. Full autonomous navigation, obstacle avoidance, mission execution.",
+          "levels": {
+            "L1_Remote": "Full human control via datalink",
+            "L2_Supervised": "Human sets objectives, AI executes",
+            "L3_Delegated": "AI executes mission segment autonomously with human authority to abort",
+            "L4_Full_Auto": "Full autonomous mission execution within rules of engagement"
+          }
+        },
+
+        "SwarmCoordination": {
+          "id": "AV-AI-SWM",
+          "label": "Swarm / Collaborative Combat AI",
+          "description": "Multi-agent coordination algorithms for UAV swarms and loyal wingman.",
+          "protocols": ["mesh_networking", "consensus_algorithms", "task_allocation", "formation_keeping", "collision_avoidance"]
+        }
+      }
+    }
+  }
+}

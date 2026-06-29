@@ -1,6 +1,8 @@
 # Weights
 *.pt
 *.pth
+checkpoints/
+weights/
 
 # Large datasets
 datasets/entity/train.jsonl
@@ -15,6 +17,7 @@ datasets/entity_classification.jsonl
 
 datasets/raw/
 datasets/processed/
+datasets/
 
 # Cache
 .cache/
@@ -27,9 +30,12 @@ datasets/processed/
 __pycache__/
 *.pyc
 *.pyo
+*.py[cod]
+*.so
 
 # Virtual environment
 venv/
+.env.*
 
 # Environment variables
 .env
@@ -46,3 +52,21 @@ Thumbs.db
 outputs/*.json
 outputs/*.csv
 outputs/*.txt
+outputs/
+
+# Python build
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Experiment artifacts
+experiments/
+
+# Pytest
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/

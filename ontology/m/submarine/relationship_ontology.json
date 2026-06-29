@@ -1,0 +1,398 @@
+{
+  "ontology_id": "physworldlm:submarine:relationship_ontology",
+  "version": "1.0.0",
+  "description": "Semantic graph relationship ontology linking submarine taxonomy, components, propulsion, sensors, weapons, missions, crews, fleets, and instances. Suitable for RDF/OWL triple-store ingestion, knowledge graph construction, and PhysWorldLM simulation scene graph assembly.",
+  "namespace": "pwlm:sub:rel",
+
+  "RelationshipTypes": {
+    "structural": {
+      "hasComponent": {
+        "id": "pwlm:rel:hasComponent",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:comp:*",
+        "inverse": "isComponentOf",
+        "cardinality": "one-to-many",
+        "simulation_role": "Scene graph parent-child link; child transform is relative to parent hull frame."
+      },
+      "isComponentOf": {
+        "id": "pwlm:rel:isComponentOf",
+        "domain": "pwlm:sub:comp:*",
+        "range": "pwlm:sub:PlatformClass",
+        "inverse": "hasComponent"
+      },
+      "hasSubsystem": {
+        "id": "pwlm:rel:hasSubsystem",
+        "domain": "pwlm:sub:comp:*",
+        "range": "pwlm:sub:comp:*",
+        "description": "A subsystem is a functionally grouped collection of components within a parent system.",
+        "examples": [
+          ["Hull", "BallastTank"],
+          ["CombatManagement", "FireControlSystem"],
+          ["Sonar", "TowedArraySonar"]
+        ]
+      },
+      "contains": {
+        "id": "pwlm:rel:contains",
+        "domain": "pwlm:sub:comp:*",
+        "range": "pwlm:sub:comp:*",
+        "description": "Physical containment: one component is physically housed inside another.",
+        "examples": [
+          ["Sail", "Periscope"],
+          ["Sail", "OptronicMast"],
+          ["LaunchBay", "UUV"]
+        ]
+      },
+      "matesTo": {
+        "id": "pwlm:rel:matesTo",
+        "description": "Physical interface between two components (e.g. DSRV mates to escape hatch).",
+        "examples": [
+          ["DSRV", "EscapeTrunk"],
+          ["UUV", "DockingSystem"]
+        ]
+      }
+    },
+
+    "functional": {
+      "usesPropulsion": {
+        "id": "pwlm:rel:usesPropulsion",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:comp:Propulsion",
+        "examples": [
+          ["SSN", "NuclearReactor"],
+          ["SSK", "DieselEngine"],
+          ["SSP", "AIPFuelCell"],
+          ["SSA", "BatterySystem"]
+        ]
+      },
+      "hasSensor": {
+        "id": "pwlm:rel:hasSensor",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": ["pwlm:sub:sys:Sonar", "pwlm:sub:sys:Sensors"],
+        "cardinality": "one-to-many",
+        "examples": [
+          ["SSN", "PassiveSonar"],
+          ["SSN", "ActiveSonar"],
+          ["SSN", "TowedArraySonar"],
+          ["SSN", "OptronicMast"],
+          ["SSN", "ESM"]
+        ]
+      },
+      "hasWeapon": {
+        "id": "pwlm:rel:hasWeapon",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:comp:LaunchSystem",
+        "examples": [
+          ["SSN", "TorpedoTube"],
+          ["SSN", "VerticalLaunchSystem"],
+          ["SSBN", "MissileTube"],
+          ["SSK", "TorpedoTube"],
+          ["SSK", "MineDeploymentSystem"]
+        ]
+      },
+      "launches": {
+        "id": "pwlm:rel:launches",
+        "domain": "pwlm:sub:comp:LaunchSystem",
+        "range": "pwlm:weapon:*",
+        "cardinality": "one-to-many",
+        "examples": [
+          ["TorpedoTube", "HeavyweightTorpedo"],
+          ["VLS", "TomahawkSLCM"],
+          ["MissileTube", "TridentIID5"],
+          ["UUVTube", "ISRUUV"],
+          ["MineDeployment", "InfluenceMine"]
+        ]
+      },
+      "deploys": {
+        "id": "pwlm:rel:deploys",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": ["pwlm:sub:sys:UUV", "pwlm:weapon:Mine", "pwlm:sub:comp:LockOut"],
+        "examples": [
+          ["SSGN", "AUV"],
+          ["SSN", "DecoyUUV"],
+          ["SSK", "NavalMine"]
+        ]
+      },
+      "carries": {
+        "id": "pwlm:rel:carries",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:sys:UUV",
+        "examples": [
+          ["SSN", "OrcaXLUUV"],
+          ["SSGN", "MCM_UUV"]
+        ]
+      },
+      "navigatesUsing": {
+        "id": "pwlm:rel:navigatesUsing",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:sys:Navigation",
+        "examples": [
+          ["All", "INS"],
+          ["All", "DVL"],
+          ["SSN", "GPS (at PD)"],
+          ["SSA", "USBL"]
+        ]
+      },
+      "communicatesVia": {
+        "id": "pwlm:rel:communicatesVia",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:sys:Comms",
+        "examples": [
+          ["SSBN", "ELF"],
+          ["SSBN", "VLF"],
+          ["SSN", "VLF"],
+          ["SSN", "SATCOM (at PD)"],
+          ["SSN", "DataLink"],
+          ["SSA", "AcousticComm"]
+        ]
+      },
+      "performsMission": {
+        "id": "pwlm:rel:performsMission",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:MissionRole",
+        "examples": [
+          ["SSBN", "StrategicDeterrence"],
+          ["SSN", "SeaDenial"],
+          ["SSN", "ISR"],
+          ["SSK", "MineLaying"],
+          ["SSP", "SeaDenial"],
+          ["SSA", "OceanographicSurvey"]
+        ]
+      },
+      "usesCountermeasure": {
+        "id": "pwlm:rel:usesCountermeasure",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:sys:EW",
+        "examples": [
+          ["SSN", "AcousticDecoy"],
+          ["SSN", "TowedDecoy"],
+          ["SSK", "NoiseGenerator"]
+        ]
+      },
+      "controlledBy": {
+        "id": "pwlm:rel:controlledBy",
+        "domain": ["pwlm:sub:sys:UUV", "pwlm:sub:SSA"],
+        "range": ["pwlm:sub:sys:Autonomous", "pwlm:sub:sys:UUVLink"],
+        "examples": [
+          ["AUV", "AIMissionPlanner"],
+          ["ROV", "UUVControlLink"],
+          ["OrcaXLUUV", "AutonomousMissionController"]
+        ]
+      },
+      "managesSignature": {
+        "id": "pwlm:rel:managesSignature",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:comp:SignatureMgmt",
+        "examples": [
+          ["SSN", "AcousticSignature"],
+          ["SSK", "MagneticSignature"],
+          ["SSP", "PressureSignature"],
+          ["All", "Degaussing"]
+        ]
+      }
+    },
+
+    "operational": {
+      "operatedBy": {
+        "id": "pwlm:rel:operatedBy",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:org:NavalCrew",
+        "examples": [
+          ["SSN", "AttackSubmCrew"],
+          ["SSBN", "BlueCrew/GoldCrew"]
+        ]
+      },
+      "belongsTo": {
+        "id": "pwlm:rel:belongsTo",
+        "domain": "pwlm:sub:inst:*",
+        "range": "pwlm:org:NavalFleet",
+        "examples": [
+          ["USS_Virginia", "USNavySubForce"],
+          ["Borei_K550", "RussianPacificFleet"]
+        ]
+      },
+      "stationedAt": {
+        "id": "pwlm:rel:stationedAt",
+        "domain": "pwlm:sub:inst:*",
+        "range": "pwlm:infra:NavalBase",
+        "examples": [
+          ["USS_Virginia", "NavalSubBase_NewLondon"],
+          ["HMS_Astute", "HMNB_Clyde_Faslane"]
+        ]
+      },
+      "isEscortedBy": {
+        "id": "pwlm:rel:isEscortedBy",
+        "domain": "pwlm:sub:inst:SSBN",
+        "range": "pwlm:sub:inst:SSN",
+        "description": "SSBN deterrent patrol escort by SSN in some navies."
+      },
+      "coordinatesWith": {
+        "id": "pwlm:rel:coordinatesWith",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": ["pwlm:platform:Aircraft", "pwlm:platform:Surface", "pwlm:sub:PlatformClass"],
+        "examples": [
+          ["SSN", "MaritimePatrolAircraft_P8"],
+          ["SSN", "DestroyerASW"],
+          ["OrcaXLUUV", "VirginiaBatchV"]
+        ]
+      },
+      "participatesIn": {
+        "id": "pwlm:rel:participatesIn",
+        "domain": "pwlm:sub:inst:*",
+        "range": "pwlm:ops:NavalOperation",
+        "description": "Links specific submarine instance to an operational event, exercise, or patrol."
+      }
+    },
+
+    "hydrodynamic": {
+      "exhibitsSignature": {
+        "id": "pwlm:rel:exhibitsSignature",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:comp:SignatureMgmt",
+        "simulation_role": "Drives detectability computation in acoustic and sensor models."
+      },
+      "governedByDynamics": {
+        "id": "pwlm:rel:governedByDynamics",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:comp:Hydrodynamics",
+        "description": "Links platform to its hydrodynamic model; used by PhysWorldLM physics engine.",
+        "examples": [
+          ["SSN", "ManeuveringDynamics"],
+          ["SSK", "BuoyancyControl"],
+          ["SSP", "DiveRate"]
+        ]
+      },
+      "controlledByAutopilot": {
+        "id": "pwlm:rel:controlledByAutopilot",
+        "domain": "pwlm:sub:PlatformClass",
+        "range": "pwlm:sub:sys:Autonomous",
+        "examples": [
+          ["SSN", "DepthController"],
+          ["SSN", "Autopilot"],
+          ["SSA", "AIMissionPlanner"]
+        ]
+      }
+    },
+
+    "information": {
+      "feedsDataTo": {
+        "id": "pwlm:rel:feedsDataTo",
+        "description": "Information flow relationship between systems.",
+        "examples": [
+          ["PassiveSonar", "AcousticProcessingUnit"],
+          ["AcousticProcessingUnit", "TargetMotionAnalysis"],
+          ["TargetMotionAnalysis", "FireControlSystem"],
+          ["FireControlSystem", "TorpedoTube"],
+          ["ESM", "TacticalPicture"],
+          ["EnvironmentalSensors", "AIMissionPlanner"],
+          ["DVL", "INS"],
+          ["OptronicMast", "CombatManagementComputer"]
+        ]
+      },
+      "triggersAction": {
+        "id": "pwlm:rel:triggersAction",
+        "description": "Event-driven causal relationship between system state and action.",
+        "examples": [
+          ["FloodDetection", "CompartmentIsolation"],
+          ["ThreatDetectionAI", "AcousticDecoy"],
+          ["ReactorSCRAM", "EmergencyPowerUnit"],
+          ["FireDetection", "FireSuppression"],
+          ["TorpedoAlert", "CollisionAvoidance"]
+        ]
+      },
+      "classifies": {
+        "id": "pwlm:rel:classifies",
+        "examples": [
+          ["AcousticProcessingUnit", "SonarContact"],
+          ["ThreatDetectionAI", "UnderWaterThreat"]
+        ]
+      }
+    },
+
+    "physworldlm_simulation": {
+      "hasSimModel": {
+        "id": "pwlm:rel:hasSimModel",
+        "description": "Links an ontology entity to its PhysWorldLM simulation model class.",
+        "examples": [
+          ["SSN", "RigidBodyHydrodynamicsModel"],
+          ["TorpedoTube", "ImpulseLaunchModel"],
+          ["NuclearReactor", "PWRThermalModel"],
+          ["AcousticDecoy", "AcousticSourceModel"],
+          ["BallastTank", "BuoyancyVolumeModel"]
+        ]
+      },
+      "hasStateVariable": {
+        "id": "pwlm:rel:hasStateVariable",
+        "description": "Dynamic simulation state variables for this entity.",
+        "examples": [
+          ["SSN", ["position_NED_m", "velocity_body_m_per_s", "depth_m", "heading_deg", "pitch_deg", "roll_deg", "speed_kt"]],
+          ["BatterySystem", ["soc_pct", "voltage_V", "temperature_C"]],
+          ["BallastTank", ["fill_fraction", "internal_pressure_kPa"]],
+          ["AIPFuelCell", ["h2_remaining_kg", "power_output_kW"]]
+        ]
+      },
+      "hasTriggerCondition": {
+        "id": "pwlm:rel:hasTriggerCondition",
+        "description": "Condition that activates or deactivates a simulation behavior.",
+        "examples": [
+          ["EmergencyBlow", "depth < 50m AND flood_rate > threshold"],
+          ["ReactorSCRAM", "reactor_temperature > limit OR manual_command"],
+          ["CollisionAvoidance", "obstacle_range < safety_distance_m"]
+        ]
+      },
+      "hasFailureMode": {
+        "id": "pwlm:rel:hasFailureMode",
+        "description": "Possible failure modes modeled in simulation.",
+        "examples": [
+          ["PressureHull", "collapse_at_crush_depth"],
+          ["BatterySystem", "thermal_runaway"],
+          ["TorpedoTube", "misfire"],
+          ["ReactorCoolant", "LOCA"],
+          ["TowedArray", "cable_break"]
+        ]
+      },
+      "interfacesWith": {
+        "id": "pwlm:rel:interfacesWith",
+        "description": "Cross-ontology interfaces to other PhysWorldLM domain ontologies.",
+        "cross_ontology_links": [
+          { "source": "pwlm:sub:sys:Sonar", "target": "pwlm:ocean:AcousticEnvironment", "relationship": "perceives" },
+          { "source": "pwlm:sub:comp:AcousticSig", "target": "pwlm:ocean:AcousticEnvironment", "relationship": "emitsInto" },
+          { "source": "pwlm:sub:sys:Navigation", "target": "pwlm:ocean:Bathymetry", "relationship": "referencedBy" },
+          { "source": "pwlm:sub:comp:Hydrodynamics", "target": "pwlm:ocean:CurrentField", "relationship": "affectedBy" },
+          { "source": "pwlm:sub:comp:BallastTank", "target": "pwlm:ocean:Density", "relationship": "dependsOn" },
+          { "source": "pwlm:sub:comp:AnechoicTiles", "target": "pwlm:ocean:AcousticEnvironment", "relationship": "reducesSignatureIn" },
+          { "source": "pwlm:sub:sys:VLS", "target": "pwlm:weapon:CruiseMissile", "relationship": "launches" },
+          { "source": "pwlm:sub:inst:*", "target": "pwlm:infra:NavalBase", "relationship": "homeportedAt" },
+          { "source": "pwlm:sub:inst:*", "target": "pwlm:ops:NavalTaskGroup", "relationship": "assignedTo" }
+        ]
+      }
+    }
+  },
+
+  "TripleExamples": {
+    "description": "Sample RDF-style triples for knowledge graph ingestion.",
+    "triples": [
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:hasComponent", "pwlm:sub:comp:PumpJet"],
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:hasSensor", "pwlm:sub:sys:TAS"],
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:hasWeapon", "pwlm:sub:comp:VLS"],
+      ["pwlm:sub:comp:VLS", "pwlm:rel:launches", "pwlm:weapon:TomahawkSLCM"],
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:usesPropulsion", "pwlm:sub:comp:NuclearReactor"],
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:performsMission", "pwlm:sub:mission:ISR"],
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:navigatesUsing", "pwlm:sub:sys:INS"],
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:communicatesVia", "pwlm:sub:sys:VLF"],
+      ["pwlm:sub:sys:PassiveSonar", "pwlm:rel:feedsDataTo", "pwlm:sub:sys:TMA"],
+      ["pwlm:sub:sys:TMA", "pwlm:rel:feedsDataTo", "pwlm:sub:sys:FCS"],
+      ["pwlm:sub:sys:FCS", "pwlm:rel:triggers", "pwlm:sub:comp:TorpedoTube"],
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:exhibits", "pwlm:sub:comp:AcousticSig"],
+      ["pwlm:sub:comp:AcousticSig", "pwlm:rel:emitsInto", "pwlm:ocean:AcousticEnvironment"],
+      ["pwlm:sub:comp:AnechoicTiles", "pwlm:rel:reducesSignatureIn", "pwlm:ocean:AcousticEnvironment"],
+      ["pwlm:sub:inst:OhioSSBN", "pwlm:rel:performsMission", "pwlm:sub:mission:StrategicDeterrence"],
+      ["pwlm:sub:inst:OhioSSBN", "pwlm:rel:isEscortedBy", "pwlm:sub:inst:VirginiaClass"],
+      ["pwlm:sub:inst:OrcaXLUUV", "pwlm:rel:controlledBy", "pwlm:sub:sys:AIMission"],
+      ["pwlm:sub:inst:OrcaXLUUV", "pwlm:rel:coordinatesWith", "pwlm:sub:inst:VirginiaClass"],
+      ["pwlm:sub:comp:FloodDetection", "pwlm:rel:triggersAction", "pwlm:sub:comp:CompartmentIsolation"],
+      ["pwlm:sub:comp:ManeuveringDynamics", "pwlm:rel:affectedBy", "pwlm:ocean:CurrentField"],
+      ["pwlm:sub:inst:Type212A", "pwlm:rel:usesPropulsion", "pwlm:sub:comp:AIPFuelCell"],
+      ["pwlm:sub:inst:VirginiaClass", "pwlm:rel:stationedAt", "pwlm:infra:NavalSubBase_NewLondon"]
+    ]
+  }
+}

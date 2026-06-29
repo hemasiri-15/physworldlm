@@ -1,0 +1,2649 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/physics.schema.json",
+  "title": "PW-WSF-300 Physics Standard",
+  "description": "Official PhysWorldLM World Specification Physics Schema (PW-WSF-300). Engine-independent, scientifically accurate specification of all physical properties, laws, constraints, and simulation parameters governing every object and interaction in a PhysWorldLM world. Designed for longevity across military simulation, robotics, autonomous vehicles, digital twins, aerospace, naval, underwater, space, GIS, disaster simulation, reinforcement learning, scientific computing, industrial engineering, gaming, and synthetic dataset generation.",
+  "version": "1.0.0",
+  "x-committee": "PhysWorldLM World Specification Committee (PW-WSF Committee)",
+  "x-standard": "PW-WSF-300",
+  "x-status": "RELEASED",
+  "x-publication": "2025-01-01",
+  "x-revision": "1.0.0",
+  "x-authors": ["PW-WSF Committee"],
+  "x-references": [
+    "ISO 80000-1 Quantities and Units",
+    "ANSI/AIAA S-120A Mass Properties Standards",
+    "MIL-HDBK-1211 Missile Flight Simulation",
+    "NATO STANAG 4569 Protection Levels",
+    "ICAO Annex 8 Airworthiness",
+    "IMO MSC Circular 1604 Ship Stability",
+    "NIST SP 330 SI Units",
+    "IEEE 1278 Distributed Simulation"
+  ],
+  "x-compatibility": [
+    "NVIDIA PhysX", "NVIDIA Omniverse", "OpenUSD",
+    "Bullet Physics", "MuJoCo", "Gazebo", "ROS2",
+    "Unity", "Unreal Engine", "Isaac Sim",
+    "Cesium", "Blender", "OpenGL", "Vulkan", "WebGPU"
+  ],
+
+  "type": "object",
+  "required": ["physics_id", "simulation_profile"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier (RFC 4122)."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp (UTC)."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. 1.0.0."
+    },
+
+    "Vector3": {
+      "type": "object",
+      "description": "3-component Cartesian vector. Coordinate system and units determined by context.",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number", "description": "X component." },
+        "y": { "type": "number", "description": "Y component." },
+        "z": { "type": "number", "description": "Z component." }
+      }
+    },
+
+    "Matrix3x3": {
+      "type": "object",
+      "description": "Row-major 3×3 matrix. Used for inertia tensors, rotation matrices, and stress/strain tensors.",
+      "required": ["m00","m01","m02","m10","m11","m12","m20","m21","m22"],
+      "additionalProperties": false,
+      "properties": {
+        "m00": { "type": "number" }, "m01": { "type": "number" }, "m02": { "type": "number" },
+        "m10": { "type": "number" }, "m11": { "type": "number" }, "m12": { "type": "number" },
+        "m20": { "type": "number" }, "m21": { "type": "number" }, "m22": { "type": "number" }
+      }
+    },
+
+    "UnitQuantity": {
+      "type": "object",
+      "description": "A scalar physical quantity with explicit SI unit annotation, uncertainty, and precision metadata.",
+      "required": ["value", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "value":       { "type": "number", "description": "Numeric value in the specified unit." },
+        "unit":        { "type": "string", "description": "SI unit string e.g. 'kg', 'm/s', 'Pa', 'K'." },
+        "uncertainty": { "type": "number", "minimum": 0, "description": "1-sigma measurement uncertainty in same unit." },
+        "precision":   { "type": "string", "enum": ["float16","float32","float64"], "default": "float64" },
+        "notes":       { "type": "string", "description": "Engineering notes or source reference." }
+      }
+    },
+
+    "UnitVector3": {
+      "type": "object",
+      "description": "3D vector quantity with explicit SI unit.",
+      "required": ["value", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "$ref": "#/$defs/Vector3" },
+        "unit":  { "type": "string", "description": "SI unit for all three components." }
+      }
+    },
+
+    "SimulationProfile": {
+      "type": "object",
+      "description": "Top-level simulation profile. Selects the operating mode, accuracy tier, and domain context for the physics engine. Engine-agnostic — every supported backend should map these fields to its own parameters.",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "realtime", "faster_than_realtime", "offline_hifi",
+            "deterministic", "probabilistic", "monte_carlo",
+            "reinforcement_learning", "hardware_in_the_loop",
+            "software_in_the_loop", "digital_twin", "scientific_computing"
+          ],
+          "description": "Primary simulation execution mode.",
+          "default": "realtime"
+        },
+        "domain": {
+          "type": "array",
+          "description": "Application domains active in this simulation. Multiple domains may be combined.",
+          "items": {
+            "type": "string",
+            "enum": [
+              "military", "robotics", "autonomous_vehicles",
+              "aerospace", "naval", "underwater", "space",
+              "smart_city", "disaster", "industrial", "scientific",
+              "gaming", "synthetic_data", "custom"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "accuracy_tier": {
+          "type": "string",
+          "enum": ["prototype", "engineering", "high_fidelity", "research"],
+          "description": "Target physical accuracy tier. Controls which subsystems are solved at full fidelity.",
+          "default": "engineering"
+        },
+        "gpu_acceleration": {
+          "type": "boolean",
+          "description": "Enable GPU acceleration for solver and collision detection.",
+          "default": false
+        },
+        "cpu_fallback": {
+          "type": "boolean",
+          "description": "Fall back to CPU if GPU resources are unavailable.",
+          "default": true
+        },
+        "multithreading": {
+          "type": "boolean",
+          "description": "Enable multi-threaded physics solving.",
+          "default": true
+        },
+        "thread_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of worker threads. 0 = use all available cores.",
+          "default": 0
+        },
+        "asynchronous": {
+          "type": "boolean",
+          "description": "Run physics simulation asynchronously from rendering.",
+          "default": false
+        }
+      }
+    },
+
+    "WorldConstants": {
+      "type": "object",
+      "description": "Universal physical constants and planet-specific parameters governing the simulation world. All constants are given in SI units. Engine implementations shall consume these values rather than hardcoding engine defaults.",
+      "additionalProperties": false,
+      "properties": {
+        "gravitational_constant_G": {
+          "description": "Universal gravitational constant G. SI unit: m³/(kg·s²). CODATA 2018 value: 6.674e-11.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 6.674e-11, "unit": "m3/(kg*s2)" }
+        },
+        "gravitational_acceleration": {
+          "description": "Local gravitational acceleration vector. SI unit: m/s². Earth standard: (0, 0, -9.80665) in Z-up ENU. Override per planet.",
+          "$ref": "#/$defs/UnitVector3",
+          "default": { "value": { "x": 0, "y": 0, "z": -9.80665 }, "unit": "m/s2" }
+        },
+        "speed_of_light_mps": {
+          "description": "Speed of light in vacuum c. SI unit: m/s. Exact value: 299792458.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 299792458, "unit": "m/s" }
+        },
+        "speed_of_sound_mps": {
+          "description": "Speed of sound in air at sea level, 20°C, 50% humidity. SI unit: m/s.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 343.0, "unit": "m/s" }
+        },
+        "boltzmann_constant": {
+          "description": "Boltzmann constant k_B. SI unit: J/K. CODATA 2018 exact: 1.380649e-23.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 1.380649e-23, "unit": "J/K" }
+        },
+        "planck_constant": {
+          "description": "Planck constant h. SI unit: J·s. CODATA 2018 exact: 6.62607015e-34.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 6.62607015e-34, "unit": "J*s" }
+        },
+        "universal_gas_constant": {
+          "description": "Universal gas constant R. SI unit: J/(mol·K). Exact: 8.314462618.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 8.314462618, "unit": "J/(mol*K)" }
+        },
+        "standard_atmospheric_pressure_pa": {
+          "description": "International Standard Atmosphere (ISA) sea-level pressure. SI unit: Pa.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 101325.0, "unit": "Pa" }
+        },
+        "standard_air_density_kg_m3": {
+          "description": "ISA sea-level air density at 15°C. SI unit: kg/m³.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 1.225, "unit": "kg/m3" }
+        },
+        "air_dynamic_viscosity_pa_s": {
+          "description": "Dynamic viscosity of dry air at 20°C, 1 atm. SI unit: Pa·s.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 1.8e-5, "unit": "Pa*s" }
+        },
+        "freshwater_density_kg_m3": {
+          "description": "Density of fresh water at 4°C (maximum). SI unit: kg/m³.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 1000.0, "unit": "kg/m3" }
+        },
+        "seawater_density_kg_m3": {
+          "description": "Density of standard seawater at 25°C, 35 ppt salinity. SI unit: kg/m³.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 1025.0, "unit": "kg/m3" }
+        },
+        "earth_rotation_rate_rad_s": {
+          "description": "Earth's sidereal rotation rate used for Coriolis effect computation. SI unit: rad/s.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 7.2921150e-5, "unit": "rad/s" }
+        },
+        "coriolis_enabled": {
+          "type": "boolean",
+          "description": "Enable Coriolis and Eötvös effects. Required for long-range ballistics and oceanographic simulations.",
+          "default": false
+        },
+        "earth_radius_m": {
+          "description": "Mean Earth radius (WGS-84 approximation). SI unit: m.",
+          "$ref": "#/$defs/UnitQuantity",
+          "default": { "value": 6371000.0, "unit": "m" }
+        },
+        "magnetic_field": {
+          "description": "Background magnetic field vector at world origin. SI unit: T (Tesla). Default: approximate surface value.",
+          "$ref": "#/$defs/UnitVector3",
+          "default": { "value": { "x": 2e-5, "y": 0, "z": -4.5e-5 }, "unit": "T" }
+        },
+        "planet": {
+          "type": "string",
+          "enum": ["Earth", "Moon", "Mars", "Venus", "Titan", "custom"],
+          "description": "Host planet. Determines default gravity, atmosphere, and rotation constants.",
+          "default": "Earth"
+        },
+        "planet_custom_parameters": {
+          "type": "object",
+          "description": "Overrides for non-standard planets. Keys match WorldConstants property names.",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "NumericalSolver": {
+      "type": "object",
+      "description": "Numerical integration and solver configuration. Decoupled from engine implementation — describes desired solver behaviour, not internal engine parameters.",
+      "additionalProperties": false,
+      "properties": {
+        "integrator": {
+          "type": "string",
+          "enum": ["euler_explicit", "euler_semi_implicit", "verlet", "leapfrog", "rk4", "rk45_adaptive", "pbd", "xpbd", "custom"],
+          "description": "Numerical integrator type. RK4 for high accuracy; PBD/XPBD for real-time constraint satisfaction.",
+          "default": "euler_semi_implicit"
+        },
+        "fixed_timestep_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Fixed physics timestep in seconds. SI unit: s. Lower values increase accuracy and cost.",
+          "default": 0.01
+        },
+        "variable_timestep": {
+          "type": "boolean",
+          "description": "Allow adaptive timestep. Only valid with adaptive integrators (rk45_adaptive).",
+          "default": false
+        },
+        "max_timestep_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Maximum adaptive timestep upper bound. SI unit: s.",
+          "default": 0.033
+        },
+        "min_timestep_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Minimum adaptive timestep lower bound. SI unit: s.",
+          "default": 1e-6
+        },
+        "substeps": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of physics substeps per simulation tick. Higher substeps improve constraint and contact stability.",
+          "default": 4
+        },
+        "solver_iterations": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Constraint solver iterations per substep.",
+          "default": 8
+        },
+        "collision_iterations": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Contact resolution iterations per substep.",
+          "default": 4
+        },
+        "tolerance": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Solver convergence tolerance. Dimensionless or in relevant SI units depending on solver type.",
+          "default": 1e-6
+        },
+        "deterministic": {
+          "type": "boolean",
+          "description": "Enforce deterministic simulation. Disables all non-deterministic optimisations (e.g. thread-order dependent operations).",
+          "default": true
+        },
+        "error_estimation": {
+          "type": "boolean",
+          "description": "Enable local truncation error estimation for adaptive stepping.",
+          "default": false
+        },
+        "precision": {
+          "type": "string",
+          "enum": ["float16", "float32", "float64"],
+          "description": "Floating-point precision for solver arithmetic. float64 required for long-range ballistics and orbital mechanics.",
+          "default": "float64"
+        },
+        "stabilization_enabled": {
+          "type": "boolean",
+          "description": "Enable Baumgarte stabilisation or similar constraint drift correction.",
+          "default": true
+        },
+        "sleep_threshold_energy": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Kinetic energy threshold below which a body is put to sleep. SI unit: J. Zero = never sleep.",
+          "default": 0.005
+        },
+        "sleep_time_threshold_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Time a body must be below sleep_threshold_energy before sleeping. SI unit: s.",
+          "default": 0.5
+        }
+      }
+    },
+
+    "Units": {
+      "type": "object",
+      "description": "Unit system declaration for this Physics object. All values in this schema are assumed to use the declared units. Engines shall convert to their internal system at load time.",
+      "additionalProperties": false,
+      "properties": {
+        "length":        { "type": "string", "enum": ["m","ft","cm","mm","km","nm_nautical"], "default": "m" },
+        "mass":          { "type": "string", "enum": ["kg","g","lb","tonne"], "default": "kg" },
+        "time":          { "type": "string", "enum": ["s","ms","us"], "default": "s" },
+        "angle":         { "type": "string", "enum": ["rad","deg"], "default": "rad" },
+        "temperature":   { "type": "string", "enum": ["K","C","F"], "default": "K" },
+        "force":         { "type": "string", "enum": ["N","lbf","kN","MN"], "default": "N" },
+        "pressure":      { "type": "string", "enum": ["Pa","kPa","MPa","psi","atm","bar"], "default": "Pa" },
+        "energy":        { "type": "string", "enum": ["J","kJ","MJ","BTU"], "default": "J" },
+        "power":         { "type": "string", "enum": ["W","kW","MW","hp"], "default": "W" },
+        "speed":         { "type": "string", "enum": ["m/s","km/h","knots","ft/s","mph"], "default": "m/s" },
+        "current":       { "type": "string", "enum": ["A","mA"], "default": "A" },
+        "magnetic_flux_density": { "type": "string", "enum": ["T","mT","uT","G"], "default": "T" },
+        "frequency":     { "type": "string", "enum": ["Hz","kHz","MHz","GHz"], "default": "Hz" }
+      }
+    },
+
+    "RigidBodyDynamics": {
+      "type": "object",
+      "description": "Rigid body mechanics properties. A rigid body is an idealised solid with no deformation. These properties drive Newtonian dynamics: F=ma, τ=Iα, and constraint solving.",
+      "additionalProperties": false,
+      "properties": {
+        "body_type": {
+          "type": "string",
+          "enum": ["static", "kinematic", "dynamic"],
+          "description": "Static: infinite mass, zero velocity. Kinematic: motion driven externally. Dynamic: fully simulated.",
+          "default": "dynamic"
+        },
+        "mass_kg": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Total body mass. SI unit: kg. Must be strictly positive for dynamic bodies."
+        },
+        "density_kg_m3": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Average material density used when mass is derived from geometry volume. SI unit: kg/m³."
+        },
+        "volume_m3": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Total enclosed volume. SI unit: m³. Derived from geometry if not specified."
+        },
+        "center_of_mass": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Center of mass position in local body frame. SI unit: m."
+        },
+        "inertia_tensor": {
+          "$ref": "#/$defs/Matrix3x3",
+          "description": "Full 3×3 inertia tensor in body frame about center of mass. SI unit: kg·m². Must be symmetric positive definite."
+        },
+        "principal_moments_of_inertia": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Principal moments of inertia Ixx, Iyy, Izz in principal axis frame. SI unit: kg·m²."
+        },
+        "principal_axes": {
+          "$ref": "#/$defs/Matrix3x3",
+          "description": "Rotation matrix mapping body frame to principal axis frame."
+        },
+        "linear_velocity_mps": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Initial linear velocity in world frame. SI unit: m/s."
+        },
+        "angular_velocity_rad_s": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Initial angular velocity in body frame. SI unit: rad/s."
+        },
+        "linear_damping": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Linear velocity damping coefficient. Dimensionless (s⁻¹). Models aerodynamic drag at low precision. Range: [0, 1).",
+          "default": 0.01
+        },
+        "angular_damping": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Angular velocity damping coefficient. Dimensionless (s⁻¹). Range: [0, 1).",
+          "default": 0.05
+        },
+        "friction_static": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Static friction coefficient μ_s. Coulomb friction model. Dimensionless. Typical range: [0.1, 1.5].",
+          "default": 0.5
+        },
+        "friction_kinetic": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Kinetic (sliding) friction coefficient μ_k. Must be ≤ friction_static. Dimensionless.",
+          "default": 0.4
+        },
+        "friction_rolling": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Rolling resistance coefficient. Dimensionless. Typical range: [0.001, 0.05].",
+          "default": 0.01
+        },
+        "friction_spinning": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Spinning (torsional) friction coefficient. Dimensionless.",
+          "default": 0.0
+        },
+        "restitution": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Coefficient of restitution (bounciness) e. 0 = perfectly inelastic, 1 = perfectly elastic. Dimensionless.",
+          "default": 0.2
+        },
+        "gravity_scale": {
+          "type": "number",
+          "description": "Multiplier applied to world gravity for this body. 0 = no gravity, 1 = standard, negative = inverted.",
+          "default": 1.0
+        },
+        "gravity_override": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Per-body gravitational acceleration override. Overrides gravity_scale if set. SI unit: m/s²."
+        },
+        "ccd_enabled": {
+          "type": "boolean",
+          "description": "Enable Continuous Collision Detection. Required for fast-moving bodies (projectiles, missiles) to prevent tunnelling.",
+          "default": false
+        },
+        "ccd_min_distance_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Minimum distance threshold for CCD activation. SI unit: m.",
+          "default": 0.01
+        },
+        "sleeping_enabled": {
+          "type": "boolean",
+          "description": "Allow body to sleep when below energy threshold to reduce CPU cost.",
+          "default": true
+        },
+        "solver_position_iterations": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Per-body position solver iteration override. Overrides global NumericalSolver setting.",
+          "default": 8
+        },
+        "solver_velocity_iterations": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Per-body velocity solver iteration override.",
+          "default": 4
+        },
+        "max_linear_velocity_mps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Velocity clamping limit for numerical stability. SI unit: m/s. 0 = unclamped.",
+          "default": 0
+        },
+        "max_angular_velocity_rad_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Angular velocity clamping limit. SI unit: rad/s. 0 = unclamped.",
+          "default": 0
+        }
+      }
+    },
+
+    "SoftBodyDynamics": {
+      "type": "object",
+      "description": "Deformable body mechanics. Covers elastic, viscoelastic, and elasto-plastic materials including cloth, rope, biological tissue, armour deformation, and tyre deformation.",
+      "additionalProperties": false,
+      "properties": {
+        "young_modulus_pa": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Young's modulus E (elastic modulus). Resistance to tensile/compressive deformation. SI unit: Pa. Steel ≈ 200 GPa."
+        },
+        "shear_modulus_pa": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Shear modulus G. Resistance to shear deformation. SI unit: Pa."
+        },
+        "bulk_modulus_pa": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Bulk modulus K. Resistance to volumetric compression. SI unit: Pa."
+        },
+        "poisson_ratio": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 0.5,
+          "description": "Poisson's ratio ν. Ratio of transverse to axial strain. Range: (-1, 0.5]. Most materials: 0.2–0.4. Rubber ≈ 0.5."
+        },
+        "stiffness": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Simulation stiffness parameter (engine-normalised). Range: [0, 1]. 1 = maximally stiff (approaches rigid). Used by PBD solvers.",
+          "default": 0.5
+        },
+        "damping": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Soft body internal damping coefficient. Range: [0, 1].",
+          "default": 0.1
+        },
+        "yield_strength_pa": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Yield stress σ_y. Stress at which plastic deformation begins. SI unit: Pa."
+        },
+        "ultimate_tensile_strength_pa": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Ultimate tensile strength (UTS). Maximum stress before fracture under tension. SI unit: Pa."
+        },
+        "compressive_strength_pa": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum stress before failure under compression. SI unit: Pa."
+        },
+        "fracture_toughness_pa_sqrt_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mode I fracture toughness K_IC. Resistance to crack propagation. SI unit: Pa·√m."
+        },
+        "plastic_deformation_enabled": {
+          "type": "boolean",
+          "description": "Allow permanent (plastic) deformation beyond yield point.",
+          "default": false
+        },
+        "fracture_enabled": {
+          "type": "boolean",
+          "description": "Allow mesh fracture/splitting when stress exceeds fracture criterion.",
+          "default": false
+        },
+        "tearing_enabled": {
+          "type": "boolean",
+          "description": "Allow cloth/membrane tearing when strain exceeds tearing threshold.",
+          "default": false
+        },
+        "tearing_strain_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Engineering strain ε at which tearing occurs. Dimensionless."
+        },
+        "viscoelastic_model": {
+          "type": "string",
+          "enum": ["none", "maxwell", "kelvin_voigt", "standard_linear_solid", "custom"],
+          "description": "Viscoelastic model for time-dependent deformation (creep, stress relaxation).",
+          "default": "none"
+        },
+        "relaxation_time_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Characteristic relaxation time for viscoelastic model. SI unit: s."
+        },
+        "fatigue_enabled": {
+          "type": "boolean",
+          "description": "Enable cyclic fatigue degradation of material properties.",
+          "default": false
+        },
+        "fatigue_cycle_limit": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of stress cycles before fatigue failure (S-N curve intercept)."
+        },
+        "simulation_resolution": {
+          "type": "string",
+          "enum": ["coarse", "medium", "fine", "adaptive"],
+          "description": "Mesh resolution for deformable simulation.",
+          "default": "medium"
+        }
+      }
+    },
+
+    "FluidDynamics": {
+      "type": "object",
+      "description": "Fluid dynamics properties for liquid and gas simulation. Covers incompressible and compressible flows, turbulence, buoyancy, drag, and free-surface effects. Referenced by both aerodynamic and hydrodynamic subsystems.",
+      "additionalProperties": false,
+      "properties": {
+        "fluid_type": {
+          "type": "string",
+          "enum": ["air", "water_fresh", "water_salt", "fuel_jet", "fuel_diesel", "hydraulic_oil", "blood", "custom"],
+          "description": "Working fluid medium.",
+          "default": "air"
+        },
+        "density_kg_m3": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Fluid density ρ. SI unit: kg/m³."
+        },
+        "dynamic_viscosity_pa_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Dynamic viscosity μ. SI unit: Pa·s."
+        },
+        "kinematic_viscosity_m2_s": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Kinematic viscosity ν = μ/ρ. SI unit: m²/s."
+        },
+        "bulk_velocity_mps": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Mean bulk flow velocity vector. SI unit: m/s."
+        },
+        "turbulence_model": {
+          "type": "string",
+          "enum": ["none", "k_epsilon", "k_omega_sst", "les", "dns", "empirical", "custom"],
+          "description": "Turbulence model. 'empirical' uses Reynolds-number–based correlations without solving RANS.",
+          "default": "empirical"
+        },
+        "turbulence_intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Turbulence intensity I = u'/U. Dimensionless. Typical: 0.01–0.2.",
+          "default": 0.05
+        },
+        "reynolds_number": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Reynolds number Re = ρUL/μ for the characteristic length. Dimensionless. Used to select flow regime and correlations."
+        },
+        "flow_regime": {
+          "type": "string",
+          "enum": ["laminar", "transitional", "turbulent"],
+          "description": "Governing flow regime. Derived from Reynolds number if not specified."
+        },
+        "compressible": {
+          "type": "boolean",
+          "description": "Enable compressible flow effects (required for Mach > 0.3).",
+          "default": false
+        },
+        "mach_number": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mach number M = v/c_sound at current flight condition. Dimensionless."
+        },
+        "buoyancy_enabled": {
+          "type": "boolean",
+          "description": "Apply Archimedes buoyancy force. Required for floating or submerged bodies.",
+          "default": false
+        },
+        "submerged_volume_m3": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Volume of body submerged in fluid. SI unit: m³. Computed by engine from geometry if not specified."
+        },
+        "drag_model": {
+          "type": "string",
+          "enum": ["stokes", "newton", "quadratic", "cd_table", "custom"],
+          "description": "Drag model. Newton/quadratic for turbulent high-Re; Stokes for creeping low-Re flow.",
+          "default": "quadratic"
+        },
+        "drag_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Dimensionless drag coefficient C_D. Reference area must be specified separately. Typical range: 0.1–2.0."
+        },
+        "drag_reference_area_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Reference area A for drag force: F_D = 0.5 ρ v² C_D A. SI unit: m²."
+        },
+        "cavitation_enabled": {
+          "type": "boolean",
+          "description": "Enable cavitation modelling (bubble formation at low pressure). Relevant for propellers and torpedoes.",
+          "default": false
+        },
+        "cavitation_number": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Cavitation number σ = (p - p_v) / (0.5 ρ v²). Dimensionless. Cavitation occurs when σ approaches 0."
+        },
+        "free_surface_enabled": {
+          "type": "boolean",
+          "description": "Enable free-surface simulation (waves, sloshing, wakes).",
+          "default": false
+        },
+        "wake_model": {
+          "type": "string",
+          "enum": ["none", "empirical", "vortex_lattice", "cfd_coupled"],
+          "description": "Wake generation model behind moving bodies.",
+          "default": "none"
+        },
+        "current_velocity_mps": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Ambient fluid current velocity (ocean current, wind, river flow). SI unit: m/s."
+        },
+        "pressure_field_ref": {
+          "type": "string",
+          "description": "Reference to an external pressure field data source (e.g. CFD output file or URL)."
+        }
+      }
+    },
+
+    "Aerodynamics": {
+      "type": "object",
+      "description": "Aerodynamic properties governing flight dynamics and airframe-atmosphere interaction. Applicable to aircraft, missiles, UAVs, projectiles, and any body moving through atmosphere. All coefficients are dimensionless unless noted.",
+      "additionalProperties": false,
+      "properties": {
+        "reference_area_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Wing reference area S. Used as denominator in all aerodynamic coefficient definitions. SI unit: m²."
+        },
+        "reference_chord_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mean aerodynamic chord length c̄. SI unit: m."
+        },
+        "reference_span_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Wing span b. SI unit: m."
+        },
+        "lift_coefficient_CL": {
+          "type": "number",
+          "description": "Lift coefficient C_L at nominal flight condition. Dimensionless."
+        },
+        "drag_coefficient_CD": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total drag coefficient C_D at nominal condition. Dimensionless."
+        },
+        "side_force_coefficient_CY": {
+          "type": "number",
+          "description": "Lateral force coefficient C_Y. Dimensionless."
+        },
+        "rolling_moment_Cl": {
+          "type": "number",
+          "description": "Rolling moment coefficient C_l (lowercase l). Dimensionless."
+        },
+        "pitching_moment_Cm": {
+          "type": "number",
+          "description": "Pitching moment coefficient C_m about aerodynamic centre. Dimensionless."
+        },
+        "yawing_moment_Cn": {
+          "type": "number",
+          "description": "Yawing moment coefficient C_n about body z-axis. Dimensionless."
+        },
+        "cl_alpha_per_rad": {
+          "type": "number",
+          "description": "Lift curve slope ∂C_L/∂α. SI unit: 1/rad. Typical thin airfoil: 2π."
+        },
+        "alpha_stall_rad": {
+          "type": "number",
+          "description": "Angle of attack at stall α_stall. SI unit: rad."
+        },
+        "stall_model": {
+          "type": "string",
+          "enum": ["none", "linear_drop", "lift_curve_table", "dynamic_stall_beddoes", "custom"],
+          "description": "Stall aerodynamic model.",
+          "default": "none"
+        },
+        "induced_drag_coefficient_CDi": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Induced (vortex) drag coefficient C_Di = C_L² / (π e AR). Dimensionless."
+        },
+        "parasite_drag_coefficient_CD0": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Zero-lift parasite drag coefficient C_D0. Dimensionless."
+        },
+        "oswald_efficiency_factor": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "description": "Oswald span efficiency factor e. Used for induced drag: C_Di = C_L² / (π e AR). Dimensionless.",
+          "default": 0.85
+        },
+        "aspect_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Wing aspect ratio AR = b² / S. Dimensionless."
+        },
+        "mach_number": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Current freestream Mach number. Dimensionless."
+        },
+        "reynolds_number": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Reynolds number at current condition. Dimensionless."
+        },
+        "dynamic_pressure_pa": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Freestream dynamic pressure q = 0.5 ρ v². SI unit: Pa."
+        },
+        "flight_regime": {
+          "type": "string",
+          "enum": ["subsonic", "transonic", "supersonic", "hypersonic", "orbital"],
+          "description": "Current aerodynamic flight regime."
+        },
+        "compressibility_correction": {
+          "type": "string",
+          "enum": ["none", "prandtl_glauert", "karman_tsien", "laitone", "ackeret"],
+          "description": "Compressibility correction method for subsonic/supersonic coefficients.",
+          "default": "none"
+        },
+        "aeroelasticity_enabled": {
+          "type": "boolean",
+          "description": "Enable aeroelastic coupling between structural deformation and aerodynamic loads.",
+          "default": false
+        },
+        "ground_effect_enabled": {
+          "type": "boolean",
+          "description": "Enable ground effect aerodynamics when body is near terrain.",
+          "default": false
+        },
+        "propwash_enabled": {
+          "type": "boolean",
+          "description": "Enable propeller slipstream (propwash) effects on aerodynamic surfaces.",
+          "default": false
+        },
+        "coefficient_tables_ref": {
+          "type": "string",
+          "description": "URI/path to external aerodynamic coefficient lookup tables (C_L, C_D vs α, β, Mach, Re)."
+        }
+      }
+    },
+
+    "Hydrodynamics": {
+      "type": "object",
+      "description": "Hydrodynamic properties governing vessels and submerged bodies. Covers surface ships, submarines, torpedoes, and UUVs. References Fluid Dynamics for ambient water properties.",
+      "additionalProperties": false,
+      "properties": {
+        "displacement_m3": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Volumetric displacement (volume of water displaced by hull at design draft). SI unit: m³."
+        },
+        "displacement_tonnes": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Displacement in metric tonnes (mass of water displaced). SI unit: t."
+        },
+        "draught_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Design waterline draught. SI unit: m."
+        },
+        "hull_drag_model": {
+          "type": "string",
+          "enum": ["empirical_holtrop", "empirical_ittc", "empirical_munk", "cfd", "custom"],
+          "description": "Hull resistance prediction method.",
+          "default": "empirical_holtrop"
+        },
+        "hull_drag_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Dimensionless hull total drag coefficient C_T at design speed. Dimensionless."
+        },
+        "form_factor": {
+          "type": "number",
+          "description": "Hull form factor (1+k) used in viscous resistance calculation. Dimensionless."
+        },
+        "block_coefficient_CB": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Block coefficient C_B = displacement / (L × B × T). Dimensionless. Typical: 0.5–0.85."
+        },
+        "waterplane_area_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Waterplane area A_WP. SI unit: m²."
+        },
+        "metacentric_height_m": {
+          "type": "number",
+          "description": "Metacentric height GM for initial stability. Positive = stable. SI unit: m."
+        },
+        "roll_period_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Natural roll period T_φ. SI unit: s."
+        },
+        "trim_deg": {
+          "type": "number",
+          "description": "Design trim angle (positive = bow down). SI unit: degrees."
+        },
+        "heave_added_mass": { "$ref": "#/$defs/Vector3", "description": "Added mass coefficients for heave, surge, sway. Dimensionless." },
+        "roll_damping_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Linear roll damping coefficient B_44. SI unit: kg·m²/s."
+        },
+        "propeller_efficiency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Open-water propeller efficiency η_O. Dimensionless.",
+          "default": 0.65
+        },
+        "propeller_diameter_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Propeller diameter D. SI unit: m."
+        },
+        "propeller_thrust_coefficient_KT": {
+          "type": "number",
+          "description": "Thrust coefficient K_T. Dimensionless."
+        },
+        "propeller_torque_coefficient_KQ": {
+          "type": "number",
+          "description": "Torque coefficient K_Q. Dimensionless."
+        },
+        "cavitation_enabled": {
+          "type": "boolean",
+          "description": "Enable propeller cavitation modelling.",
+          "default": false
+        },
+        "duct_type": {
+          "type": "string",
+          "enum": ["open", "ducted_accelerating", "ducted_decelerating", "none"],
+          "description": "Propeller nozzle configuration.",
+          "default": "none"
+        },
+        "depth_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Current submersion depth (centre of volume). SI unit: m."
+        },
+        "crush_depth_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum operating pressure depth for submarines. SI unit: m."
+        }
+      }
+    },
+
+    "Thermodynamics": {
+      "type": "object",
+      "description": "Thermal physics properties governing heat generation, transfer, and dissipation. Supports conduction, convection, radiation, combustion, and ignition for all entity types.",
+      "additionalProperties": false,
+      "properties": {
+        "temperature_k": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Current body temperature. SI unit: K. Must be strictly positive (0 K not physical).",
+          "default": 293.15
+        },
+        "thermal_mass_j_per_k": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Thermal mass (heat capacity) C = m × c_p. SI unit: J/K."
+        },
+        "specific_heat_capacity_j_kg_k": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Specific heat capacity at constant pressure c_p. SI unit: J/(kg·K). Air: 1005, Steel: 490, Water: 4182."
+        },
+        "thermal_conductivity_w_m_k": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Thermal conductivity λ. Fourier's law heat flux: q = -λ ∇T. SI unit: W/(m·K). Copper: 385, Steel: 50, Air: 0.026."
+        },
+        "thermal_emissivity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Surface thermal emissivity ε for Stefan-Boltzmann radiation. 0 = perfect reflector, 1 = blackbody. Dimensionless.",
+          "default": 0.9
+        },
+        "thermal_expansion_coefficient_per_k": {
+          "type": "number",
+          "description": "Linear thermal expansion coefficient α_T. SI unit: K⁻¹. Steel: 12e-6, Aluminium: 23e-6."
+        },
+        "heat_generation_w": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Internal heat generation rate (engine, electronics, crew). SI unit: W."
+        },
+        "convective_heat_transfer_enabled": {
+          "type": "boolean",
+          "description": "Enable convective heat exchange with ambient fluid.",
+          "default": true
+        },
+        "convective_heat_transfer_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Convective heat transfer coefficient h. SI unit: W/(m²·K). Forced air: 25–250; natural: 2–25."
+        },
+        "radiative_heat_transfer_enabled": {
+          "type": "boolean",
+          "description": "Enable Stefan-Boltzmann radiative heat exchange.",
+          "default": false
+        },
+        "ignition_temperature_k": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Autoignition temperature. Body combustion begins when temperature exceeds this. SI unit: K."
+        },
+        "combustion_enabled": {
+          "type": "boolean",
+          "description": "Allow body to enter combustion state when ignition temperature is exceeded.",
+          "default": false
+        },
+        "heat_of_combustion_j_kg": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Lower heating value (LHV) of combustible material. SI unit: J/kg. JP-8: 43.3 MJ/kg."
+        },
+        "burn_rate_kg_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mass burn rate. SI unit: kg/s."
+        },
+        "cooling_system": {
+          "type": "string",
+          "enum": ["none", "passive_air", "forced_air", "liquid_cooled", "evaporative", "custom"],
+          "description": "Active cooling system type.",
+          "default": "none"
+        },
+        "cooling_capacity_w": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Cooling system heat removal capacity. SI unit: W."
+        },
+        "thermal_signature_w_sr": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Infrared thermal signature (radiant intensity). SI unit: W/sr. Drives IR sensor detection."
+        },
+        "thermal_masking_factor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Thermal masking effectiveness (0 = no masking, 1 = full suppression). Dimensionless.",
+          "default": 0
+        }
+      }
+    },
+
+    "Electromagnetics": {
+      "type": "object",
+      "description": "Electromagnetic properties governing RF/radar interaction, EM interference, and sensor signatures. Drives radar detection, ECM modelling, and electromagnetic compatibility analysis.",
+      "additionalProperties": false,
+      "properties": {
+        "radar_cross_section_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Monostatic radar cross section (RCS) σ at nose-on aspect, nominal frequency. SI unit: m². Lower = stealthier. F-35 ≈ 0.0015 m²."
+        },
+        "rcs_aspect_table_ref": {
+          "type": "string",
+          "description": "URI/path to RCS vs azimuth/elevation/frequency lookup table."
+        },
+        "rf_frequency_hz": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Nominal RF operating frequency. SI unit: Hz."
+        },
+        "radar_band": {
+          "type": "string",
+          "enum": ["HF", "VHF", "UHF", "L", "S", "C", "X", "Ku", "K", "Ka", "V", "W", "custom"],
+          "description": "IEEE radar frequency band designation."
+        },
+        "dielectric_constant": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Relative permittivity ε_r of body surface material. Dimensionless."
+        },
+        "magnetic_permeability": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Relative magnetic permeability μ_r. Dimensionless. Steel ≈ 100–1000, aluminium ≈ 1."
+        },
+        "electrical_conductivity_s_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Electrical conductivity σ_e. SI unit: S/m. Copper: 5.96e7, Carbon fibre: ~3000."
+        },
+        "emi_susceptibility": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Electromagnetic interference susceptibility. 0 = fully hardened, 1 = fully susceptible. Dimensionless.",
+          "default": 0.5
+        },
+        "emi_emission_level_dbm": {
+          "type": "number",
+          "description": "Radiated EMI emission level. SI unit: dBm."
+        },
+        "em_shielding_effectiveness_db": {
+          "type": "number",
+          "minimum": 0,
+          "description": "EM shielding effectiveness (SE) of body enclosure. SI unit: dB.",
+          "default": 0
+        },
+        "infrared_signature": {
+          "type": "object",
+          "description": "Infrared (IR) signature across spectral bands.",
+          "additionalProperties": false,
+          "properties": {
+            "mwir_w_sr": { "type": "number", "minimum": 0, "description": "Mid-wave IR radiant intensity (3–5 µm). SI unit: W/sr." },
+            "lwir_w_sr": { "type": "number", "minimum": 0, "description": "Long-wave IR radiant intensity (8–12 µm). SI unit: W/sr." },
+            "exhaust_plume_enabled": { "type": "boolean", "description": "Include exhaust plume IR contribution.", "default": false },
+            "solar_reflection_enabled": { "type": "boolean", "description": "Include solar reflection IR contribution.", "default": false }
+          }
+        },
+        "stealth_coating": {
+          "type": "boolean",
+          "description": "Radar absorbent material (RAM) or stealth coating applied.",
+          "default": false
+        },
+        "emp_hardening": {
+          "type": "boolean",
+          "description": "Entity is hardened against electromagnetic pulse (EMP).",
+          "default": false
+        }
+      }
+    },
+
+    "AcousticPhysics": {
+      "type": "object",
+      "description": "Acoustic physics properties including airborne and underwater sound propagation, sonar interaction, and acoustic signatures.",
+      "additionalProperties": false,
+      "properties": {
+        "acoustic_signature_db": {
+          "type": "number",
+          "description": "Broadband acoustic source level. SI unit: dB re 1 µPa at 1 m (underwater) or dB SPL (air)."
+        },
+        "acoustic_signature_spectrum_ref": {
+          "type": "string",
+          "description": "URI/path to acoustic source spectrum vs frequency."
+        },
+        "sound_attenuation_model": {
+          "type": "string",
+          "enum": ["spherical_spreading", "cylindrical_spreading", "bellhop", "kraken", "empirical", "custom"],
+          "description": "Sound propagation attenuation model.",
+          "default": "spherical_spreading"
+        },
+        "sound_speed_profile_ref": {
+          "type": "string",
+          "description": "URI/path to sound velocity profile (SVP) data. Relevant for underwater acoustics."
+        },
+        "sonar_target_strength_db": {
+          "type": "number",
+          "description": "Target strength (TS) for active sonar detection. SI unit: dB re 1 m²."
+        },
+        "noise_reduction_factor_db": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Installed acoustic noise reduction (vibration isolation, anechoic tiles). SI unit: dB.",
+          "default": 0
+        },
+        "doppler_enabled": {
+          "type": "boolean",
+          "description": "Apply Doppler frequency shift to acoustic signatures.",
+          "default": true
+        },
+        "reverberation_model": {
+          "type": "string",
+          "enum": ["none", "image_source", "ray_tracing", "statistical"],
+          "description": "Room/environment acoustic reverberation model.",
+          "default": "none"
+        }
+      }
+    },
+
+    "OpticalPhysics": {
+      "type": "object",
+      "description": "Optical physics properties governing visual and near-IR appearance, BRDF, atmospheric attenuation, and laser interaction.",
+      "additionalProperties": false,
+      "properties": {
+        "albedo": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Diffuse surface reflectance (albedo). 0 = perfect absorber (matte black), 1 = perfect reflector. Dimensionless.",
+          "default": 0.3
+        },
+        "brdf_model": {
+          "type": "string",
+          "enum": ["lambertian", "phong", "blinn_phong", "oren_nayar", "cook_torrance", "disney_pbr", "measured", "custom"],
+          "description": "Bidirectional reflectance distribution function (BRDF) model.",
+          "default": "lambertian"
+        },
+        "brdf_data_ref": {
+          "type": "string",
+          "description": "URI/path to measured BRDF data (e.g. .merl format)."
+        },
+        "roughness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Microsurface roughness for PBR BRDF models. 0 = mirror, 1 = fully diffuse. Dimensionless.",
+          "default": 0.5
+        },
+        "metallic": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Metallic factor for PBR workflow. 0 = dielectric, 1 = metal. Dimensionless.",
+          "default": 0.0
+        },
+        "specular_reflectance": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Specular reflectance F0 at normal incidence. Dimensionless.",
+          "default": 0.04
+        },
+        "index_of_refraction": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Real part of complex index of refraction n. Used for glass, water, atmospheric refraction. Dimensionless.",
+          "default": 1.0
+        },
+        "extinction_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Imaginary part of complex refractive index k. Drives optical absorption in metals. Dimensionless.",
+          "default": 0.0
+        },
+        "atmospheric_attenuation_enabled": {
+          "type": "boolean",
+          "description": "Apply atmospheric extinction (Beer-Lambert law) based on weather state.",
+          "default": true
+        },
+        "laser_cross_section_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Optical cross section for laser/LIDAR interaction. SI unit: m²."
+        },
+        "polarisation_state": {
+          "type": "string",
+          "enum": ["unpolarised", "linear_H", "linear_V", "circular_L", "circular_R", "elliptical"],
+          "description": "Polarisation state of emitted/reflected radiation.",
+          "default": "unpolarised"
+        }
+      }
+    },
+
+    "MaterialPhysics": {
+      "type": "object",
+      "description": "Comprehensive engineering material physics properties. Drives deformation, fracture, penetration, corrosion, and sensor signature models. Supersedes the lightweight Material definition in world.schema.json for high-fidelity simulations.",
+      "additionalProperties": false,
+      "properties": {
+        "material_id": { "$ref": "#/$defs/UUID" },
+        "material_name": { "type": "string", "description": "Material designation (e.g. 'AISI 4340 Steel', 'Aluminium 7075-T6', 'UHMWPE')." },
+        "material_category": {
+          "type": "string",
+          "enum": ["metal_ferrous", "metal_non_ferrous", "ceramic", "polymer_thermoplastic",
+                   "polymer_thermoset", "composite_cfrp", "composite_gfrp", "composite_armour",
+                   "concrete", "soil", "rock", "ice", "wood", "glass", "explosive",
+                   "propellant", "fuel", "biological", "custom"],
+          "description": "Material category for database lookup and default property inheritance."
+        },
+        "density_kg_m3":              { "type": "number", "exclusiveMinimum": 0, "description": "Mass density ρ. SI unit: kg/m³." },
+        "young_modulus_pa":           { "type": "number", "exclusiveMinimum": 0, "description": "Young's modulus E. SI unit: Pa." },
+        "shear_modulus_pa":           { "type": "number", "exclusiveMinimum": 0, "description": "Shear modulus G. SI unit: Pa." },
+        "bulk_modulus_pa":            { "type": "number", "exclusiveMinimum": 0, "description": "Bulk modulus K. SI unit: Pa." },
+        "poisson_ratio":              { "type": "number", "minimum": -1, "maximum": 0.5, "description": "Poisson's ratio ν. Dimensionless." },
+        "yield_strength_pa":          { "type": "number", "minimum": 0, "description": "Yield strength σ_y. SI unit: Pa." },
+        "ultimate_tensile_strength_pa":{ "type": "number", "minimum": 0, "description": "UTS σ_UTS. SI unit: Pa." },
+        "compressive_strength_pa":    { "type": "number", "minimum": 0, "description": "Compressive strength σ_c. SI unit: Pa." },
+        "shear_strength_pa":          { "type": "number", "minimum": 0, "description": "Shear strength τ_max. SI unit: Pa." },
+        "fracture_toughness_pa_sqrt_m":{ "type": "number", "minimum": 0, "description": "Mode I fracture toughness K_IC. SI unit: Pa·√m." },
+        "hardness_vickers":           { "type": "number", "minimum": 0, "description": "Vickers hardness HV. Dimensionless." },
+        "hardness_brinell":           { "type": "number", "minimum": 0, "description": "Brinell hardness HB. Dimensionless." },
+        "thermal_conductivity_w_m_k": { "type": "number", "minimum": 0, "description": "Thermal conductivity λ. SI unit: W/(m·K)." },
+        "specific_heat_j_kg_k":       { "type": "number", "minimum": 0, "description": "Specific heat capacity c_p. SI unit: J/(kg·K)." },
+        "thermal_expansion_per_k":    { "type": "number", "description": "Linear thermal expansion coefficient α. SI unit: K⁻¹." },
+        "melting_point_k":            { "type": "number", "minimum": 0, "description": "Melting (solidus) temperature. SI unit: K." },
+        "electrical_conductivity_s_m":{ "type": "number", "minimum": 0, "description": "Electrical conductivity σ_e. SI unit: S/m." },
+        "dielectric_constant":        { "type": "number", "minimum": 1, "description": "Relative permittivity ε_r. Dimensionless." },
+        "magnetic_permeability_rel":  { "type": "number", "minimum": 0, "description": "Relative magnetic permeability μ_r. Dimensionless." },
+        "corrosion_resistance": {
+          "type": "string",
+          "enum": ["very_low", "low", "medium", "high", "very_high", "stainless", "custom"],
+          "description": "Qualitative corrosion resistance rating.",
+          "default": "medium"
+        },
+        "penetration_resistance_class": {
+          "type": "string",
+          "enum": ["none", "STANAG_1", "STANAG_2", "STANAG_3", "STANAG_4", "STANAG_5", "STANAG_6", "custom"],
+          "description": "NATO STANAG 4569 ballistic protection level.",
+          "default": "none"
+        },
+        "spall_enabled": {
+          "type": "boolean",
+          "description": "Enable spall (secondary fragmentation) on high-velocity impact.",
+          "default": false
+        },
+        "areal_density_kg_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Areal density of armour plate. SI unit: kg/m². Used in ballistic penetration models."
+        },
+        "temperature_dependent_properties": {
+          "type": "boolean",
+          "description": "Properties vary with temperature. Requires thermodynamics coupling.",
+          "default": false
+        },
+        "material_data_ref": {
+          "type": "string",
+          "description": "URI/path to full material property database record (e.g. ASM, Granta)."
+        }
+      }
+    },
+
+    "CollisionSystem": {
+      "type": "object",
+      "description": "Collision detection and response configuration. Defines collision layers, filtering, contact manifold properties, and impact response behaviour.",
+      "additionalProperties": false,
+      "properties": {
+        "collision_enabled": {
+          "type": "boolean",
+          "description": "Enable collision detection for this body.",
+          "default": true
+        },
+        "collision_layer": {
+          "type": "string",
+          "description": "Logical collision layer name. Bodies only collide with bodies whose layers appear in their collision_mask."
+        },
+        "collision_mask": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of collision layers this body can collide with.",
+          "uniqueItems": true
+        },
+        "trigger_volume": {
+          "type": "boolean",
+          "description": "Body acts as a trigger zone (detects overlap, generates events, but no physical response).",
+          "default": false
+        },
+        "ccd_enabled": {
+          "type": "boolean",
+          "description": "Enable Continuous Collision Detection for this body.",
+          "default": false
+        },
+        "contact_offset_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Distance at which contact is created before actual surface intersection. SI unit: m.",
+          "default": 0.01
+        },
+        "rest_offset_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Distance at which two bodies are considered resting. SI unit: m.",
+          "default": 0.001
+        },
+        "impact_response_model": {
+          "type": "string",
+          "enum": ["elastic", "plastic", "penetration", "fragmentation", "explosion", "custom"],
+          "description": "Physics model to apply on high-energy impact.",
+          "default": "elastic"
+        },
+        "penetration_enabled": {
+          "type": "boolean",
+          "description": "Allow projectile penetration through body using ballistic penetration model.",
+          "default": false
+        },
+        "ricochet_enabled": {
+          "type": "boolean",
+          "description": "Enable ricochet calculation on oblique impacts.",
+          "default": false
+        },
+        "collision_events_enabled": {
+          "type": "boolean",
+          "description": "Emit simulation events on collision onset and separation.",
+          "default": true
+        },
+        "collision_geometry_type": {
+          "type": "string",
+          "enum": ["exact_mesh", "convex_hull", "bounding_box", "bounding_sphere", "capsule", "compound", "none"],
+          "description": "Collision geometry simplification level.",
+          "default": "convex_hull"
+        },
+        "max_impulse_n_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum impulse clamp applied during collision response. SI unit: N·s. 0 = unclamped.",
+          "default": 0
+        }
+      }
+    },
+
+    "ConstraintSystem": {
+      "type": "object",
+      "description": "Physical joint/constraint definition. Constrains the relative motion between two bodies. Engine-agnostic representation of all common mechanical joints.",
+      "required": ["constraint_type"],
+      "additionalProperties": false,
+      "properties": {
+        "constraint_type": {
+          "type": "string",
+          "enum": [
+            "fixed", "hinge", "prismatic", "ball_socket",
+            "universal", "spring_damper", "distance",
+            "gear", "rack_and_pinion", "pulley",
+            "servo", "motor", "six_dof", "planar", "custom"
+          ],
+          "description": "Constraint/joint type."
+        },
+        "body_a_id": { "$ref": "#/$defs/UUID", "description": "First body UUID." },
+        "body_b_id": { "$ref": "#/$defs/UUID", "description": "Second body UUID." },
+        "anchor_a": { "$ref": "#/$defs/Vector3", "description": "Constraint anchor in body A local frame. SI unit: m." },
+        "anchor_b": { "$ref": "#/$defs/Vector3", "description": "Constraint anchor in body B local frame. SI unit: m." },
+        "axis": { "$ref": "#/$defs/Vector3", "description": "Constraint axis in world frame (for hinge, prismatic)." },
+        "secondary_axis": { "$ref": "#/$defs/Vector3", "description": "Secondary axis for universal/6-DOF joints." },
+        "linear_limit_lower_m": { "type": "number", "description": "Lower linear travel limit. SI unit: m." },
+        "linear_limit_upper_m": { "type": "number", "description": "Upper linear travel limit. SI unit: m." },
+        "angular_limit_lower_rad": { "type": "number", "description": "Lower angular limit. SI unit: rad." },
+        "angular_limit_upper_rad": { "type": "number", "description": "Upper angular limit. SI unit: rad." },
+        "stiffness_n_m": { "type": "number", "minimum": 0, "description": "Spring stiffness k. SI unit: N/m (linear) or N·m/rad (angular)." },
+        "damping_n_s_m": { "type": "number", "minimum": 0, "description": "Damping coefficient c. SI unit: N·s/m or N·m·s/rad." },
+        "preload_n": { "type": "number", "description": "Spring preload force/torque. SI unit: N or N·m." },
+        "breakable": { "type": "boolean", "description": "Constraint breaks when force/torque thresholds exceeded.", "default": false },
+        "break_force_n": { "type": "number", "minimum": 0, "description": "Linear force threshold for constraint break. SI unit: N." },
+        "break_torque_n_m": { "type": "number", "minimum": 0, "description": "Torque threshold for constraint break. SI unit: N·m." },
+        "target_velocity_m_s": { "type": "number", "description": "Target velocity for motor/servo constraints. SI unit: m/s or rad/s." },
+        "max_force_n": { "type": "number", "minimum": 0, "description": "Maximum force/torque the motor can exert. SI unit: N or N·m." },
+        "gear_ratio": { "type": "number", "description": "Gear transmission ratio. Dimensionless. Used with gear/rack_and_pinion." },
+        "enabled": { "type": "boolean", "default": true }
+      }
+    },
+
+    "ForceSystem": {
+      "type": "object",
+      "description": "Active forces and force field definitions applied to an entity. Covers persistent applied forces, thrust, environmental forces, and impulses.",
+      "additionalProperties": false,
+      "properties": {
+        "applied_forces": {
+          "type": "array",
+          "description": "List of named persistent forces acting on the body.",
+          "items": {
+            "type": "object",
+            "required": ["name", "force_vector"],
+            "additionalProperties": false,
+            "properties": {
+              "name":          { "type": "string" },
+              "force_type":    { "type": "string", "enum": ["constant","spring","drag","lift","thrust","buoyancy","magnetic","custom"] },
+              "force_vector":  { "$ref": "#/$defs/Vector3", "description": "Force vector in world frame. SI unit: N." },
+              "torque_vector": { "$ref": "#/$defs/Vector3", "description": "Torque vector in world frame. SI unit: N·m." },
+              "application_point": { "$ref": "#/$defs/Vector3", "description": "Point of force application in body frame. SI unit: m." },
+              "enabled":       { "type": "boolean", "default": true }
+            }
+          }
+        },
+        "thrust_n":         { "type": "number", "minimum": 0, "description": "Current thrust force magnitude. SI unit: N." },
+        "thrust_direction":  { "$ref": "#/$defs/Vector3", "description": "Thrust direction unit vector in world frame." },
+        "thrust_vectoring_enabled": { "type": "boolean", "default": false },
+        "wind_force":        { "$ref": "#/$defs/Vector3", "description": "Wind-induced force. SI unit: N." },
+        "current_force":     { "$ref": "#/$defs/Vector3", "description": "Ocean/river current-induced force. SI unit: N." },
+        "magnetic_force":    { "$ref": "#/$defs/Vector3", "description": "Magnetic (Lorentz) force. SI unit: N." },
+        "contact_force":     { "$ref": "#/$defs/Vector3", "description": "Net contact/constraint force. SI unit: N. Read-only from solver." },
+        "accumulated_impulse_n_s": { "$ref": "#/$defs/Vector3", "description": "Net impulse accumulated this physics tick. SI unit: N·s." }
+      }
+    },
+
+    "MotionState": {
+      "type": "object",
+      "description": "Current kinematic state of the entity. This section is populated by the physics engine during simulation. Initial conditions may be specified at load time.",
+      "additionalProperties": false,
+      "properties": {
+        "position":                { "$ref": "#/$defs/Vector3", "description": "World-frame position. SI unit: m." },
+        "velocity_mps":            { "$ref": "#/$defs/Vector3", "description": "World-frame linear velocity. SI unit: m/s." },
+        "acceleration_mps2":       { "$ref": "#/$defs/Vector3", "description": "World-frame linear acceleration. SI unit: m/s²." },
+        "jerk_mps3":               { "$ref": "#/$defs/Vector3", "description": "World-frame jerk (rate of change of acceleration). SI unit: m/s³." },
+        "angular_velocity_rad_s":  { "$ref": "#/$defs/Vector3", "description": "Body-frame angular velocity (ω). SI unit: rad/s." },
+        "angular_acceleration_rad_s2": { "$ref": "#/$defs/Vector3", "description": "Body-frame angular acceleration (α). SI unit: rad/s²." },
+        "speed_mps":               { "type": "number", "minimum": 0, "description": "Scalar speed |v|. SI unit: m/s." },
+        "mach_number":             { "type": "number", "minimum": 0, "description": "Current Mach number. Dimensionless." },
+        "dynamic_pressure_pa":     { "type": "number", "minimum": 0, "description": "Dynamic pressure q = 0.5 ρ v². SI unit: Pa." },
+        "altitude_m":              { "type": "number", "description": "Altitude above reference geoid. SI unit: m." },
+        "heading_rad":             { "type": "number", "description": "Heading angle from North. SI unit: rad." },
+        "pitch_rad":               { "type": "number", "description": "Pitch angle. Positive = nose up. SI unit: rad." },
+        "roll_rad":                { "type": "number", "description": "Roll angle. Positive = right wing down. SI unit: rad." },
+        "track_angle_rad":         { "type": "number", "description": "Velocity track angle from North. SI unit: rad." },
+        "predicted_trajectory": {
+          "type": "array",
+          "description": "Predicted future positions (supplied by trajectory predictor or Kalman filter).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "time_s":    { "type": "number", "description": "Simulation time of prediction. SI unit: s." },
+              "position":  { "$ref": "#/$defs/Vector3" },
+              "confidence":{ "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          }
+        }
+      }
+    },
+
+    "EnergySystem": {
+      "type": "object",
+      "description": "Energy state and balance for an entity. Tracks all energy forms relevant to simulation.",
+      "additionalProperties": false,
+      "properties": {
+        "kinetic_energy_j":     { "type": "number", "minimum": 0, "description": "Translational kinetic energy KE = 0.5 m v². SI unit: J." },
+        "rotational_energy_j":  { "type": "number", "minimum": 0, "description": "Rotational kinetic energy RE = 0.5 I ω². SI unit: J." },
+        "potential_energy_j":   { "type": "number", "description": "Gravitational potential energy PE = m g h. SI unit: J." },
+        "thermal_energy_j":     { "type": "number", "minimum": 0, "description": "Internal thermal energy. SI unit: J." },
+        "chemical_energy_j":    { "type": "number", "minimum": 0, "description": "Stored chemical energy (fuel, propellant, explosive). SI unit: J." },
+        "electrical_energy_j":  { "type": "number", "minimum": 0, "description": "Stored electrical energy (battery, capacitor). SI unit: J." },
+        "explosive_energy_j":   { "type": "number", "minimum": 0, "description": "Stored explosive energy. SI unit: J. TNT equivalent: 1 kg ≈ 4.184 MJ." },
+        "total_energy_j":       { "type": "number", "description": "Total mechanical energy (KE + RE + PE). SI unit: J." },
+        "power_dissipation_w":  { "type": "number", "minimum": 0, "description": "Instantaneous power dissipation (damping, friction, drag). SI unit: W." },
+        "efficiency":           { "type": "number", "minimum": 0, "maximum": 1, "description": "Overall energy conversion efficiency (propulsion, etc.). Dimensionless.", "default": 0.8 }
+      }
+    },
+
+    "BallisticsSystem": {
+      "type": "object",
+      "description": "6-DOF ballistic flight and terminal effects. Covers internal, external, and terminal ballistics for all projectile types — guns, artillery, missiles, rockets, bombs.",
+      "additionalProperties": false,
+      "properties": {
+        "projectile_type": {
+          "type": "string",
+          "enum": ["small_arms_FMJ", "small_arms_hollow_point", "armour_piercing",
+                   "HEAT", "HESH", "APFSDS", "HE", "HEI", "smoke", "tracer",
+                   "artillery_HE", "artillery_DPICM", "guided_artillery",
+                   "bomb_dumb", "bomb_guided_LGB", "bomb_guided_GPS",
+                   "rocket_unguided", "missile_AAM", "missile_ASM",
+                   "missile_SAM", "missile_ATM", "torpedo", "loitering_munition", "custom"],
+          "description": "Projectile classification."
+        },
+        "calibre_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Bore calibre (projectile diameter). SI unit: m."
+        },
+        "muzzle_velocity_mps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Muzzle velocity v_0 at barrel exit. SI unit: m/s."
+        },
+        "propellant_type": {
+          "type": "string",
+          "description": "Propellant designation (e.g. 'M1 propellant', 'Nitrocellulose', 'Solid HTPB')."
+        },
+        "ballistic_coefficient_kg_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Ballistic coefficient BC = m / (C_D × A). SI unit: kg/m². Higher BC = less drag effect."
+        },
+        "drag_model": {
+          "type": "string",
+          "enum": ["G1", "G2", "G5", "G6", "G7", "G8", "GL", "GS", "GI", "custom"],
+          "description": "Drag function model (ICAO G-function). G7 recommended for boat-tail long-range projectiles.",
+          "default": "G1"
+        },
+        "spin_stabilised": {
+          "type": "boolean",
+          "description": "Projectile uses rifling-induced spin for gyroscopic stabilisation.",
+          "default": false
+        },
+        "twist_rate_calibres_per_turn": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Rifling twist rate in calibres per turn. SI unit: calibres/turn."
+        },
+        "fin_stabilised": {
+          "type": "boolean",
+          "description": "Projectile uses fins (feathers) for aerodynamic stabilisation.",
+          "default": false
+        },
+        "gravity_compensation": {
+          "type": "boolean",
+          "description": "Apply elevation correction for gravity drop.",
+          "default": true
+        },
+        "coriolis_correction": {
+          "type": "boolean",
+          "description": "Apply Coriolis and Eötvös correction. Required for long-range artillery.",
+          "default": false
+        },
+        "spin_drift_enabled": {
+          "type": "boolean",
+          "description": "Apply gyroscopic spin drift correction.",
+          "default": false
+        },
+        "wind_drift_enabled": {
+          "type": "boolean",
+          "description": "Apply wind drift correction.",
+          "default": true
+        },
+        "meplat_diameter_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Flat tip (meplat) diameter. Affects drag and penetration. SI unit: m."
+        },
+        "sectional_density_kg_m2": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Sectional density SD = m / d². SI unit: kg/m²."
+        },
+        "terminal_velocity_mps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Terminal velocity under gravity with drag balanced. SI unit: m/s."
+        },
+        "time_of_flight_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Time of flight to target. SI unit: s."
+        },
+        "penetration_model": {
+          "type": "string",
+          "enum": ["none", "de_marre", "thor", "modified_petry", "tate_alekseevski", "hydrocode", "custom"],
+          "description": "Armour penetration model.",
+          "default": "none"
+        },
+        "penetration_at_0m_rha_mm": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Penetration into rolled homogeneous armour (RHA) at point-blank range. SI unit: mm."
+        },
+        "ricochet_model": {
+          "type": "string",
+          "enum": ["none", "empirical_obliquity", "de_marre_oblique", "custom"],
+          "description": "Ricochet probability/deflection model.",
+          "default": "none"
+        },
+        "minimum_ricochet_angle_rad": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Minimum obliquity angle for ricochet. SI unit: rad."
+        },
+        "fuse_type": {
+          "type": "string",
+          "enum": ["point_detonating", "delay", "proximity_fuze", "time", "pressure", "magnetic", "acoustic", "none"],
+          "description": "Fuse/fuze mechanism type.",
+          "default": "none"
+        },
+        "fuse_delay_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Fuse delay after impact/arming. SI unit: s.",
+          "default": 0.0
+        },
+        "armed": {
+          "type": "boolean",
+          "description": "Projectile is armed and capable of detonation.",
+          "default": false
+        }
+      }
+    },
+
+    "ExplosionPhysics": {
+      "type": "object",
+      "description": "Explosion physics governing blast, shockwave, fragmentation, cratering, and thermal radiation effects. Parameters based on TNT equivalent scaling laws (Hopkinson-Cranz).",
+      "additionalProperties": false,
+      "properties": {
+        "explosive_type": {
+          "type": "string",
+          "enum": ["TNT", "RDX", "HMX", "C4", "PETN", "Semtex", "Composition_B",
+                   "ANFO", "thermobaric", "shaped_charge", "nuclear_sub_kt", "custom"],
+          "description": "Explosive material type for property lookup."
+        },
+        "tnt_equivalent_kg": {
+          "type": "number",
+          "minimum": 0,
+          "description": "TNT equivalent mass W. Used in Hopkinson-Cranz scaling: Z = R / W^(1/3). SI unit: kg."
+        },
+        "explosive_mass_kg": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Actual explosive filler mass. SI unit: kg."
+        },
+        "detonation_velocity_mps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Chapman-Jouguet detonation velocity D. SI unit: m/s. TNT ≈ 6950 m/s."
+        },
+        "peak_overpressure_pa": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Peak incident overpressure P_SO at fireball radius. SI unit: Pa."
+        },
+        "blast_radius_lethal_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Radius at which peak overpressure reaches 207 kPa (fatal lung damage threshold). SI unit: m."
+        },
+        "blast_radius_50pct_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Radius at which 50% lethality is expected. SI unit: m."
+        },
+        "blast_radius_injury_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Radius at which injury-level overpressure occurs. SI unit: m."
+        },
+        "impulse_pa_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Specific impulse (positive phase impulse) i_s. SI unit: Pa·s."
+        },
+        "positive_phase_duration_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Duration of positive pressure phase t_d. SI unit: s."
+        },
+        "shockwave_velocity_mps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Initial shockwave propagation velocity. SI unit: m/s."
+        },
+        "fragmentation_enabled": {
+          "type": "boolean",
+          "description": "Generate secondary fragmentation.",
+          "default": false
+        },
+        "fragment_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of fragments spawned. Used with fragment mass distribution."
+        },
+        "fragment_mass_distribution": {
+          "type": "string",
+          "enum": ["mott_gurney", "gaussian", "uniform", "custom_table"],
+          "description": "Fragment mass distribution model.",
+          "default": "mott_gurney"
+        },
+        "fragment_velocity_mps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mean fragment initial velocity (Gurney velocity). SI unit: m/s."
+        },
+        "gurney_constant_mps": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Gurney energy √(2E) for fragment velocity estimation. SI unit: m/s. TNT ≈ 2440 m/s."
+        },
+        "fragmentation_cone_deg": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 180,
+          "description": "Half-angle of fragmentation cone (for directional warheads). SI unit: degrees.",
+          "default": 90
+        },
+        "crater_enabled": {
+          "type": "boolean",
+          "description": "Generate terrain crater on detonation.",
+          "default": false
+        },
+        "crater_radius_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Expected crater radius. SI unit: m."
+        },
+        "crater_depth_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Expected crater depth. SI unit: m."
+        },
+        "thermal_radiation_enabled": {
+          "type": "boolean",
+          "description": "Emit thermal radiation pulse (fireball).",
+          "default": false
+        },
+        "fireball_radius_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum fireball radius. SI unit: m."
+        },
+        "thermal_yield_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Fraction of total energy released as thermal radiation. Dimensionless.",
+          "default": 0.35
+        }
+      }
+    },
+
+    "FirePhysics": {
+      "type": "object",
+      "description": "Fire, flame, and smoke physics. Governs ignition, combustion, flame spread, smoke generation, oxygen depletion, and extinguishing conditions.",
+      "additionalProperties": false,
+      "properties": {
+        "fire_state": {
+          "type": "string",
+          "enum": ["none", "smouldering", "igniting", "burning", "flashover", "backdraft", "extinguished"],
+          "description": "Current fire state of the entity.",
+          "default": "none"
+        },
+        "flame_temperature_k": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Adiabatic flame temperature. SI unit: K. Petrol ≈ 2273 K."
+        },
+        "burn_rate_kg_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Fuel mass burn rate. SI unit: kg/s."
+        },
+        "heat_release_rate_w": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Heat release rate (HRR) Q. SI unit: W."
+        },
+        "smoke_production_rate_kg_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Smoke mass production rate. SI unit: kg/s."
+        },
+        "oxygen_depletion_enabled": {
+          "type": "boolean",
+          "description": "Model oxygen depletion in enclosed spaces.",
+          "default": false
+        },
+        "spread_rate_m_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Flame spread rate across surface. SI unit: m/s."
+        },
+        "flame_height_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mean flame height above fuel surface. SI unit: m."
+        },
+        "flashover_temperature_k": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Gas layer temperature at which flashover occurs (compartment fires). SI unit: K.",
+          "default": 873.15
+        },
+        "extinguishing_agent": {
+          "type": "string",
+          "enum": ["water", "CO2", "halon", "dry_powder", "foam", "sand", "none"],
+          "description": "Extinguishing agent applied.",
+          "default": "none"
+        },
+        "fire_particle_system_ref": {
+          "type": "string",
+          "description": "Reference to particle system definition for visual fire/smoke rendering."
+        }
+      }
+    },
+
+    "VehicleDynamics": {
+      "type": "object",
+      "description": "Vehicle-type-specific physics dynamics. The active sub-object is selected by vehicle_category. Engine implementations should map these to appropriate vehicle physics plugins.",
+      "additionalProperties": false,
+      "properties": {
+        "vehicle_category": {
+          "type": "string",
+          "enum": ["wheeled", "tracked", "fixed_wing", "rotorcraft", "vtol",
+                   "surface_ship", "submarine", "spacecraft", "uav_multirotor",
+                   "missile", "torpedo", "custom"],
+          "description": "Vehicle dynamics category."
+        },
+
+        "wheeled": {
+          "type": "object",
+          "description": "Wheeled vehicle dynamics (cars, trucks, APCs, HMMWVs).",
+          "additionalProperties": false,
+          "properties": {
+            "axle_count":       { "type": "integer", "minimum": 1, "description": "Number of axles." },
+            "wheel_count":      { "type": "integer", "minimum": 1, "description": "Total wheel count." },
+            "wheelbase_m":      { "type": "number", "minimum": 0, "description": "Wheelbase (front to rear axle). SI unit: m." },
+            "track_width_m":    { "type": "number", "minimum": 0, "description": "Track width (wheel centreline to centreline). SI unit: m." },
+            "wheel_radius_m":   { "type": "number", "minimum": 0, "description": "Unloaded wheel radius. SI unit: m." },
+            "tyre_type":        { "type": "string", "enum": ["road","off_road","run_flat","solid","airless"] },
+            "suspension_type":  { "type": "string", "enum": ["rigid","leaf_spring","coil_spring","independent","torsion_bar","hydropneumatic"] },
+            "spring_rate_n_m":  { "type": "number", "minimum": 0, "description": "Suspension spring rate. SI unit: N/m." },
+            "damper_rate_n_s_m":{ "type": "number", "minimum": 0, "description": "Damper rate. SI unit: N·s/m." },
+            "max_steering_angle_rad": { "type": "number", "minimum": 0, "description": "Maximum steering angle. SI unit: rad." },
+            "max_torque_n_m":   { "type": "number", "minimum": 0, "description": "Peak engine torque. SI unit: N·m." },
+            "max_power_w":      { "type": "number", "minimum": 0, "description": "Peak engine power. SI unit: W." },
+            "gearbox_type":     { "type": "string", "enum": ["manual","automatic","CVT","electric_direct","hydrostatic"] },
+            "gear_ratios":      { "type": "array", "items": { "type": "number" }, "description": "Gear ratios including reverse." },
+            "final_drive_ratio": { "type": "number", "description": "Final drive gear ratio." },
+            "braking_force_n":  { "type": "number", "minimum": 0, "description": "Maximum braking force. SI unit: N." },
+            "tyre_friction_longitudinal": { "type": "number", "minimum": 0, "description": "Tyre-road longitudinal friction coefficient. Dimensionless." },
+            "tyre_friction_lateral": { "type": "number", "minimum": 0, "description": "Tyre-road lateral friction coefficient. Dimensionless." },
+            "load_capacity_kg": { "type": "number", "minimum": 0, "description": "Maximum payload capacity. SI unit: kg." }
+          }
+        },
+
+        "tracked": {
+          "type": "object",
+          "description": "Tracked vehicle dynamics (tanks, IFVs, self-propelled artillery).",
+          "additionalProperties": false,
+          "properties": {
+            "track_length_m":     { "type": "number", "minimum": 0, "description": "Track ground contact length. SI unit: m." },
+            "track_width_m":      { "type": "number", "minimum": 0, "description": "Track plate width. SI unit: m." },
+            "ground_pressure_pa": { "type": "number", "minimum": 0, "description": "Mean maximum pressure (MMP) on ground. SI unit: Pa." },
+            "track_friction":     { "type": "number", "minimum": 0, "description": "Track-terrain friction coefficient. Dimensionless." },
+            "max_torque_n_m":     { "type": "number", "minimum": 0, "description": "Peak engine/transmission torque at sprocket. SI unit: N·m." },
+            "max_power_w":        { "type": "number", "minimum": 0, "description": "Peak engine power. SI unit: W." },
+            "transmission_type":  { "type": "string", "enum": ["hydrostatic","electro_mechanical","controlled_differential","clutch_brake"] },
+            "pivot_turn_radius_m":{ "type": "number", "minimum": 0, "description": "Minimum turning radius (neutral steer). SI unit: m." }
+          }
+        },
+
+        "fixed_wing": {
+          "type": "object",
+          "description": "Fixed-wing aircraft dynamics.",
+          "additionalProperties": false,
+          "properties": {
+            "aircraft_class": { "type": "string", "enum": ["fighter","bomber","transport","trainer","uav","glider","civil","custom"] },
+            "max_thrust_n":   { "type": "number", "minimum": 0, "description": "Maximum installed thrust. SI unit: N." },
+            "thrust_to_weight": { "type": "number", "minimum": 0, "description": "Thrust-to-weight ratio. Dimensionless." },
+            "wing_loading_pa":  { "type": "number", "minimum": 0, "description": "Wing loading W/S. SI unit: Pa." },
+            "service_ceiling_m":{ "type": "number", "minimum": 0, "description": "Service ceiling (maximum sustained altitude). SI unit: m." },
+            "stall_speed_mps":  { "type": "number", "minimum": 0, "description": "Clean stall speed (1G, MTOW). SI unit: m/s." },
+            "max_speed_mps":    { "type": "number", "minimum": 0, "description": "Maximum level speed at service ceiling. SI unit: m/s." },
+            "max_mach":         { "type": "number", "minimum": 0, "description": "Maximum operating Mach number M_MO. Dimensionless." },
+            "max_g_positive":   { "type": "number", "description": "Maximum positive-g structural limit. Dimensionless." },
+            "max_g_negative":   { "type": "number", "description": "Maximum negative-g structural limit (negative). Dimensionless." },
+            "engine_count":     { "type": "integer", "minimum": 1, "description": "Number of engines." },
+            "engine_type":      { "type": "string", "enum": ["piston","turboprop","turbojet","turbofan","ramjet","scramjet","rocket","electric","custom"] },
+            "afterburner_enabled": { "type": "boolean", "default": false },
+            "afterburner_thrust_n": { "type": "number", "minimum": 0, "description": "Maximum thrust with afterburner. SI unit: N." },
+            "fly_by_wire":      { "type": "boolean", "default": false }
+          }
+        },
+
+        "rotorcraft": {
+          "type": "object",
+          "description": "Rotorcraft (helicopter, gyroplane) dynamics.",
+          "additionalProperties": false,
+          "properties": {
+            "rotor_count":       { "type": "integer", "minimum": 1 },
+            "main_rotor_radius_m": { "type": "number", "minimum": 0, "description": "Main rotor radius. SI unit: m." },
+            "main_rotor_rpm":    { "type": "number", "minimum": 0, "description": "Nominal main rotor RPM." },
+            "tail_rotor_radius_m": { "type": "number", "minimum": 0, "description": "Tail rotor radius. SI unit: m." },
+            "rotor_configuration": { "type": "string", "enum": ["single_main_tail","coaxial","tandem","tiltrotor","synchropter","custom"] },
+            "disc_loading_pa":   { "type": "number", "minimum": 0, "description": "Rotor disc loading T/A. SI unit: Pa." },
+            "figure_of_merit":   { "type": "number", "minimum": 0, "maximum": 1, "description": "Hovering figure of merit FM. Dimensionless." },
+            "max_power_w":       { "type": "number", "minimum": 0, "description": "Maximum installed power. SI unit: W." },
+            "hover_ceiling_m":   { "type": "number", "minimum": 0, "description": "Hover ceiling OGE. SI unit: m." },
+            "autorotation_enabled": { "type": "boolean", "default": true }
+          }
+        },
+
+        "surface_ship": {
+          "type": "object",
+          "description": "Surface ship dynamics. Complements Hydrodynamics section.",
+          "additionalProperties": false,
+          "properties": {
+            "ship_class":       { "type": "string", "description": "Ship class designation." },
+            "loa_m":            { "type": "number", "minimum": 0, "description": "Length overall (LOA). SI unit: m." },
+            "beam_m":           { "type": "number", "minimum": 0, "description": "Maximum beam. SI unit: m." },
+            "max_speed_knots":  { "type": "number", "minimum": 0, "description": "Maximum speed. SI unit: knots." },
+            "propulsion_type":  { "type": "string", "enum": ["steam_turbine","gas_turbine","diesel","diesel_electric","combined_CODAD","nuclear","custom"] },
+            "shaft_count":      { "type": "integer", "minimum": 1 },
+            "max_power_w":      { "type": "number", "minimum": 0, "description": "Maximum shaft power. SI unit: W." },
+            "sea_keeping_max_sea_state": { "type": "integer", "minimum": 0, "maximum": 9, "description": "Maximum sea state for design operations." }
+          }
+        },
+
+        "submarine": {
+          "type": "object",
+          "description": "Submarine dynamics.",
+          "additionalProperties": false,
+          "properties": {
+            "max_depth_m":      { "type": "number", "minimum": 0, "description": "Maximum operating depth. SI unit: m." },
+            "test_depth_m":     { "type": "number", "minimum": 0, "description": "Test/design depth. SI unit: m." },
+            "crush_depth_m":    { "type": "number", "minimum": 0, "description": "Estimated hull crush depth. SI unit: m." },
+            "ballast_control":  { "type": "string", "enum": ["main_ballast","variable_ballast","pump_jet","custom"] },
+            "snorkel_enabled":  { "type": "boolean", "default": false },
+            "anechoic_tiles":   { "type": "boolean", "default": false },
+            "propulsion_type":  { "type": "string", "enum": ["diesel_electric","nuclear_steam","AIP_fuel_cell","AIP_stirling","custom"] }
+          }
+        },
+
+        "spacecraft": {
+          "type": "object",
+          "description": "Spacecraft attitude and orbital dynamics.",
+          "additionalProperties": false,
+          "properties": {
+            "spacecraft_class": { "type": "string", "enum": ["satellite","launch_vehicle","lander","rover","capsule","space_station","probe","custom"] },
+            "dry_mass_kg":      { "type": "number", "minimum": 0, "description": "Dry mass (no propellant). SI unit: kg." },
+            "propellant_mass_kg": { "type": "number", "minimum": 0, "description": "Propellant mass. SI unit: kg." },
+            "total_delta_v_mps":{ "type": "number", "minimum": 0, "description": "Total ΔV budget. SI unit: m/s." },
+            "specific_impulse_s":{ "type": "number", "minimum": 0, "description": "Specific impulse Isp. SI unit: s." },
+            "attitude_control_type":{ "type": "string", "enum": ["reaction_wheels","thrusters","CMG","magnetic_torquers","passive_gravity_gradient","custom"] },
+            "solar_panel_area_m2": { "type": "number", "minimum": 0, "description": "Total solar panel area. SI unit: m²." },
+            "solar_panel_efficiency": { "type": "number", "minimum": 0, "maximum": 1, "description": "Solar panel conversion efficiency. Dimensionless." }
+          }
+        }
+      }
+    },
+
+    "OrbitalMechanics": {
+      "type": "object",
+      "description": "Keplerian and perturbed orbital mechanics for spacecraft and high-altitude objects. Uses standard two-body and N-body formulations.",
+      "additionalProperties": false,
+      "properties": {
+        "orbit_type": {
+          "type": "string",
+          "enum": ["LEO", "MEO", "GEO", "HEO", "SSO", "lunar", "interplanetary", "hyperbolic", "suborbital", "custom"],
+          "description": "Orbit classification."
+        },
+        "semi_major_axis_m": { "type": "number", "exclusiveMinimum": 0, "description": "Semi-major axis a. SI unit: m." },
+        "eccentricity": { "type": "number", "minimum": 0, "description": "Orbital eccentricity e. 0 = circular, 1 = parabolic. Dimensionless." },
+        "inclination_rad": { "type": "number", "minimum": 0, "description": "Orbital inclination i. SI unit: rad." },
+        "raan_rad": { "type": "number", "description": "Right ascension of ascending node (Ω). SI unit: rad." },
+        "argument_of_periapsis_rad": { "type": "number", "description": "Argument of periapsis (ω). SI unit: rad." },
+        "true_anomaly_rad": { "type": "number", "description": "True anomaly ν at epoch. SI unit: rad." },
+        "epoch": { "$ref": "#/$defs/Timestamp", "description": "Epoch for orbital elements (UTC)." },
+        "orbital_period_s": { "type": "number", "minimum": 0, "description": "Orbital period T. SI unit: s." },
+        "periapsis_altitude_m": { "type": "number", "description": "Periapsis altitude above reference ellipsoid. SI unit: m." },
+        "apoapsis_altitude_m": { "type": "number", "description": "Apoapsis altitude above reference ellipsoid. SI unit: m." },
+        "perturbations": {
+          "type": "object",
+          "description": "Orbital perturbation forces.",
+          "additionalProperties": false,
+          "properties": {
+            "j2_enabled":              { "type": "boolean", "default": false, "description": "Earth oblateness (J2) perturbation." },
+            "atmospheric_drag_enabled":{ "type": "boolean", "default": false, "description": "Atmospheric drag perturbation." },
+            "solar_radiation_pressure_enabled": { "type": "boolean", "default": false, "description": "Solar radiation pressure." },
+            "lunar_perturbation_enabled": { "type": "boolean", "default": false, "description": "Third-body lunar gravitational perturbation." },
+            "solar_perturbation_enabled": { "type": "boolean", "default": false, "description": "Third-body solar gravitational perturbation." }
+          }
+        },
+        "reentry_enabled": {
+          "type": "boolean",
+          "description": "Model atmospheric re-entry heating and deceleration.",
+          "default": false
+        },
+        "reentry_corridor": {
+          "type": "object",
+          "description": "Re-entry flight path corridor.",
+          "additionalProperties": false,
+          "properties": {
+            "entry_angle_rad": { "type": "number", "description": "Re-entry flight path angle (negative = below horizontal). SI unit: rad." },
+            "max_heating_w_m2": { "type": "number", "minimum": 0, "description": "Peak aerodynamic heating rate. SI unit: W/m²." }
+          }
+        }
+      }
+    },
+
+    "EnvironmentalPhysics": {
+      "type": "object",
+      "description": "Environmental physics effects driving terrain-entity and weather-entity interactions. Covers precipitation, mud, ice, dust, vegetation, and terrain deformation.",
+      "additionalProperties": false,
+      "properties": {
+        "terrain_type": {
+          "type": "string",
+          "enum": ["paved","gravel","soil_firm","soil_soft","sand_dry","sand_wet",
+                   "mud_shallow","mud_deep","snow_compacted","snow_soft","ice",
+                   "swamp","water_shallow","concrete","rock","custom"],
+          "description": "Terrain surface type for mobility and friction calculation.",
+          "default": "soil_firm"
+        },
+        "terrain_friction_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Terrain surface friction coefficient. Dimensionless.",
+          "default": 0.6
+        },
+        "terrain_bearing_capacity_pa": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum ground bearing pressure before sinkage. SI unit: Pa."
+        },
+        "terrain_sinkage_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Current vehicle sinkage into terrain. SI unit: m."
+        },
+        "terrain_deformation_enabled": {
+          "type": "boolean",
+          "description": "Allow permanent terrain deformation (tracks, craters, ruts).",
+          "default": false
+        },
+        "vegetation_drag_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Additional drag coefficient from vegetation penetration. Dimensionless.",
+          "default": 0
+        },
+        "dust_suspension_enabled": {
+          "type": "boolean",
+          "description": "Generate dust/rotor-wash particle systems.",
+          "default": false
+        },
+        "rain_intensity_mm_hr": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Rainfall intensity. SI unit: mm/hr."
+        },
+        "snow_depth_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Snow depth on terrain. SI unit: m."
+        },
+        "ice_thickness_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Ice layer thickness. Affects vehicle mobility and load bearing. SI unit: m."
+        },
+        "frost_bite_risk": {
+          "type": "boolean",
+          "description": "Environmental temperature poses frostbite risk to dismounted personnel.",
+          "default": false
+        },
+        "flooding_depth_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Floodwater depth at entity location. SI unit: m."
+        }
+      }
+    },
+
+    "OceanPhysics": {
+      "type": "object",
+      "description": "Ocean environment physics. Defines tidal, current, wave, salinity, and acoustic properties of the oceanic operating environment.",
+      "additionalProperties": false,
+      "properties": {
+        "ocean_zone": {
+          "type": "string",
+          "enum": ["littoral", "shallow_water", "open_ocean", "deep_water", "arctic", "tropical", "custom"],
+          "description": "Operational ocean zone.",
+          "default": "open_ocean"
+        },
+        "depth_m": { "type": "number", "minimum": 0, "description": "Water column depth at entity location. SI unit: m." },
+        "salinity_ppt": { "type": "number", "minimum": 0, "description": "Salinity in parts per thousand. Default open ocean: 35 ppt.", "default": 35 },
+        "temperature_k": { "type": "number", "minimum": 0, "description": "Sea surface temperature (SST). SI unit: K." },
+        "thermocline_depth_m": { "type": "number", "minimum": 0, "description": "Depth of thermocline layer. SI unit: m." },
+        "pressure_pa_at_depth": { "type": "number", "minimum": 0, "description": "Hydrostatic pressure at entity depth. SI unit: Pa." },
+        "wave_model": {
+          "type": "string",
+          "enum": ["none", "JONSWAP", "PM_spectrum", "irregular_waves", "regular_waves", "custom"],
+          "description": "Ocean wave spectrum model.",
+          "default": "none"
+        },
+        "significant_wave_height_m": { "type": "number", "minimum": 0, "description": "Significant wave height H_s. SI unit: m." },
+        "wave_peak_period_s": { "type": "number", "minimum": 0, "description": "Peak wave period T_p. SI unit: s." },
+        "wave_direction_rad": { "type": "number", "description": "Dominant wave propagation direction. SI unit: rad." },
+        "swell_height_m": { "type": "number", "minimum": 0, "description": "Swell wave height component. SI unit: m." },
+        "current_speed_mps": { "type": "number", "minimum": 0, "description": "Surface current speed. SI unit: m/s." },
+        "current_direction_rad": { "type": "number", "description": "Current direction. SI unit: rad." },
+        "tidal_range_m": { "type": "number", "minimum": 0, "description": "Tidal range (MHWS - MLWS). SI unit: m." },
+        "tidal_state": { "type": "string", "enum": ["high_water","ebb","low_water","flood","custom"] },
+        "underwater_sound_velocity_mps": { "type": "number", "minimum": 0, "description": "Sound velocity at entity depth. SI unit: m/s. Typical: 1450–1550 m/s.", "default": 1500 },
+        "bioluminescence_enabled": { "type": "boolean", "default": false, "description": "Bioluminescent wake effects active (tactical relevance for submarines)." }
+      }
+    },
+
+    "ParticleSystem": {
+      "type": "object",
+      "description": "Particle system physics properties. Governs physically-based particle emission, dynamics, and lifecycle for smoke, dust, sparks, debris, shrapnel, rain, snow, and fluid spray.",
+      "additionalProperties": false,
+      "properties": {
+        "particle_type": {
+          "type": "string",
+          "enum": ["smoke","dust","sparks","embers","debris","shrapnel","water_spray",
+                   "rain","snow","hail","exhaust","fuel_spray","blood","sand","custom"],
+          "description": "Particle medium type."
+        },
+        "emission_rate_per_s": { "type": "number", "minimum": 0, "description": "Emission rate. SI unit: particles/s." },
+        "max_particle_count":  { "type": "integer", "minimum": 0, "description": "Maximum live particle count." },
+        "particle_mass_kg":    { "type": "number", "minimum": 0, "description": "Mean particle mass. SI unit: kg." },
+        "particle_diameter_m": { "type": "number", "minimum": 0, "description": "Mean particle diameter. SI unit: m." },
+        "initial_velocity_mps":{ "$ref": "#/$defs/Vector3", "description": "Mean initial emission velocity. SI unit: m/s." },
+        "velocity_spread_mps": { "type": "number", "minimum": 0, "description": "Emission velocity spread (1-sigma). SI unit: m/s." },
+        "lifetime_s":          { "type": "number", "minimum": 0, "description": "Mean particle lifetime. SI unit: s." },
+        "lifetime_spread_s":   { "type": "number", "minimum": 0, "description": "Lifetime spread (1-sigma). SI unit: s." },
+        "gravity_scale":       { "type": "number", "description": "Gravity multiplier applied to particles.", "default": 1.0 },
+        "drag_coefficient":    { "type": "number", "minimum": 0, "description": "Particle drag coefficient C_D. Dimensionless." },
+        "wind_affected":       { "type": "boolean", "description": "Particles affected by ambient wind field.", "default": true },
+        "collision_enabled":   { "type": "boolean", "description": "Particles collide with terrain and bodies.", "default": false },
+        "opacity_decay_enabled":{ "type": "boolean", "description": "Particle opacity decreases with age.", "default": true },
+        "simulation_space":    { "type": "string", "enum": ["world","local"], "default": "world", "description": "Particle integration reference frame." }
+      }
+    },
+
+    "AIPhysicsInterface": {
+      "type": "object",
+      "description": "Physics-AI coupling interface. Provides hooks for reinforcement learning agents, differentiable physics solvers, state estimation pipelines, and sensor fusion systems.",
+      "additionalProperties": false,
+      "properties": {
+        "rl_state_enabled": {
+          "type": "boolean",
+          "description": "Expose physics state as RL observation vector.",
+          "default": false
+        },
+        "rl_observation_fields": {
+          "type": "array",
+          "description": "Named physics fields included in RL observation vector.",
+          "items": { "type": "string" }
+        },
+        "rl_action_fields": {
+          "type": "array",
+          "description": "Named physics fields modified by RL actions (force, torque, joint targets, etc.).",
+          "items": { "type": "string" }
+        },
+        "differentiable_physics": {
+          "type": "boolean",
+          "description": "Enable differentiable physics mode. Supports gradient back-propagation through simulation. Requires compatible engine (Warp, Brax, MuJoCo MJX).",
+          "default": false
+        },
+        "differentiable_engine": {
+          "type": "string",
+          "enum": ["nvidia_warp", "brax", "mujoco_mjx", "taichi", "custom"],
+          "description": "Differentiable physics backend."
+        },
+        "state_estimation_enabled": {
+          "type": "boolean",
+          "description": "Enable Kalman/particle filter state estimation hooks.",
+          "default": false
+        },
+        "state_uncertainty": {
+          "type": "object",
+          "description": "State estimation covariance (diagonal).",
+          "additionalProperties": false,
+          "properties": {
+            "position_variance_m2":   { "type": "number", "minimum": 0, "description": "Position estimate variance. SI unit: m²." },
+            "velocity_variance_m2_s2":{ "type": "number", "minimum": 0, "description": "Velocity estimate variance. SI unit: (m/s)²." },
+            "attitude_variance_rad2": { "type": "number", "minimum": 0, "description": "Attitude estimate variance. SI unit: rad²." }
+          }
+        },
+        "physics_prediction_horizon_s": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Physics prediction horizon for model predictive control (MPC) / trajectory prediction. SI unit: s.",
+          "default": 1.0
+        },
+        "sensor_fusion_topics": {
+          "type": "array",
+          "description": "ROS2/DDS topic names supplying sensor fusion inputs to the physics estimator.",
+          "items": { "type": "string" }
+        },
+        "sim_to_real_transfer": {
+          "type": "boolean",
+          "description": "Sim-to-real domain randomisation mode. Randomises physics parameters within calibrated bounds each episode.",
+          "default": false
+        },
+        "domain_randomisation_seed": {
+          "type": "integer",
+          "description": "Random seed for reproducible domain randomisation."
+        }
+      }
+    },
+
+    "CompatibilityLayer": {
+      "type": "object",
+      "description": "Compatibility metadata mapping PW-WSF-300 physics properties to specific engine parameter names. Allows engine adapters to perform systematic field mapping at load time.",
+      "additionalProperties": false,
+      "properties": {
+        "physx": {
+          "type": "object",
+          "description": "NVIDIA PhysX 5.x parameter hints.",
+          "additionalProperties": true
+        },
+        "omniverse": {
+          "type": "object",
+          "description": "NVIDIA Omniverse / Isaac Sim / PhysX USD parameter hints.",
+          "additionalProperties": true
+        },
+        "bullet": {
+          "type": "object",
+          "description": "Bullet Physics 3.x parameter hints.",
+          "additionalProperties": true
+        },
+        "mujoco": {
+          "type": "object",
+          "description": "MuJoCo 3.x MJCF parameter hints.",
+          "additionalProperties": true
+        },
+        "gazebo": {
+          "type": "object",
+          "description": "Gazebo/Ignition Robotics SDF parameter hints.",
+          "additionalProperties": true
+        },
+        "ros2": {
+          "type": "object",
+          "description": "ROS2 message type and topic mapping hints.",
+          "additionalProperties": true
+        },
+        "unity": {
+          "type": "object",
+          "description": "Unity PhysX integration parameter hints.",
+          "additionalProperties": true
+        },
+        "unreal": {
+          "type": "object",
+          "description": "Unreal Engine Chaos Physics parameter hints.",
+          "additionalProperties": true
+        },
+        "cesium": {
+          "type": "object",
+          "description": "CesiumJS / Cesium for Unreal geospatial parameter hints.",
+          "additionalProperties": true
+        },
+        "openusd": {
+          "type": "object",
+          "description": "OpenUSD PhysicsSchema prim hints.",
+          "additionalProperties": true
+        },
+        "blender": {
+          "type": "object",
+          "description": "Blender Rigid Body / Mantaflow parameter hints.",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "ValidationRules": {
+      "type": "object",
+      "description": "Schema-level validation assertions for physics plausibility. Engines shall check these constraints on load and emit warnings or errors as configured.",
+      "additionalProperties": false,
+      "properties": {
+        "enforce_positive_mass":        { "type": "boolean", "default": true },
+        "enforce_positive_density":     { "type": "boolean", "default": true },
+        "enforce_spd_inertia_tensor":   { "type": "boolean", "default": true, "description": "Enforce that inertia tensor is symmetric positive definite." },
+        "enforce_finite_values":        { "type": "boolean", "default": true, "description": "Reject NaN and Inf values." },
+        "enforce_unit_consistency":     { "type": "boolean", "default": true },
+        "enforce_coefficient_ranges":   { "type": "boolean", "default": true, "description": "Validate friction, restitution, efficiency in [0,1] or other defined bounds." },
+        "enforce_timestep_positive":    { "type": "boolean", "default": true },
+        "enforce_material_compatibility": { "type": "boolean", "default": false, "description": "Validate that material properties are mutually consistent (e.g. G = E/(2(1+ν)))." },
+        "enforce_constraint_integrity": { "type": "boolean", "default": true, "description": "Validate that all constraint body_a_id / body_b_id reference valid entities." },
+        "validation_mode": {
+          "type": "string",
+          "enum": ["warn", "error", "silent"],
+          "description": "Action taken on validation failure.",
+          "default": "warn"
+        }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "physics_id": {
+      "$ref": "#/$defs/UUID",
+      "description": "Unique identifier for this Physics object. References from Entity.physics_ref."
+    },
+
+    "entity_id": {
+      "$ref": "#/$defs/UUID",
+      "description": "ID of the WorldSpec Entity this Physics object is attached to."
+    },
+
+    "version": {
+      "$ref": "#/$defs/VersionString",
+      "description": "PW-WSF-300 schema version for this physics instance.",
+      "default": "1.0.0"
+    },
+
+    "namespace": {
+      "type": "string",
+      "description": "Physics namespace for multi-domain scenes (e.g. 'military.ground', 'aerospace.fighter')."
+    },
+
+    "simulation_profile": {
+      "$ref": "#/$defs/SimulationProfile",
+      "description": "Simulation mode and domain context."
+    },
+
+    "units": {
+      "$ref": "#/$defs/Units",
+      "description": "Unit system for all values in this Physics object."
+    },
+
+    "world_constants": {
+      "$ref": "#/$defs/WorldConstants",
+      "description": "Universal physical constants and planetary parameters. Typically defined once at world level and inherited by entities."
+    },
+
+    "numerical_solver": {
+      "$ref": "#/$defs/NumericalSolver",
+      "description": "Numerical integration and solver configuration. Per-entity overrides of global solver settings."
+    },
+
+    "rigid_body": {
+      "$ref": "#/$defs/RigidBodyDynamics",
+      "description": "Rigid body dynamics. Applicable to all solid non-deformable entities."
+    },
+
+    "soft_body": {
+      "$ref": "#/$defs/SoftBodyDynamics",
+      "description": "Deformable body mechanics. Active when entity has non-rigid material behaviour."
+    },
+
+    "fluid_dynamics": {
+      "$ref": "#/$defs/FluidDynamics",
+      "description": "Ambient fluid interaction properties. Shared basis for aerodynamics and hydrodynamics."
+    },
+
+    "aerodynamics": {
+      "$ref": "#/$defs/Aerodynamics",
+      "description": "Airframe aerodynamics. Active for all bodies moving through atmosphere."
+    },
+
+    "hydrodynamics": {
+      "$ref": "#/$defs/Hydrodynamics",
+      "description": "Hull and propeller hydrodynamics. Active for surface ships, submarines, and UUVs."
+    },
+
+    "thermodynamics": {
+      "$ref": "#/$defs/Thermodynamics",
+      "description": "Thermal physics: heat generation, transfer, and thermal signatures."
+    },
+
+    "electromagnetics": {
+      "$ref": "#/$defs/Electromagnetics",
+      "description": "EM and RF properties: RCS, EM interference, IR signatures, shielding."
+    },
+
+    "acoustics": {
+      "$ref": "#/$defs/AcousticPhysics",
+      "description": "Acoustic and sonar signature properties."
+    },
+
+    "optics": {
+      "$ref": "#/$defs/OpticalPhysics",
+      "description": "Optical and near-IR appearance properties for visual and LIDAR sensors."
+    },
+
+    "material": {
+      "$ref": "#/$defs/MaterialPhysics",
+      "description": "Full engineering material physics properties (high-fidelity override of world.schema Material)."
+    },
+
+    "collision": {
+      "$ref": "#/$defs/CollisionSystem",
+      "description": "Collision detection layers, filtering, and impact response."
+    },
+
+    "constraints": {
+      "type": "array",
+      "description": "Physical joints and constraints associated with this entity.",
+      "items": { "$ref": "#/$defs/ConstraintSystem" }
+    },
+
+    "forces": {
+      "$ref": "#/$defs/ForceSystem",
+      "description": "Active forces and force fields applied to this entity."
+    },
+
+    "motion": {
+      "$ref": "#/$defs/MotionState",
+      "description": "Current kinematic state. Engine-updated at runtime."
+    },
+
+    "energy": {
+      "$ref": "#/$defs/EnergySystem",
+      "description": "Energy balance. Engine-updated at runtime."
+    },
+
+    "vehicle_dynamics": {
+      "$ref": "#/$defs/VehicleDynamics",
+      "description": "Vehicle-type–specific physics subsystem."
+    },
+
+    "ballistics": {
+      "$ref": "#/$defs/BallisticsSystem",
+      "description": "Ballistic flight and terminal effects. Active for all projectile entity types."
+    },
+
+    "explosion": {
+      "$ref": "#/$defs/ExplosionPhysics",
+      "description": "Explosion physics. Active for warheads, IEDs, bomb entities."
+    },
+
+    "fire": {
+      "$ref": "#/$defs/FirePhysics",
+      "description": "Fire and combustion physics."
+    },
+
+    "orbital_mechanics": {
+      "$ref": "#/$defs/OrbitalMechanics",
+      "description": "Keplerian orbital elements and perturbation models. Active for spacecraft and satellites."
+    },
+
+    "environmental": {
+      "$ref": "#/$defs/EnvironmentalPhysics",
+      "description": "Terrain and weather interaction physics."
+    },
+
+    "ocean": {
+      "$ref": "#/$defs/OceanPhysics",
+      "description": "Ocean environment physics. Active for naval and underwater entities."
+    },
+
+    "particles": {
+      "type": "array",
+      "description": "Particle systems attached to this entity (smoke, sparks, debris, exhaust).",
+      "items": { "$ref": "#/$defs/ParticleSystem" }
+    },
+
+    "ai_interface": {
+      "$ref": "#/$defs/AIPhysicsInterface",
+      "description": "RL, differentiable physics, and sensor fusion integration hooks."
+    },
+
+    "compatibility": {
+      "$ref": "#/$defs/CompatibilityLayer",
+      "description": "Per-engine parameter mapping metadata."
+    },
+
+    "validation": {
+      "$ref": "#/$defs/ValidationRules",
+      "description": "Physics plausibility validation configuration."
+    },
+
+    "created_at": { "$ref": "#/$defs/Timestamp" },
+    "modified_at": { "$ref": "#/$defs/Timestamp" },
+
+    "custom_extensions": {
+      "type": "object",
+      "description": "Domain-specific physics extensions not covered by PW-WSF-300. Namespace keys as 'domain:property'.",
+      "additionalProperties": true
+    }
+
+  },
+
+  "examples": [
+    {
+      "physics_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "entity_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "version": "1.0.0",
+      "namespace": "aerospace.fighter",
+      "simulation_profile": {
+        "mode": "realtime",
+        "domain": ["military", "aerospace"],
+        "accuracy_tier": "high_fidelity",
+        "gpu_acceleration": true,
+        "multithreading": true
+      },
+      "units": {
+        "length": "m", "mass": "kg", "time": "s",
+        "angle": "rad", "temperature": "K"
+      },
+      "rigid_body": {
+        "body_type": "dynamic",
+        "mass_kg": 14300,
+        "center_of_mass": { "x": 0.0, "y": 0.0, "z": -0.2 },
+        "friction_static": 0.4,
+        "restitution": 0.1,
+        "ccd_enabled": false,
+        "gravity_scale": 1.0
+      },
+      "aerodynamics": {
+        "reference_area_m2": 27.87,
+        "reference_span_m": 9.45,
+        "lift_coefficient_CL": 0.3,
+        "drag_coefficient_CD": 0.02,
+        "aspect_ratio": 3.2,
+        "oswald_efficiency_factor": 0.82,
+        "max_mach": 2.0,
+        "flight_regime": "supersonic",
+        "stall_model": "linear_drop"
+      },
+      "thermodynamics": {
+        "temperature_k": 300,
+        "thermal_signature_w_sr": 1200
+      },
+      "electromagnetics": {
+        "radar_cross_section_m2": 0.0015,
+        "infrared_signature": {
+          "mwir_w_sr": 850,
+          "lwir_w_sr": 200,
+          "exhaust_plume_enabled": true
+        }
+      },
+      "vehicle_dynamics": {
+        "vehicle_category": "fixed_wing",
+        "fixed_wing": {
+          "aircraft_class": "fighter",
+          "max_thrust_n": 125000,
+          "thrust_to_weight": 0.89,
+          "wing_loading_pa": 3600,
+          "service_ceiling_m": 18000,
+          "stall_speed_mps": 72,
+          "max_speed_mps": 680,
+          "max_mach": 2.0,
+          "max_g_positive": 9.0,
+          "max_g_negative": -3.0,
+          "engine_count": 2,
+          "engine_type": "turbofan",
+          "afterburner_enabled": true,
+          "afterburner_thrust_n": 160000,
+          "fly_by_wire": true
+        }
+      },
+      "validation": {
+        "enforce_positive_mass": true,
+        "enforce_finite_values": true,
+        "validation_mode": "error"
+      }
+    }
+  ]
+}

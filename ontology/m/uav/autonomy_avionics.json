@@ -1,0 +1,474 @@
+{
+  "ontology": "PhysWorld Military Ontology (PWMO)",
+  "module": "UAV",
+  "file": "autonomy_avionics.json",
+  "version": "1.0.0",
+  "description": "Complete ontology for UAV autonomy, AI, avionics, navigation, propulsion, communications, and electronic warfare subsystems",
+  "autonomy": {
+    "SAE_Autonomy_Levels": {
+      "id": "AUTO_Levels",
+      "label": "UAV Autonomy Level Scale",
+      "levels": {
+        "Level0": { "id": "AL0", "label": "Level 0 – Remote Control", "description": "Continuous manual control, no automation" },
+        "Level1": { "id": "AL1", "label": "Level 1 – Assisted", "description": "Attitude stabilization, altitude hold" },
+        "Level2": { "id": "AL2", "label": "Level 2 – Automated", "description": "Waypoint following, pre-programmed flight plan" },
+        "Level3": { "id": "AL3", "label": "Level 3 – Supervised Autonomy", "description": "Mission execution with human on-the-loop" },
+        "Level4": { "id": "AL4", "label": "Level 4 – Conditional Autonomy", "description": "Autonomous decision in defined operational context" },
+        "Level5": { "id": "AL5", "label": "Level 5 – Full Autonomy", "description": "No human involvement required in any scenario" }
+      }
+    },
+    "ArtificialIntelligence": {
+      "id": "AUTO_AI",
+      "label": "Artificial Intelligence Subsystem",
+      "subclasses": {
+        "MachineLearning": {
+          "id": "AI_ML",
+          "label": "Machine Learning",
+          "subclasses": {
+            "SupervisedLearning": {
+              "id": "AI_SL",
+              "label": "Supervised Learning",
+              "subclasses": {
+                "Classification": { "id": "AI_Class", "label": "Classification" },
+                "Regression": { "id": "AI_Reg", "label": "Regression" },
+                "SemanticSegmentation": { "id": "AI_SemSeg", "label": "Semantic Segmentation" }
+              }
+            },
+            "UnsupervisedLearning": {
+              "id": "AI_USL",
+              "label": "Unsupervised Learning",
+              "subclasses": {
+                "Clustering": { "id": "AI_Clust", "label": "Clustering" },
+                "AnomalyDetection": { "id": "AI_AnomalyDet", "label": "Anomaly Detection" }
+              }
+            },
+            "ReinforcementLearning": {
+              "id": "AI_RL",
+              "label": "Reinforcement Learning",
+              "subclasses": {
+                "DQN": { "id": "AI_DQN", "label": "Deep Q-Network (DQN)" },
+                "PPO": { "id": "AI_PPO", "label": "Proximal Policy Optimization (PPO)" },
+                "MADDPG": { "id": "AI_MADDPG", "label": "Multi-Agent DDPG (MADDPG) for Swarms" },
+                "MultiAgentRL": { "id": "AI_MARL", "label": "Multi-Agent Reinforcement Learning (MARL)" }
+              }
+            },
+            "TransferLearning": { "id": "AI_TL", "label": "Transfer Learning" },
+            "FederatedLearning": { "id": "AI_FL", "label": "Federated Learning (Distributed Swarm Training)" },
+            "OnlineLearning": { "id": "AI_OL", "label": "Online / Continual Learning" }
+          }
+        },
+        "DeepLearning": {
+          "id": "AI_DL",
+          "label": "Deep Learning",
+          "subclasses": {
+            "CNN": { "id": "AI_CNN", "label": "Convolutional Neural Network (CNN)" },
+            "RNN": { "id": "AI_RNN", "label": "Recurrent Neural Network (RNN)" },
+            "LSTM": { "id": "AI_LSTM", "label": "Long Short-Term Memory (LSTM)" },
+            "Transformer": { "id": "AI_Transformer", "label": "Transformer Network" },
+            "GAN": { "id": "AI_GAN", "label": "Generative Adversarial Network (GAN)" },
+            "DiffusionModel": { "id": "AI_Diffusion", "label": "Diffusion Model" },
+            "GraphNeuralNetwork": { "id": "AI_GNN", "label": "Graph Neural Network (GNN)" },
+            "VisionTransformer": { "id": "AI_ViT", "label": "Vision Transformer (ViT)" },
+            "SiameseNetwork": { "id": "AI_Siamese", "label": "Siamese Network (Re-ID / Tracking)" }
+          }
+        },
+        "ComputerVision": {
+          "id": "AI_CV",
+          "label": "Computer Vision",
+          "subclasses": {
+            "ObjectDetection": {
+              "id": "CV_OD",
+              "label": "Object Detection",
+              "subclasses": {
+                "YOLO_Family": { "id": "CV_YOLO", "label": "YOLO Family Detectors" },
+                "FasterRCNN": { "id": "CV_FRCNN", "label": "Faster R-CNN" },
+                "SSD": { "id": "CV_SSD", "label": "Single Shot Detector (SSD)" },
+                "DETR": { "id": "CV_DETR", "label": "DETR (Transformer-Based Detection)" },
+                "EfficientDet": { "id": "CV_EffDet", "label": "EfficientDet" }
+              }
+            },
+            "ObjectTracking": {
+              "id": "CV_OT",
+              "label": "Object Tracking",
+              "subclasses": {
+                "SingleObjectTracking": { "id": "CV_SOT", "label": "Single Object Tracking (SOT)" },
+                "MultiObjectTracking": { "id": "CV_MOT", "label": "Multi-Object Tracking (MOT)" },
+                "KalmanFilter": { "id": "CV_KF", "label": "Kalman Filter Tracker" },
+                "DeepSORT": { "id": "CV_DeepSORT", "label": "DeepSORT Tracker" },
+                "ByteTrack": { "id": "CV_ByteTrack", "label": "ByteTrack Tracker" },
+                "MotionCompensation": { "id": "CV_MotComp", "label": "Motion Compensation Tracker" }
+              }
+            },
+            "TargetRecognition": {
+              "id": "CV_TR",
+              "label": "Target Recognition",
+              "subclasses": {
+                "ATR": { "id": "CV_ATR", "label": "Automatic Target Recognition (ATR)" },
+                "ISAR_Recognition": { "id": "CV_ISARRec", "label": "ISAR-Based Recognition" },
+                "SAR_ATR": { "id": "CV_SAR_ATR", "label": "SAR-Based ATR" },
+                "EOTargetRec": { "id": "CV_EOTargetRec", "label": "EO/IR Target Recognition" }
+              }
+            },
+            "TargetClassification": {
+              "id": "CV_TC",
+              "label": "Target Classification",
+              "subclasses": {
+                "VehicleClassification": { "id": "CV_VehicleClass", "label": "Vehicle Classification" },
+                "AircraftClassification": { "id": "CV_AircraftClass", "label": "Aircraft Classification" },
+                "ShipClassification": { "id": "CV_ShipClass", "label": "Ship Classification" },
+                "PersonDetection": { "id": "CV_PersonDet", "label": "Person / Combatant Detection" }
+              }
+            },
+            "InstanceSegmentation": { "id": "CV_InstSeg", "label": "Instance Segmentation" },
+            "SemanticSegmentation_CV": { "id": "CV_SemSeg", "label": "Semantic Segmentation" },
+            "PanopticSegmentation": { "id": "CV_PanoSeg", "label": "Panoptic Segmentation" },
+            "ChangeDetection": { "id": "CV_ChangeDet", "label": "Change Detection (Temporal Analysis)" },
+            "DepthEstimation": { "id": "CV_DepthEst", "label": "Monocular Depth Estimation" },
+            "OpticalFlowCV": { "id": "CV_OptFlow", "label": "Optical Flow Estimation" },
+            "ImageSuperResolution": { "id": "CV_SR", "label": "Image Super-Resolution" },
+            "ImageFusion": { "id": "CV_ImgFusion", "label": "Image Fusion (EO+IR+SAR)" },
+            "Despeckling": { "id": "CV_Despeckle", "label": "SAR Despeckling" }
+          }
+        },
+        "SensorFusion": {
+          "id": "AI_SF",
+          "label": "Sensor Fusion",
+          "subclasses": {
+            "EarlyFusion": { "id": "SF_Early", "label": "Early Fusion (Data-Level)" },
+            "LateFusion": { "id": "SF_Late", "label": "Late Fusion (Decision-Level)" },
+            "IntermediateFusion": { "id": "SF_Mid", "label": "Intermediate Fusion (Feature-Level)" },
+            "BayesianFusion": { "id": "SF_Bayes", "label": "Bayesian Fusion" },
+            "KalmanFusion": { "id": "SF_Kalman", "label": "Kalman Filter Fusion" },
+            "DempsterShafer": { "id": "SF_DS", "label": "Dempster-Shafer Fusion" },
+            "EO_IR_Fusion": { "id": "SF_EOIR", "label": "EO/IR Fusion" },
+            "Radar_EO_Fusion": { "id": "SF_RadarEO", "label": "Radar / EO Fusion" },
+            "LiDAR_Camera_Fusion": { "id": "SF_LiDARCam", "label": "LiDAR-Camera Fusion" },
+            "GPS_INS_Fusion": { "id": "SF_GPS_INS", "label": "GPS/INS Fusion" }
+          }
+        },
+        "SwarmIntelligence": {
+          "id": "AI_Swarm",
+          "label": "Swarm Intelligence",
+          "subclasses": {
+            "ParticleSwarmOptimization": { "id": "SI_PSO", "label": "Particle Swarm Optimization (PSO)" },
+            "AntColonyOptimization": { "id": "SI_ACO", "label": "Ant Colony Optimization (ACO)" },
+            "BeeAlgorithm": { "id": "SI_Bee", "label": "Bee Algorithm" },
+            "FlockingBehavior": { "id": "SI_Flock", "label": "Flocking Behavior (Reynolds Rules)" },
+            "StigmergyCoordination": { "id": "SI_Stigmergy", "label": "Stigmergy-Based Coordination" },
+            "ConsensusAlgorithm": { "id": "SI_Consensus", "label": "Distributed Consensus Algorithm" },
+            "AuctionTaskAllocation": { "id": "SI_Auction", "label": "Auction-Based Task Allocation" },
+            "DistributedMapping": { "id": "SI_DistMap", "label": "Distributed Collaborative Mapping" },
+            "DistributedTargeting": { "id": "SI_DistTgt", "label": "Distributed Targeting" }
+          }
+        },
+        "KnowledgeRepresentation": {
+          "id": "AI_KR",
+          "label": "Knowledge Representation & Reasoning",
+          "subclasses": {
+            "OntologyReasoning": { "id": "KR_Onto", "label": "Ontology-Based Reasoning" },
+            "BayesianNetwork": { "id": "KR_BN", "label": "Bayesian Network" },
+            "FuzzyLogic": { "id": "KR_Fuzzy", "label": "Fuzzy Logic Controller" },
+            "ExpertSystem": { "id": "KR_Expert", "label": "Expert System" },
+            "KnowledgeGraph": { "id": "KR_KG", "label": "Knowledge Graph (Military)" }
+          }
+        },
+        "NaturalLanguageProcessing": {
+          "id": "AI_NLP",
+          "label": "Natural Language Processing (Mission Interface)",
+          "subclasses": {
+            "VoiceCommand": { "id": "NLP_Voice", "label": "Voice Command Interface" },
+            "MissionBriefingParser": { "id": "NLP_Brief", "label": "Mission Briefing Parser" }
+          }
+        }
+      }
+    },
+    "AutonomousNavigation": {
+      "id": "AUTO_Nav",
+      "label": "Autonomous Navigation Functions",
+      "subclasses": {
+        "SLAM": {
+          "id": "NAV_SLAM",
+          "label": "Simultaneous Localization and Mapping (SLAM)",
+          "subclasses": {
+            "VisualSLAM": { "id": "SLAM_Visual", "label": "Visual SLAM (vSLAM)" },
+            "LiDAR_SLAM": { "id": "SLAM_LiDAR", "label": "LiDAR SLAM" },
+            "Radar_SLAM": { "id": "SLAM_Radar", "label": "Radar SLAM" },
+            "InertialSLAM": { "id": "SLAM_INS", "label": "Inertial SLAM" },
+            "MultiSensorSLAM": { "id": "SLAM_Multi", "label": "Multi-Sensor SLAM" }
+          }
+        },
+        "ObstacleAvoidance": {
+          "id": "NAV_OA",
+          "label": "Obstacle Avoidance",
+          "subclasses": {
+            "ReactiveAvoidance": { "id": "OA_React", "label": "Reactive Avoidance (Potential Fields)" },
+            "PredictiveAvoidance": { "id": "OA_Predict", "label": "Predictive Avoidance" },
+            "APF": { "id": "OA_APF", "label": "Artificial Potential Field (APF)" },
+            "VelocityObstacles": { "id": "OA_VO", "label": "Velocity Obstacles Method" },
+            "3DObstacleAvoidance": { "id": "OA_3D", "label": "3D Obstacle Avoidance" }
+          }
+        },
+        "CollisionAvoidance": {
+          "id": "NAV_CA",
+          "label": "Collision Avoidance (DAA – Detect and Avoid)",
+          "subclasses": {
+            "ACAS_Xu": { "id": "CA_ACASXu", "label": "ACAS Xu (Airborne Collision Avoidance)" },
+            "SenseAndAvoid": { "id": "CA_SAA", "label": "Sense and Avoid (SAA)" },
+            "ProximityWarning": { "id": "CA_ProxWarn", "label": "Proximity Warning System" }
+          }
+        },
+        "PathPlanning": {
+          "id": "NAV_PP",
+          "label": "Path Planning",
+          "subclasses": {
+            "AStarAlgorithm": { "id": "PP_AStar", "label": "A* Algorithm" },
+            "RRT": { "id": "PP_RRT", "label": "Rapidly-Exploring Random Tree (RRT)" },
+            "RRT_Star": { "id": "PP_RRTStar", "label": "RRT* (Optimal RRT)" },
+            "DijkstraAlgorithm": { "id": "PP_Dijkstra", "label": "Dijkstra's Algorithm" },
+            "DynamicPathPlanning": { "id": "PP_Dynamic", "label": "Dynamic / Online Replanning" },
+            "ThreatAvoidancePlanning": { "id": "PP_ThreatAvoid", "label": "Threat-Aware Path Planning" },
+            "MultiAgentPathPlanning": { "id": "PP_MAPP", "label": "Multi-Agent Path Planning (MAPP)" }
+          }
+        },
+        "AutonomousTakeoff": { "id": "NAV_AutoTO", "label": "Autonomous Takeoff" },
+        "AutonomousLanding": {
+          "id": "NAV_AutoLand",
+          "label": "Autonomous Landing",
+          "subclasses": {
+            "PrecisionLanding": { "id": "AL_Prec", "label": "Precision Landing" },
+            "MovingPlatformLanding": { "id": "AL_Moving", "label": "Moving Platform Landing (Ship Deck)" },
+            "BlindLanding": { "id": "AL_Blind", "label": "Blind / GPS-Denied Landing" }
+          }
+        },
+        "ReturnToHome": { "id": "NAV_RTH", "label": "Return To Home / Base" },
+        "TerrainFollowing": { "id": "NAV_TF", "label": "Terrain Following" },
+        "NOE_Flight": { "id": "NAV_NOE", "label": "Nap-of-the-Earth (NOE) Flight" },
+        "FormationFlight": {
+          "id": "NAV_Form",
+          "label": "Formation Flight Control",
+          "subclasses": {
+            "LeaderFollower": { "id": "FF_LF", "label": "Leader-Follower Formation" },
+            "VirtualStructure": { "id": "FF_VS", "label": "Virtual Structure Formation" },
+            "BehaviorBased": { "id": "FF_BB", "label": "Behavior-Based Formation" }
+          }
+        },
+        "EmergencyRecovery": {
+          "id": "NAV_ER",
+          "label": "Emergency Recovery / Failsafe",
+          "subclasses": {
+            "AutoRotationRecovery": { "id": "ER_AutoRot", "label": "Auto-Rotation Recovery" },
+            "DeadstickLanding": { "id": "ER_Deadstick", "label": "Deadstick Landing" },
+            "ParachuteDeployment": { "id": "ER_Para", "label": "Automatic Parachute Deployment" }
+          }
+        },
+        "EnergyManagement": {
+          "id": "NAV_EM",
+          "label": "Energy / Endurance Management",
+          "subclasses": {
+            "BatteryEnergyOptimization": { "id": "EM_Bat", "label": "Battery Energy Optimization" },
+            "FuelOptimization": { "id": "EM_Fuel", "label": "Fuel Optimization" },
+            "SolarEnergyHarvesting": { "id": "EM_Solar", "label": "Solar Energy Harvesting" },
+            "GlideOptimization": { "id": "EM_Glide", "label": "Glide Path Optimization" }
+          }
+        }
+      }
+    },
+    "MissionManagement": {
+      "id": "AUTO_Mission",
+      "label": "Autonomous Mission Management",
+      "subclasses": {
+        "MissionPlanning": {
+          "id": "MM_Plan",
+          "label": "Mission Planning System",
+          "subclasses": {
+            "RoutePlanning": { "id": "MP_Route", "label": "Route Planning" },
+            "ThreatAnalysis": { "id": "MP_Threat", "label": "Threat Analysis & Avoidance" },
+            "SensorCoverage": { "id": "MP_SensCov", "label": "Sensor Coverage Planning" },
+            "TaskAllocation": { "id": "MP_Task", "label": "Task Allocation (Single / Multi-UAV)" },
+            "TemporalCoordination": { "id": "MP_Temporal", "label": "Temporal Coordination" }
+          }
+        },
+        "MissionReplanning": {
+          "id": "MM_Replan",
+          "label": "Dynamic Mission Replanning",
+          "subclasses": {
+            "ContingencyReplanning": { "id": "MR_Cont", "label": "Contingency Replanning" },
+            "OpportunisticReplanning": { "id": "MR_Opp", "label": "Opportunistic Replanning" }
+          }
+        },
+        "CooperativeDecisionMaking": {
+          "id": "MM_CDM",
+          "label": "Cooperative Decision Making (Multi-UAV)",
+          "subclasses": {
+            "ConsensusDecision": { "id": "CDM_Consensus", "label": "Consensus-Based Decision" },
+            "HierarchicalDecision": { "id": "CDM_Hier", "label": "Hierarchical Decision Structure" },
+            "VotingMechanism": { "id": "CDM_Vote", "label": "Voting Mechanism" }
+          }
+        },
+        "RulesOfEngagement": {
+          "id": "MM_ROE",
+          "label": "Rules of Engagement (RoE) Compliance System",
+          "subclasses": {
+            "HumanOnTheLoop": { "id": "ROE_HOTL", "label": "Human-On-The-Loop (HOTL)" },
+            "HumanInTheLoop": { "id": "ROE_HITL", "label": "Human-In-The-Loop (HITL)" },
+            "HumanOutOfTheLoop": { "id": "ROE_HOOTL", "label": "Human-Out-Of-The-Loop (HOOTL)" }
+          }
+        },
+        "IntelligenceFusionMgmt": { "id": "MM_IntFus", "label": "Intelligence Fusion Management" },
+        "BattleDamageAssessment": { "id": "MM_BDA", "label": "Autonomous Battle Damage Assessment (BDA)" },
+        "CombatID": { "id": "MM_CID", "label": "Combat Identification (CID) Module" }
+      }
+    },
+    "CommunicationsAutonomy": {
+      "id": "AUTO_Comm",
+      "label": "Communications Autonomy",
+      "subclasses": {
+        "CognitiveRadio": { "id": "CA_CogRadio", "label": "Cognitive Radio (Dynamic Spectrum Access)" },
+        "AntiJamCommunications": { "id": "CA_AJComm", "label": "Anti-Jam Communications (FHSS/DSSS)" },
+        "LowProbabilityInterception": { "id": "CA_LPI", "label": "Low Probability of Intercept / Detection (LPI/LPD)" },
+        "DelayTolerantNetworking": { "id": "CA_DTN", "label": "Delay-Tolerant Networking (DTN)" },
+        "SwarmCommunicationsProtocol": { "id": "CA_SwarmProto", "label": "Swarm Communications Protocol" }
+      }
+    }
+  },
+  "avionics": {
+    "FlightControlAvionics": {
+      "id": "AV_FC",
+      "label": "Flight Control Avionics",
+      "subclasses": {
+        "AttitudeHeadingReferenceSystem": { "id": "AV_AHRS", "label": "Attitude and Heading Reference System (AHRS)" },
+        "AirDataComputer": { "id": "AV_ADC", "label": "Air Data Computer (ADC)" },
+        "FlightManagementSystem": { "id": "AV_FMS", "label": "Flight Management System (FMS)" },
+        "AutopilotComputer": { "id": "AV_APC", "label": "Autopilot Computer" },
+        "FlyByWire": {
+          "id": "AV_FBW",
+          "label": "Fly-By-Wire (FBW) System",
+          "subclasses": {
+            "AnalogFBW": { "id": "FBW_Analog", "label": "Analog FBW" },
+            "DigitalFBW": { "id": "FBW_Digital", "label": "Digital FBW" },
+            "FlyByLight": { "id": "FBW_FBL", "label": "Fly-By-Light (Fiber Optic)" }
+          }
+        },
+        "FaultTolerantFCS": {
+          "id": "AV_FTFCS",
+          "label": "Fault-Tolerant Flight Control System",
+          "subclasses": {
+            "TriplexRedundancy": { "id": "FT_Triplex", "label": "Triplex Redundancy" },
+            "QuadplexRedundancy": { "id": "FT_Quad", "label": "Quadplex Redundancy" },
+            "DissimilarRedundancy": { "id": "FT_Dissim", "label": "Dissimilar Redundancy" }
+          }
+        }
+      }
+    },
+    "PropulsionControl": {
+      "id": "AV_PropCtrl",
+      "label": "Propulsion Control Avionics",
+      "subclasses": {
+        "FADEC_Avionics": { "id": "AV_FADEC", "label": "Full Authority Digital Engine Control (FADEC)" },
+        "ThrottleController": { "id": "AV_Throttle", "label": "Throttle Controller" },
+        "HybridEnergyManager": { "id": "AV_HEM", "label": "Hybrid Energy Manager" },
+        "ESC_Controller": { "id": "AV_ESC", "label": "ESC Flight Controller Integration" }
+      }
+    },
+    "SensorManagement": {
+      "id": "AV_SensMgmt",
+      "label": "Sensor Management System",
+      "subclasses": {
+        "SensorScheduler": { "id": "SM_Sched", "label": "Sensor Scheduler" },
+        "QualityOfService_Sensor": { "id": "SM_QoS", "label": "Sensor Quality-of-Service Manager" },
+        "GimbalController": { "id": "SM_Gimbal", "label": "Gimbal / Pointing Controller" },
+        "SensorModeSelector": { "id": "SM_Mode", "label": "Sensor Mode Selector" }
+      }
+    },
+    "HealthAndUsageMonitoring": {
+      "id": "AV_HUMS",
+      "label": "Health and Usage Monitoring System (HUMS)",
+      "subclasses": {
+        "EngineHMS": { "id": "HUMS_Eng", "label": "Engine Health Monitor" },
+        "StructuralHMS": { "id": "HUMS_Struct", "label": "Structural Health Monitor" },
+        "BatteryHMS": { "id": "HUMS_Bat", "label": "Battery Health Monitor" },
+        "PrognosticsHealthMgmt": { "id": "HUMS_PHM", "label": "Prognostics and Health Management (PHM)" },
+        "FaultIsolation": { "id": "HUMS_FI", "label": "Fault Isolation and Recovery" }
+      }
+    },
+    "NavigationAvionics": {
+      "id": "AV_NavAv",
+      "label": "Navigation Avionics Suite",
+      "subclasses": {
+        "IntegratedNavigationSystem": { "id": "NAV_INS_Av", "label": "Integrated Navigation System (INS/GNSS)" },
+        "TerrainAwarenessSystem": { "id": "NAV_TAWS", "label": "Terrain Awareness and Warning System (TAWS)" },
+        "RadarAltimeterAvionics": { "id": "NAV_RAlt", "label": "Radar Altimeter" },
+        "NavigationDisplay": { "id": "NAV_Disp", "label": "Navigation Display (GCS Side)" }
+      }
+    },
+    "DataLink_Avionics": {
+      "id": "AV_DLA",
+      "label": "Data Link Avionics",
+      "subclasses": {
+        "CDL_Terminal": { "id": "DLA_CDL", "label": "Common Data Link Terminal" },
+        "Link16_Terminal": { "id": "DLA_L16", "label": "Link 16 Terminal" },
+        "GroundDataTerminal": { "id": "DLA_GDT", "label": "Ground Data Terminal (GDT)" },
+        "AirborneDataRelay": { "id": "DLA_ADR", "label": "Airborne Data Relay Module" }
+      }
+    },
+    "InertialSystems": {
+      "id": "AV_Inertial",
+      "label": "Inertial Systems",
+      "subclasses": {
+        "MEMS_IMU_Av": { "id": "INS_MEMS", "label": "MEMS IMU" },
+        "FOG_IMU_Av": { "id": "INS_FOG", "label": "Fiber Optic Gyroscope IMU" },
+        "RLG_IMU_Av": { "id": "INS_RLG", "label": "Ring Laser Gyroscope IMU" },
+        "HemisphericalResonatorGyro_Av": { "id": "INS_HRG", "label": "Hemispherical Resonator Gyroscope" },
+        "NanoIMU": { "id": "INS_Nano", "label": "Nano IMU (CSAC-Based)" }
+      }
+    },
+    "ElectronicWarfareAvionics": {
+      "id": "AV_EW",
+      "label": "Electronic Warfare Avionics",
+      "subclasses": {
+        "ESM_Avionics": { "id": "EWA_ESM", "label": "ESM Suite" },
+        "ECM_Avionics": { "id": "EWA_ECM", "label": "ECM System" },
+        "DRFM_Avionics": { "id": "EWA_DRFM", "label": "DRFM Jammer Avionics" },
+        "RWR_Avionics": { "id": "EWA_RWR", "label": "Radar Warning Receiver (RWR)" },
+        "MAWS_Avionics": { "id": "EWA_MAWS", "label": "Missile Approach Warning System (MAWS)" },
+        "CyberWarfareModule": { "id": "EWA_Cyber", "label": "Cyber Warfare Module" }
+      }
+    }
+  },
+  "propulsion_systems": {
+    "ElectricPropulsion_Full": {
+      "id": "PROP_Elec",
+      "label": "Electric Propulsion",
+      "technologies": {
+        "BLDC_Motor": { "id": "P_BLDC", "label": "Brushless DC Motor (BLDC)" },
+        "PMSM": { "id": "P_PMSM", "label": "Permanent Magnet Synchronous Motor (PMSM)" },
+        "BLAC": { "id": "P_BLAC", "label": "Brushless AC Motor (BLAC)" },
+        "HighEfficiencyESC": { "id": "P_ESC_HE", "label": "High-Efficiency ESC" },
+        "VariableSpeedDrive": { "id": "P_VSD", "label": "Variable Speed Drive" }
+      }
+    },
+    "TurbineEngines": {
+      "id": "PROP_Turbine",
+      "label": "Turbine Propulsion",
+      "technologies": {
+        "MicroGasTurbine": { "id": "P_MGT", "label": "Micro Gas Turbine (< 100 lbf thrust)" },
+        "SmallTurbojet": { "id": "P_STJ", "label": "Small Turbojet (100–500 lbf)" },
+        "MediumTurbofan": { "id": "P_MTF", "label": "Medium Turbofan (500–5000 lbf)" },
+        "Turboprop_Military": { "id": "P_TP_Mil", "label": "Military Turboprop" },
+        "Turboshaft_Military": { "id": "P_TS_Mil", "label": "Military Turboshaft" },
+        "RamjetEngine": { "id": "P_Ramjet", "label": "Ramjet Engine" },
+        "ScramjetEngine": { "id": "P_Scramjet", "label": "Scramjet Engine (Hypersonic)" },
+        "PulseDetonationEngine": { "id": "P_PDE", "label": "Pulse Detonation Engine (PDE)" }
+      }
+    },
+    "HydrogenPropulsion": {
+      "id": "PROP_H2",
+      "label": "Hydrogen Propulsion",
+      "technologies": {
+        "HydrogenICE": { "id": "P_H2ICE", "label": "Hydrogen Internal Combustion Engine" },
+        "LiquidHydrogenTurbine": { "id": "P_H2Turbine", "label": "Liquid Hydrogen Turbine" },
+        "H2_PEM_FuelCell": { "id": "P_H2PEM", "label": "Hydrogen PEM Fuel Cell" }
+      }
+    }
+  }
+}

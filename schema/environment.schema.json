@@ -1,0 +1,1448 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/environment.schema.json",
+  "title": "PW-WSF-500 Environment Standard",
+  "description": "PhysWorldLM World Specification Format (PW-WSF-500) v1.0. Canonical definition of the environmental state surrounding all entities in a PhysWorldLM simulation. Covers planetary context, atmosphere, ocean, lighting, EM environment, acoustics, radiation, chemical/biological hazards, navigation, communications, sensor effects, and physics modifiers. Does NOT own physical laws (physics.schema.json), time-varying weather phenomena (weather.schema.json), or static surface geometry (terrain.schema.json). Engine-independent, SI-unit throughout.",
+
+  "$comment": "Standard: PW-WSF-500 | Status: Active | Publication: 2025-01-01 | References: ISA 1976 Standard Atmosphere, ICAO Doc 7488, US MIL-STD-210, NATO STANAG 4082, NRLMSISE-00, WGS-84, EGM2008, COESA, ITU-R P series, IEC 62232, Beaufort Scale, Douglas Sea Scale, Saffir-Simpson, NOAA, NASA CEA, ESA ECSS, ISO 2533 | Compatibility: world.schema.json v1.x, material.schema.json v1.x, physics.schema.json, terrain.schema.json, weather.schema.json",
+
+  "type": "object",
+  "required": ["environment_id", "environment_name", "version", "classification"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier (RFC 4122)."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string e.g. 1.0.0."
+    },
+
+    "NonNegativeNumber": {
+      "type": "number",
+      "minimum": 0
+    },
+
+    "UnitFloat": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Dimensionless scalar in [0, 1]."
+    },
+
+    "TemperatureKelvin": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Absolute temperature in Kelvin."
+    },
+
+    "Vector3": {
+      "type": "object",
+      "description": "3-component Cartesian vector.",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+
+    "GeoCoordinate": {
+      "type": "object",
+      "description": "WGS-84 geographic coordinate.",
+      "required": ["latitude", "longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90  },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 },
+        "altitude_m":{ "type": "number", "description": "Height above WGS-84 ellipsoid. SI: m." }
+      }
+    },
+
+    "AltitudeRange": {
+      "type": "object",
+      "description": "A vertical extent bounded by minimum and maximum altitude.",
+      "required": ["min_m", "max_m"],
+      "additionalProperties": false,
+      "properties": {
+        "min_m": { "type": "number", "description": "Minimum altitude (negative for below sea level). SI: m." },
+        "max_m": { "type": "number", "description": "Maximum altitude. SI: m." }
+      }
+    },
+
+    "QuantityWithUnit": {
+      "type": "object",
+      "description": "A physical quantity with explicit SI unit.",
+      "required": ["value", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "value":    { "type": "number" },
+        "unit":     { "type": "string", "description": "SI unit symbol." },
+        "source":   { "type": "string", "description": "Data source or measurement reference." }
+      }
+    },
+
+    "QuantityRange": {
+      "type": "object",
+      "required": ["min", "max", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "min":     { "type": "number" },
+        "max":     { "type": "number" },
+        "typical": { "type": "number" },
+        "unit":    { "type": "string" }
+      }
+    },
+
+    "WindVector": {
+      "type": "object",
+      "description": "Wind state at a specific altitude layer.",
+      "additionalProperties": false,
+      "properties": {
+        "altitude_m":      { "type": "number", "description": "Layer altitude. SI: m." },
+        "speed_mps":       { "$ref": "#/$defs/NonNegativeNumber", "description": "Wind speed. SI: m/s." },
+        "direction_deg":   { "type": "number", "minimum": 0, "maximum": 360, "description": "Meteorological wind direction (from, clockwise from north). SI: °." },
+        "gust_speed_mps":  { "$ref": "#/$defs/NonNegativeNumber", "description": "Peak gust speed. SI: m/s." },
+        "turbulence_intensity": { "$ref": "#/$defs/UnitFloat", "description": "Turbulence intensity I = σ_u / U (dimensionless)." },
+        "turbulence_class": {
+          "type": "string",
+          "enum": ["none", "light", "moderate", "severe", "extreme"],
+          "description": "ICAO turbulence classification."
+        }
+      }
+    },
+
+    "GasSpecies": {
+      "type": "object",
+      "description": "A gas species and its volume fraction in a gas mixture.",
+      "required": ["formula", "volume_fraction"],
+      "additionalProperties": false,
+      "properties": {
+        "name":            { "type": "string" },
+        "formula":         { "type": "string", "description": "Molecular formula (e.g. N2, O2, CO2)." },
+        "volume_fraction": { "$ref": "#/$defs/UnitFloat", "description": "Volume (molar) fraction (0–1)." },
+        "cas_number":      { "type": "string" },
+        "is_toxic":        { "type": "boolean" },
+        "tlv_ppm":         { "type": "number", "description": "Threshold limit value in parts per million." }
+      }
+    },
+
+    "SensorDegradation": {
+      "type": "object",
+      "description": "Environmental degradation factor applied to a sensor modality.",
+      "additionalProperties": false,
+      "properties": {
+        "range_multiplier":       { "type": "number", "description": "Effective range multiplier (1.0 = nominal, <1 = degraded)." },
+        "noise_additive_db":      { "type": "number", "description": "Added noise floor in dB." },
+        "false_alarm_rate_delta": { "type": "number", "description": "Additive change in false alarm rate." },
+        "clutter_level":          { "type": "string", "enum": ["none", "low", "medium", "high", "severe"] },
+        "notes":                  { "type": "string" }
+      }
+    },
+
+    "OrbitalElements": {
+      "type": "object",
+      "description": "Keplerian orbital elements.",
+      "additionalProperties": false,
+      "properties": {
+        "semi_major_axis_m":        { "type": "number", "description": "Semi-major axis a. SI: m." },
+        "eccentricity":             { "type": "number", "minimum": 0, "description": "Orbital eccentricity (0 = circle)." },
+        "inclination_deg":          { "type": "number", "minimum": 0, "maximum": 180 },
+        "raan_deg":                 { "type": "number", "minimum": 0, "maximum": 360, "description": "Right ascension of ascending node." },
+        "argument_of_periapsis_deg":{ "type": "number", "minimum": 0, "maximum": 360 },
+        "true_anomaly_deg":         { "type": "number", "minimum": 0, "maximum": 360 }
+      }
+    },
+
+    "SpectralIrradiance": {
+      "type": "array",
+      "description": "Spectral irradiance curve as [wavelength_nm, W/(m²·nm)] pairs.",
+      "items": {
+        "type": "object",
+        "required": ["wavelength_nm", "irradiance_w_m2_nm"],
+        "additionalProperties": false,
+        "properties": {
+          "wavelength_nm":      { "type": "number", "minimum": 0 },
+          "irradiance_w_m2_nm": { "type": "number", "minimum": 0 }
+        }
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "environment_id": {
+      "$ref": "#/$defs/UUID",
+      "description": "Globally unique identifier for this environment definition."
+    },
+
+    "environment_name": {
+      "type": "string",
+      "description": "Canonical environment name (e.g. 'Kabul Urban Combat AO', 'ISS Low Earth Orbit', 'North Atlantic Storm').",
+      "minLength": 1
+    },
+
+    "display_name": {
+      "type": "string",
+      "description": "Short display label for UI."
+    },
+
+    "description": {
+      "type": "string",
+      "description": "Detailed description of the environmental scenario."
+    },
+
+    "version": { "$ref": "#/$defs/VersionString" },
+    "namespace": {
+      "type": "string",
+      "default": "physworldlm",
+      "description": "Namespace (e.g. 'physworldlm.environments.earth.arctic')."
+    },
+
+    "created_at":  { "$ref": "#/$defs/Timestamp" },
+    "modified_at": { "$ref": "#/$defs/Timestamp" },
+
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+
+    "template_id": {
+      "$ref": "#/$defs/UUID",
+      "description": "UUID of a parent template this environment was derived from."
+    },
+
+    "ontology": {
+      "type": "object",
+      "description": "Semantic identifiers for ontology and knowledge graph interoperability.",
+      "additionalProperties": false,
+      "properties": {
+        "uri":                { "type": "string", "format": "uri" },
+        "knowledge_graph_id": { "type": "string" },
+        "envo_biome_id":      { "type": "string", "description": "Environment Ontology (ENVO) biome ID." },
+        "wikidata_qid":       { "type": "string" }
+      }
+    },
+
+    "classification": {
+      "type": "object",
+      "description": "Environment type, biome, climate, and domain classification.",
+      "required": ["environment_type"],
+      "additionalProperties": false,
+      "properties": {
+
+        "environment_type": {
+          "type": "string",
+          "description": "Primary environment type.",
+          "enum": [
+            "indoor", "outdoor_urban", "outdoor_rural", "outdoor_forest",
+            "outdoor_desert", "outdoor_mountain", "outdoor_arctic", "outdoor_tropical",
+            "outdoor_savanna", "outdoor_wetland", "outdoor_coastal",
+            "underground", "subterranean_cave",
+            "underwater_shallow", "underwater_deep", "underwater_abyssal",
+            "maritime_surface", "maritime_port",
+            "airborne_low", "airborne_medium", "airborne_high", "airborne_stratosphere",
+            "near_space", "orbital_leo", "orbital_meo", "orbital_geo", "orbital_heo",
+            "lunar_surface", "lunar_orbit",
+            "martian_surface", "martian_orbit",
+            "planetary_surface", "planetary_orbit",
+            "interplanetary", "deep_space",
+            "asteroid_surface",
+            "space_station", "artificial_habitat",
+            "industrial_facility", "military_base", "urban_combat",
+            "custom"
+          ]
+        },
+
+        "biome": {
+          "type": "string",
+          "enum": [
+            "tropical_rainforest", "tropical_savanna", "subtropical_desert",
+            "mediterranean", "temperate_grassland", "temperate_forest",
+            "boreal_forest", "tundra", "arctic", "antarctic",
+            "wetland", "mangrove", "coral_reef",
+            "open_ocean", "deep_ocean", "coastal",
+            "urban", "agricultural", "industrial",
+            "subterranean", "extraterrestrial", "none", "custom"
+          ]
+        },
+
+        "koppen_class": {
+          "type": "string",
+          "description": "Köppen-Geiger climate classification (e.g. Af, BWh, Dfc, ET)."
+        },
+
+        "planet": {
+          "type": "string",
+          "enum": ["Earth", "Moon", "Mars", "Venus", "Mercury", "Jupiter", "Saturn",
+                   "Uranus", "Neptune", "Pluto", "Ceres", "Titan", "Europa",
+                   "Ganymede", "Io", "custom"],
+          "default": "Earth"
+        },
+
+        "natural_or_artificial": {
+          "type": "string",
+          "enum": ["natural", "artificial", "hybrid"]
+        },
+
+        "indoor_or_outdoor": {
+          "type": "string",
+          "enum": ["indoor", "outdoor", "partially_enclosed"]
+        },
+
+        "mission_context": {
+          "type": "string",
+          "description": "High-level mission or simulation category.",
+          "enum": [
+            "combat", "peacekeeping", "humanitarian", "reconnaissance",
+            "search_and_rescue", "disaster_response", "construction",
+            "exploration", "scientific", "logistics", "training",
+            "commercial_aviation", "maritime_transport", "space_mission",
+            "autonomous_vehicle", "robotics_test", "digital_twin",
+            "custom"
+          ]
+        },
+
+        "security_classification": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret"]
+        }
+      }
+    },
+
+    "spatial_extent": {
+      "type": "object",
+      "description": "Geographic and volumetric extent of this environment.",
+      "additionalProperties": false,
+      "properties": {
+
+        "coordinate_system": {
+          "type": "string",
+          "enum": ["WGS84", "ECEF", "ENU", "NED", "UTM", "local_flat_earth",
+                   "planetocentric", "planetodetic", "heliocentric", "custom"],
+          "default": "WGS84"
+        },
+
+        "map_projection": {
+          "type": "string",
+          "description": "Map projection for 2D representations (e.g. EPSG:4326, EPSG:32637).",
+          "examples": ["EPSG:4326", "EPSG:32637", "EPSG:3857"]
+        },
+
+        "origin": {
+          "$ref": "#/$defs/GeoCoordinate",
+          "description": "Geographic or planetary origin of the local coordinate frame."
+        },
+
+        "origin_ecef_m": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Origin in ECEF (Earth-centred, Earth-fixed) coordinates. SI: m."
+        },
+
+        "bounding_box_geo": {
+          "type": "object",
+          "description": "Geographic bounding box.",
+          "additionalProperties": false,
+          "properties": {
+            "southwest": { "$ref": "#/$defs/GeoCoordinate" },
+            "northeast": { "$ref": "#/$defs/GeoCoordinate" }
+          }
+        },
+
+        "bounding_box_local_m": {
+          "type": "object",
+          "description": "Local Cartesian bounding volume. SI: m.",
+          "additionalProperties": false,
+          "properties": {
+            "min": { "$ref": "#/$defs/Vector3" },
+            "max": { "$ref": "#/$defs/Vector3" }
+          }
+        },
+
+        "altitude_limits": { "$ref": "#/$defs/AltitudeRange" },
+
+        "depth_limit_m": {
+          "type": "number",
+          "description": "Maximum water or underground depth (negative = below surface). SI: m."
+        },
+
+        "area_km2": {
+          "type": "number",
+          "description": "Approximate horizontal surface area. SI: km²."
+        },
+
+        "scale_factor": {
+          "type": "number",
+          "description": "Global scale factor if environment is a scaled model (1.0 = real scale).",
+          "default": 1.0
+        },
+
+        "regional_zones": {
+          "type": "array",
+          "description": "Named sub-regions within this environment (AOs, sectors, biomes).",
+          "items": {
+            "type": "object",
+            "required": ["zone_id", "zone_name"],
+            "additionalProperties": false,
+            "properties": {
+              "zone_id":    { "$ref": "#/$defs/UUID" },
+              "zone_name":  { "type": "string" },
+              "description":{ "type": "string" },
+              "bounds_geo": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "southwest": { "$ref": "#/$defs/GeoCoordinate" },
+                  "northeast": { "$ref": "#/$defs/GeoCoordinate" }
+                }
+              },
+              "altitude_limits": { "$ref": "#/$defs/AltitudeRange" },
+              "zone_type": { "type": "string", "description": "e.g. 'exclusion_zone', 'urban_area', 'water_body', 'airspace'." }
+            }
+          }
+        }
+      }
+    },
+
+    "time": {
+      "type": "object",
+      "description": "Simulation time reference and clock configuration.",
+      "additionalProperties": false,
+      "properties": {
+        "simulation_start_utc":   { "$ref": "#/$defs/Timestamp", "description": "Simulation start time in UTC." },
+        "simulation_elapsed_s":   { "type": "number", "description": "Elapsed simulation time from start. SI: s." },
+        "time_scale_factor":      { "type": "number", "description": "Simulation time scale (1.0 = real-time, 2.0 = 2× speed).", "default": 1.0 },
+        "julian_date":            { "type": "number", "description": "Julian Date (JD) at simulation start." },
+        "modified_julian_date":   { "type": "number", "description": "Modified Julian Date (MJD = JD − 2400000.5) at start." },
+        "mission_elapsed_time_s": { "type": "number", "description": "Mission elapsed time from mission epoch. SI: s." },
+        "utc_offset_h":           { "type": "number", "minimum": -12, "maximum": 14, "description": "UTC offset for local solar time. SI: h." },
+        "timezone":               { "type": "string", "description": "IANA timezone identifier (e.g. 'Asia/Kabul')." },
+        "solar_time_h":           { "type": "number", "description": "Apparent solar time (local) at origin. SI: h." },
+        "sidereal_time_h":        { "type": "number", "description": "Local sidereal time. SI: h." },
+        "epoch_system":           { "type": "string", "enum": ["J2000", "B1950", "UNIX", "GPS", "mission", "custom"], "default": "J2000" }
+      }
+    },
+
+    "planetary": {
+      "type": "object",
+      "description": "Physical properties of the host planet or body.",
+      "additionalProperties": false,
+      "properties": {
+        "planet_name":           { "type": "string", "description": "Name of the planetary body." },
+        "mean_radius_m":         { "type": "number", "description": "Mean planetary radius. SI: m." },
+        "equatorial_radius_m":   { "type": "number", "description": "Equatorial radius. SI: m." },
+        "polar_radius_m":        { "type": "number", "description": "Polar radius. SI: m." },
+        "flattening":            { "type": "number", "description": "Geometric flattening f = (a−b)/a." },
+        "mass_kg":               { "type": "number", "description": "Planetary mass. SI: kg." },
+        "gravitational_parameter_m3_s2":{ "type": "number", "description": "Standard gravitational parameter μ = GM. SI: m³/s²." },
+        "surface_gravity_m_s2":  { "type": "number", "description": "Surface gravity at equator. SI: m/s²." },
+        "gravity_vector_m_s2":   { "$ref": "#/$defs/Vector3", "description": "Local gravity vector in world frame. SI: m/s²." },
+        "escape_velocity_m_s":   { "type": "number", "description": "Escape velocity. SI: m/s." },
+        "rotation_period_s":     { "type": "number", "description": "Sidereal rotation period. SI: s." },
+        "axial_tilt_deg":        { "type": "number", "description": "Axial tilt relative to orbital plane. SI: °." },
+        "orbital_period_s":      { "type": "number", "description": "Orbital period around primary. SI: s." },
+        "orbital_elements":      { "$ref": "#/$defs/OrbitalElements" },
+        "surface_pressure_pa":   { "type": "number", "description": "Mean surface atmospheric pressure. SI: Pa." },
+        "geoid_model":           { "type": "string", "description": "Geoid model used (e.g. EGM2008, EGM96, MarsGeoid2011)." },
+        "datum":                 { "type": "string", "description": "Geodetic datum (e.g. WGS-84, GRS80, Mars_2000)." },
+        "magnetic_field": {
+          "type": "object",
+          "description": "Planetary magnetic field at simulation origin.",
+          "additionalProperties": false,
+          "properties": {
+            "total_intensity_t":     { "type": "number", "description": "Total magnetic field intensity. SI: T." },
+            "declination_deg":       { "type": "number", "description": "Magnetic declination (from true north, positive east). SI: °." },
+            "inclination_deg":       { "type": "number", "description": "Magnetic inclination (dip angle). SI: °." },
+            "north_component_t":     { "type": "number", "description": "Northward component. SI: T." },
+            "east_component_t":      { "type": "number", "description": "Eastward component. SI: T." },
+            "vertical_component_t":  { "type": "number", "description": "Vertical (downward) component. SI: T." },
+            "field_vector_t":        { "$ref": "#/$defs/Vector3", "description": "Full field vector in NED frame. SI: T." },
+            "model":                 { "type": "string", "description": "Magnetic field model used (e.g. WMM2025, IGRF-13)." },
+            "has_magnetosphere":     { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "atmosphere": {
+      "type": "object",
+      "description": "Atmospheric state at the simulation origin and altitude profile. Owns the current atmospheric condition; weather.schema.json owns dynamic meteorological events.",
+      "additionalProperties": false,
+      "properties": {
+
+        "atmosphere_model": {
+          "type": "string",
+          "description": "Atmospheric model used.",
+          "enum": ["ISA_1976", "US_Standard_1976", "NRLMSISE00", "JB2008",
+                   "MarsGRAM", "VenusGRAM", "custom", "none"],
+          "default": "ISA_1976"
+        },
+
+        "surface_conditions": {
+          "type": "object",
+          "description": "Atmospheric state at the reference surface level.",
+          "additionalProperties": false,
+          "properties": {
+            "temperature_k":      { "$ref": "#/$defs/TemperatureKelvin", "description": "Air temperature at surface. SI: K." },
+            "pressure_pa":        { "type": "number", "description": "Total air pressure at surface. SI: Pa." },
+            "density_kg_m3":      { "type": "number", "description": "Air mass density at surface. SI: kg/m³." },
+            "humidity_relative_fraction": { "$ref": "#/$defs/UnitFloat", "description": "Relative humidity (0–1)." },
+            "humidity_absolute_kg_m3": { "type": "number", "description": "Absolute humidity. SI: kg/m³." },
+            "dew_point_k":        { "$ref": "#/$defs/TemperatureKelvin", "description": "Dew point temperature. SI: K." },
+            "wet_bulb_k":         { "$ref": "#/$defs/TemperatureKelvin", "description": "Wet bulb temperature. SI: K." },
+            "dynamic_viscosity_pa_s": { "type": "number", "description": "Air dynamic viscosity. SI: Pa·s." },
+            "kinematic_viscosity_m2_s":{ "type": "number", "description": "Air kinematic viscosity. SI: m²/s." },
+            "speed_of_sound_m_s": { "type": "number", "description": "Speed of sound in air. SI: m/s." },
+            "refractive_index":   { "type": "number", "description": "Atmospheric refractive index at surface (≈1.000293 for standard air)." }
+          }
+        },
+
+        "altitude_profile": {
+          "type": "array",
+          "description": "Atmosphere state at discrete altitude layers (for non-standard atmospheres).",
+          "items": {
+            "type": "object",
+            "required": ["altitude_m"],
+            "additionalProperties": false,
+            "properties": {
+              "altitude_m":        { "type": "number", "description": "Geopotential altitude. SI: m." },
+              "temperature_k":     { "$ref": "#/$defs/TemperatureKelvin" },
+              "pressure_pa":       { "type": "number" },
+              "density_kg_m3":     { "type": "number" },
+              "wind":              { "$ref": "#/$defs/WindVector" }
+            }
+          }
+        },
+
+        "composition": {
+          "type": "array",
+          "description": "Gas composition at the surface level.",
+          "items": { "$ref": "#/$defs/GasSpecies" }
+        },
+
+        "surface_wind": { "$ref": "#/$defs/WindVector", "description": "Surface-level wind state." },
+
+        "wind_profile": {
+          "type": "array",
+          "description": "Wind profile at multiple altitudes.",
+          "items": { "$ref": "#/$defs/WindVector" }
+        },
+
+        "visibility": {
+          "type": "object",
+          "description": "Atmospheric visibility conditions.",
+          "additionalProperties": false,
+          "properties": {
+            "meteorological_visibility_m": { "type": "number", "description": "Prevailing meteorological visibility. SI: m." },
+            "extinction_coefficient_per_m":{ "type": "number", "description": "Atmospheric extinction coefficient β. SI: m⁻¹." },
+            "scattering_coefficient_per_m":{ "type": "number", "description": "Volume scattering coefficient. SI: m⁻¹." },
+            "absorption_coefficient_per_m":{ "type": "number", "description": "Molecular absorption coefficient. SI: m⁻¹." },
+            "optical_depth":               { "type": "number", "description": "Vertical optical depth (dimensionless)." },
+            "visual_range_class": {
+              "type": "string",
+              "enum": ["dense_fog", "thick_fog", "moderate_fog", "thin_fog", "mist",
+                       "haze", "very_poor", "poor", "moderate", "good", "very_good", "excellent"]
+            }
+          }
+        },
+
+        "aerosols": {
+          "type": "object",
+          "description": "Aerosol loading and type.",
+          "additionalProperties": false,
+          "properties": {
+            "aerosol_model":       { "type": "string", "enum": ["rural", "urban", "maritime", "desert", "tropospheric", "stratospheric", "arctic", "smoke", "custom"] },
+            "aod_550nm":           { "type": "number", "description": "Aerosol optical depth at 550 nm (dimensionless)." },
+            "pm10_ug_m3":          { "type": "number", "description": "PM10 particulate matter concentration. SI: µg/m³." },
+            "pm25_ug_m3":          { "type": "number", "description": "PM2.5 concentration. SI: µg/m³." },
+            "dust_loading_g_m3":   { "type": "number", "description": "Desert dust loading. SI: g/m³." },
+            "smoke_concentration_g_m3":{ "type": "number", "description": "Smoke concentration. SI: g/m³." }
+          }
+        },
+
+        "cloud_layers": {
+          "type": "array",
+          "description": "Individual cloud layer definitions.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "layer_name":         { "type": "string", "description": "e.g. 'BKN025', 'OVC080'." },
+              "base_m":             { "type": "number", "description": "Cloud base altitude AGL. SI: m." },
+              "top_m":              { "type": "number", "description": "Cloud top altitude AGL. SI: m." },
+              "coverage_oktas":     { "type": "number", "minimum": 0, "maximum": 8, "description": "Cloud coverage in oktas (0–8)." },
+              "type": {
+                "type": "string",
+                "enum": ["Cu", "Cb", "Sc", "St", "As", "Ac", "Ns", "Ci", "Cs", "Cc", "TCU", "custom"]
+              },
+              "liquid_water_content_kg_m3":{ "type": "number", "description": "Cloud liquid water content. SI: kg/m³." },
+              "ice_water_content_kg_m3":   { "type": "number", "description": "Cloud ice water content. SI: kg/m³." }
+            }
+          }
+        },
+
+        "ozone_dobson":         { "type": "number", "description": "Total column ozone in Dobson units." },
+        "tropopause_altitude_m":{ "type": "number", "description": "Tropopause altitude. SI: m." },
+        "boundary_layer_height_m":{ "type": "number", "description": "Atmospheric boundary layer top height. SI: m." }
+      }
+    },
+
+    "ocean": {
+      "type": "object",
+      "description": "Ocean and water body state. Applicable for maritime, underwater, and coastal environments.",
+      "additionalProperties": false,
+      "properties": {
+
+        "water_type": {
+          "type": "string",
+          "enum": ["open_ocean", "coastal_sea", "shelf_sea", "enclosed_sea", "estuary",
+                   "freshwater_lake", "river", "reservoir", "lagoon", "fjord", "ice_covered", "custom"]
+        },
+
+        "surface_conditions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "temperature_k":      { "$ref": "#/$defs/TemperatureKelvin", "description": "Sea surface temperature (SST). SI: K." },
+            "salinity_psu":       { "type": "number", "description": "Practical Salinity Units (PSU). Open ocean ≈ 35 PSU." },
+            "density_kg_m3":      { "type": "number", "description": "Seawater density at surface. SI: kg/m³." },
+            "ph":                 { "type": "number", "minimum": 0, "maximum": 14, "description": "Sea surface pH." },
+            "dissolved_oxygen_mg_l":{ "type": "number", "description": "Dissolved oxygen concentration. SI: mg/L." }
+          }
+        },
+
+        "depth_profile": {
+          "type": "array",
+          "description": "Ocean state at discrete depth layers.",
+          "items": {
+            "type": "object",
+            "required": ["depth_m"],
+            "additionalProperties": false,
+            "properties": {
+              "depth_m":        { "type": "number", "description": "Depth below surface (positive downward). SI: m." },
+              "temperature_k":  { "$ref": "#/$defs/TemperatureKelvin" },
+              "salinity_psu":   { "type": "number" },
+              "density_kg_m3":  { "type": "number" },
+              "pressure_pa":    { "type": "number" },
+              "sound_speed_m_s":{ "type": "number", "description": "In-situ sound speed. SI: m/s." },
+              "current_speed_m_s":    { "type": "number" },
+              "current_direction_deg":{ "type": "number", "minimum": 0, "maximum": 360 }
+            }
+          }
+        },
+
+        "sound_velocity_profile": {
+          "type": "array",
+          "description": "SVP for sonar and underwater acoustics modelling.",
+          "items": {
+            "type": "object",
+            "required": ["depth_m", "sound_speed_m_s"],
+            "additionalProperties": false,
+            "properties": {
+              "depth_m":       { "type": "number" },
+              "sound_speed_m_s":{ "type": "number" }
+            }
+          }
+        },
+
+        "waves": {
+          "type": "object",
+          "description": "Sea state and wave parameters.",
+          "additionalProperties": false,
+          "properties": {
+            "douglas_sea_state":  { "type": "integer", "minimum": 0, "maximum": 9, "description": "Douglas sea state scale (0–9)." },
+            "beaufort_wind_force":{ "type": "integer", "minimum": 0, "maximum": 12, "description": "Beaufort wind force scale (0–12)." },
+            "significant_wave_height_m":{ "type": "number", "description": "H_s (average of highest 1/3 waves). SI: m." },
+            "peak_wave_period_s": { "type": "number", "description": "Dominant wave period. SI: s." },
+            "mean_wave_period_s": { "type": "number", "description": "Mean wave period. SI: s." },
+            "peak_wave_direction_deg":{ "type": "number", "minimum": 0, "maximum": 360 },
+            "swell_height_m":     { "type": "number", "description": "Swell wave height. SI: m." },
+            "swell_direction_deg":{ "type": "number", "minimum": 0, "maximum": 360 },
+            "wave_spectrum_model":{ "type": "string", "enum": ["JONSWAP", "Pierson_Moskowitz", "BRETSCHNEIDER", "custom"] }
+          }
+        },
+
+        "tides": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "model":             { "type": "string", "enum": ["FES2014", "TPXO9", "EOT20", "custom", "none"] },
+            "current_height_m":  { "type": "number", "description": "Current tidal height above MLLW. SI: m." },
+            "tidal_range_m":     { "type": "number", "description": "Spring tidal range. SI: m." },
+            "next_high_tide_utc":{ "$ref": "#/$defs/Timestamp" },
+            "next_low_tide_utc": { "$ref": "#/$defs/Timestamp" },
+            "tidal_type":        { "type": "string", "enum": ["semidiurnal", "diurnal", "mixed", "negligible"] }
+          }
+        },
+
+        "surface_current": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "speed_m_s":     { "type": "number", "description": "Surface current speed. SI: m/s." },
+            "direction_deg": { "type": "number", "minimum": 0, "maximum": 360, "description": "Current direction (toward, clockwise from north)." },
+            "system_name":   { "type": "string", "description": "Named current system (e.g. Gulf Stream, Kuroshio)." }
+          }
+        },
+
+        "sea_ice": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "concentration_fraction": { "$ref": "#/$defs/UnitFloat", "description": "Sea ice concentration (0=open water, 1=full ice cover)." },
+            "thickness_m":            { "type": "number", "description": "Mean sea ice thickness. SI: m." },
+            "ice_type":               { "type": "string", "enum": ["first_year", "multiyear", "fast_ice", "pack_ice", "frazil", "pancake", "none"] }
+          }
+        },
+
+        "bottom_depth_m": { "type": "number", "description": "Water column depth at the reference location. SI: m." },
+        "bathymetry_model":{ "type": "string", "description": "Bathymetry dataset reference (e.g. GEBCO_2023, ETOPO1)." }
+      }
+    },
+
+    "terrain_ref": {
+      "type": "object",
+      "description": "Reference to terrain.schema.json — environment does NOT own terrain geometry.",
+      "additionalProperties": false,
+      "properties": {
+        "terrain_schema_id": { "$ref": "#/$defs/UUID", "description": "UUID of the terrain.schema.json document." },
+        "terrain_schema_url":{ "type": "string", "format": "uri" },
+        "dem_ref":           { "type": "string", "description": "Digital elevation model asset reference." },
+        "tile_source":       { "type": "string", "description": "Tile server URL (Cesium, WMS, etc.)." }
+      }
+    },
+
+    "weather_ref": {
+      "type": "object",
+      "description": "Reference to weather.schema.json — environment does NOT own weather events.",
+      "additionalProperties": false,
+      "properties": {
+        "weather_schema_id": { "$ref": "#/$defs/UUID", "description": "UUID of the weather.schema.json document." },
+        "weather_schema_url":{ "type": "string", "format": "uri" },
+        "current_weather_summary": {
+          "type": "string",
+          "description": "Short textual METAR-like weather summary (e.g. 'CAVOK', 'BKN025 -RA BR')."
+        }
+      }
+    },
+
+    "lighting": {
+      "type": "object",
+      "description": "Lighting and solar/lunar illumination state.",
+      "additionalProperties": false,
+      "properties": {
+
+        "illumination_condition": {
+          "type": "string",
+          "enum": ["day", "golden_hour", "civil_twilight", "nautical_twilight",
+                   "astronomical_twilight", "night", "full_moon_night",
+                   "partial_moon_night", "starlight_only", "artificial_lit", "blackout", "custom"],
+          "description": "Current illumination phase."
+        },
+
+        "sun": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "elevation_deg":      { "type": "number", "minimum": -90, "maximum": 90, "description": "Solar elevation angle above horizon. SI: °." },
+            "azimuth_deg":        { "type": "number", "minimum": 0,   "maximum": 360, "description": "Solar azimuth (clockwise from north). SI: °." },
+            "direction_enu":      { "$ref": "#/$defs/Vector3", "description": "Unit vector toward sun in ENU frame." },
+            "irradiance_w_m2":    { "type": "number", "description": "Direct normal irradiance (DNI) at top of atmosphere. SI: W/m²." },
+            "surface_irradiance_w_m2":{ "type": "number", "description": "Direct irradiance at surface (after atmospheric attenuation). SI: W/m²." },
+            "spectral_irradiance":{ "$ref": "#/$defs/SpectralIrradiance" },
+            "sunrise_utc":        { "$ref": "#/$defs/Timestamp" },
+            "sunset_utc":         { "$ref": "#/$defs/Timestamp" },
+            "solar_noon_utc":     { "$ref": "#/$defs/Timestamp" }
+          }
+        },
+
+        "moon": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "elevation_deg":      { "type": "number", "minimum": -90, "maximum": 90 },
+            "azimuth_deg":        { "type": "number", "minimum": 0,   "maximum": 360 },
+            "phase_fraction":     { "$ref": "#/$defs/UnitFloat", "description": "Moon phase (0=new, 0.5=full, 1=new cycle)." },
+            "illuminance_lux":    { "type": "number", "description": "Lunar illuminance at surface. SI: lux." },
+            "moonrise_utc":       { "$ref": "#/$defs/Timestamp" },
+            "moonset_utc":        { "$ref": "#/$defs/Timestamp" }
+          }
+        },
+
+        "stars_visible":         { "type": "boolean" },
+        "sky_model":             { "type": "string", "enum": ["Preetham", "Hosek_Wilkie", "Nishita", "CIE_clear", "CIE_overcast", "HDRI", "custom"] },
+        "sky_hdri_ref":          { "type": "string", "description": "URI to an HDRI sky dome asset." },
+        "ambient_illuminance_lux":{ "type": "number", "description": "Hemispherical ambient illuminance. SI: lux." },
+        "correlated_color_temperature_k":{ "type": "number", "description": "Sky CCT for rendering. SI: K." },
+        "horizontal_irradiance_w_m2":{ "type": "number", "description": "Global horizontal irradiance (GHI). SI: W/m²." },
+        "diffuse_irradiance_w_m2":  { "type": "number", "description": "Diffuse horizontal irradiance (DHI). SI: W/m²." },
+        "night_vision_nv_rating":   {
+          "type": "string",
+          "enum": ["NVG_suitable", "NVG_marginal", "NVG_unsuitable", "not_applicable"],
+          "description": "Night vision goggles suitability rating."
+        },
+        "artificial_lighting": {
+          "type": "object",
+          "description": "Artificial light sources in the environment.",
+          "additionalProperties": false,
+          "properties": {
+            "present":           { "type": "boolean" },
+            "average_lux":       { "type": "number", "description": "Average artificial illuminance at ground level. SI: lux." },
+            "source_types":      { "type": "array", "items": { "type": "string", "enum": ["streetlight", "floodlight", "vehicle", "facility", "fire", "muzzle_flash", "custom"] }}
+          }
+        }
+      }
+    },
+
+    "electromagnetic_environment": {
+      "type": "object",
+      "description": "RF, radar, EM noise, and signal environment.",
+      "additionalProperties": false,
+      "properties": {
+
+        "solar_activity": {
+          "type": "object",
+          "description": "Solar activity affecting EM propagation and radiation.",
+          "additionalProperties": false,
+          "properties": {
+            "f107_solar_flux":   { "type": "number", "description": "F10.7 cm solar flux index (SFU)." },
+            "kp_index":          { "type": "number", "minimum": 0, "maximum": 9, "description": "Planetary geomagnetic K-index (0–9)." },
+            "ap_index":          { "type": "number", "description": "Equivalent planetary amplitude index." },
+            "dst_index_nt":      { "type": "number", "description": "Dst geomagnetic storm index. SI: nT." },
+            "solar_event": {
+              "type": "string",
+              "enum": ["quiet", "active", "minor_storm", "moderate_storm", "severe_storm",
+                       "extreme_storm", "solar_flare_X", "solar_flare_M", "CME", "none"]
+            }
+          }
+        },
+
+        "ionosphere": {
+          "type": "object",
+          "description": "Ionospheric conditions affecting HF/VHF propagation.",
+          "additionalProperties": false,
+          "properties": {
+            "model":             { "type": "string", "enum": ["IRI2020", "NeQuick", "Klobuchar", "IONEX", "custom"] },
+            "tec_tecu":          { "type": "number", "description": "Total Electron Content. SI: TECU (10¹⁶ el/m²)." },
+            "foF2_mhz":          { "type": "number", "description": "Critical frequency of F2 layer. SI: MHz." },
+            "muf_mhz":           { "type": "number", "description": "Maximum Usable Frequency for HF sky-wave. SI: MHz." },
+            "hf_absorption_db":  { "type": "number", "description": "HF absorption due to D-layer. SI: dB." },
+            "scintillation_index_s4": { "type": "number", "description": "GPS scintillation S4 index (0–1)." }
+          }
+        },
+
+        "em_noise_floor_dbm":    { "type": "number", "description": "Background EM noise floor at 1 GHz. SI: dBm." },
+        "rf_interference": {
+          "type": "array",
+          "description": "Active RF interference sources.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "source_name":     { "type": "string" },
+              "frequency_hz":    { "type": "number", "description": "Centre frequency. SI: Hz." },
+              "bandwidth_hz":    { "type": "number", "description": "Bandwidth. SI: Hz." },
+              "erp_dbw":         { "type": "number", "description": "Effective Radiated Power. SI: dBW." },
+              "interference_type":{ "type": "string", "enum": ["jamming", "spoofing", "natural", "commercial", "military", "industrial", "custom"] }
+            }
+          }
+        },
+
+        "gps_availability": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "gnss_visible_satellites": { "type": "integer", "description": "Number of GNSS satellites in view." },
+            "pdop":                    { "type": "number", "description": "Position Dilution of Precision." },
+            "hdop":                    { "type": "number", "description": "Horizontal DOP." },
+            "vdop":                    { "type": "number", "description": "Vertical DOP." },
+            "gps_jamming":             { "type": "boolean" },
+            "gps_spoofing":            { "type": "boolean" },
+            "gnss_systems_available":  { "type": "array", "items": { "type": "string", "enum": ["GPS", "GLONASS", "Galileo", "BeiDou", "NavIC", "QZSS"] }}
+          }
+        },
+
+        "radar_environment": {
+          "type": "object",
+          "description": "Radar clutter and propagation environment.",
+          "additionalProperties": false,
+          "properties": {
+            "sea_clutter_level":    { "type": "string", "enum": ["none", "low", "medium", "high", "severe"] },
+            "land_clutter_level":   { "type": "string", "enum": ["none", "low", "medium", "high", "severe"] },
+            "weather_clutter_level":{ "type": "string", "enum": ["none", "light", "moderate", "heavy", "extreme"] },
+            "ducting_present":      { "type": "boolean", "description": "True if atmospheric ducting is present (anomalous propagation)." },
+            "evaporation_duct_height_m":{ "type": "number", "description": "Evaporation duct height (maritime). SI: m." },
+            "multipath_severity":   { "type": "string", "enum": ["none", "low", "medium", "high"] }
+          }
+        }
+      }
+    },
+
+    "acoustic_environment": {
+      "type": "object",
+      "description": "Ambient acoustic and noise environment.",
+      "additionalProperties": false,
+      "properties": {
+        "ambient_noise_level_db_spl": { "type": "number", "description": "Broadband ambient sound pressure level. SI: dB re 20 µPa." },
+        "ambient_noise_sources": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["wind", "traffic", "industrial", "ocean_waves", "rain", "wildlife",
+                     "aircraft", "weapons_fire", "machinery", "silence", "custom"]
+          }
+        },
+        "sound_speed_surface_m_s":    { "type": "number", "description": "Speed of sound in air at surface. SI: m/s." },
+        "acoustic_propagation_model": {
+          "type": "string",
+          "enum": ["ray_tracing", "parabolic_equation", "FDTD", "image_source", "simple_inverse_square", "custom"]
+        },
+        "reverberation_time_s":       { "type": "number", "description": "RT60 (time for 60 dB decay). SI: s. Applicable for enclosed environments." },
+        "ground_absorption_class": {
+          "type": "string",
+          "enum": ["hard", "grass", "soil", "forest", "snow", "water", "concrete", "custom"],
+          "description": "Ground surface acoustic absorption class (ISO 9613-2)."
+        },
+        "underwater_ambient_db_upa":  { "type": "number", "description": "Underwater ambient noise level (Wenz curves). SI: dB re 1 µPa." }
+      }
+    },
+
+    "radiation_environment": {
+      "type": "object",
+      "description": "Natural and artificial ionising and non-ionising radiation levels.",
+      "additionalProperties": false,
+      "properties": {
+        "solar_uv_index":            { "type": "number", "minimum": 0, "description": "UV Index (WHO scale)." },
+        "solar_irradiance_w_m2":     { "type": "number", "description": "Total solar irradiance (TSI). SI: W/m²." },
+        "background_dose_rate_gy_h": { "type": "number", "description": "Natural background ionising radiation dose rate. SI: Gy/h." },
+        "gamma_dose_rate_gy_h":      { "type": "number", "description": "Gamma radiation dose rate. SI: Gy/h." },
+        "neutron_flux_n_cm2_s":      { "type": "number", "description": "Thermal neutron flux. SI: n/(cm²·s)." },
+        "cosmic_ray_flux_per_cm2_s": { "type": "number", "description": "Galactic cosmic ray flux. SI: particles/(cm²·s)." },
+        "radiation_belts": {
+          "type": "object",
+          "description": "Van Allen belt exposure (orbital environments).",
+          "additionalProperties": false,
+          "properties": {
+            "inner_belt":      { "type": "boolean", "description": "True if inside inner Van Allen belt." },
+            "outer_belt":      { "type": "boolean", "description": "True if inside outer Van Allen belt." },
+            "proton_flux_per_cm2_s":{ "type": "number", "description": "Trapped proton flux. SI: protons/(cm²·s)." },
+            "electron_flux_per_cm2_s":{ "type": "number", "description": "Trapped electron flux. SI: electrons/(cm²·s)." }
+          }
+        },
+        "radiological_contamination": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "present":           { "type": "boolean" },
+            "dose_rate_gy_h":    { "type": "number", "description": "Contamination dose rate. SI: Gy/h." },
+            "contaminant_type":  { "type": "string", "enum": ["nuclear_fallout", "industrial_spill", "dirty_bomb", "natural_radon", "custom"] }
+          }
+        },
+        "emp_threat": {
+          "type": "object",
+          "description": "Electromagnetic pulse threat characterisation.",
+          "additionalProperties": false,
+          "properties": {
+            "present":      { "type": "boolean" },
+            "peak_field_v_m":{ "type": "number", "description": "Peak EMP electric field. SI: V/m." },
+            "source":       { "type": "string", "enum": ["HEMP_E1", "HEMP_E2", "HEMP_E3", "lightning", "IEMI", "solar_CME", "nuclear", "custom"] }
+          }
+        }
+      }
+    },
+
+    "chemical_environment": {
+      "type": "object",
+      "description": "Atmospheric chemical hazards, pollutants, and CBRN agents.",
+      "additionalProperties": false,
+      "properties": {
+        "hazardous_gases": {
+          "type": "array",
+          "description": "Toxic or hazardous gas species present above threshold.",
+          "items": { "$ref": "#/$defs/GasSpecies" }
+        },
+        "chemical_agents": {
+          "type": "array",
+          "description": "CBRN chemical agent threats.",
+          "items": {
+            "type": "object",
+            "required": ["agent_name"],
+            "additionalProperties": false,
+            "properties": {
+              "agent_name":         { "type": "string", "description": "IUPAC name or NATO designation (e.g. 'GB', 'VX', 'H', 'CX')." },
+              "cas_number":         { "type": "string" },
+              "nato_code":          { "type": "string" },
+              "concentration_mg_m3":{ "type": "number", "description": "Atmospheric concentration. SI: mg/m³." },
+              "lcl50_mg_m3_min":    { "type": "number", "description": "LCLCt50 (inhalation lethal concentration). SI: mg·min/m³." },
+              "persistence_class":  { "type": "string", "enum": ["non_persistent", "semi_persistent", "persistent"] },
+              "detection_threshold_mg_m3":{ "type": "number" }
+            }
+          }
+        },
+        "explosion_vapors": {
+          "type": "array",
+          "description": "Explosive or flammable vapours in the atmosphere.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "compound":             { "type": "string" },
+              "concentration_ppm":    { "type": "number" },
+              "lel_fraction":         { "type": "number", "description": "Fraction of lower explosive limit (0–1 = 0%–100% LEL)." }
+            }
+          }
+        },
+        "smoke_obscuration": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "present":            { "type": "boolean" },
+            "density_g_m3":       { "type": "number" },
+            "type":               { "type": "string", "enum": ["white_phosphorus", "HC_smoke", "oil_smoke", "fire_smoke", "industrial", "custom"] },
+            "visible_band_extinction_per_m":{ "type": "number" },
+            "ir_band_extinction_per_m":      { "type": "number" }
+          }
+        },
+        "air_quality_index":        { "type": "number", "description": "AQI (US EPA scale, 0–500)." },
+        "pollution_class":          { "type": "string", "enum": ["pristine", "rural", "suburban", "urban", "industrial", "severely_polluted"] }
+      }
+    },
+
+    "biological_environment": {
+      "type": "object",
+      "description": "Biological hazards, vegetation type, and ecological context.",
+      "additionalProperties": false,
+      "properties": {
+        "vegetation_density": {
+          "type": "string",
+          "enum": ["none", "sparse", "open", "moderate", "dense", "very_dense", "jungle"]
+        },
+        "vegetation_type": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["grass", "shrub", "deciduous_forest", "coniferous_forest", "tropical_forest", "mangrove", "wetland", "crop", "tundra_vegetation", "aquatic", "custom"] }
+        },
+        "canopy_height_m": { "type": "number", "description": "Mean vegetation canopy height. SI: m." },
+        "leaf_area_index":  { "type": "number", "description": "Leaf area index (m² leaf / m² ground)." },
+        "bio_agents": {
+          "type": "array",
+          "description": "Biological CBRN agent threats.",
+          "items": {
+            "type": "object",
+            "required": ["agent_name"],
+            "additionalProperties": false,
+            "properties": {
+              "agent_name":      { "type": "string", "description": "Pathogen or biological agent name." },
+              "nato_code":       { "type": "string" },
+              "concentration_per_m3":{ "type": "number", "description": "Airborne concentration (organisms/particles per m³)." },
+              "transmission":    { "type": "string", "enum": ["airborne", "contact", "vector_borne", "waterborne", "foodborne"] },
+              "threat_level":    { "type": "string", "enum": ["negligible", "low", "moderate", "high", "critical"] }
+            }
+          }
+        },
+        "pollen_count_grains_m3": { "type": "number" },
+        "disease_prevalence_notes":{ "type": "string" },
+        "wildlife_presence": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Notable wildlife species present (may affect simulation)."
+        }
+      }
+    },
+
+    "navigation_environment": {
+      "type": "object",
+      "description": "Navigation aids, coordinate frames, and reference data.",
+      "additionalProperties": false,
+      "properties": {
+        "true_north_deg":       { "type": "number", "minimum": 0, "maximum": 360, "description": "True north azimuth in world frame." },
+        "magnetic_north_deg":   { "type": "number", "minimum": 0, "maximum": 360, "description": "Magnetic north azimuth in world frame." },
+        "magnetic_declination_deg":{ "type": "number", "description": "Magnetic declination (positive = east of true north). SI: °." },
+        "grid_declination_deg": { "type": "number", "description": "Grid declination (map grid vs true north). SI: °." },
+        "utm_zone":             { "type": "string", "description": "UTM zone designation (e.g. '37N')." },
+        "mgrs_grid":            { "type": "string", "description": "Military Grid Reference System cell (e.g. '38TLN')." },
+        "coordinate_frames_available": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["WGS84", "ECEF", "ENU", "NED", "UTM", "MGRS", "local_flat", "body", "custom"] }
+        },
+        "ins_reference": {
+          "type": "object",
+          "description": "INS alignment reference for simulation.",
+          "additionalProperties": false,
+          "properties": {
+            "gravity_m_s2":     { "type": "number", "description": "Local gravity magnitude for INS initialisation. SI: m/s²." },
+            "earth_rotation_rate_rad_s":{ "type": "number", "description": "Earth rotation rate at latitude. SI: rad/s." }
+          }
+        },
+        "navigation_aids": {
+          "type": "array",
+          "description": "Navigation beacons and aids active in this environment.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "aid_type":     { "type": "string", "enum": ["VOR", "NDB", "ILS", "TACAN", "VORTAC", "DME", "LORAN", "DECCA", "OMEGA", "AIS", "custom"] },
+              "identifier":   { "type": "string" },
+              "frequency_hz": { "type": "number" },
+              "position":     { "$ref": "#/$defs/GeoCoordinate" },
+              "operational":  { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+
+    "communications_environment": {
+      "type": "object",
+      "description": "Radio communications conditions, satellite visibility, and network availability.",
+      "additionalProperties": false,
+      "properties": {
+        "radio_propagation_model": {
+          "type": "string",
+          "enum": ["free_space", "two_ray_ground", "Okumura_Hata", "COST231", "ITU_R_P528",
+                   "ITU_R_P1546", "Longley_Rice", "ray_tracing", "custom"],
+          "description": "RF propagation model in use."
+        },
+        "line_of_sight_range_m":   { "type": "number", "description": "Maximum radio line-of-sight range at reference altitude. SI: m." },
+        "satellite_comms": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "satcom_available":     { "type": "boolean" },
+            "constellations":       { "type": "array", "items": { "type": "string", "enum": ["Inmarsat", "Iridium", "Viasat", "Starlink", "WGS", "Skynet", "AEHF", "MUOS", "custom"] }},
+            "minimum_elevation_deg":{ "type": "number", "description": "Minimum satellite elevation for link. SI: °." }
+          }
+        },
+        "atmospheric_loss_model":  { "type": "string", "enum": ["ITU_R_P676", "ITU_R_P840", "custom"], "description": "Atmospheric gas and cloud attenuation model." },
+        "multipath_environment":   { "type": "string", "enum": ["none", "low", "urban_canyon", "maritime", "mountainous", "indoor", "severe"] },
+        "datalink_availability": {
+          "type": "array",
+          "description": "Available tactical data links.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "link_name":    { "type": "string", "description": "e.g. Link-16, Link-22, VMF, JREAP, CDS." },
+              "available":    { "type": "boolean" },
+              "range_m":      { "type": "number" },
+              "frequency_hz": { "type": "number" }
+            }
+          }
+        },
+        "cyber_environment": {
+          "type": "object",
+          "description": "Network and cyber environment characterisation.",
+          "additionalProperties": false,
+          "properties": {
+            "network_type":     { "type": "string", "enum": ["disconnected", "degraded", "MANET", "satellite", "LTE", "5G", "MPLS", "classified_network", "custom"] },
+            "bandwidth_bps":    { "type": "number", "description": "Available network bandwidth. SI: bit/s." },
+            "latency_ms":       { "type": "number", "description": "Round-trip network latency. SI: ms." },
+            "packet_loss_fraction":{ "$ref": "#/$defs/UnitFloat" },
+            "cyber_threat_level":  { "type": "string", "enum": ["none", "low", "elevated", "high", "critical"] }
+          }
+        }
+      }
+    },
+
+    "sensor_environment_effects": {
+      "type": "object",
+      "description": "Per-modality environmental degradation applied to sensors in this environment.",
+      "additionalProperties": false,
+      "properties": {
+        "eo_camera":    { "$ref": "#/$defs/SensorDegradation", "description": "EO/visible band camera." },
+        "ir_camera":    { "$ref": "#/$defs/SensorDegradation", "description": "Infrared (MWIR/LWIR) camera." },
+        "radar":        { "$ref": "#/$defs/SensorDegradation", "description": "Radar (all bands)." },
+        "sar":          { "$ref": "#/$defs/SensorDegradation", "description": "Synthetic aperture radar." },
+        "lidar":        { "$ref": "#/$defs/SensorDegradation", "description": "Laser ranging / LIDAR." },
+        "sonar_active": { "$ref": "#/$defs/SensorDegradation", "description": "Active sonar." },
+        "sonar_passive":{ "$ref": "#/$defs/SensorDegradation", "description": "Passive sonar." },
+        "gps_ins":      { "$ref": "#/$defs/SensorDegradation", "description": "GNSS/INS navigation." },
+        "magnetometer": { "$ref": "#/$defs/SensorDegradation", "description": "Magnetic field sensor." },
+        "chemical_detector":{ "$ref": "#/$defs/SensorDegradation" },
+        "biological_detector":{ "$ref": "#/$defs/SensorDegradation" },
+        "nuclear_detector":   { "$ref": "#/$defs/SensorDegradation" },
+        "seismic":      { "$ref": "#/$defs/SensorDegradation" },
+        "hyperspectral":{ "$ref": "#/$defs/SensorDegradation" },
+        "acoustic":     { "$ref": "#/$defs/SensorDegradation" },
+        "sigint":       { "$ref": "#/$defs/SensorDegradation" }
+      }
+    },
+
+    "physics_modifiers": {
+      "type": "object",
+      "description": "Environmental modifications to physics parameters. Does NOT own physical laws — those belong to physics.schema.json. Provides per-environment overrides.",
+      "additionalProperties": false,
+      "properties": {
+
+        "gravity_override_m_s2": {
+          "$ref": "#/$defs/Vector3",
+          "description": "Override gravity vector in world frame. SI: m/s². Overrides physics.schema.json value for this environment."
+        },
+
+        "air_density_kg_m3":     { "type": "number", "description": "Air density used for aerodynamic drag computation. SI: kg/m³." },
+        "air_pressure_pa":       { "type": "number", "description": "Ambient air pressure. SI: Pa." },
+        "air_temperature_k":     { "$ref": "#/$defs/TemperatureKelvin", "description": "Ambient air temperature for thermal/aerodynamic computations. SI: K." },
+        "speed_of_sound_m_s":    { "type": "number", "description": "Speed of sound (for Mach number, sonic boom, etc.). SI: m/s." },
+
+        "wind_force_surface": {
+          "$ref": "#/$defs/WindVector",
+          "description": "Wind force at surface level used in physics integration."
+        },
+
+        "ocean_current_surface": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "velocity_x_m_s": { "type": "number" },
+            "velocity_y_m_s": { "type": "number" },
+            "velocity_z_m_s": { "type": "number" }
+          },
+          "description": "Surface ocean current velocity in world frame. SI: m/s."
+        },
+
+        "buoyancy_fluid_density_kg_m3": { "type": "number", "description": "Fluid density used for buoyancy calculation. SI: kg/m³." },
+
+        "global_friction_multiplier":   { "type": "number", "description": "Global friction scale factor applied to all contact pairs. 1.0 = nominal.", "default": 1.0 },
+
+        "global_drag_multiplier":       { "type": "number", "description": "Global aerodynamic drag scale factor. 1.0 = nominal.", "default": 1.0 },
+
+        "precipitation_effects": {
+          "type": "object",
+          "description": "Physics effects of precipitation on traction and visibility.",
+          "additionalProperties": false,
+          "properties": {
+            "wet_road_friction_multiplier": { "type": "number", "default": 0.7 },
+            "snow_road_friction_multiplier":{ "type": "number", "default": 0.4 },
+            "ice_road_friction_multiplier": { "type": "number", "default": 0.2 }
+          }
+        },
+
+        "temperature_effects": {
+          "type": "object",
+          "description": "Temperature-induced material and physics modifications.",
+          "additionalProperties": false,
+          "properties": {
+            "ground_temperature_k":     { "$ref": "#/$defs/TemperatureKelvin" },
+            "thermal_gradient_k_m":     { "type": "number", "description": "Air temperature lapse rate. SI: K/m." },
+            "permafrost_present":        { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "ai_metadata": {
+      "type": "object",
+      "description": "AI reasoning, retrieval, and ontology integration metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "semantic_description": { "type": "string", "description": "Rich natural language description for RAG retrieval and LLM world building." },
+        "functional_characteristics": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "High-level descriptors (e.g. 'GPS_denied', 'visually_degraded', 'high_clutter', 'NBC_contaminated')."
+        },
+        "domain_use_cases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["ground_combat", "air_operations", "naval_operations", "special_operations",
+                     "autonomous_ground_vehicle", "autonomous_air_vehicle", "autonomous_underwater_vehicle",
+                     "disaster_response", "search_and_rescue", "space_operations", "scientific_expedition",
+                     "digital_twin_city", "training_simulation", "custom"]
+          }
+        },
+        "mission_critical_factors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Environmental factors most critical to mission success (for LLM world model reasoning)."
+        },
+        "hazard_summary":  { "type": "string" },
+        "search_keywords": { "type": "array", "items": { "type": "string" } },
+        "language_labels": {
+          "type": "object",
+          "description": "Localised environment names keyed by ISO 639-1 code.",
+          "additionalProperties": { "type": "string" }
+        },
+        "knowledge_graph_ids": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "wikidata": { "type": "string" },
+            "geonames": { "type": "string" },
+            "osm_id":   { "type": "string" },
+            "custom":   { "type": "object", "additionalProperties": { "type": "string" } }
+          }
+        },
+        "embedding_hint": { "type": "string", "description": "Canonical text for vector embedding of this environment." }
+      }
+    },
+
+    "schema_refs": {
+      "type": "object",
+      "description": "Cross-references to other PhysWorldLM schema documents.",
+      "additionalProperties": false,
+      "properties": {
+        "world_schema_version":    { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "world_id":                { "$ref": "#/$defs/UUID", "description": "UUID of the parent world.schema.json instance." },
+        "physics_schema_id":       { "$ref": "#/$defs/UUID", "description": "UUID of the physics.schema.json document governing this environment." },
+        "terrain_schema_id":       { "$ref": "#/$defs/UUID", "description": "UUID of the terrain.schema.json document." },
+        "weather_schema_id":       { "$ref": "#/$defs/UUID", "description": "UUID of the weather.schema.json document." },
+        "material_ids_referenced": {
+          "type": "array",
+          "description": "UUIDs of material.schema.json instances referenced by this environment.",
+          "items": { "$ref": "#/$defs/UUID" }
+        }
+      }
+    },
+
+    "domain_extensions": {
+      "type": "object",
+      "description": "Domain-specific environment extension blocks.",
+      "properties": {
+        "military": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "threat_level":          { "type": "string", "enum": ["green", "yellow", "amber", "red", "black"] },
+            "rules_of_engagement":   { "type": "string" },
+            "area_of_operations":    { "type": "string" },
+            "classification_level":  { "type": "string", "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret"] },
+            "nato_exercise_area":    { "type": "boolean" },
+            "iads_active":           { "type": "boolean", "description": "Integrated Air Defence System active." }
+          }
+        },
+        "space": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "orbital_altitude_m":    { "type": "number" },
+            "debris_density_per_km3":{ "type": "number" },
+            "solar_wind_speed_km_s": { "type": "number" },
+            "solar_wind_density_per_cm3":{ "type": "number" }
+          }
+        },
+        "underwater": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "max_depth_m":           { "type": "number" },
+            "thermocline_depth_m":   { "type": "number" },
+            "SOFAR_channel_depth_m": { "type": "number", "description": "Sound Fixing And Ranging channel depth. SI: m." }
+          }
+        },
+        "urban": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "urban_canyon_factor":   { "type": "number", "description": "Average building canyon aspect ratio (building height / street width)." },
+            "building_density_per_km2":{ "type": "number" },
+            "population_density_per_km2":{ "type": "number" }
+          }
+        },
+        "custom": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+
+    "notes": {
+      "type": "string",
+      "description": "Free-form engineering notes, data source credits, or scenario caveats."
+    }
+
+  },
+
+  "examples": [
+    {
+      "environment_id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "environment_name": "Kabul Urban Combat Environment — Summer Day",
+      "display_name": "Kabul AO",
+      "version": "1.0.0",
+      "classification": {
+        "environment_type": "urban_combat",
+        "biome": "urban",
+        "koppen_class": "BSk",
+        "planet": "Earth",
+        "natural_or_artificial": "hybrid",
+        "indoor_or_outdoor": "outdoor",
+        "mission_context": "combat",
+        "security_classification": "unclassified"
+      },
+      "spatial_extent": {
+        "coordinate_system": "WGS84",
+        "origin": { "latitude": 34.5553, "longitude": 69.2075, "altitude_m": 1800 },
+        "altitude_limits": { "min_m": 1700, "max_m": 6000 }
+      },
+      "time": {
+        "simulation_start_utc": "2025-07-15T08:00:00Z",
+        "time_scale_factor": 1.0,
+        "timezone": "Asia/Kabul"
+      },
+      "planetary": {
+        "planet_name": "Earth",
+        "surface_gravity_m_s2": 9.814,
+        "gravity_vector_m_s2": { "x": 0, "y": 0, "z": -9.814 },
+        "magnetic_field": {
+          "total_intensity_t": 5.6e-5,
+          "declination_deg": 2.1,
+          "inclination_deg": 54.3,
+          "model": "WMM2025"
+        }
+      },
+      "atmosphere": {
+        "atmosphere_model": "ISA_1976",
+        "surface_conditions": {
+          "temperature_k": 308.15,
+          "pressure_pa": 81200,
+          "density_kg_m3": 0.918,
+          "humidity_relative_fraction": 0.15,
+          "speed_of_sound_m_s": 351.8
+        },
+        "surface_wind": {
+          "speed_mps": 4.2,
+          "direction_deg": 215,
+          "turbulence_class": "light"
+        }
+      },
+      "lighting": {
+        "illumination_condition": "day",
+        "sun": {
+          "elevation_deg": 62,
+          "azimuth_deg": 143,
+          "surface_irradiance_w_m2": 820
+        }
+      },
+      "physics_modifiers": {
+        "gravity_override_m_s2": { "x": 0, "y": 0, "z": -9.814 },
+        "air_density_kg_m3": 0.918,
+        "air_pressure_pa": 81200,
+        "air_temperature_k": 308.15,
+        "speed_of_sound_m_s": 351.8
+      },
+      "ai_metadata": {
+        "semantic_description": "High-altitude arid urban environment at 1800 m ASL. Thin air reduces engine and aerodynamic performance. High UV. Dust haze degrades EO sensors. Strong GPS availability. IADS threat.",
+        "functional_characteristics": ["high_altitude", "arid", "urban_canyon", "dust_haze", "high_UV"],
+        "domain_use_cases": ["ground_combat", "autonomous_ground_vehicle"]
+      }
+    }
+  ]
+}

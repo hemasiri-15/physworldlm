@@ -1,0 +1,486 @@
+{
+  "@context": { "pwmo": "https://physworld.ai/ontology/radar#" },
+  "@id": "pwmo:ComponentOntology",
+  "rdfs:label": "PWMO Complete Radar Component Ontology",
+
+  "Components": {
+
+    "Antenna": {
+      "@id": "pwmo:Antenna",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Antenna",
+      "skos:definition": "Transducer converting guided electromagnetic waves to free-space propagating waves (TX) and vice versa (RX). The antenna determines beam pattern, gain, scan coverage, and polarization.",
+      "pwmo:purpose": "Transmit high-power RF pulses into space; receive reflected energy; provide directional gain; determine angular resolution",
+      "pwmo:criticalParameters": {
+        "gain_dBi": { "type": "xsd:float", "description": "Peak boresight gain relative to isotropic radiator. Typical: 25-45 dBi" },
+        "beamwidth_3dB_az_deg": { "type": "xsd:float", "description": "3 dB azimuth beamwidth. Determines azimuth resolution" },
+        "beamwidth_3dB_el_deg": { "type": "xsd:float", "description": "3 dB elevation beamwidth" },
+        "sidelobe_level_dB": { "type": "xsd:float", "description": "Peak sidelobe level relative to main beam. Low sidelobes critical for ECCM. Typical: -25 to -45 dB" },
+        "polarization": { "type": "xsd:string", "enum": ["Linear-H", "Linear-V", "RHCP", "LHCP", "Dual-linear", "Dual-circular", "Arbitrary"] },
+        "scan_coverage_az_deg": { "type": "xsd:float", "description": "Electronic scan coverage in azimuth (phased arrays)" },
+        "scan_coverage_el_deg": { "type": "xsd:float", "description": "Electronic scan coverage in elevation" },
+        "frequency_min_GHz": { "type": "xsd:float" },
+        "frequency_max_GHz": { "type": "xsd:float" },
+        "aperture_area_m2": { "type": "xsd:float" },
+        "efficiency_percent": { "type": "xsd:float", "description": "Aperture efficiency. Typical: 60-80%" },
+        "VSWR": { "type": "xsd:float", "description": "Voltage Standing Wave Ratio. Ideal: 1.0" },
+        "isolation_dB": { "type": "xsd:float", "description": "TX-RX isolation (if shared aperture)" },
+        "rotation_speed_rpm": { "type": "xsd:float", "description": "Mechanical rotation speed (rotating antennas)" },
+        "mass_kg": { "type": "xsd:float" },
+        "material": { "type": "xsd:string" },
+        "MTBF_hours": { "type": "xsd:float" }
+      },
+      "pwmo:subTypes": {
+        "ParabolicReflector": {
+          "@id": "pwmo:ParabolicReflector",
+          "rdfs:label": "Parabolic Reflector Antenna",
+          "skos:definition": "Single or dual reflector antenna focusing beam via parabolic surface geometry. Classic radar antenna.",
+          "pwmo:feedTypes": ["Horn Feed", "Cassegrain Sub-reflector", "Gregorian Sub-reflector", "Dipole Feed"],
+          "pwmo:advantages": ["High gain", "Simple", "Low loss", "Mature technology"],
+          "pwmo:disadvantages": ["Mechanical scan only", "Large physical size for low frequencies", "Feed blockage"],
+          "pwmo:examples": ["AN/FPS-117 (IFF antenna)", "Ground Master 400 (secondary)", "Most early warning radars pre-1990"]
+        },
+        "SlottedWaveguideArray": {
+          "@id": "pwmo:SlottedWaveguideArray",
+          "rdfs:label": "Slotted Waveguide Array",
+          "skos:definition": "Linear or planar array of resonant slots cut in waveguide walls, acting as radiating elements. Used in airborne and naval search radars for low-profile, high-gain flat antenna.",
+          "pwmo:advantages": ["Low profile", "High power handling", "Good efficiency", "Low cost for given aperture"],
+          "pwmo:disadvantages": ["Narrow bandwidth", "Fixed polarization", "No electronic scanning"],
+          "pwmo:examples": ["AN/APS-137 (maritime patrol)", "SPS-48 naval (partial)", "APY-1/2 (JSTARS)"]
+        },
+        "PESA_Array": {
+          "@id": "pwmo:PESA_Array",
+          "rdfs:label": "Passive Electronically Scanned Array",
+          "skos:definition": "Array of radiating elements with individually controllable phase shifters, fed from single central transmitter via corporate or series feed network.",
+          "pwmo:phaseShifterTypes": {
+            "FerritePhaseShifter": "High power, slower switching (~10μs), latching",
+            "PIN_Diode": "Fast switching (<1μs), moderate power, higher loss",
+            "MEMS": "Very low loss, moderate speed, emerging technology",
+            "RF_MEMS": "Low insertion loss, research/limited production"
+          },
+          "pwmo:feedNetworks": ["Corporate Feed", "Series Feed", "Space Feed (Constrained Lens)"],
+          "pwmo:grating_lobe_avoidance": "Element spacing ≤ λ/2 for grating lobe free scanning ±90°",
+          "pwmo:examples": ["AN/APG-63v1 (F-15)", "AN/SPY-1 (Aegis)", "Zhuk-M (MiG-29)", "N001 Bars (Su-30)"]
+        },
+        "AESA_Array": {
+          "@id": "pwmo:AESA_Array",
+          "rdfs:label": "Active Electronically Scanned Array",
+          "skos:definition": "Phased array where each radiating element (or sub-array) has its own integrated TR module containing PA, LNA, phase shifter, and attenuator. All modules operate coherently.",
+          "pwmo:TR_module_components": ["Power Amplifier (PA)", "Low Noise Amplifier (LNA)", "Phase Shifter (4-6 bit)", "Attenuator (4-6 bit)", "TX/RX Switch", "Circulator/Duplexer", "Limiter", "Temperature Compensation"],
+          "pwmo:arrayGeometries": ["Rectangular planar", "Circular aperture", "Triangular lattice", "Conformal (curved)", "Sparse array", "Random thinned array"],
+          "pwmo:digital_beamforming": {
+            "description": "Digital beamforming (DBF) performs beam steering in digital domain after ADC at element level, enabling simultaneous multiple independent beams",
+            "advantages": ["Unlimited simultaneous beams", "Adaptive nulling per beam", "Cognitive adaptation", "No analog phase shifter loss"],
+            "requirement": "One ADC/DAC per element or sub-array",
+            "examples": ["AN/APG-77v1.5", "SPY-6 (AMDR)", "AN/APG-82"]
+          },
+          "pwmo:numberOfElements_typical": {
+            "fighterFCR": [800, 2500],
+            "navalVolumeSearch": [4096, 16000],
+            "groundEWR_UHF": [256, 2048],
+            "groundFireControl": [1000, 5000]
+          },
+          "pwmo:TR_module_count_drives": ["Total output power", "Aperture size", "Graceful degradation capability", "Cost"],
+          "pwmo:examples": ["AN/APG-77 (F-22, ~2200 TRMs)", "AN/APG-81 (F-35A, ~1200 TRMs)", "EL/M-2052 (IAF)", "CAPTOR-E (Typhoon, ~1500 TRMs)", "RBE2-AA (Rafale)", "KLJ-7A (J-10C)", "APAR (F-125 frigate)", "SPY-6 (DDG)", "Uttam (Tejas Mk2)"]
+        },
+        "ConformalArray": {
+          "@id": "pwmo:ConformalArray",
+          "rdfs:label": "Conformal Antenna Array",
+          "skos:definition": "Phased array whose radiating surface conforms to the shape of the aircraft fuselage, wing leading edge, or other structure, minimizing drag and radar cross-section.",
+          "pwmo:advantages": ["Aerodynamic integration", "360-degree coverage possible", "Reduced RCS", "Multi-function capability"],
+          "pwmo:challenges": ["Element pattern variation across curved surface", "Complex beamforming", "Thermal management in structure"],
+          "pwmo:examples": ["F-35 L16 conformal (partial)", "Proposed 6th-gen systems", "Tempest conformal arrays (concept)"]
+        },
+        "SparseArray": {
+          "@id": "pwmo:SparseArray",
+          "rdfs:label": "Sparse / Thinned Array",
+          "skos:definition": "Array with non-uniform element spacing (fewer elements than a filled λ/2-spaced array) designed to reduce cost while maintaining aperture size and main beam width at cost of higher sidelobe levels.",
+          "pwmo:useCases": ["Large aperture EWR on budget", "Space radar with mass constraints"],
+          "pwmo:SLL_penalty_dB": [3, 10]
+        }
+      }
+    },
+
+    "Transmitter": {
+      "@id": "pwmo:Transmitter",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Radar Transmitter",
+      "skos:definition": "Generates high-power RF energy for radiation. May be a single high-power device (PESA/mechanical) or distributed across TR modules (AESA).",
+      "pwmo:criticalParameters": {
+        "peak_power_kW": { "type": "xsd:float", "description": "Peak instantaneous output power. Range: 1kW (airborne) to 10MW (BMEWS)" },
+        "average_power_kW": { "type": "xsd:float" },
+        "duty_cycle_percent": { "type": "xsd:float", "description": "Average/Peak power ratio * 100. CW = 100%, typical pulsed = 0.1-20%" },
+        "frequency_GHz": { "type": "xsd:float" },
+        "bandwidth_MHz": { "type": "xsd:float", "description": "Instantaneous bandwidth. Determines range resolution after compression" },
+        "efficiency_percent": { "type": "xsd:float", "description": "DC-to-RF efficiency. GaN: 40-65%, TWT: 20-40%, Magnetron: 30-50%" },
+        "MTBF_hours": { "type": "xsd:float" }
+      },
+      "pwmo:technologies": {
+        "Magnetron": {
+          "@id": "pwmo:Magnetron",
+          "skos:definition": "Crossed-field vacuum tube oscillator generating high-power microwave energy. Self-oscillating (not coherent). Used in early and simpler radars.",
+          "pwmo:advantages": ["Very high peak power", "Low cost", "Simple"],
+          "pwmo:disadvantages": ["Incoherent (no Doppler processing)", "Limited frequency agility", "Phase noise", "Aging"],
+          "pwmo:powerRange_kW": [1, 5000],
+          "pwmo:frequencyBands": ["L", "S", "C", "X"],
+          "pwmo:examples": ["AN/TPS-70 (L-band, 200 kW peak)", "Many legacy naval search radars", "Legacy airport radars"]
+        },
+        "Klystron": {
+          "@id": "pwmo:Klystron",
+          "skos:definition": "Linear beam vacuum tube amplifier providing high power, stable, coherent output. Used in high-power ground and naval radars.",
+          "pwmo:advantages": ["Coherent (Doppler capable)", "Very high peak power", "High efficiency at high power", "Good frequency stability"],
+          "pwmo:disadvantages": ["Large size/weight", "High voltage required", "Limited bandwidth", "Limited lifetime"],
+          "pwmo:powerRange_kW": [10, 20000],
+          "pwmo:frequencyBands": ["UHF", "L", "S", "C", "X"],
+          "pwmo:examples": ["AN/FPS-132 UEWR (UHF, multi-MW)", "SPY-1 (S-band)", "Voronezh-M (L-band)", "BMEWS FPS-120"]
+        },
+        "TravelingWaveTube_TWT": {
+          "@id": "pwmo:TravelingWaveTube",
+          "skos:definition": "Wideband vacuum tube amplifier with electron beam interacting with slow-wave structure. Provides high power with wide bandwidth — common in airborne radars before AESA.",
+          "pwmo:advantages": ["Wide bandwidth (octave possible)", "Coherent", "High power for size", "Frequency agile"],
+          "pwmo:disadvantages": ["High voltage required", "Limited lifetime (~5000 hrs)", "CRT-like failure modes"],
+          "pwmo:powerRange_kW": [0.1, 100],
+          "pwmo:frequencyBands": ["X", "Ku", "Ka", "C"],
+          "pwmo:examples": ["AN/APG-63 (F-15, pre-AESA)", "AN/APG-65 (F/A-18)", "Irbis-E PESA (supporting TWT)"]
+        },
+        "SolidStatePowerAmplifier_SSPA": {
+          "@id": "pwmo:SSPA",
+          "skos:definition": "Transistor-based RF power amplifier. In AESA, each TR module contains one SSPA. Technology transition: GaAs → GaN (current generation).",
+          "pwmo:GaAs_MMIC": {
+            "power_density_Wmm": [0.3, 1.0],
+            "PAE_percent": [20, 35],
+            "frequency_range_GHz": [1, 40],
+            "breakdown_voltage_V": [15, 25]
+          },
+          "pwmo:GaN_MMIC": {
+            "power_density_Wmm": [3, 12],
+            "PAE_percent": [40, 65],
+            "frequency_range_GHz": [0.5, 100],
+            "breakdown_voltage_V": [60, 120],
+            "thermal_conductivity_advantage": "GaN on SiC substrate: 3.5x better thermal conductivity vs GaAs"
+          },
+          "pwmo:GaN_suppliers": {
+            "USA": ["Wolfspeed (Cree)", "Qorvo", "Raytheon RFMD", "MACOM", "NXP"],
+            "Europe": ["United Monolithic Semiconductors (UMS)", "OMMIC", "Fraunhofer IAF"],
+            "Japan": ["Fujitsu", "Mitsubishi", "Sumitomo"],
+            "Israel": ["Elta Systems MMIC"],
+            "India": ["GAETEC (DRDO)", "SAMEER"],
+            "China": ["CETC 13th Institute", "AVIC MMIC"],
+            "Russia": ["Mikran", "NIIPP"]
+          }
+        }
+      }
+    },
+
+    "Receiver": {
+      "@id": "pwmo:Receiver",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Radar Receiver",
+      "skos:definition": "Captures extremely weak return signals from targets and prepares them for signal processing. Performance defined by noise figure, dynamic range, and sensitivity.",
+      "pwmo:criticalParameters": {
+        "noise_figure_dB": { "type": "xsd:float", "description": "Ratio of SNR at input to SNR at output. Lower is better. Typical: 2-8 dB" },
+        "receiver_sensitivity_dBm": { "type": "xsd:float", "description": "Minimum detectable signal level" },
+        "dynamic_range_dB": { "type": "xsd:float", "description": "Ratio of maximum non-saturating signal to minimum detectable. Typical: 80-120 dB" },
+        "instantaneous_bandwidth_MHz": { "type": "xsd:float" },
+        "ADC_bits": { "type": "xsd:integer", "description": "ADC resolution. Typical: 12-16 bit" },
+        "ADC_sampling_rate_MHz": { "type": "xsd:float" },
+        "gain_dB": { "type": "xsd:float" },
+        "IIP3_dBm": { "type": "xsd:float", "description": "Third-order intercept point; linearity metric" }
+      },
+      "pwmo:architecture": {
+        "Superheterodyne": {
+          "description": "Classical architecture: LNA → mixer (down-convert to IF) → IF filter/amplifier → ADC",
+          "advantage": "Mature, high performance, good image rejection",
+          "ifFrequency_MHz": [10, 1000]
+        },
+        "DirectConversion": {
+          "description": "LNA → IQ mixer (down-convert to baseband) → ADC",
+          "advantage": "Simpler, wideband",
+          "disadvantage": "DC offset, IQ imbalance issues"
+        },
+        "DirectSampling": {
+          "description": "High-speed ADC samples directly at RF; digital down-conversion in FPGA/DSP",
+          "advantage": "Maximum flexibility, software-defined",
+          "requirement": "ADC sampling rate > 2x RF frequency (or sub-Nyquist bandpass sampling)",
+          "modern_ADC": "16-bit at 3-12 GSPS now achievable"
+        }
+      },
+      "pwmo:components": {
+        "LNA": {
+          "@id": "pwmo:LNA",
+          "rdfs:label": "Low Noise Amplifier",
+          "skos:definition": "First active stage after antenna; must add minimum noise. Sets receiver noise figure. GaAs or InP HEMT technology.",
+          "pwmo:noise_figure_dB": [0.3, 2.5],
+          "pwmo:technology": ["GaAs pHEMT", "InP HEMT", "GaN HEMT (higher power handling)"],
+          "pwmo:purpose": "Amplify weak received signal before it travels through lossy cable/filter where noise would be added"
+        },
+        "Limiter": {
+          "@id": "pwmo:Limiter",
+          "skos:definition": "Protects LNA from damage during transmit pulse leakage. PIN diode or ferrite limiter.",
+          "pwmo:recovery_time_ns": [10, 200],
+          "pwmo:insertion_loss_dB": [0.3, 1.5],
+          "pwmo:purpose": "Protection of sensitive receive chain from own transmitter pulse and nearby radar interference"
+        },
+        "Circulator": {
+          "@id": "pwmo:Circulator",
+          "skos:definition": "Ferrite device that routes TX power to antenna and RX power from antenna to receiver; provides isolation between TX and RX paths in shared-aperture systems.",
+          "pwmo:isolation_dB": [20, 40],
+          "pwmo:insertion_loss_dB": [0.1, 0.5],
+          "pwmo:power_handling_kW": [0.1, 100]
+        },
+        "Duplexer": {
+          "@id": "pwmo:Duplexer",
+          "skos:definition": "T/R switch or passive device separating transmit and receive paths sharing single antenna port. Can be electromechanical, PIN diode, or ferrite.",
+          "pwmo:types": ["Gas Tube Duplexer (legacy)", "PIN Diode TR Switch", "Ferrite Circulator", "Solid State T/R Switch"]
+        },
+        "Mixer": {
+          "@id": "pwmo:Mixer",
+          "skos:definition": "Frequency conversion device multiplying RF signal with local oscillator to produce IF signal. Diode or FET-based.",
+          "pwmo:types": ["Single-balanced", "Double-balanced", "Image-reject", "IQ (quadrature)"],
+          "pwmo:conversionLoss_dB": [4, 10]
+        }
+      }
+    },
+
+    "FrequencySynthesizer": {
+      "@id": "pwmo:FrequencySynthesizer",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Frequency Synthesizer / Exciter",
+      "skos:definition": "Generates all coherent frequency references for the radar: transmit waveform, local oscillator, ADC clock, timing signals. The heart of coherent radar processing.",
+      "pwmo:criticalParameters": {
+        "phase_noise_dBc_Hz": { "description": "Phase noise at given offset; limits clutter cancellation capability. Typical: -130 to -160 dBc/Hz at 1 kHz offset" },
+        "frequency_agility_hopping_rate_Hz": { "type": "xsd:float", "description": "Pulse-to-pulse frequency change rate for LPI/ECCM" },
+        "tuning_range_MHz": { "type": "xsd:float" },
+        "settling_time_ns": { "type": "xsd:float" },
+        "spurious_suppression_dBc": { "type": "xsd:float" }
+      },
+      "pwmo:technologies": ["Direct Digital Synthesizer (DDS)", "PLL-based", "YIG-tuned oscillator (YTO)", "Numerically Controlled Oscillator (NCO)", "Hybrid DDS+PLL"],
+      "pwmo:waveformGeneration": "Modern synthesizers generate arbitrary waveforms digitally (DAC-based) enabling LFM chirp, FMCW, stepped frequency, OFDM, and pseudo-random waveforms"
+    },
+
+    "SignalProcessor": {
+      "@id": "pwmo:SignalProcessor",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Signal Processor",
+      "skos:definition": "Performs all digital processing of received radar data from raw ADC samples through to detected target reports. Implements the complete signal processing chain.",
+      "pwmo:hardware": {
+        "FPGA": {
+          "role": "High-speed deterministic processing: pulse compression, FFT, CFAR, beamforming",
+          "examples": ["Xilinx Virtex UltraScale+", "Intel Stratix 10", "Microchip PolarFire"],
+          "operations_per_second": "1-10 TOPS typical"
+        },
+        "GPU": {
+          "role": "Parallel floating-point computation: SAR imaging, STAP, AI inference",
+          "examples": ["NVIDIA Jetson (embedded)", "AMD Radeon embedded", "Custom mil-grade GPU"],
+          "operations_per_second": "10-1000 TOPS"
+        },
+        "DSP": {
+          "role": "Fixed-point or floating-point signal processing: filtering, FFT, tracking",
+          "examples": ["TI C6678", "ADI SHARC", "Qualcomm Hexagon DSP"]
+        },
+        "GPGPU": {
+          "role": "General-purpose GPU for AI/ML inference and complex signal processing"
+        },
+        "CustomASIC": {
+          "role": "Maximum throughput at minimum power for specific algorithms (beamforming, FFT)",
+          "examples": ["Raytheon BBP-3", "Custom pulse compression chips"]
+        }
+      },
+      "pwmo:processingChain": [
+        "ADC Sampling",
+        "Digital Down-Conversion (DDC)",
+        "Range Gating",
+        "Pulse Compression (Matched Filter / LFM Correlation)",
+        "I/Q Separation",
+        "Coherent Integration (FFT across pulses)",
+        "Doppler Processing",
+        "Moving Target Indicator (MTI) / Moving Target Detection (MTD)",
+        "CFAR Detection",
+        "Space-Time Adaptive Processing (STAP)",
+        "Beamforming / Adaptive Beamforming",
+        "Clutter Map Generation",
+        "Target Extraction",
+        "Monopulse Angle Estimation",
+        "Target Association / Correlation",
+        "Kalman / EKF / UKF Tracking",
+        "JPDA / MHT Multi-Target Data Association",
+        "Classification / NCTR",
+        "Threat Evaluation",
+        "IFF Correlation",
+        "Track Management",
+        "Display Formatting",
+        "Data Recording",
+        "Network Output (Link 16 / JTIDS / MIDS)"
+      ]
+    },
+
+    "IFF_System": {
+      "@id": "pwmo:IFF",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Identification Friend or Foe (IFF)",
+      "skos:definition": "Secondary radar system using coded interrogations and transponder replies to distinguish friendly from unknown/hostile targets. Integrated with primary radar to correlate primary track with IFF return.",
+      "pwmo:modes": {
+        "Mode_1": "Military only; 32 code combinations",
+        "Mode_2": "Military only; 4096 code combinations; unit identification",
+        "Mode_3A": "Civil/military ATC; 4096 codes",
+        "Mode_C": "Altitude encoding; barometric altitude",
+        "Mode_4": "Military crypto; IFF challenge-response with KIT-1C crypto keys",
+        "Mode_5": "Current standard NATO IFF; encrypted; GPS position inclusion; Level 1 and Level 2; ADS-B compatible",
+        "Mode_S": "Civil selective addressing; 24-bit ICAO aircraft address",
+        "ADS-B": "Automatic Dependent Surveillance Broadcast; GPS position broadcast"
+      },
+      "pwmo:frequency": "1030 MHz (interrogation) / 1090 MHz (reply)",
+      "pwmo:militaryCritical": "Mode 5 crypto keys must be loaded daily; failure creates IFF blue-on-blue risk"
+    },
+
+    "PowerSupply": {
+      "@id": "pwmo:PowerSupply",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Power Supply / Power Conditioning",
+      "skos:definition": "Converts prime power (AC mains, generator, vehicle bus) to regulated voltages required by radar subsystems. High-power radars require significant power infrastructure.",
+      "pwmo:subComponents": {
+        "HighVoltagePSU": { "purpose": "Powers vacuum tubes (klystron, TWT): 10-150 kV, high current" },
+        "LowVoltagePSU": { "purpose": "Powers digital electronics: ±12V, 5V, 3.3V, 1.8V regulated" },
+        "ModulatorPSU": { "purpose": "Generates high-power transmit pulses; energy storage in pulse-forming network (PFN) or capacitor bank" },
+        "UPS": { "purpose": "Uninterruptible power supply; battery backup for graceful shutdown" },
+        "Generator": {
+          "purpose": "Prime power for mobile radars",
+          "typical_power_kW": [15, 2000],
+          "fuel": ["Diesel", "JP-8", "Hybrid diesel-battery"]
+        }
+      },
+      "pwmo:powerRequirements_typical": {
+        "ManPortableSurveillance": "0.1-1 kW",
+        "AirborneFCR": "5-20 kW",
+        "MobileGroundRadar": "50-500 kW",
+        "NavalVolumeSearch": "100-2000 kW",
+        "FixedEarlyWarning": "1-50 MW"
+      }
+    },
+
+    "CoolingSystem": {
+      "@id": "pwmo:CoolingSystem",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Thermal Management / Cooling System",
+      "skos:definition": "Removes waste heat from power amplifiers, TR modules, and electronics. Critical for GaN-based AESA where power densities exceed 10 W/mm². Insufficient cooling causes performance degradation and premature failure.",
+      "pwmo:coolingTypes": {
+        "ForcedAir": {
+          "heatFlux_Wcm2": [0.1, 5],
+          "application": "Low-power electronics, legacy radars",
+          "advantage": "Simple, no liquid infrastructure",
+          "disadvantage": "Limited heat removal capacity"
+        },
+        "LiquidCooling": {
+          "coolants": ["Water-glycol", "Perfluorocarbon (PFC)", "PAO (Poly-Alpha-Olefin)", "Hydraulic fluid"],
+          "heatFlux_Wcm2": [10, 100],
+          "application": "GaN AESA TR modules, high-power amplifiers",
+          "advantage": "High heat flux capability"
+        },
+        "VaporCycleCooling": {
+          "application": "Airborne systems; compact refrigeration cycle",
+          "heatFlux_Wcm2": [5, 30]
+        },
+        "MicrochannelCooling": {
+          "description": "Liquid cooling channels fabricated directly under GaN substrate",
+          "heatFlux_Wcm2": [100, 1000],
+          "application": "Next-generation AESA TR modules",
+          "maturity": "Research/early production"
+        },
+        "ThermoelectricCooling_TEC": {
+          "application": "Spot cooling of low-noise amplifiers and detectors",
+          "cooling_capacity_W": [1, 50]
+        },
+        "HeatPipe": {
+          "application": "Passive heat spreading in space and airborne systems",
+          "advantage": "No moving parts, high reliability"
+        }
+      },
+      "pwmo:thermalDesignPrinciples": ["Junction temperature must stay <150°C for GaN", "Thermal resistance minimization path: junction → package → cold plate → coolant", "Thermal cycling causes solder joint fatigue"]
+    },
+
+    "MissionComputer": {
+      "@id": "pwmo:MissionComputer",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Mission / Radar Management Computer",
+      "skos:definition": "High-level control computer managing radar modes, scheduling, resource management, operator interface, data fusion, and external communications. Above signal processor in processing hierarchy.",
+      "pwmo:functions": ["Mode selection and sequencing", "Beam scheduling and resource allocation", "Track file management", "IFF correlation", "Threat evaluation and prioritization", "Weapon assignment support", "Datalink formatting and transmission", "Built-in test (BIT) and fault isolation", "Operator display generation", "Recording management", "ECCM policy execution"],
+      "pwmo:hardwarePlatforms": ["VME/VPX ruggedized Intel/AMD boards", "ARM-based embedded systems", "Custom military VLSI", "COTS with ruggedization"],
+      "pwmo:operatingSystems": ["VxWorks RTOS", "LynxOS-178", "Green Hills INTEGRITY", "Linux (hardened)", "DO-178 certified RTOS (airborne)"]
+    },
+
+    "RotaryJoint": {
+      "@id": "pwmo:RotaryJoint",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Rotary Joint",
+      "skos:definition": "Waveguide or coaxial device allowing RF energy transmission from stationary feed to rotating antenna structure without interruption. Critical wear component in rotating radar antennas.",
+      "pwmo:electricalParameters": {
+        "insertion_loss_dB": [0.1, 0.5],
+        "VSWR": [1.05, 1.3],
+        "power_handling_kW": [0.01, 500],
+        "frequency_range_GHz": [0.5, 40]
+      },
+      "pwmo:mechanicalParameters": {
+        "rotation_speed_rpm": [0.5, 30],
+        "MTBF_hours": [5000, 50000]
+      },
+      "pwmo:types": ["Single-channel coaxial", "Multi-channel coaxial", "Waveguide rotary joint", "Contactless (choke) type"]
+    },
+
+    "INS_GPS": {
+      "@id": "pwmo:NavigationSystem",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Navigation System (INS/GPS)",
+      "skos:definition": "Provides radar platform position, velocity, and attitude. Essential for SAR processing (motion compensation), airborne radar stabilization, and geo-referenced target reporting.",
+      "pwmo:types": {
+        "INS": {
+          "technology": ["Ring Laser Gyro (RLG)", "Fiber Optic Gyro (FOG)", "MEMS IMU"],
+          "accuracy": { "position_drift_m_per_hr": [0.1, 10], "heading_accuracy_mrad": [0.01, 1.0] },
+          "advantage": "Jam-proof, autonomous"
+        },
+        "GPS": {
+          "signals": ["L1 C/A", "L2 P(Y)", "L5", "M-code (military)"],
+          "accuracy_m": { "L1_civil": 3, "P(Y)_military": 0.3, "M-code_military": 0.1 },
+          "vulnerability": "Jamming, spoofing"
+        },
+        "INS_GPS_coupled": {
+          "types": ["Loosely coupled", "Tightly coupled", "Deeply integrated"],
+          "advantage": "INS bridges GPS outages; GPS corrects INS drift"
+        }
+      }
+    },
+
+    "DataLink": {
+      "@id": "pwmo:DataLink",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Data Link / Communication Interface",
+      "skos:definition": "Transmits radar track data, raw video, and control messages to/from C2 systems, other sensors, and weapon systems. Enables networked radar operation.",
+      "pwmo:militaryDataLinks": {
+        "Link_16": { "frequency": "969-1206 MHz", "dataRate_kbps": 28.8, "encryption": "TRANSEC+COMSEC", "range_km": 500, "users": "NATO standard" },
+        "JTIDS": { "note": "Joint Tactical Information Distribution System; carries Link 16" },
+        "MIDS": { "note": "Multifunctional Information Distribution System; miniaturized Link 16" },
+        "Link_11": { "frequency": "HF/UHF", "dataRate_kbps": 2.4, "note": "Legacy; being phased out by Link 22" },
+        "Link_22": { "note": "NATO Link 22; HF and UHF; replaces Link 11" },
+        "SADL": { "note": "Situational Awareness Data Link; USAF intra-flight" },
+        "IFDL": { "note": "Intra-Flight Data Link; F-22 low-probability intercept" },
+        "MADL": { "note": "Multifunction Advanced Data Link; F-35 LPI; 1 Gbps encrypted" },
+        "TTNT": { "note": "Tactical Targeting Network Technology; high-throughput IP-based" },
+        "CDL": { "note": "Common Data Link; SIGINT/SAR imagery downlink; 10-137 Mbps" }
+      }
+    },
+
+    "BuiltInTest_BIT": {
+      "@id": "pwmo:BuiltInTest",
+      "@type": "pwmo:RadarComponent",
+      "rdfs:label": "Built-In Test (BIT) System",
+      "skos:definition": "Continuous or initiated self-test capability monitoring radar health, detecting faults, and isolating failures to line-replaceable unit (LRU) level to support rapid maintenance.",
+      "pwmo:types": {
+        "IBIT": "Initiated BIT; manual trigger; comprehensive test",
+        "CBIT": "Continuous BIT; ongoing monitoring during operation",
+        "PBIT": "Power-up BIT; executed at system startup",
+        "MBIT": "Maintenance BIT; detailed offline diagnostic"
+      },
+      "pwmo:faultIsolation": "Target: isolate to LRU within 10-30 minutes by maintenance technician",
+      "pwmo:falseAlarmRate_target_percent": [0, 2]
+    }
+  }
+}

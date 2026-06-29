@@ -1,0 +1,291 @@
+{
+  "ontology_id": "physworldlm:submarine:upper_taxonomy",
+  "version": "1.0.0",
+  "description": "Complete submarine classification hierarchy for PhysWorldLM military ontology. Covers platform class, operational role, propulsion class, and generation.",
+  "namespace": "pwlm:sub",
+
+  "PlatformClass": {
+    "id": "pwlm:sub:PlatformClass",
+    "label": "Submarine Platform Class",
+    "subclasses": {
+      "SSN": {
+        "id": "pwlm:sub:SSN",
+        "label": "Attack Submarine",
+        "description": "Nuclear-powered fast attack submarine optimized for sea denial, ASW, and ISR.",
+        "propulsion_class": "Nuclear",
+        "crew_range": [100, 140],
+        "displacement_range_tonnes": [6000, 12000],
+        "typical_depth_m": 400,
+        "max_depth_m": 600,
+        "representative_classes": ["Virginia", "Seawolf", "Los Angeles", "Astute", "Graney (Yasen)", "Rubis"]
+      },
+      "SSBN": {
+        "id": "pwlm:sub:SSBN",
+        "label": "Ballistic Missile Submarine",
+        "description": "Nuclear-powered submarine providing strategic nuclear deterrence via SLBMs.",
+        "propulsion_class": "Nuclear",
+        "crew_range": [140, 175],
+        "displacement_range_tonnes": [16000, 48000],
+        "typical_depth_m": 300,
+        "max_depth_m": 500,
+        "representative_classes": ["Ohio", "Borei", "Vanguard", "Le Triomphant", "Arihant", "Jin (Type 094)"]
+      },
+      "SSGN": {
+        "id": "pwlm:sub:SSGN",
+        "label": "Guided Missile Submarine",
+        "description": "Nuclear-powered submarine with large-capacity VLS for land attack and anti-ship cruise missiles.",
+        "propulsion_class": "Nuclear",
+        "crew_range": [140, 160],
+        "displacement_range_tonnes": [14000, 24000],
+        "typical_depth_m": 300,
+        "max_depth_m": 500,
+        "representative_classes": ["Ohio (converted)", "Oscar II (Antey)", "Papa"]
+      },
+      "SSK": {
+        "id": "pwlm:sub:SSK",
+        "label": "Diesel-Electric Submarine",
+        "description": "Conventional diesel-electric submarine; highly quiet when on batteries.",
+        "propulsion_class": "DieselElectric",
+        "crew_range": [25, 60],
+        "displacement_range_tonnes": [1000, 4000],
+        "typical_depth_m": 250,
+        "max_depth_m": 400,
+        "representative_classes": ["Type 212A", "Soryu", "KSS-III", "Scorpene", "Lada", "Dolphin"]
+      },
+      "SSP": {
+        "id": "pwlm:sub:SSP",
+        "label": "Air-Independent Propulsion Submarine",
+        "description": "Conventional submarine with AIP module enabling extended submerged endurance without snorkeling.",
+        "propulsion_class": "AIP",
+        "crew_range": [25, 50],
+        "displacement_range_tonnes": [1000, 3000],
+        "typical_depth_m": 250,
+        "max_depth_m": 400,
+        "representative_classes": ["Type 212A", "Gotland", "Soryu", "S-80 Plus", "Scorpene AIP"]
+      },
+      "SSM": {
+        "id": "pwlm:sub:SSM",
+        "label": "Midget Submarine",
+        "description": "Small submarine for coastal operations, special forces insertion, and mine laying.",
+        "propulsion_class": "DieselElectric",
+        "crew_range": [2, 12],
+        "displacement_range_tonnes": [50, 300],
+        "typical_depth_m": 100,
+        "max_depth_m": 200,
+        "representative_classes": ["Yugo", "Cosmos", "SDV Mk.8"]
+      },
+      "SSA": {
+        "id": "pwlm:sub:SSA",
+        "label": "Autonomous Submarine",
+        "description": "Unmanned or optionally manned submarine for ISR, mine warfare, and attrition missions.",
+        "propulsion_class": "Electric",
+        "crew_range": [0, 2],
+        "displacement_range_tonnes": [10, 100],
+        "typical_depth_m": 200,
+        "max_depth_m": 600,
+        "representative_classes": ["Orca XLUUV", "Echo Voyager"]
+      },
+      "SST": {
+        "id": "pwlm:sub:SST",
+        "label": "Training Submarine",
+        "description": "Dedicated submarine platform for crew training and qualification.",
+        "propulsion_class": "DieselElectric",
+        "crew_range": [30, 60],
+        "displacement_range_tonnes": [800, 1500],
+        "typical_depth_m": 150,
+        "max_depth_m": 250,
+        "representative_classes": ["Gotland (reserve)", "Kobben"]
+      },
+      "SSR": {
+        "id": "pwlm:sub:SSR",
+        "label": "Research Submarine",
+        "description": "Scientific and military research platform for oceanography and acoustic research.",
+        "propulsion_class": "DieselElectric",
+        "crew_range": [10, 40],
+        "displacement_range_tonnes": [500, 2000],
+        "typical_depth_m": 500,
+        "max_depth_m": 1000
+      },
+      "SSRN": {
+        "id": "pwlm:sub:SSRN",
+        "label": "Rescue Submarine",
+        "description": "Deep submergence rescue vehicle (DSRV) or submarine rescue system.",
+        "propulsion_class": "Electric",
+        "crew_range": [4, 8],
+        "displacement_range_tonnes": [50, 200],
+        "typical_depth_m": 600,
+        "max_depth_m": 1000
+      },
+      "SSX": {
+        "id": "pwlm:sub:SSX",
+        "label": "Experimental Submarine",
+        "description": "Technology demonstrator or prototype submarine.",
+        "propulsion_class": "Mixed",
+        "crew_range": [10, 50],
+        "displacement_range_tonnes": [500, 5000]
+      }
+    }
+  },
+
+  "MissionRole": {
+    "id": "pwlm:sub:MissionRole",
+    "label": "Submarine Operational Mission Roles",
+    "roles": {
+      "StrategicDeterrence": {
+        "id": "pwlm:sub:mission:StrategicDeterrence",
+        "label": "Strategic Nuclear Deterrence",
+        "description": "Continuous at-sea nuclear deterrent patrol with SLBMs.",
+        "applicable_classes": ["SSBN"],
+        "simulation_relevance": "Strategic stability modeling, second-strike survivability"
+      },
+      "SeaDenial": {
+        "id": "pwlm:sub:mission:SeaDenial",
+        "label": "Sea Denial",
+        "description": "Preventing adversary naval operations in a defined maritime area.",
+        "applicable_classes": ["SSN", "SSK", "SSP"],
+        "simulation_relevance": "Area denial physics, torpedo engagement envelopes"
+      },
+      "SeaControl": {
+        "id": "pwlm:sub:mission:SeaControl",
+        "label": "Sea Control",
+        "description": "Establishing and maintaining maritime dominance in an operational area.",
+        "applicable_classes": ["SSN", "SSGN"],
+        "simulation_relevance": "Task group coordination, escort dynamics"
+      },
+      "LandAttack": {
+        "id": "pwlm:sub:mission:LandAttack",
+        "label": "Land Attack",
+        "description": "Precision strike against shore targets using cruise missiles.",
+        "applicable_classes": ["SSN", "SSGN", "SSK"],
+        "simulation_relevance": "VLS salvo planning, cruise missile flight path simulation"
+      },
+      "AntiShipWarfare": {
+        "id": "pwlm:sub:mission:ASuW",
+        "label": "Anti-Surface Warfare",
+        "description": "Targeting and engaging surface ships with torpedoes or anti-ship missiles.",
+        "applicable_classes": ["SSN", "SSGN", "SSK", "SSP"],
+        "simulation_relevance": "TMA, torpedo kinematics, evasion dynamics"
+      },
+      "AntiSubmarineWarfare": {
+        "id": "pwlm:sub:mission:ASW",
+        "label": "Anti-Submarine Warfare",
+        "description": "Detection, tracking, and engagement of adversary submarines.",
+        "applicable_classes": ["SSN", "SSK"],
+        "simulation_relevance": "Passive sonar modeling, acoustic environment simulation"
+      },
+      "ISR": {
+        "id": "pwlm:sub:mission:ISR",
+        "label": "Intelligence, Surveillance & Reconnaissance",
+        "description": "Covert intelligence gathering, SIGINT, and ELINT collection.",
+        "applicable_classes": ["SSN", "SSK", "SSP", "SSA"],
+        "simulation_relevance": "Acoustic track recording, emission collection modeling"
+      },
+      "MineLaying": {
+        "id": "pwlm:sub:mission:MineLaying",
+        "label": "Mine Laying",
+        "description": "Covert deployment of naval mines in contested waters.",
+        "applicable_classes": ["SSN", "SSK", "SSP", "SSM"],
+        "simulation_relevance": "Mine pattern planning, hydrodynamic mine drift"
+      },
+      "SpecialOperations": {
+        "id": "pwlm:sub:mission:SOF",
+        "label": "Special Forces Deployment",
+        "description": "Insertion and extraction of special operations forces.",
+        "applicable_classes": ["SSN", "SSK", "SSM"],
+        "simulation_relevance": "Lock-out chamber timing, swimmer delivery"
+      },
+      "UUVCarriage": {
+        "id": "pwlm:sub:mission:UUVCarriage",
+        "label": "UUV Carrier & Control",
+        "description": "Deployment and control of unmanned underwater vehicles.",
+        "applicable_classes": ["SSN", "SSGN", "SSK", "SSA"],
+        "simulation_relevance": "UUV swarm coordination, acoustic data link modeling"
+      },
+      "MineCountermeasures": {
+        "id": "pwlm:sub:mission:MCM",
+        "label": "Mine Countermeasures",
+        "description": "Detection and neutralization of naval mines.",
+        "applicable_classes": ["SSA", "SSK"],
+        "simulation_relevance": "Mine detection sonar, UUV MCM sweep patterns"
+      },
+      "SearchAndRescue": {
+        "id": "pwlm:sub:mission:SAR",
+        "label": "Search and Rescue",
+        "description": "Locating and rescuing downed crew or disabled submarines.",
+        "applicable_classes": ["SSRN"],
+        "simulation_relevance": "DSRV mating dynamics, survivor detection"
+      },
+      "OceanographicSurvey": {
+        "id": "pwlm:sub:mission:OceanSurvey",
+        "label": "Oceanographic Survey",
+        "description": "Mapping ocean floor, measuring currents, temperature, and salinity.",
+        "applicable_classes": ["SSR", "SSA"],
+        "simulation_relevance": "Bathymetric modeling, SVDP profiling"
+      },
+      "ElectronicIntelligence": {
+        "id": "pwlm:sub:mission:ELINT",
+        "label": "Electronic Intelligence",
+        "description": "Passive collection of adversary radar, communications, and electronic emissions.",
+        "applicable_classes": ["SSN", "SSK"],
+        "simulation_relevance": "RF signal propagation through sea-air boundary"
+      },
+      "EscortOperations": {
+        "id": "pwlm:sub:mission:Escort",
+        "label": "Escort Operations",
+        "description": "Providing ASW screen for surface task groups.",
+        "applicable_classes": ["SSN"],
+        "simulation_relevance": "Formation geometry, sprint-and-drift kinematics"
+      }
+    }
+  },
+
+  "PropulsionClass": {
+    "id": "pwlm:sub:PropulsionClass",
+    "label": "Submarine Propulsion Classification",
+    "classes": {
+      "Nuclear": {
+        "id": "pwlm:sub:prop:Nuclear",
+        "label": "Nuclear Propulsion",
+        "submerged_endurance": "Unlimited (limited by crew and provisions)",
+        "speed_kt_submerged": [20, 35],
+        "signature_level": "Medium-High (reactor plant noise)"
+      },
+      "DieselElectric": {
+        "id": "pwlm:sub:prop:DieselElectric",
+        "label": "Diesel-Electric",
+        "submerged_endurance_days": [3, 7],
+        "snorkel_endurance_days": [30, 60],
+        "speed_kt_submerged": [8, 12],
+        "speed_kt_surface": [10, 15],
+        "signature_level": "Low (on battery), High (on diesel)"
+      },
+      "AIP": {
+        "id": "pwlm:sub:prop:AIP",
+        "label": "Air-Independent Propulsion",
+        "submerged_endurance_days": [14, 30],
+        "speed_kt_submerged_aip": [4, 8],
+        "speed_kt_submerged_sprint": [15, 20],
+        "signature_level": "Very Low (AIP mode)"
+      },
+      "Electric": {
+        "id": "pwlm:sub:prop:Electric",
+        "label": "Battery-Electric (UUV/Autonomous)",
+        "submerged_endurance_days": [1, 5],
+        "speed_kt_submerged": [3, 8],
+        "signature_level": "Very Low"
+      }
+    }
+  },
+
+  "GenerationTaxonomy": {
+    "id": "pwlm:sub:GenerationTaxonomy",
+    "label": "Submarine Technology Generation",
+    "generations": {
+      "Gen1": { "label": "First Generation (1950s–1960s)", "description": "Early nuclear boats; high reactor noise, limited electronics." },
+      "Gen2": { "label": "Second Generation (1960s–1970s)", "description": "Improved reactors, first towed arrays, basic TASS." },
+      "Gen3": { "label": "Third Generation (1970s–1980s)", "description": "Anechoic tiles, improved sonar, digital fire control." },
+      "Gen4": { "label": "Fourth Generation (1990s–2010s)", "description": "Pump-jet propulsors, advanced sonar, VLS integration." },
+      "Gen5": { "label": "Fifth Generation (2010s–present)", "description": "AI-assisted CMS, multi-static sonar, UUV carriage, AIP." }
+    }
+  }
+}

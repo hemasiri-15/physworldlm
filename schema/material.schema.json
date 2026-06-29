@@ -1,0 +1,1329 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/material.schema.json",
+  "title": "PW-WSF-400 Material Standard",
+  "description": "Official PhysWorldLM World Specification material standard. Engine-independent, physics-aware, scientific and engineering description of every material that can exist in a simulated universe. Every physical object in PhysWorldLM references one or more Material objects.",
+  "committee": "PhysWorldLM World Specification Committee (PW-WSF Committee)",
+  "publication": "PW-WSF-400",
+  "revision": 1,
+  "version": "1.0.0",
+  "status": "draft",
+  "license": "Apache-2.0",
+
+  "$defs": {
+
+    "UUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier."
+    },
+
+    "Timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "VersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+
+    "ScalarSI": {
+      "type": "object",
+      "description": "A scalar engineering value with SI unit, valid range, uncertainty, and standard reference.",
+      "additionalProperties": false,
+      "required": ["value", "unit"],
+      "properties": {
+        "value":       { "type": "number", "description": "Numerical value in specified SI unit." },
+        "unit":        { "type": "string", "description": "SI unit symbol." },
+        "min":         { "type": "number", "description": "Physical minimum bound." },
+        "max":         { "type": "number", "description": "Physical maximum bound." },
+        "uncertainty": { "type": "number", "description": "±1σ measurement uncertainty, same unit." },
+        "temperature_k":{ "type": "number", "description": "Temperature at which value was measured, Kelvin." },
+        "pressure_pa": { "type": "number", "description": "Pressure at which value was measured, Pa." },
+        "standard_ref":{ "type": "string", "description": "Measurement standard, e.g. ASTM E8, ISO 6892." }
+      }
+    },
+
+    "SpectralValue": {
+      "type": "object",
+      "description": "Wavelength-dependent property.",
+      "additionalProperties": false,
+      "properties": {
+        "wavelengths_nm": { "type": "array", "items": { "type": "number" } },
+        "values":         { "type": "array", "items": { "type": "number" } },
+        "unit":           { "type": "string" }
+      }
+    },
+
+    "ThermoProperty": {
+      "type": "object",
+      "description": "Temperature-dependent property curve.",
+      "additionalProperties": false,
+      "properties": {
+        "temperatures_k": { "type": "array", "items": { "type": "number" } },
+        "values":         { "type": "array", "items": { "type": "number" } },
+        "unit":           { "type": "string" }
+      }
+    },
+
+    "MaterialIdentity": {
+      "type": "object",
+      "description": "Identity, provenance, and governance metadata for a material.",
+      "additionalProperties": false,
+      "required": ["id", "name", "version"],
+      "properties": {
+        "id":             { "$ref": "#/$defs/UUID", "description": "Global material UUID." },
+        "name":           { "type": "string", "description": "Canonical machine-readable name, e.g. 'steel_304_annealed'." },
+        "display_name":   { "type": "string" },
+        "namespace":      { "type": "string", "description": "Reverse-DNS namespace, e.g. 'org.physworldlm.materials'." },
+        "version":        { "$ref": "#/$defs/VersionString" },
+        "revision":       { "type": "integer", "minimum": 0 },
+        "parent_material_id": { "$ref": "#/$defs/UUID", "description": "UUID of the base material this is derived from." },
+        "derived_material_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/UUID" }
+        },
+        "aliases":    { "type": "array", "items": { "type": "string" } },
+        "synonyms":   { "type": "array", "items": { "type": "string" } },
+        "domain":     { "type": "string", "enum": ["general", "military", "aerospace", "naval", "medical", "geological", "industrial", "space", "robotics", "custom"] },
+        "source":     { "type": "string", "description": "Data source, e.g. 'ASM Handbook Vol.1', 'MIL-HDBK-5J'." },
+        "creator":    { "type": "string" },
+        "created_at": { "$ref": "#/$defs/Timestamp" },
+        "updated_at": { "$ref": "#/$defs/Timestamp" },
+        "deprecated": { "type": "boolean", "default": false },
+        "tags":       { "type": "array", "items": { "type": "string" } },
+        "classification_level": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret", "custom"],
+          "default": "unclassified"
+        },
+        "license":    { "type": "string" }
+      }
+    },
+
+    "MaterialClassification": {
+      "type": "object",
+      "description": "Multi-level hierarchical material taxonomy.",
+      "additionalProperties": false,
+      "properties": {
+        "primary_class": {
+          "type": "string",
+          "enum": [
+            "metal", "alloy", "ceramic", "glass", "polymer", "elastomer",
+            "composite", "foam", "concrete", "masonry", "stone", "wood",
+            "soil", "sand", "clay", "rock", "snow", "ice",
+            "water", "freshwater", "seawater", "oil", "fuel", "gas", "plasma",
+            "biological_tissue", "fabric", "paper",
+            "semiconductor", "superconductor",
+            "nanomaterial", "metamaterial",
+            "shape_memory_alloy", "smart_material", "piezoelectric",
+            "explosive", "propellant",
+            "armor_material", "stealth_material", "radar_absorbent",
+            "unknown", "custom"
+          ]
+        },
+        "secondary_class": { "type": "string" },
+        "tertiary_class":  { "type": "string" },
+        "metal_class": {
+          "type": "string",
+          "enum": ["ferrous", "non_ferrous", "precious", "refractory", "light", "unknown"]
+        },
+        "alloy_system": {
+          "type": "string",
+          "description": "Alloy designation system class, e.g. 'Fe-Cr-Ni', 'Al-Cu'."
+        },
+        "polymer_class": {
+          "type": "string",
+          "enum": ["thermoplastic", "thermoset", "elastomer", "biopolymer", "hydrogel", "unknown"]
+        },
+        "composite_matrix": {
+          "type": "string",
+          "enum": ["polymer_matrix", "metal_matrix", "ceramic_matrix", "carbon_matrix", "unknown"]
+        },
+        "composite_reinforcement": {
+          "type": "string",
+          "enum": ["carbon_fiber", "glass_fiber", "aramid_fiber", "boron_fiber", "natural_fiber",
+                   "particle", "whisker", "nano", "unknown"]
+        },
+        "taxonomy_uri":  { "type": "string", "format": "uri" },
+        "cas_number":    { "type": "string", "description": "Chemical Abstracts Service registry number." },
+        "iupac_name":    { "type": "string" },
+        "custom_taxonomy": { "type": "object", "additionalProperties": true }
+      }
+    },
+
+    "MaterialComposition": {
+      "type": "object",
+      "description": "Chemical and elemental composition of the material.",
+      "additionalProperties": false,
+      "properties": {
+        "chemical_formula": { "type": "string", "description": "Empirical or molecular formula, e.g. 'Fe2O3'." },
+        "elements": {
+          "type": "array",
+          "description": "Elemental composition by mass fraction.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["symbol"],
+            "properties": {
+              "symbol":        { "type": "string", "description": "Element symbol, e.g. 'Fe'." },
+              "name":          { "type": "string" },
+              "atomic_number": { "type": "integer", "minimum": 1, "maximum": 118 },
+              "mass_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+              "wt_pct":        { "type": "number", "minimum": 0, "maximum": 100 },
+              "at_pct":        { "type": "number", "minimum": 0, "maximum": 100 }
+            }
+          }
+        },
+        "compounds": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "formula":       { "type": "string" },
+              "name":          { "type": "string" },
+              "mass_fraction": { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          }
+        },
+        "isotopes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "symbol":        { "type": "string" },
+              "mass_number":   { "type": "integer" },
+              "abundance":     { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          }
+        },
+        "purity_pct":       { "type": "number", "minimum": 0, "maximum": 100 },
+        "impurities": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "element":       { "type": "string" },
+              "max_ppm":       { "type": "number" }
+            }
+          }
+        },
+        "additives": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name":          { "type": "string" },
+              "function":      { "type": "string" },
+              "mass_fraction": { "type": "number" }
+            }
+          }
+        },
+        "coatings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "material_id":   { "$ref": "#/$defs/UUID" },
+              "name":          { "type": "string" },
+              "thickness_m":   { "type": "number" },
+              "process":       { "type": "string" }
+            }
+          }
+        },
+        "surface_treatment": { "type": "string" },
+        "reinforcement": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type":            { "type": "string" },
+            "volume_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+            "fiber_orientation": {
+              "type": "string",
+              "enum": ["random", "unidirectional", "bidirectional", "woven", "braided", "custom"]
+            },
+            "fiber_length_m":  { "type": "number" },
+            "fiber_diameter_m":{ "type": "number" }
+          }
+        }
+      }
+    },
+
+    "CrystalStructure": {
+      "type": "object",
+      "description": "Atomic, crystallographic, and microstructural description.",
+      "additionalProperties": false,
+      "properties": {
+        "crystal_system": {
+          "type": "string",
+          "enum": ["cubic", "tetragonal", "orthorhombic", "hexagonal", "trigonal", "monoclinic", "triclinic", "amorphous", "quasi_crystalline"]
+        },
+        "bravais_lattice":   { "type": "string" },
+        "space_group":       { "type": "string", "description": "Space group Hermann-Mauguin symbol." },
+        "space_group_number":{ "type": "integer", "minimum": 1, "maximum": 230 },
+        "lattice_parameters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "a_m": { "type": "number" },
+            "b_m": { "type": "number" },
+            "c_m": { "type": "number" },
+            "alpha_deg": { "type": "number" },
+            "beta_deg":  { "type": "number" },
+            "gamma_deg": { "type": "number" }
+          }
+        },
+        "grain_size_m":       { "type": "number", "description": "Mean grain diameter, meters (ASTM E112)." },
+        "grain_size_astm":    { "type": "number", "description": "ASTM grain size number." },
+        "texture_coefficient":{ "type": "number", "description": "Crystallographic texture index." },
+        "defect_density_per_m2":{ "type": "number", "description": "Dislocation density, /m²." },
+        "phases": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name":           { "type": "string" },
+              "volume_fraction":{ "type": "number", "minimum": 0, "maximum": 1 },
+              "crystal_system": { "type": "string" },
+              "stability_range_k": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "min_k": { "type": "number" },
+                  "max_k": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "heat_treatment_history": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "process":         { "type": "string" },
+              "temperature_k":   { "type": "number" },
+              "duration_s":      { "type": "number" },
+              "atmosphere":      { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+
+    "PhysicalProperties": {
+      "type": "object",
+      "description": "Fundamental physical properties: density, porosity, moisture.",
+      "additionalProperties": false,
+      "properties": {
+        "density_kg_m3": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Mass density, kg/m³. ASTM B311 / ISO 1183.",
+          "examples": [{ "value": 7850, "unit": "kg/m³" }]
+        },
+        "specific_gravity": { "type": "number", "minimum": 0 },
+        "bulk_density_kg_m3": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Bulk (apparent) density for granular materials, kg/m³."
+        },
+        "porosity": { "type": "number", "minimum": 0, "maximum": 1, "description": "Total porosity, dimensionless." },
+        "void_ratio": { "type": "number", "minimum": 0 },
+        "water_absorption_pct": { "type": "number", "minimum": 0 },
+        "moisture_content": { "type": "number", "minimum": 0, "maximum": 1 },
+        "compressibility": { "$ref": "#/$defs/ScalarSI" },
+        "permeability_m2": { "$ref": "#/$defs/ScalarSI", "description": "Intrinsic permeability (Darcy), m²." },
+        "swelling_pct":  { "type": "number" },
+        "shrinkage_pct": { "type": "number" }
+      }
+    },
+
+    "MechanicalProperties": {
+      "type": "object",
+      "description": "Engineering mechanical properties per ASTM/ISO standards.",
+      "additionalProperties": false,
+      "properties": {
+        "youngs_modulus_pa": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Young's (elastic) modulus, Pa. ASTM E111 / ISO 6892-1."
+        },
+        "bulk_modulus_pa": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Bulk modulus K, Pa."
+        },
+        "shear_modulus_pa": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Shear (rigidity) modulus G, Pa."
+        },
+        "poisson_ratio": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 0.5,
+          "description": "Poisson's ratio ν, dimensionless."
+        },
+        "elastic_limit_pa": { "$ref": "#/$defs/ScalarSI" },
+        "yield_strength_pa": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "0.2% proof stress (tensile yield), Pa. ASTM E8."
+        },
+        "ultimate_tensile_strength_pa": { "$ref": "#/$defs/ScalarSI" },
+        "compressive_strength_pa": { "$ref": "#/$defs/ScalarSI" },
+        "flexural_strength_pa": { "$ref": "#/$defs/ScalarSI" },
+        "torsional_strength_pa": { "$ref": "#/$defs/ScalarSI" },
+        "hardness": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "vickers_hv":    { "type": "number", "minimum": 0, "description": "Vickers hardness HV (ASTM E92)." },
+            "brinell_hb":    { "type": "number", "minimum": 0 },
+            "rockwell_hrc":  { "type": "number" },
+            "rockwell_hrb":  { "type": "number" },
+            "knoop_hk":      { "type": "number" },
+            "shore_a":       { "type": "number", "minimum": 0, "maximum": 100 },
+            "shore_d":       { "type": "number", "minimum": 0, "maximum": 100 },
+            "mohs":          { "type": "number", "minimum": 0, "maximum": 10 }
+          }
+        },
+        "fracture_toughness_pa_m05": {
+          "$ref": "#/$defs/ScalarSI",
+          "description": "Plane-strain fracture toughness KIc, Pa·√m. ASTM E399."
+        },
+        "impact_energy_j": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Charpy impact energy, J. ASTM E23 / ISO 148-1."
+        },
+        "fatigue": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "endurance_limit_pa":    { "$ref": "#/$defs/ScalarSI" },
+            "cycles_to_failure":     { "type": "number" },
+            "stress_ratio_r":        { "type": "number" },
+            "sn_curve_ref":          { "type": "string" }
+          }
+        },
+        "creep": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "creep_rate_s_1":       { "$ref": "#/$defs/ScalarSI", "description": "Steady-state creep rate, /s." },
+            "activation_energy_j_mol": { "type": "number" },
+            "reference_temperature_k": { "type": "number" }
+          }
+        },
+        "ductility": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "elongation_at_break_pct": { "type": "number", "minimum": 0 },
+            "reduction_of_area_pct":   { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "anisotropy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "isotropic":     { "type": "boolean", "default": true },
+            "orthotropic":   { "type": "boolean", "default": false },
+            "transversely_isotropic": { "type": "boolean", "default": false },
+            "stiffness_tensor_gpa": {
+              "type": "array",
+              "description": "Voigt-notation 6×6 elastic stiffness tensor, GPa.",
+              "items": { "type": "array", "items": { "type": "number" }, "minItems": 6, "maxItems": 6 },
+              "minItems": 6,
+              "maxItems": 6
+            }
+          }
+        },
+        "viscoelastic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "storage_modulus_pa": { "$ref": "#/$defs/ScalarSI" },
+            "loss_modulus_pa":    { "$ref": "#/$defs/ScalarSI" },
+            "tan_delta":          { "type": "number" },
+            "relaxation_time_s":  { "type": "number" }
+          }
+        },
+        "hyperelastic_model": {
+          "type": "string",
+          "enum": ["neo_hookean", "mooney_rivlin", "ogden", "arruda_boyce", "yeoh", "custom"]
+        },
+        "hyperelastic_params":    { "type": "object", "additionalProperties": true },
+        "stress_strain_curve_ref":{ "type": "string" },
+        "failure_criteria":       { "type": "string", "enum": ["von_mises", "tresca", "drucker_prager", "mohr_coulomb", "tsai_wu", "custom"] }
+      }
+    },
+
+    "ThermalProperties": {
+      "type": "object",
+      "description": "Thermodynamic and heat transfer properties.",
+      "additionalProperties": false,
+      "properties": {
+        "specific_heat_capacity_j_kg_k": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Specific heat capacity at constant pressure Cp, J/(kg·K). ASTM E1269."
+        },
+        "thermal_conductivity_w_m_k": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Thermal conductivity λ, W/(m·K). ASTM E1461."
+        },
+        "thermal_diffusivity_m2_s": { "$ref": "#/$defs/ScalarSI" },
+        "thermal_expansion_per_k": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Coefficient of thermal expansion α, /K. ASTM E228."
+        },
+        "thermal_emissivity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Hemispherical total emissivity ε. Dimensionless."
+        },
+        "thermal_resistance_m2_k_w": { "$ref": "#/$defs/ScalarSI" },
+        "melting_point_k": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Solidus temperature, K."
+        },
+        "boiling_point_k":     { "$ref": "#/$defs/ScalarSI" },
+        "glass_transition_k":  { "$ref": "#/$defs/ScalarSI", "description": "Tg for polymers and glasses, K." },
+        "flash_point_k":       { "$ref": "#/$defs/ScalarSI" },
+        "ignition_temperature_k": { "$ref": "#/$defs/ScalarSI" },
+        "auto_ignition_k":     { "$ref": "#/$defs/ScalarSI" },
+        "heat_of_combustion_j_kg": { "$ref": "#/$defs/ScalarSI" },
+        "heat_of_fusion_j_kg": { "$ref": "#/$defs/ScalarSI" },
+        "heat_of_vaporization_j_kg": { "$ref": "#/$defs/ScalarSI" },
+        "thermal_conductivity_vs_temperature": { "$ref": "#/$defs/ThermoProperty" },
+        "specific_heat_vs_temperature":        { "$ref": "#/$defs/ThermoProperty" }
+      }
+    },
+
+    "ElectricalProperties": {
+      "type": "object",
+      "description": "Electrical and electronic material properties.",
+      "additionalProperties": false,
+      "properties": {
+        "electrical_conductivity_s_m": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Electrical conductivity σ, S/m. ASTM B193."
+        },
+        "electrical_resistivity_ohm_m": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Electrical resistivity ρ, Ω·m."
+        },
+        "relative_permittivity": { "type": "number", "minimum": 1, "description": "Relative permittivity εr (dielectric constant)." },
+        "dielectric_loss_tangent": { "type": "number", "minimum": 0, "description": "tan δ." },
+        "dielectric_strength_v_m": { "$ref": "#/$defs/ScalarSI" },
+        "breakdown_voltage_v":     { "$ref": "#/$defs/ScalarSI" },
+        "charge_density_c_m3":     { "$ref": "#/$defs/ScalarSI" },
+        "surface_resistivity_ohm_sq": { "$ref": "#/$defs/ScalarSI" },
+        "bandgap_ev": { "type": "number", "minimum": 0, "description": "Electronic bandgap, eV (semiconductors)." },
+        "carrier_concentration_per_m3": { "$ref": "#/$defs/ScalarSI" },
+        "carrier_mobility_m2_v_s": { "$ref": "#/$defs/ScalarSI" },
+        "piezoelectric": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "piezoelectric_charge_constant_c_n": { "$ref": "#/$defs/ScalarSI" },
+            "piezoelectric_voltage_constant_v_m_n": { "$ref": "#/$defs/ScalarSI" }
+          }
+        },
+        "pyroelectric_coefficient_c_m2_k": { "$ref": "#/$defs/ScalarSI" },
+        "superconducting": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "critical_temperature_k":  { "type": "number" },
+            "critical_field_t":        { "type": "number" },
+            "critical_current_density_a_m2": { "type": "number" }
+          }
+        },
+        "permittivity_vs_frequency": { "$ref": "#/$defs/SpectralValue" }
+      }
+    },
+
+    "MagneticProperties": {
+      "type": "object",
+      "description": "Magnetic properties per IEC 60404.",
+      "additionalProperties": false,
+      "properties": {
+        "relative_permeability": { "type": "number", "minimum": 0 },
+        "magnetic_susceptibility": { "type": "number" },
+        "saturation_magnetization_t": { "$ref": "#/$defs/ScalarSI" },
+        "coercivity_a_m": { "$ref": "#/$defs/ScalarSI" },
+        "remanence_t": { "$ref": "#/$defs/ScalarSI" },
+        "curie_temperature_k": { "type": "number" },
+        "hysteresis_loss_j_m3": { "$ref": "#/$defs/ScalarSI" },
+        "magnetic_class": {
+          "type": "string",
+          "enum": ["diamagnetic", "paramagnetic", "ferromagnetic", "antiferromagnetic", "ferrimagnetic", "superparamagnetic"]
+        }
+      }
+    },
+
+    "OpticalProperties": {
+      "type": "object",
+      "description": "Optical and photonic material properties across the electromagnetic spectrum.",
+      "additionalProperties": false,
+      "properties": {
+        "refractive_index": { "type": "number", "minimum": 1, "description": "Real part of complex refractive index n at 550nm." },
+        "extinction_coefficient": { "type": "number", "minimum": 0, "description": "Imaginary part k of complex refractive index." },
+        "opacity": {
+          "type": "string",
+          "enum": ["opaque", "translucent", "transparent"]
+        },
+        "transmittance": { "type": "number", "minimum": 0, "maximum": 1 },
+        "reflectance":   { "type": "number", "minimum": 0, "maximum": 1 },
+        "absorptance":   { "type": "number", "minimum": 0, "maximum": 1 },
+        "albedo":        { "type": "number", "minimum": 0, "maximum": 1, "description": "Hemispherical-hemispherical reflectance." },
+        "color": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cie_lab": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "L": { "type": "number" },
+                "a": { "type": "number" },
+                "b": { "type": "number" }
+              }
+            },
+            "srgb": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "r": { "type": "number", "minimum": 0, "maximum": 1 },
+                "g": { "type": "number", "minimum": 0, "maximum": 1 },
+                "b": { "type": "number", "minimum": 0, "maximum": 1 }
+              }
+            },
+            "munsell": { "type": "string" },
+            "natural_language": { "type": "string" }
+          }
+        },
+        "spectral_reflectance":    { "$ref": "#/$defs/SpectralValue", "description": "Reflectance vs wavelength (nm)." },
+        "spectral_transmittance":  { "$ref": "#/$defs/SpectralValue" },
+        "spectral_absorptance":    { "$ref": "#/$defs/SpectralValue" },
+        "brdf_model":              { "type": "string", "enum": ["lambertian", "phong", "ggx", "beckmann", "oren_nayar", "cook_torrance", "custom"] },
+        "brdf_params":             { "type": "object", "additionalProperties": true },
+        "bsdf_model":              { "type": "string" },
+        "roughness":               { "type": "number", "minimum": 0, "maximum": 1 },
+        "metallic":                { "type": "number", "minimum": 0, "maximum": 1 },
+        "scattering_coefficient_per_m": { "$ref": "#/$defs/ScalarSI" },
+        "fluorescence":            { "type": "boolean" },
+        "fluorescence_emission_nm":{ "type": "number" },
+        "luminescence":            { "type": "boolean" },
+        "uv_reflectance":          { "$ref": "#/$defs/SpectralValue" },
+        "ir_emissivity":           { "type": "number", "minimum": 0, "maximum": 1 },
+        "polarization_effects":    { "type": "boolean" }
+      }
+    },
+
+    "ElectromagneticProperties": {
+      "type": "object",
+      "description": "Radar, RF, microwave, and stealth material properties.",
+      "additionalProperties": false,
+      "properties": {
+        "radar_cross_section_m2": {
+          "type": "number",
+          "description": "Monostatic RCS at reference frequency, m²."
+        },
+        "radar_absorptivity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Fraction of incident radar energy absorbed."
+        },
+        "rf_reflectivity":    { "type": "number", "minimum": 0, "maximum": 1 },
+        "rf_absorptivity":    { "type": "number", "minimum": 0, "maximum": 1 },
+        "rf_transmissivity":  { "type": "number", "minimum": 0, "maximum": 1 },
+        "em_shielding_effectiveness_db": {
+          "type": "number",
+          "description": "Shielding effectiveness in dB (MIL-STD-461)."
+        },
+        "ram_effectiveness": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "frequency_ghz":      { "type": "number" },
+            "rcs_reduction_db":   { "type": "number" },
+            "bandwidth_ghz":      { "type": "number" }
+          }
+        },
+        "frequency_response": {
+          "type": "array",
+          "description": "Frequency-dependent EM response.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "frequency_hz":    { "type": "number" },
+              "permittivity_real":{ "type": "number" },
+              "permittivity_imag":{ "type": "number" },
+              "permeability_real":{ "type": "number" },
+              "permeability_imag":{ "type": "number" }
+            }
+          }
+        },
+        "stealth_properties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "is_low_observable":     { "type": "boolean" },
+            "radar_absorbent":       { "type": "boolean" },
+            "ir_suppression":        { "type": "boolean" },
+            "acoustic_suppression":  { "type": "boolean" }
+          }
+        }
+      }
+    },
+
+    "AcousticProperties": {
+      "type": "object",
+      "description": "Acoustic and vibration material properties.",
+      "additionalProperties": false,
+      "properties": {
+        "speed_of_sound_m_s": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Longitudinal wave speed, m/s."
+        },
+        "acoustic_impedance_pa_s_m": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Specific acoustic impedance Z = ρ·c, Pa·s/m = rayl."
+        },
+        "sound_absorption_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Random-incidence absorption coefficient α (ISO 354)."
+        },
+        "sound_transmission_loss_db": { "$ref": "#/$defs/ScalarSI" },
+        "sound_reflection_coefficient":{ "type": "number", "minimum": 0, "maximum": 1 },
+        "damping_factor":             { "type": "number", "minimum": 0 },
+        "resonance_frequencies_hz":   { "type": "array", "items": { "type": "number" } },
+        "frequency_response_curve": { "$ref": "#/$defs/SpectralValue" },
+        "sonar_reflectivity":         { "type": "number", "minimum": 0, "maximum": 1 },
+        "acoustic_signature": {
+          "type": "string",
+          "enum": ["silent", "low", "moderate", "high", "very_high", "unknown"]
+        }
+      }
+    },
+
+    "ChemicalProperties": {
+      "type": "object",
+      "description": "Chemical reactivity, stability, and environmental compatibility.",
+      "additionalProperties": false,
+      "properties": {
+        "chemical_stability": {
+          "type": "string",
+          "enum": ["stable", "unstable", "reactive", "explosive", "pyrophoric", "custom"]
+        },
+        "oxidation_resistance": {
+          "type": "string",
+          "enum": ["excellent", "good", "moderate", "poor", "very_poor"]
+        },
+        "corrosion_resistance": {
+          "type": "string",
+          "enum": ["excellent", "good", "moderate", "poor", "very_poor"]
+        },
+        "acid_resistance":     { "type": "string", "enum": ["excellent", "good", "moderate", "poor"] },
+        "alkali_resistance":   { "type": "string", "enum": ["excellent", "good", "moderate", "poor"] },
+        "salt_spray_resistance": { "type": "string", "enum": ["excellent", "good", "moderate", "poor"] },
+        "uv_resistance":       { "type": "string", "enum": ["excellent", "good", "moderate", "poor"] },
+        "radiation_resistance":{ "type": "string", "enum": ["excellent", "good", "moderate", "poor"] },
+        "biodegradation":      { "type": "boolean" },
+        "biodegradation_rate": { "$ref": "#/$defs/ScalarSI" },
+        "solubility_g_l":      { "$ref": "#/$defs/ScalarSI" },
+        "toxicity": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ld50_mg_kg":         { "type": "number" },
+            "ghs_hazard_codes":   { "type": "array", "items": { "type": "string" } },
+            "carcinogenic":       { "type": "boolean" }
+          }
+        },
+        "flammability_class": {
+          "type": "string",
+          "enum": ["A1", "A2", "B", "C", "D", "E", "F", "non_combustible", "custom"]
+        },
+        "ph":    { "type": "number", "minimum": 0, "maximum": 14 },
+        "vapor_pressure_pa": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "GeologicalSoilProperties": {
+      "type": "object",
+      "description": "Geological and geotechnical properties — for soils, rocks, and geological materials.",
+      "additionalProperties": false,
+      "properties": {
+        "unified_soil_classification": { "type": "string" },
+        "grain_size_distribution": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "d10_m": { "type": "number" },
+            "d50_m": { "type": "number" },
+            "d90_m": { "type": "number" },
+            "uniformity_coefficient": { "type": "number" },
+            "curvature_coefficient":  { "type": "number" }
+          }
+        },
+        "atterberg_limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "liquid_limit_pct":   { "type": "number" },
+            "plastic_limit_pct":  { "type": "number" },
+            "plasticity_index":   { "type": "number" },
+            "shrinkage_limit_pct":{ "type": "number" }
+          }
+        },
+        "bearing_capacity_kpa": { "$ref": "#/$defs/ScalarSI" },
+        "internal_friction_angle_deg": { "type": "number", "minimum": 0, "maximum": 90 },
+        "cohesion_kpa":         { "$ref": "#/$defs/ScalarSI" },
+        "compression_index":    { "type": "number" },
+        "permeability_m_s":     { "$ref": "#/$defs/ScalarSI" },
+        "erodibility_class": {
+          "type": "string",
+          "enum": ["very_low", "low", "moderate", "high", "very_high"]
+        },
+        "rock_type":            { "type": "string" },
+        "ucs_mpa":              { "$ref": "#/$defs/ScalarSI", "description": "Uniaxial compressive strength, MPa." },
+        "point_load_index":     { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "FluidProperties": {
+      "type": "object",
+      "description": "Properties for fluid materials: water, fuel, oil, gas, plasma.",
+      "additionalProperties": false,
+      "properties": {
+        "dynamic_viscosity_pa_s": {
+          "allOf": [{ "$ref": "#/$defs/ScalarSI" }],
+          "description": "Dynamic viscosity μ, Pa·s."
+        },
+        "kinematic_viscosity_m2_s": { "$ref": "#/$defs/ScalarSI" },
+        "surface_tension_n_m":      { "$ref": "#/$defs/ScalarSI" },
+        "vapor_pressure_pa":        { "$ref": "#/$defs/ScalarSI" },
+        "bulk_modulus_pa":          { "$ref": "#/$defs/ScalarSI" },
+        "flow_behavior": {
+          "type": "string",
+          "enum": ["newtonian", "non_newtonian", "bingham_plastic", "shear_thinning", "shear_thickening", "viscoelastic"]
+        },
+        "cavitation_number":    { "type": "number" },
+        "compressibility_1_pa": { "$ref": "#/$defs/ScalarSI" },
+        "turbulent_prandtl":    { "type": "number" }
+      }
+    },
+
+    "FireExplosionBehaviour": {
+      "type": "object",
+      "description": "Combustion, fire spread, and explosion behaviour.",
+      "additionalProperties": false,
+      "properties": {
+        "combustible":          { "type": "boolean" },
+        "burn_rate_m_s":        { "$ref": "#/$defs/ScalarSI" },
+        "heat_release_rate_kw_m2": { "$ref": "#/$defs/ScalarSI" },
+        "smoke_generation_class": {
+          "type": "string",
+          "enum": ["s1", "s2", "s3", "unknown"]
+        },
+        "flame_spread_index":   { "type": "number" },
+        "oxygen_index_pct":     { "type": "number", "minimum": 0, "maximum": 100 },
+        "explosive":            { "type": "boolean" },
+        "explosive_class": {
+          "type": "string",
+          "enum": ["UN_class_1_1", "UN_class_1_2", "UN_class_1_3", "UN_class_1_4",
+                   "UN_class_1_5", "UN_class_1_6", "deflagrating", "detonating", "custom"]
+        },
+        "detonation_velocity_m_s":   { "$ref": "#/$defs/ScalarSI" },
+        "detonation_pressure_pa":    { "$ref": "#/$defs/ScalarSI" },
+        "heat_of_explosion_j_kg":    { "$ref": "#/$defs/ScalarSI" },
+        "brisance":                  { "type": "number" },
+        "blast_resistance":          { "type": "string", "enum": ["none", "low", "moderate", "high", "extreme"] },
+        "thermal_damage_threshold_j_m2": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "BallisticBehaviour": {
+      "type": "object",
+      "description": "Ballistic protection and terminal effects properties.",
+      "additionalProperties": false,
+      "properties": {
+        "armor_class": {
+          "type": "string",
+          "enum": ["none", "NIJ_I", "NIJ_IIA", "NIJ_II", "NIJ_IIIA", "NIJ_III", "NIJ_IV",
+                   "STANAG_1", "STANAG_2", "STANAG_3", "STANAG_4", "STANAG_5", "STANAG_6",
+                   "custom"]
+        },
+        "v50_m_s":              { "$ref": "#/$defs/ScalarSI", "description": "Ballistic limit V50, m/s." },
+        "areal_density_kg_m2":  { "$ref": "#/$defs/ScalarSI" },
+        "perforation_resistance":{ "type": "string", "enum": ["none", "low", "moderate", "high", "extreme"] },
+        "spall_prone":           { "type": "boolean" },
+        "fragmentation":         { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+        "ricochet_angle_deg":    { "type": "number" },
+        "shockwave_response":    { "type": "string", "enum": ["elastic", "elasto_plastic", "hydrodynamic"] },
+        "hugoniot_params": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Shock Hugoniot fit: Us = c0 + s·Up",
+          "properties": {
+            "c0_m_s": { "type": "number" },
+            "s":      { "type": "number" },
+            "gamma0": { "type": "number" }
+          }
+        },
+        "overpressure_resistance_pa": { "$ref": "#/$defs/ScalarSI" },
+        "mil_standard_refs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "examples": [["MIL-DTL-46100E", "MIL-A-46100"]]
+        }
+      }
+    },
+
+    "SensorBehaviour": {
+      "type": "object",
+      "description": "Material interaction signatures for all sensor modalities.",
+      "additionalProperties": false,
+      "properties": {
+        "radar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "rcs_m2":           { "type": "number" },
+            "absorptivity":     { "type": "number", "minimum": 0, "maximum": 1 },
+            "reflectivity":     { "type": "number", "minimum": 0, "maximum": 1 },
+            "frequency_band_hz":{ "type": "number" }
+          }
+        },
+        "sar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "backscatter_coefficient_db": { "type": "number" },
+            "dielectric_constant_real":   { "type": "number" },
+            "dielectric_constant_imag":   { "type": "number" },
+            "penetration_depth_m":        { "type": "number" }
+          }
+        },
+        "lidar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "reflectivity_1064nm": { "type": "number", "minimum": 0, "maximum": 1 },
+            "reflectivity_905nm":  { "type": "number", "minimum": 0, "maximum": 1 },
+            "specular":            { "type": "boolean" }
+          }
+        },
+        "eo": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "spectral_reflectance": { "$ref": "#/$defs/SpectralValue" }
+          }
+        },
+        "ir": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "emissivity_lwir": { "type": "number", "minimum": 0, "maximum": 1, "description": "LWIR 8–12 µm emissivity." },
+            "emissivity_mwir": { "type": "number", "minimum": 0, "maximum": 1, "description": "MWIR 3–5 µm emissivity." },
+            "thermal_signature": { "type": "string", "enum": ["cold", "cool", "neutral", "warm", "hot"] }
+          }
+        },
+        "sonar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "target_strength_db": { "type": "number" },
+            "acoustic_impedance_rayl": { "type": "number" }
+          }
+        },
+        "magnetic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "magnetic_signature": { "type": "string", "enum": ["none", "low", "moderate", "high"] },
+            "demagnetized":       { "type": "boolean" }
+          }
+        },
+        "gnss": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "gnss_transparent": { "type": "boolean", "description": "True if material is transparent to GNSS signals." },
+            "multipath_risk":   { "type": "string", "enum": ["low", "moderate", "high"] }
+          }
+        },
+        "seismic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "seismic_impedance_kg_m2_s": { "type": "number" },
+            "p_wave_velocity_m_s":       { "type": "number" },
+            "s_wave_velocity_m_s":       { "type": "number" }
+          }
+        },
+        "hyperspectral": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "spectral_signature_ref": { "type": "string", "description": "Reference to spectral library entry." },
+            "spectral_library":       { "type": "string", "enum": ["USGS_spectral", "ASTER", "ECOSTRESS", "custom"] }
+          }
+        }
+      }
+    },
+
+    "AIMetadata": {
+      "type": "object",
+      "description": "Semantic AI metadata for knowledge graph integration and language-model reasoning.",
+      "additionalProperties": false,
+      "properties": {
+        "ontology_class":   { "type": "string", "format": "uri" },
+        "taxonomy":         { "type": "string" },
+        "kg_node_uri":      { "type": "string", "format": "uri" },
+        "semantic_labels":  { "type": "array", "items": { "type": "string" } },
+        "synonyms":         { "type": "array", "items": { "type": "string" } },
+        "search_keywords":  { "type": "array", "items": { "type": "string" } },
+        "natural_language_description": { "type": "string" },
+        "embedding_vector": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Dense semantic embedding for nearest-neighbor retrieval."
+        },
+        "domain_tags":      { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "ManufacturingInfo": {
+      "type": "object",
+      "description": "Manufacturing process, quality, and traceability metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "process": {
+          "type": "string",
+          "enum": [
+            "casting", "sand_casting", "investment_casting", "die_casting",
+            "forging", "hot_rolling", "cold_rolling", "extrusion",
+            "drawing", "stamping", "deep_drawing",
+            "machining", "turning", "milling", "grinding",
+            "additive_manufacturing", "fdm", "sls", "slm", "sla", "directed_energy",
+            "injection_molding", "compression_molding", "resin_transfer_molding",
+            "pultrusion", "filament_winding",
+            "sintering", "hot_pressing", "spark_plasma_sintering",
+            "electroforming", "electroplating",
+            "welding", "brazing", "soldering",
+            "heat_treatment", "annealing", "quenching", "tempering",
+            "case_hardening", "nitriding", "carburizing",
+            "surface_finishing", "coating", "pvd", "cvd", "thermal_spray",
+            "natural", "geological", "biological",
+            "custom"
+          ]
+        },
+        "condition": {
+          "type": "string",
+          "enum": ["as_cast", "as_forged", "annealed", "normalized", "quenched_tempered",
+                   "cold_worked", "hot_worked", "solution_treated", "aged", "custom"]
+        },
+        "quality_grade":    { "type": "string" },
+        "tolerance_class":  { "type": "string" },
+        "surface_finish_ra_m": { "type": "number", "description": "Arithmetic mean surface roughness Ra, meters." },
+        "batch_number":     { "type": "string" },
+        "manufacturer":     { "type": "string" },
+        "country_of_origin":{ "type": "string", "description": "ISO 3166-1 alpha-2." }
+      }
+    },
+
+    "StandardsRefs": {
+      "type": "object",
+      "description": "References to applicable engineering standards.",
+      "additionalProperties": false,
+      "properties": {
+        "iso":      { "type": "array", "items": { "type": "string" }, "examples": [["ISO 6892-1", "ISO 148-1"]] },
+        "astm":     { "type": "array", "items": { "type": "string" }, "examples": [["ASTM A36", "ASTM E8"]] },
+        "din":      { "type": "array", "items": { "type": "string" } },
+        "mil_std":  { "type": "array", "items": { "type": "string" }, "examples": [["MIL-STD-1477", "MIL-HDBK-5J"]] },
+        "sae":      { "type": "array", "items": { "type": "string" } },
+        "asme":     { "type": "array", "items": { "type": "string" } },
+        "nist":     { "type": "array", "items": { "type": "string" } },
+        "nasa":     { "type": "array", "items": { "type": "string" } },
+        "asm":      { "type": "array", "items": { "type": "string" } },
+        "un_number":{ "type": "string", "description": "UN hazardous goods number." },
+        "custom":   { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "SimulationParameters": {
+      "type": "object",
+      "description": "Hints and parameters for physics engine simulation backends.",
+      "additionalProperties": false,
+      "properties": {
+        "preferred_solver": {
+          "type": "string",
+          "enum": ["physx", "bullet", "mujoco", "gazebo", "lsdyna", "abaqus", "ansys", "openfoam", "custom"]
+        },
+        "lod_bias":             { "type": "number" },
+        "numerical_stability":  { "type": "string", "enum": ["stable", "marginal", "stiff", "unknown"] },
+        "gpu_optimized":        { "type": "boolean" },
+        "approximation_model":  { "type": "string" },
+        "contact_stiffness_n_m":{ "type": "number" },
+        "contact_damping":      { "type": "number" },
+        "static_friction":      { "type": "number", "minimum": 0 },
+        "dynamic_friction":     { "type": "number", "minimum": 0 },
+        "restitution":          { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+
+    "RenderingMetadata": {
+      "type": "object",
+      "description": "Optional interoperability references for rendering pipelines. Descriptive only — not authoritative material definition.",
+      "additionalProperties": false,
+      "properties": {
+        "usd_material_ref":         { "type": "string", "description": "OpenUSD UsdShadeMaterial prim path." },
+        "materialx_ref":            { "type": "string", "description": "MaterialX nodedef reference." },
+        "gltf_pbr_ref":             { "type": "string" },
+        "unreal_material_path":     { "type": "string" },
+        "unity_material_guid":      { "type": "string" },
+        "blender_material_ref":     { "type": "string" },
+        "base_color_texture_ref":   { "type": "string" },
+        "normal_map_ref":           { "type": "string" },
+        "roughness_texture_ref":    { "type": "string" },
+        "metallic_texture_ref":     { "type": "string" },
+        "ao_texture_ref":           { "type": "string" },
+        "displacement_texture_ref": { "type": "string" },
+        "emissive_texture_ref":     { "type": "string" }
+      }
+    },
+
+    "CompatibilityLayer": {
+      "type": "object",
+      "description": "Compatibility hints for specific simulation and rendering engines.",
+      "additionalProperties": false,
+      "properties": {
+        "physx":    { "type": "object", "additionalProperties": true },
+        "omniverse":{ "type": "object", "additionalProperties": true },
+        "open_usd": { "type": "object", "additionalProperties": true },
+        "materialx":{ "type": "object", "additionalProperties": true },
+        "bullet":   { "type": "object", "additionalProperties": true },
+        "mujoco":   { "type": "object", "additionalProperties": true },
+        "gazebo":   { "type": "object", "additionalProperties": true },
+        "ros2":     { "type": "object", "additionalProperties": true },
+        "cesium":   { "type": "object", "additionalProperties": true },
+        "unity":    { "type": "object", "additionalProperties": true },
+        "unreal":   { "type": "object", "additionalProperties": true },
+        "blender":  { "type": "object", "additionalProperties": true },
+        "isaac_sim":{ "type": "object", "additionalProperties": true }
+      }
+    },
+
+    "SurfaceProperties": {
+      "type": "object",
+      "description": "Surface physics: friction, roughness, and interface properties.",
+      "additionalProperties": false,
+      "properties": {
+        "roughness_ra_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Arithmetic mean roughness Ra, meters (ISO 4287)."
+        },
+        "roughness_rz_m": { "type": "number", "minimum": 0 },
+        "roughness_rms_m":{ "type": "number", "minimum": 0 },
+        "tribology": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "static_friction_coefficient":  { "type": "number", "minimum": 0 },
+            "kinetic_friction_coefficient": { "type": "number", "minimum": 0 },
+            "rolling_resistance":           { "type": "number", "minimum": 0 },
+            "wear_rate_m3_n_m":             { "$ref": "#/$defs/ScalarSI" },
+            "hardness_ratio":               { "type": "number" }
+          }
+        },
+        "contact_angle_deg": { "type": "number", "minimum": 0, "maximum": 180, "description": "Water contact angle (wettability)." },
+        "surface_energy_j_m2": { "$ref": "#/$defs/ScalarSI" }
+      }
+    },
+
+    "DegradationProperties": {
+      "type": "object",
+      "description": "Long-term degradation, aging, corrosion, and weathering.",
+      "additionalProperties": false,
+      "properties": {
+        "corrosion": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type":           { "type": "string", "enum": ["uniform", "pitting", "crevice", "galvanic", "intergranular", "erosion", "stress_corrosion", "none"] },
+            "rate_mm_per_yr": { "type": "number" },
+            "protection":     { "type": "string" }
+          }
+        },
+        "weathering": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "uv_degradation_rate":    { "type": "number" },
+            "moisture_uptake_pct_yr": { "type": "number" },
+            "freeze_thaw_cycles":     { "type": "integer" }
+          }
+        },
+        "aging": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "design_life_yr":      { "type": "number" },
+            "property_degradation":{ "type": "object", "additionalProperties": true }
+          }
+        }
+      }
+    },
+
+    "NuclearRadiationProperties": {
+      "type": "object",
+      "description": "Nuclear and radiation properties for CBRN simulation.",
+      "additionalProperties": false,
+      "properties": {
+        "neutron_cross_section_barns": { "type": "number", "minimum": 0 },
+        "gamma_attenuation_coeff_per_m": { "type": "number", "minimum": 0 },
+        "shielding_effectiveness_hvl_m": { "type": "number", "description": "Half-value layer, meters." },
+        "radioactive":                   { "type": "boolean", "default": false },
+        "half_life_s":                   { "type": "number" },
+        "radiation_types": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["alpha", "beta", "gamma", "neutron", "x_ray"] }
+        },
+        "activation_cross_section_barns":{ "type": "number" }
+      }
+    },
+
+    "Material": {
+      "type": "object",
+      "title": "Material",
+      "description": "Complete PW-WSF-400 material specification. Engine-independent scientific and engineering description of a material for PhysWorldLM.",
+      "additionalProperties": false,
+      "required": ["identity"],
+      "properties": {
+        "identity":          { "$ref": "#/$defs/MaterialIdentity" },
+        "classification":    { "$ref": "#/$defs/MaterialClassification" },
+        "composition":       { "$ref": "#/$defs/MaterialComposition" },
+        "crystal_structure": { "$ref": "#/$defs/CrystalStructure" },
+        "physical":          { "$ref": "#/$defs/PhysicalProperties" },
+        "mechanical":        { "$ref": "#/$defs/MechanicalProperties" },
+        "thermal":           { "$ref": "#/$defs/ThermalProperties" },
+        "electrical":        { "$ref": "#/$defs/ElectricalProperties" },
+        "magnetic":          { "$ref": "#/$defs/MagneticProperties" },
+        "optical":           { "$ref": "#/$defs/OpticalProperties" },
+        "electromagnetic":   { "$ref": "#/$defs/ElectromagneticProperties" },
+        "acoustic":          { "$ref": "#/$defs/AcousticProperties" },
+        "chemical":          { "$ref": "#/$defs/ChemicalProperties" },
+        "geological_soil":   { "$ref": "#/$defs/GeologicalSoilProperties" },
+        "fluid":             { "$ref": "#/$defs/FluidProperties" },
+        "fire_explosion":    { "$ref": "#/$defs/FireExplosionBehaviour" },
+        "ballistic":         { "$ref": "#/$defs/BallisticBehaviour" },
+        "sensor_behaviour":  { "$ref": "#/$defs/SensorBehaviour" },
+        "surface":           { "$ref": "#/$defs/SurfaceProperties" },
+        "degradation":       { "$ref": "#/$defs/DegradationProperties" },
+        "nuclear_radiation": { "$ref": "#/$defs/NuclearRadiationProperties" },
+        "ai_metadata":       { "$ref": "#/$defs/AIMetadata" },
+        "manufacturing":     { "$ref": "#/$defs/ManufacturingInfo" },
+        "standards":         { "$ref": "#/$defs/StandardsRefs" },
+        "simulation":        { "$ref": "#/$defs/SimulationParameters" },
+        "rendering":         { "$ref": "#/$defs/RenderingMetadata" },
+        "compatibility":     { "$ref": "#/$defs/CompatibilityLayer" },
+        "metadata_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "metadata_id":  { "type": "string", "format": "uuid" },
+            "metadata_uri": { "type": "string", "format": "uri",
+                              "default": "https://physworldlm.org/schemas/metadata.schema.json" }
+          }
+        },
+        "physics_ref": {
+          "type": "string",
+          "format": "uri",
+          "default": "https://physworldlm.org/schemas/physics.schema.json"
+        },
+        "extensions": {
+          "type": "object",
+          "description": "Domain extension fields using reverse-DNS keys.",
+          "additionalProperties": true,
+          "examples": [{ "mil.nato.material": {}, "org.ros.material": {} }]
+        }
+      }
+    }
+
+  },
+
+  "type": "object",
+  "required": ["material"],
+  "additionalProperties": false,
+
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://physworldlm.org/schemas/material.schema.json"
+    },
+    "material": { "$ref": "#/$defs/Material" }
+  },
+
+  "examples": [
+    {
+      "$schema": "https://physworldlm.org/schemas/material.schema.json",
+      "material": {
+        "identity": {
+          "id": "b7e3f210-4a2c-4d8b-9f1e-8c3d56a7b2e4",
+          "name": "steel_astm_a36_hot_rolled",
+          "display_name": "ASTM A36 Structural Steel (Hot-Rolled)",
+          "version": "1.0.0",
+          "revision": 0,
+          "source": "ASTM A36 / ASM Handbook Vol.1",
+          "domain": "general"
+        },
+        "classification": {
+          "primary_class": "alloy",
+          "metal_class": "ferrous",
+          "alloy_system": "Fe-Mn-C"
+        },
+        "composition": {
+          "chemical_formula": "Fe-Mn-C",
+          "purity_pct": 98.5,
+          "elements": [
+            { "symbol": "Fe", "name": "Iron",      "wt_pct": 98.5 },
+            { "symbol": "Mn", "name": "Manganese", "wt_pct": 0.9 },
+            { "symbol": "C",  "name": "Carbon",    "wt_pct": 0.25 }
+          ]
+        },
+        "physical": {
+          "density_kg_m3": { "value": 7850, "unit": "kg/m³" }
+        },
+        "mechanical": {
+          "youngs_modulus_pa": { "value": 2e11, "unit": "Pa" },
+          "yield_strength_pa": { "value": 2.5e8, "unit": "Pa" },
+          "ultimate_tensile_strength_pa": { "value": 4e8, "unit": "Pa" },
+          "poisson_ratio": 0.26
+        },
+        "thermal": {
+          "thermal_conductivity_w_m_k": { "value": 51.9, "unit": "W/(m·K)" },
+          "melting_point_k": { "value": 1800, "unit": "K" }
+        },
+        "standards": {
+          "astm": ["ASTM A36"],
+          "iso":  ["ISO 630"]
+        }
+      }
+    }
+  ]
+}

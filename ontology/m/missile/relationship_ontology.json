@@ -1,0 +1,643 @@
+{
+  "MissileRelationshipOntology": {
+    "relationships": [
+      {
+        "name": "hasComponent",
+        "definition": "A missile or subsystem has a specific engineering component as a physical part",
+        "domain": "Missile | MissileSubsystem",
+        "range": "MissileComponent | MissileSubsystem",
+        "cardinality": "one-to-many",
+        "inverse": "partOf",
+        "description": "Structural composition relationship expressing physical containment or integration",
+        "usageExamples": [
+          "AIM-120D hasComponent ActiveRadarSeeker",
+          "BrahMos hasComponent RamjetSustainer",
+          "Tomahawk hasComponent TurbofanEngine"
+        ]
+      },
+      {
+        "name": "partOf",
+        "definition": "A component or subsystem is physically part of a larger assembly",
+        "domain": "MissileComponent | MissileSubsystem",
+        "range": "Missile | MissileSubsystem",
+        "cardinality": "many-to-one",
+        "inverse": "hasComponent",
+        "description": "Inverse of hasComponent; mereological inclusion",
+        "usageExamples": [
+          "ActiveRadarSeeker partOf AIM-120D",
+          "HTPB_Propellant partOf SolidRocketMotor"
+        ]
+      },
+      {
+        "name": "subsystemOf",
+        "definition": "A functional system is a subsystem of a higher-level system",
+        "domain": "MissileSubsystem",
+        "range": "Missile | MissileSubsystem",
+        "cardinality": "many-to-one",
+        "inverse": "containsSubsystem",
+        "description": "Functional hierarchy; subsystem fulfills specific functional role within parent",
+        "usageExamples": [
+          "GuidanceSystem subsystemOf Missile",
+          "INS_Unit subsystemOf GuidanceSystem"
+        ]
+      },
+      {
+        "name": "usesGuidance",
+        "definition": "A missile employs a specific guidance mode or technology",
+        "domain": "Missile",
+        "range": "GuidanceMode",
+        "cardinality": "one-to-many",
+        "inverse": "guidesTarget",
+        "description": "Links missile instance to guidance taxonomy class",
+        "usageExamples": [
+          "AIM-9X usesGuidance ImagingInfraredSeeker",
+          "Tomahawk usesGuidance TERCOM",
+          "Tomahawk usesGuidance DSMAC",
+          "AIM-120D usesGuidance ActiveRadarHoming"
+        ]
+      },
+      {
+        "name": "usesNavigation",
+        "definition": "A missile uses a specific navigation technology during flight",
+        "domain": "Missile",
+        "range": "NavigationSystem",
+        "cardinality": "one-to-many",
+        "inverse": "navigates",
+        "description": "Navigation technology used, possibly distinct from terminal seeker",
+        "usageExamples": [
+          "BrahMos usesNavigation INS",
+          "BrahMos usesNavigation GLONASS_Receiver",
+          "Agni-V usesNavigation RingLaserGyroINS"
+        ]
+      },
+      {
+        "name": "usesPropulsion",
+        "definition": "A missile is powered by a specific propulsion type",
+        "domain": "Missile",
+        "range": "PropulsionSystem",
+        "cardinality": "one-to-many",
+        "inverse": "propelsMissile",
+        "description": "Propulsion system(s) used; may be multiple for booster-sustainer designs",
+        "usageExamples": [
+          "BrahMos usesPropulsion SolidRocketBooster",
+          "BrahMos usesPropulsion Ramjet",
+          "Tomahawk usesPropulsion Turbofan",
+          "Agni-V usesPropulsion SolidRocketMotor"
+        ]
+      },
+      {
+        "name": "usesWarhead",
+        "definition": "A missile carries and delivers a specific warhead type",
+        "domain": "Missile",
+        "range": "WarheadSystem",
+        "cardinality": "one-to-many",
+        "inverse": "carriedBy",
+        "description": "Warhead type employed; may be selectable for multi-role missiles",
+        "usageExamples": [
+          "AIM-9X usesWarhead BlastFragmentationWarhead",
+          "Minuteman_III usesWarhead NuclearWarhead",
+          "Nag usesWarhead TandemShapedChargeWarhead"
+        ]
+      },
+      {
+        "name": "usesFuze",
+        "definition": "A missile uses a specific fuze type for warhead initiation",
+        "domain": "Missile",
+        "range": "FuzeSystem",
+        "cardinality": "one-to-many",
+        "inverse": "fuzes",
+        "description": "Fuze determines detonation mode: proximity, impact, time, command",
+        "usageExamples": [
+          "AIM-9X usesFuze ProximityFuze",
+          "JASSM-ER usesFuze ImpactFuze",
+          "Tomahawk usesFuze TimeAndImpactFuze"
+        ]
+      },
+      {
+        "name": "usesSensor",
+        "definition": "A missile employs specific sensors for flight data, targeting or environment sensing",
+        "domain": "Missile",
+        "range": "SensorSystem | SeekerSystem",
+        "cardinality": "one-to-many",
+        "inverse": "sensorOf",
+        "description": "Sensor systems excluding the primary seeker; includes altimeter, IMU sensors, etc.",
+        "usageExamples": [
+          "Tomahawk usesSensor RadarAltimeter",
+          "BrahMos usesSensor BarometricAltimeter"
+        ]
+      },
+      {
+        "name": "usesPowerSystem",
+        "definition": "A missile uses a specific power generation or storage system",
+        "domain": "Missile",
+        "range": "PowerSystem",
+        "cardinality": "one-to-many",
+        "inverse": "powerSource",
+        "description": "Electrical power source used during flight",
+        "usageExamples": [
+          "AIM-120D usesPowerSystem ThermalBattery",
+          "Tomahawk usesPowerSystem TurbineAlternator"
+        ]
+      },
+      {
+        "name": "usesCommunication",
+        "definition": "A missile employs a specific communication system for datalink or command updates",
+        "domain": "Missile",
+        "range": "CommunicationSystem",
+        "cardinality": "one-to-many",
+        "inverse": "communicationOf",
+        "description": "Data link or communication technology enabling mid-flight updates or BDA",
+        "usageExamples": [
+          "AIM-120D usesCommunication TwoWayDataLink",
+          "Tomahawk_Block_V usesCommunication RF_DataLink"
+        ]
+      },
+      {
+        "name": "launchesFrom",
+        "definition": "A missile can be launched from a specific platform type",
+        "domain": "Missile",
+        "range": "LaunchPlatform",
+        "cardinality": "one-to-many",
+        "inverse": "launchesMissile",
+        "description": "Launch platform or vehicle from which the missile is deployed",
+        "usageExamples": [
+          "Tomahawk launchesFrom Submarine",
+          "AIM-9X launchesFrom F-35",
+          "Agni-V launchesFrom MobileTEL"
+        ]
+      },
+      {
+        "name": "launchedBy",
+        "definition": "A missile is launched by a specific military unit, ship, aircraft or platform",
+        "domain": "Missile",
+        "range": "MilitaryPlatform | MilitaryUnit",
+        "cardinality": "many-to-many",
+        "inverse": "deploys",
+        "description": "Operational launcher; more specific than launchesFrom",
+        "usageExamples": [
+          "SM-6 launchedBy ArleighBurkeDDG",
+          "BrahMos launchedBy INS_Kolkata"
+        ]
+      },
+      {
+        "name": "targets",
+        "definition": "A missile is designed to engage a specific target type",
+        "domain": "Missile",
+        "range": "TargetCategory",
+        "cardinality": "one-to-many",
+        "inverse": "targetedBy",
+        "description": "Intended target class; determines seeker and warhead selection",
+        "usageExamples": [
+          "AIM-120D targets Aircraft",
+          "AIM-120D targets CruiseMissile",
+          "DF-21D targets AircraftCarrier",
+          "Nag targets MainBattleTank"
+        ]
+      },
+      {
+        "name": "tracks",
+        "definition": "A missile seeker actively tracks a specific target type",
+        "domain": "Missile | MissileSeekerSystem",
+        "range": "TargetCategory | TargetSignature",
+        "cardinality": "one-to-many",
+        "inverse": "trackedBy",
+        "description": "Seeker tracking capability related to physical phenomenon (IR signature, RCS, etc.)",
+        "usageExamples": [
+          "AIM-9X tracks IRSignature",
+          "AIM-120D tracks RadarReflection",
+          "HARM tracks RadarEmission"
+        ]
+      },
+      {
+        "name": "homesOn",
+        "definition": "A missile seeker homes on a specific physical phenomenon or signature",
+        "domain": "Missile",
+        "range": "TargetSignature | EmissionType",
+        "cardinality": "one-to-many",
+        "inverse": "attractsHoming",
+        "description": "Physical homing phenomenon: IR emission, radar reflection, laser spot, etc.",
+        "usageExamples": [
+          "Stinger homesOn IRPlume",
+          "HARM homesOn RadarEmission",
+          "Brimstone homesOn MillimeterWaveReflection"
+        ]
+      },
+      {
+        "name": "guidedBy",
+        "definition": "A missile is guided using a specific technology or method",
+        "domain": "Missile",
+        "range": "GuidanceTechnology",
+        "cardinality": "one-to-many",
+        "inverse": "guides",
+        "description": "Guidance technology active during any flight phase",
+        "usageExamples": [
+          "JASSM-ER guidedBy GPS",
+          "JASSM-ER guidedBy INS",
+          "JASSM-ER guidedBy IIR_Terminal",
+          "Python-5 guidedBy DualBand_IIR"
+        ]
+      },
+      {
+        "name": "controlledBy",
+        "definition": "A missile is remotely controlled or updated by an external system during flight",
+        "domain": "Missile",
+        "range": "ControlSystem | Operator",
+        "cardinality": "many-to-one",
+        "inverse": "controls",
+        "description": "External control authority during flight; applies to command-guided or datalink-updated missiles",
+        "usageExamples": [
+          "Hellfire_Laser controlledBy DesignatorOperator",
+          "Tomahawk controlledBy TLAM_MissionPlanningSystem"
+        ]
+      },
+      {
+        "name": "manufacturedBy",
+        "definition": "A missile is manufactured by a specific defense company",
+        "domain": "Missile",
+        "range": "Manufacturer",
+        "cardinality": "many-to-one",
+        "inverse": "manufactures",
+        "description": "Primary production entity responsible for the missile system",
+        "usageExamples": [
+          "AIM-9X manufacturedBy Raytheon",
+          "BrahMos manufacturedBy BrahMos_Aerospace",
+          "Meteor manufacturedBy MBDA"
+        ]
+      },
+      {
+        "name": "developedBy",
+        "definition": "A missile was designed and developed by a specific organization",
+        "domain": "Missile",
+        "range": "DevelopmentAgency | ResearchOrganization",
+        "cardinality": "many-to-many",
+        "inverse": "develops",
+        "description": "R&D organization; may differ from manufacturer for government-developed systems",
+        "usageExamples": [
+          "Agni-V developedBy DRDO",
+          "JASSM developedBy Lockheed_Martin",
+          "BrahMos developedBy DRDO_NPO_Mashinostroyeniya_JV"
+        ]
+      },
+      {
+        "name": "operatedBy",
+        "definition": "A missile system is operated in service by a specific nation or military branch",
+        "domain": "Missile",
+        "range": "NationState | MilitaryService",
+        "cardinality": "one-to-many",
+        "inverse": "operates",
+        "description": "Current or historical operational user of the missile system",
+        "usageExamples": [
+          "Trident_II operatedBy USNavy",
+          "Trident_II operatedBy RoyalNavy",
+          "BrahMos operatedBy IndianArmy",
+          "BrahMos operatedBy IndianNavy"
+        ]
+      },
+      {
+        "name": "exportedTo",
+        "definition": "A missile has been exported to or licensed for production by another nation",
+        "domain": "Missile",
+        "range": "NationState",
+        "cardinality": "one-to-many",
+        "inverse": "importsFrom",
+        "description": "Export transfer or licensed production agreements",
+        "usageExamples": [
+          "Stinger exportedTo Poland",
+          "S-400 exportedTo India",
+          "BrahMos exportedTo Philippines"
+        ]
+      },
+      {
+        "name": "variantOf",
+        "definition": "A missile is a variant or derived configuration of a parent missile system",
+        "domain": "Missile",
+        "range": "Missile",
+        "cardinality": "many-to-one",
+        "inverse": "hasVariant",
+        "description": "Variant relationship for missiles sharing a common design lineage with specific differences",
+        "usageExamples": [
+          "AIM-120D variantOf AIM-120",
+          "JASSM-ER variantOf JASSM",
+          "Astra_Mk2 variantOf Astra_Mk1"
+        ]
+      },
+      {
+        "name": "derivedFrom",
+        "definition": "A missile design is derived from or heavily based on another missile's design",
+        "domain": "Missile",
+        "range": "Missile",
+        "cardinality": "many-to-one",
+        "inverse": "inspiredDerivative",
+        "description": "Design lineage for missiles that evolved from an ancestor with significant modification",
+        "usageExamples": [
+          "Shahab-3 derivedFrom Nodong",
+          "Neptun derivedFrom Kh-35",
+          "YJ-18 derivedFrom Klub_3M54"
+        ]
+      },
+      {
+        "name": "successorOf",
+        "definition": "A missile is the successor in service to an earlier missile system",
+        "domain": "Missile",
+        "range": "Missile",
+        "cardinality": "many-to-one",
+        "inverse": "predecessorOf",
+        "description": "Generational succession in operational service",
+        "usageExamples": [
+          "AIM-120 successorOf AIM-7",
+          "Sentinel successorOf Minuteman_III",
+          "S-500 successorOf S-400"
+        ]
+      },
+      {
+        "name": "predecessorOf",
+        "definition": "A missile was the predecessor in service to a later missile system",
+        "domain": "Missile",
+        "range": "Missile",
+        "cardinality": "many-to-one",
+        "inverse": "successorOf",
+        "description": "Inverse of successorOf; denotes which missile was replaced",
+        "usageExamples": [
+          "AIM-7 predecessorOf AIM-120",
+          "Minuteman_III predecessorOf Sentinel"
+        ]
+      },
+      {
+        "name": "counteredBy",
+        "definition": "A missile can be countered or defeated by a specific countermeasure or system",
+        "domain": "Missile",
+        "range": "CountermeasureSystem | CountermeasureMethod",
+        "cardinality": "one-to-many",
+        "inverse": "counters",
+        "description": "Soft or hard kill countermeasure effectiveness relationship",
+        "usageExamples": [
+          "AIM-9X counteredBy DIRCM",
+          "HARM counteredBy RadarShutdown",
+          "BrahMos counteredBy HardKillAPS"
+        ]
+      },
+      {
+        "name": "jammedBy",
+        "definition": "A missile guidance system is susceptible to jamming by a specific EW system",
+        "domain": "Missile",
+        "range": "EWSystem | JammingSystem",
+        "cardinality": "one-to-many",
+        "inverse": "jams",
+        "description": "Electronic warfare effectiveness against missile sensor or guidance",
+        "usageExamples": [
+          "SARH_Missile jammedBy CWJammer",
+          "GPS_Guided_Missile jammedBy GPS_Jammer",
+          "IR_Missile jammedBy DIRCM"
+        ]
+      },
+      {
+        "name": "interceptedBy",
+        "definition": "A missile can be physically intercepted and destroyed by a specific interceptor",
+        "domain": "Missile",
+        "range": "InterceptorMissile | HardKillSystem",
+        "cardinality": "one-to-many",
+        "inverse": "intercepts",
+        "description": "Hard kill defeat relationship; interceptor must achieve lethal kinematic solution",
+        "usageExamples": [
+          "Shahab-3 interceptedBy Arrow-3",
+          "Cruise_Missile interceptedBy Patriot_PAC-3",
+          "ICBM_RV interceptedBy SM-3_Block_IIA"
+        ]
+      },
+      {
+        "name": "detectedBy",
+        "definition": "A missile can be detected by a specific sensor or radar system",
+        "domain": "Missile",
+        "range": "SensorSystem | RadarSystem",
+        "cardinality": "one-to-many",
+        "inverse": "detects",
+        "description": "Detection relationship; influenced by RCS, IR signature and altitude of missile",
+        "usageExamples": [
+          "BrahMos detectedBy AN_TPY-2",
+          "Stealth_ALCM detectedBy LowFrequency_LBand_Radar",
+          "HGV detectedBy SpaceBasedIRSensor"
+        ]
+      },
+      {
+        "name": "trackedBy",
+        "definition": "A missile is tracked in flight by a specific fire control or tracking radar",
+        "domain": "Missile",
+        "range": "TrackingSystem | FireControlRadar",
+        "cardinality": "one-to-many",
+        "inverse": "tracks",
+        "description": "Continuous flight tracking by ground, ship or airborne sensor",
+        "usageExamples": [
+          "Scud trackedBy AN_MPQ-65",
+          "HGV trackedBy GBSS"
+        ]
+      },
+      {
+        "name": "poweredBy",
+        "definition": "A missile is propelled by a specific propulsion type",
+        "domain": "Missile",
+        "range": "PropulsionSystem",
+        "cardinality": "one-to-many",
+        "inverse": "powers",
+        "description": "Propulsion-level relationship; more general than usesPropulsion",
+        "usageExamples": [
+          "BrahMos poweredBy Ramjet",
+          "Agni-V poweredBy SolidRocket",
+          "Tomahawk poweredBy Turbofan"
+        ]
+      },
+      {
+        "name": "communicatesWith",
+        "definition": "A missile communicates with an external system during flight",
+        "domain": "Missile",
+        "range": "ExternalSystem | ControlStation",
+        "cardinality": "one-to-many",
+        "inverse": "receivesDataFrom",
+        "description": "Bidirectional or uplink communication during flight for updates or targeting",
+        "usageExamples": [
+          "Tomahawk_Block_V communicatesWith JMPS",
+          "AIM-120D communicatesWith AWACSDatalink"
+        ]
+      },
+      {
+        "name": "carriesPayload",
+        "definition": "A missile carries a specific payload type beyond conventional unitary warhead",
+        "domain": "Missile",
+        "range": "Payload",
+        "cardinality": "one-to-many",
+        "inverse": "payloadOf",
+        "description": "Non-standard payload: MIRV RVs, submunitions, EMP device, sensor, etc.",
+        "usageExamples": [
+          "Minuteman_III carriesPayload MIRV_RV",
+          "Tomahawk_TLAM-D carriesPayload SubmunitionDispenser",
+          "DF-41 carriesPayload HGV_Avangard"
+        ]
+      },
+      {
+        "name": "usesFuel",
+        "definition": "A missile propulsion system uses a specific fuel or propellant chemistry",
+        "domain": "Missile | PropulsionSystem",
+        "range": "PropellantType | FuelType",
+        "cardinality": "one-to-many",
+        "inverse": "fuels",
+        "description": "Propellant or fuel chemistry powering the missile",
+        "usageExamples": [
+          "BrahMos usesFuel Kerosene",
+          "Stinger usesFuel AP_HTPB_Al_CompositePropellant",
+          "Shahab-3 usesFuel UDMH"
+        ]
+      },
+      {
+        "name": "hasFlightPhase",
+        "definition": "A missile undergoes a specific flight phase during its trajectory",
+        "domain": "Missile",
+        "range": "FlightPhase",
+        "cardinality": "one-to-many",
+        "inverse": "flightPhaseOf",
+        "description": "Ordered sequence of flight phases; guidance and propulsion differ per phase",
+        "usageExamples": [
+          "Minuteman_III hasFlightPhase BoostPhase",
+          "Minuteman_III hasFlightPhase MidcoursePhase",
+          "Minuteman_III hasFlightPhase TerminalPhase",
+          "Tomahawk hasFlightPhase CruisePhase"
+        ]
+      },
+      {
+        "name": "hasPerformance",
+        "definition": "A missile has quantifiable performance parameters",
+        "domain": "Missile",
+        "range": "PerformanceParameter",
+        "cardinality": "one-to-many",
+        "inverse": "performanceOf",
+        "description": "Quantitative performance envelope: range, speed, CEP, altitude, G-limit",
+        "usageExamples": [
+          "AIM-120D hasPerformance MaxRange_180km",
+          "BrahMos hasPerformance MaxSpeed_Mach2.8",
+          "Agni-V hasPerformance CEP_10m"
+        ]
+      },
+      {
+        "name": "belongsToFamily",
+        "definition": "A missile belongs to a broader missile family or program lineage",
+        "domain": "Missile",
+        "range": "MissileFamily",
+        "cardinality": "many-to-one",
+        "inverse": "familyIncludes",
+        "description": "Family grouping for missiles sharing heritage, design philosophy or naming",
+        "usageExamples": [
+          "AIM-120D belongsToFamily AMRAAM_Family",
+          "Agni-V belongsToFamily Agni_Family",
+          "BrahMos belongsToFamily BrahMos_Family"
+        ]
+      },
+      {
+        "name": "compatibleWith",
+        "definition": "A missile is mechanically, electrically or software-compatible with a specific platform or launcher",
+        "domain": "Missile",
+        "range": "LaunchPlatform | LauncherSystem",
+        "cardinality": "one-to-many",
+        "inverse": "accommodates",
+        "description": "Integration compatibility for launchers, stations, rail systems, VLS cells",
+        "usageExamples": [
+          "SM-6 compatibleWith MK_41_VLS",
+          "JSM compatibleWith F35_InternalWeaponsBay",
+          "JASSM compatibleWith B-52_Conventional_Rotary_Launcher"
+        ]
+      },
+      {
+        "name": "integratedWith",
+        "definition": "A missile is fully integrated with a weapon system or fire control system",
+        "domain": "Missile",
+        "range": "WeaponSystem | FireControlSystem",
+        "cardinality": "one-to-many",
+        "inverse": "integrates",
+        "description": "Full weapon system integration including software, IFF and targeting",
+        "usageExamples": [
+          "AIM-120D integratedWith F-22_Raptor",
+          "Meteor integratedWith Eurofighter_Typhoon",
+          "SM-3 integratedWith Aegis_BMD_System"
+        ]
+      },
+      {
+        "name": "defeatedBy",
+        "definition": "A missile is defeated by a specific hard-kill or soft-kill system in combat or testing",
+        "domain": "Missile",
+        "range": "CountermeasureSystem",
+        "cardinality": "one-to-many",
+        "inverse": "defeats",
+        "description": "Evidenced defeat in combat or qualification testing; stronger than counteredBy",
+        "usageExamples": [
+          "Shahab_Rocket defeatedBy IronDome",
+          "TBM_RV defeatedBy Patriot_PAC-3"
+        ]
+      },
+      {
+        "name": "supportsRole",
+        "definition": "A missile supports a specific operational military role or mission",
+        "domain": "Missile",
+        "range": "MilitaryRole | MissionType",
+        "cardinality": "one-to-many",
+        "inverse": "roleSupportedBy",
+        "description": "Operational role including deterrence, precision strike, air defense, etc.",
+        "usageExamples": [
+          "Minuteman_III supportsRole StrategicDeterrence",
+          "JASSM-ER supportsRole StandoffPrecisionStrike",
+          "HARM supportsRole SEAD"
+        ]
+      },
+      {
+        "name": "deployedIn",
+        "definition": "A missile has been operationally deployed or used in combat in a specific conflict or operation",
+        "domain": "Missile",
+        "range": "Conflict | MilitaryOperation",
+        "cardinality": "one-to-many",
+        "inverse": "sawDeploymentOf",
+        "description": "Combat use history; provides validation of operational capability",
+        "usageExamples": [
+          "Tomahawk deployedIn Operation_Desert_Storm",
+          "Kalibr deployedIn SyrianConflict",
+          "SCALP deployedIn Ukraine_Conflict"
+        ]
+      },
+      {
+        "name": "qualifiedFor",
+        "definition": "A missile has received certification or qualification for a specific platform or role",
+        "domain": "Missile",
+        "range": "LaunchPlatform | OperationalRole",
+        "cardinality": "one-to-many",
+        "inverse": "hasQualifiedMissile",
+        "description": "Formal qualification for integration; distinct from compatibility which may be potential",
+        "usageExamples": [
+          "JASSM qualifiedFor B-52H",
+          "Meteor qualifiedFor Typhoon_FGR4"
+        ]
+      },
+      {
+        "name": "certifiedBy",
+        "definition": "A missile has been certified by a specific national or international authority",
+        "domain": "Missile",
+        "range": "CertificationAuthority | StandardsBody",
+        "cardinality": "one-to-many",
+        "inverse": "certifies",
+        "description": "Regulatory certification by military or civil authority",
+        "usageExamples": [
+          "AIM-9X certifiedBy US_Navy_PMA-259",
+          "Meteor certifiedBy UK_DTVA"
+        ]
+      },
+      {
+        "name": "testFiredBy",
+        "definition": "A missile has been test-fired by a specific organization, nation or program",
+        "domain": "Missile",
+        "range": "TestOrganization | NationState",
+        "cardinality": "one-to-many",
+        "inverse": "testFired",
+        "description": "Test firing history demonstrating range, guidance or warhead performance",
+        "usageExamples": [
+          "Agni-V testFiredBy DRDO",
+          "DF-41 testFiredBy PLA_Rocket_Force",
+          "Trident_II testFiredBy USNavy"
+        ]
+      }
+    ]
+  }
+}

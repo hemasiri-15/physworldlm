@@ -1,0 +1,485 @@
+{
+  "ontology_id": "physworldlm:submarine:component_ontology",
+  "version": "1.0.0",
+  "description": "Engineering decomposition of submarine subsystems and components. Covers hull, propulsion, ballast, sonar, sensors, crew systems, launch systems, power, communications, combat systems, damage control, hydrodynamics, and signature management.",
+  "namespace": "pwlm:sub:comp",
+
+  "Hull": {
+    "id": "pwlm:sub:comp:Hull",
+    "label": "Hull Structure",
+    "sim_properties": ["pressure_rating_m", "displacement_tonnes", "length_m", "beam_m", "drag_coefficient"],
+    "components": {
+      "PressureHull": {
+        "id": "pwlm:sub:comp:PressureHull",
+        "label": "Pressure Hull",
+        "material_options": ["HY-80 steel", "HY-100 steel", "titanium", "AMS steel"],
+        "sim_properties": ["crush_depth_m", "yield_strength_MPa", "wall_thickness_mm"],
+        "failure_modes": ["collapse", "flooding", "weld failure"]
+      },
+      "OuterHull": {
+        "id": "pwlm:sub:comp:OuterHull",
+        "label": "Outer Hull (Light Hull)",
+        "sim_properties": ["volume_m3", "free_flood_area_m2"]
+      },
+      "Sail": {
+        "id": "pwlm:sub:comp:Sail",
+        "label": "Sail (Conning Tower Fairing)",
+        "sim_properties": ["height_m", "drag_coefficient"],
+        "contains": ["Periscope", "MastAssembly", "AntennaArray"]
+      },
+      "BowSection": {
+        "id": "pwlm:sub:comp:BowSection",
+        "label": "Bow Section",
+        "sim_properties": ["sonar_dome_material", "shape_factor"],
+        "contains": ["BowSonar", "TorpedoTubeArray"]
+      },
+      "SternSection": {
+        "id": "pwlm:sub:comp:SternSection",
+        "label": "Stern Section",
+        "contains": ["Propulsor", "SternPlanes", "Rudder", "ShaftSeals"]
+      },
+      "Rudder": {
+        "id": "pwlm:sub:comp:Rudder",
+        "label": "Rudder",
+        "sim_properties": ["max_deflection_deg", "actuator_rate_deg_per_s"]
+      },
+      "DivingPlanes": {
+        "id": "pwlm:sub:comp:DivingPlanes",
+        "label": "Fairwater / Bow Diving Planes",
+        "sim_properties": ["max_deflection_deg", "area_m2"]
+      },
+      "SternPlanes": {
+        "id": "pwlm:sub:comp:SternPlanes",
+        "label": "Stern Planes",
+        "sim_properties": ["max_deflection_deg", "area_m2"]
+      },
+      "BallastTank": {
+        "id": "pwlm:sub:comp:BallastTank",
+        "label": "Main Ballast Tank",
+        "count": "variable",
+        "sim_properties": ["volume_m3", "flood_rate_m3_per_s", "blow_rate_m3_per_s"],
+        "simulation_note": "Critical for buoyancy simulation; drives dive/surface transient."
+      },
+      "TrimTank": {
+        "id": "pwlm:sub:comp:TrimTank",
+        "label": "Trim & Compensation Tank",
+        "sim_properties": ["volume_m3", "pump_rate_l_per_min"]
+      },
+      "CompensatingTank": {
+        "id": "pwlm:sub:comp:CompensatingTank",
+        "label": "Compensating Tank",
+        "purpose": "Compensates for fuel/stores consumption to maintain neutral buoyancy."
+      },
+      "EscapeTrunk": {
+        "id": "pwlm:sub:comp:EscapeTrunk",
+        "label": "Escape Trunk",
+        "capacity_persons": 4,
+        "sim_properties": ["lock_cycle_time_s", "max_depth_m"]
+      },
+      "AnechoicTiles": {
+        "id": "pwlm:sub:comp:AnechoicTiles",
+        "label": "Anechoic Coating Tiles",
+        "material": "viscoelastic rubber",
+        "sim_properties": ["absorption_coefficient_by_freq", "thickness_mm"],
+        "frequency_range_Hz": [100, 10000]
+      },
+      "KingfisherKeel": {
+        "id": "pwlm:sub:comp:Keel",
+        "label": "Keel Structure",
+        "sim_properties": ["moment_of_inertia", "structural_weight_kg"]
+      }
+    }
+  },
+
+  "Propulsion": {
+    "id": "pwlm:sub:comp:Propulsion",
+    "label": "Propulsion System",
+    "sim_properties": ["max_speed_kt", "cruise_speed_kt", "sprint_endurance_h", "acoustic_signature_level"],
+    "components": {
+      "NuclearReactor": {
+        "id": "pwlm:sub:comp:NuclearReactor",
+        "label": "Nuclear Reactor (PWR)",
+        "type": "Pressurized Water Reactor",
+        "sim_properties": ["thermal_power_MW", "core_life_years", "coolant_pressure_MPa"],
+        "subtypes": ["S9G", "VM-5", "PWR2", "K-15"]
+      },
+      "SteamTurbine": {
+        "id": "pwlm:sub:comp:SteamTurbine",
+        "label": "Main Steam Turbine",
+        "sim_properties": ["shaft_power_MW", "rpm_range"]
+      },
+      "DieselEngine": {
+        "id": "pwlm:sub:comp:DieselEngine",
+        "label": "Diesel Engine",
+        "sim_properties": ["power_kW", "fuel_consumption_l_per_h", "rpm", "noise_dB_ref_1uPa_at_1m"],
+        "roles": ["charging", "snorkel propulsion"]
+      },
+      "ElectricMotor": {
+        "id": "pwlm:sub:comp:ElectricMotor",
+        "label": "Propulsion Electric Motor",
+        "sim_properties": ["power_kW", "efficiency_pct", "rpm_range"]
+      },
+      "BatterySystem": {
+        "id": "pwlm:sub:comp:BatterySystem",
+        "label": "Battery System",
+        "types": ["Lead-acid", "Lithium-ion"],
+        "sim_properties": ["capacity_kWh", "discharge_rate_kW", "charge_rate_kW", "cycle_life", "soc_pct"],
+        "simulation_note": "State of charge (soc_pct) is a dynamic simulation state variable."
+      },
+      "AIPStirling": {
+        "id": "pwlm:sub:comp:AIPStirling",
+        "label": "Stirling Engine AIP",
+        "sim_properties": ["power_kW", "oxygen_consumption_kg_per_h", "lox_tankage_kg"],
+        "noise_level": "Very low"
+      },
+      "AIPFuelCell": {
+        "id": "pwlm:sub:comp:AIPFuelCell",
+        "label": "Fuel Cell AIP (PEM)",
+        "sim_properties": ["power_kW", "hydrogen_consumption_kg_per_h", "h2_tankage_kg"],
+        "noise_level": "Near-zero mechanical"
+      },
+      "PumpJet": {
+        "id": "pwlm:sub:comp:PumpJet",
+        "label": "Pump-Jet Propulsor",
+        "sim_properties": ["thrust_kN", "cavitation_threshold_kt", "efficiency_curve"],
+        "acoustic_advantage": "Significantly lower radiated noise vs. open propeller above 20 kt"
+      },
+      "Propeller": {
+        "id": "pwlm:sub:comp:Propeller",
+        "label": "Screw Propeller",
+        "sim_properties": ["diameter_m", "blade_count", "pitch_m", "cavitation_speed_kt", "rpm"]
+      },
+      "ShaftDrive": {
+        "id": "pwlm:sub:comp:ShaftDrive",
+        "label": "Shaft Drive Train",
+        "sim_properties": ["shaft_length_m", "coupling_type", "seal_type"]
+      }
+    }
+  },
+
+  "BallastandBuoyancy": {
+    "id": "pwlm:sub:comp:BallastBuoyancy",
+    "label": "Ballast & Buoyancy Control System",
+    "sim_properties": ["neutral_buoyancy_depth_m", "surface_reserve_buoyancy_pct"],
+    "components": {
+      "MainVentValve": {
+        "id": "pwlm:sub:comp:MainVentValve",
+        "sim_properties": ["open_time_s", "close_time_s"]
+      },
+      "KingstoneValve": {
+        "id": "pwlm:sub:comp:KingstoneValve",
+        "sim_properties": ["open_time_s", "flow_rate_m3_per_s"]
+      },
+      "EmergencyBlowSystem": {
+        "id": "pwlm:sub:comp:EmergencyBlow",
+        "label": "Emergency Blow System (HP Air)",
+        "sim_properties": ["hp_air_pressure_MPa", "blow_rate_m3_per_s", "tank_volume_m3"],
+        "simulation_note": "Emergency blow generates violent positive-buoyancy transient; safety-critical."
+      },
+      "VariableBallastPump": {
+        "id": "pwlm:sub:comp:VBPump",
+        "sim_properties": ["flow_rate_l_per_min", "max_head_m"]
+      }
+    }
+  },
+
+  "PowerSystem": {
+    "id": "pwlm:sub:comp:PowerSystem",
+    "label": "Electrical Power System",
+    "sim_properties": ["total_electrical_power_kW", "bus_voltage_V"],
+    "components": {
+      "TurbineGenerator": { "id": "pwlm:sub:comp:TurbineGenerator", "sim_properties": ["power_kW", "frequency_Hz"] },
+      "DieselGenerator": { "id": "pwlm:sub:comp:DieselGenerator", "sim_properties": ["power_kW", "fuel_rate_l_per_h"] },
+      "MainBattery": { "id": "pwlm:sub:comp:MainBattery", "sim_properties": ["capacity_kWh", "soc_pct"] },
+      "PowerDistributionBoard": { "id": "pwlm:sub:comp:PDB", "label": "Power Distribution Board", "sim_properties": ["bus_sections", "circuit_breakers"] },
+      "EmergencyPowerUnit": { "id": "pwlm:sub:comp:EPU", "label": "Emergency Power Unit", "sim_properties": ["capacity_kWh", "hold_up_time_h"] },
+      "AuxiliaryPowerUnit": { "id": "pwlm:sub:comp:APU", "sim_properties": ["power_kW"] }
+    }
+  },
+
+  "LaunchSystem": {
+    "id": "pwlm:sub:comp:LaunchSystem",
+    "label": "Weapons Launch Systems",
+    "components": {
+      "TorpedoTube": {
+        "id": "pwlm:sub:comp:TorpedoTube",
+        "label": "Torpedo Tube",
+        "diameter_options_mm": [533, 650],
+        "count_range": [4, 8],
+        "launch_methods": ["swim-out", "water-ram", "air-impulse"],
+        "sim_properties": ["tube_pressure_MPa", "launch_depth_max_m", "reload_time_s"]
+      },
+      "VerticalLaunchSystem": {
+        "id": "pwlm:sub:comp:VLS",
+        "label": "Vertical Launch System",
+        "cell_options": [12, 24, 40, 154],
+        "compatible_munitions": ["Tomahawk", "Kalibr", "SLCM-N", "VPM payload"],
+        "sim_properties": ["cell_count", "cell_diameter_mm", "max_missile_length_m", "cold_launch_gas_pressure_MPa"]
+      },
+      "MissileTube": {
+        "id": "pwlm:sub:comp:MissileTube",
+        "label": "SLBM Missile Tube",
+        "count_range": [16, 24],
+        "compatible_munitions": ["Trident II D5", "Bulava", "M51", "K-4", "JL-2"],
+        "sim_properties": ["tube_diameter_mm", "tube_length_m", "ejection_pressure_MPa"]
+      },
+      "MineDeploymentSystem": {
+        "id": "pwlm:sub:comp:MineDeployment",
+        "label": "Mine Deployment System",
+        "modes": ["torpedo tube", "external cradle", "vertical minelayer"],
+        "sim_properties": ["mine_drop_rate", "depth_accuracy_m"]
+      },
+      "UUVLaunchTube": {
+        "id": "pwlm:sub:comp:UUVTube",
+        "label": "UUV Launch Tube",
+        "diameter_options_mm": [533, 762],
+        "sim_properties": ["max_uuv_length_m", "max_uuv_diameter_m", "pressurize_time_s"]
+      },
+      "LockOutChamber": {
+        "id": "pwlm:sub:comp:LockOut",
+        "label": "Lock-Out Chamber / Swimmer Delivery",
+        "capacity_divers": 6,
+        "sim_properties": ["pressurize_time_s", "max_lock_out_depth_m"]
+      },
+      "PayloadBay": {
+        "id": "pwlm:sub:comp:PayloadBay",
+        "label": "Modular Payload Bay",
+        "sim_properties": ["volume_m3", "payload_mass_kg"],
+        "uses": ["ISR modules", "special payloads", "UUV stowage"]
+      }
+    }
+  },
+
+  "CrewSystems": {
+    "id": "pwlm:sub:comp:CrewSystems",
+    "label": "Crew Accommodation & Command Systems",
+    "components": {
+      "CommandCenter": { "id": "pwlm:sub:comp:CommandCenter", "label": "Control Room / Command Center" },
+      "CombatInformationCenter": { "id": "pwlm:sub:comp:CIC", "label": "Combat Information Center" },
+      "NavigationRoom": { "id": "pwlm:sub:comp:NavRoom" },
+      "SonarRoom": { "id": "pwlm:sub:comp:SonarRoom" },
+      "ReactorControlRoom": { "id": "pwlm:sub:comp:ReactorControl" },
+      "EngineRoom": { "id": "pwlm:sub:comp:EngineRoom" },
+      "CrewQuarters": {
+        "id": "pwlm:sub:comp:CrewQuarters",
+        "sim_properties": ["crew_capacity", "habitability_index"]
+      },
+      "Galley": { "id": "pwlm:sub:comp:Galley", "sim_properties": ["provision_capacity_days"] },
+      "MedicalBay": { "id": "pwlm:sub:comp:Medical" },
+      "LifeSupport": {
+        "id": "pwlm:sub:comp:LifeSupport",
+        "label": "Life Support System",
+        "sim_properties": ["co2_scrub_rate_kg_per_h", "o2_generation_rate_kg_per_h", "humidity_control"],
+        "components": ["CO2 Scrubber", "O2 Generator (electrolysis)", "Carbon Monoxide Burner", "Refrigerant System"]
+      },
+      "EscapeSystem": {
+        "id": "pwlm:sub:comp:EscapeSystem",
+        "components": ["EscapeSuit", "EscapeTrunk", "DSRV mating flange", "LifeRaft"],
+        "sim_properties": ["max_escape_depth_m"]
+      }
+    }
+  },
+
+  "DamageControl": {
+    "id": "pwlm:sub:comp:DamageControl",
+    "label": "Safety & Damage Control Systems",
+    "sim_properties": ["compartment_count", "watertight_bulkhead_count"],
+    "components": {
+      "FireDetection": {
+        "id": "pwlm:sub:comp:FireDetection",
+        "sensor_types": ["smoke", "heat", "CO2"],
+        "sim_properties": ["detection_latency_s", "zone_coverage"]
+      },
+      "FireSuppression": {
+        "id": "pwlm:sub:comp:FireSuppression",
+        "types": ["CO2 flooding", "HALON", "water mist", "portable extinguisher"],
+        "sim_properties": ["activation_time_s", "suppression_volume_m3"]
+      },
+      "FloodDetection": {
+        "id": "pwlm:sub:comp:FloodDetection",
+        "sensor_types": ["bilge level", "pressure transducer", "humidity"],
+        "sim_properties": ["detection_threshold_l_per_min"]
+      },
+      "HullBreachDetection": {
+        "id": "pwlm:sub:comp:HullBreach",
+        "sim_properties": ["acoustic_emission_threshold", "pressure_differential_kPa"]
+      },
+      "CompartmentIsolation": {
+        "id": "pwlm:sub:comp:CompartmentIsolation",
+        "label": "Watertight Compartment Isolation",
+        "sim_properties": ["bulkhead_pressure_rating_MPa", "valve_close_time_s"]
+      },
+      "EmergencyVentilation": { "id": "pwlm:sub:comp:EmerVent" },
+      "ReactorSCRAM": {
+        "id": "pwlm:sub:comp:ReactorSCRAM",
+        "label": "Reactor Emergency Shutdown (SCRAM)",
+        "sim_properties": ["scram_time_s", "decay_heat_profile_kW"]
+      },
+      "EscapeCapsule": {
+        "id": "pwlm:sub:comp:EscapeCapsule",
+        "capacity_persons": 110,
+        "sim_properties": ["max_depth_m", "ascent_rate_m_per_s"],
+        "notable_examples": ["Losharik rescue pod concept"]
+      },
+      "EmergencyOxygenSystem": { "id": "pwlm:sub:comp:EmerO2", "sim_properties": ["capacity_person_hours"] },
+      "DamageAssessmentSystem": { "id": "pwlm:sub:comp:DamageAssess", "sim_properties": ["sensor_count", "update_rate_Hz"] }
+    }
+  },
+
+  "Hydrodynamics": {
+    "id": "pwlm:sub:comp:Hydrodynamics",
+    "label": "Hydrodynamics & Control Surfaces",
+    "description": "Physics parameters governing underwater motion, stability, and control. Central to PhysWorldLM simulation.",
+    "sim_properties": [
+      "drag_coefficient_Cd",
+      "added_mass_tensor",
+      "metacentric_height_m",
+      "block_coefficient",
+      "prismatic_coefficient",
+      "moment_of_inertia_tensor"
+    ],
+    "components": {
+      "BuoyancyControl": {
+        "id": "pwlm:sub:comp:BuoyancyCtrl",
+        "label": "Buoyancy Control",
+        "sim_properties": ["neutral_buoyancy_depth_m", "surfaced_reserve_buoyancy_pct", "submerged_weight_kN"]
+      },
+      "BallastManagement": {
+        "id": "pwlm:sub:comp:BallastMgmt",
+        "sim_properties": ["flood_rate_m3_per_s", "blow_rate_m3_per_s", "trim_pump_flow_l_per_min"]
+      },
+      "TrimControl": {
+        "id": "pwlm:sub:comp:TrimCtrl",
+        "sim_properties": ["trim_angle_range_deg", "trim_rate_deg_per_s"]
+      },
+      "StabilityControl": {
+        "id": "pwlm:sub:comp:StabilityCtrl",
+        "sim_properties": ["GM_longitudinal_m", "GM_transverse_m", "righting_moment_Nm_per_deg"]
+      },
+      "HydrodynamicLift": {
+        "id": "pwlm:sub:comp:HydroLift",
+        "sim_properties": ["lift_slope_per_rad", "plane_area_m2", "span_m"]
+      },
+      "CavitationControl": {
+        "id": "pwlm:sub:comp:CavitationCtrl",
+        "label": "Cavitation Onset Control",
+        "sim_properties": ["cavitation_speed_kt", "sigma_cavitation_number", "blade_tip_speed_m_per_s"],
+        "simulation_note": "Cavitation onset produces strong acoustic signature spike; critical for stealth modeling."
+      },
+      "WakeSignatureHydro": {
+        "id": "pwlm:sub:comp:WakeHydro",
+        "label": "Hydrodynamic Wake",
+        "types": ["pressure_wake", "velocity_wake", "surface_kelvin_wake"],
+        "sim_properties": ["wake_length_m", "wake_decay_rate"]
+      },
+      "ManeuveringDynamics": {
+        "id": "pwlm:sub:comp:ManeuverDyn",
+        "sim_properties": [
+          "turning_radius_m",
+          "advance_m",
+          "transfer_m",
+          "tactical_diameter_m",
+          "crash_stop_distance_m",
+          "time_to_ahead_s"
+        ]
+      },
+      "DiveRate": {
+        "id": "pwlm:sub:comp:DiveRate",
+        "sim_properties": ["max_dive_rate_m_per_min", "max_climb_rate_m_per_min"]
+      },
+      "SurfaceTransition": {
+        "id": "pwlm:sub:comp:SurfaceTransition",
+        "label": "Surfacing / Diving Transient",
+        "sim_properties": ["periscope_depth_m", "surfacing_time_s", "diving_time_s"]
+      },
+      "EmergencyBlow": {
+        "id": "pwlm:sub:comp:EmergencyBlowHydro",
+        "label": "Emergency Blow Dynamics",
+        "sim_properties": ["blow_ascent_rate_m_per_s", "broach_probability", "heel_angle_deg"],
+        "simulation_note": "Emergency blow creates rapid ascent and potential broaching; must be modeled for surface collision risk."
+      },
+      "FlowControl": {
+        "id": "pwlm:sub:comp:FlowCtrl",
+        "label": "Boundary Layer Flow Control",
+        "sim_properties": ["boundary_layer_thickness_mm", "turbulence_intensity"]
+      },
+      "DragReduction": {
+        "id": "pwlm:sub:comp:DragReduction",
+        "methods": ["polymer injection", "hull coating", "streamlined appendages"],
+        "sim_properties": ["drag_reduction_pct"]
+      }
+    }
+  },
+
+  "SignatureManagement": {
+    "id": "pwlm:sub:comp:SignatureMgmt",
+    "label": "Signature Management Subsystems",
+    "description": "Techniques and systems for reducing detectability across all signature domains.",
+    "domains": {
+      "AcousticSignature": {
+        "id": "pwlm:sub:comp:AcousticSig",
+        "sources": ["machinery", "propeller", "flow noise", "crew noise"],
+        "sim_properties": [
+          "radiated_noise_level_dB_ref_1uPa_at_1m",
+          "tonal_frequencies_Hz",
+          "broadband_noise_dB",
+          "source_level_SL"
+        ],
+        "mitigation": ["AnechoicTiles", "VibrationIsolation", "RaftedMachinery", "PumpJet"]
+      },
+      "MagneticSignature": {
+        "id": "pwlm:sub:comp:MagneticSig",
+        "sources": ["hull ferromagnetism", "DC current loops", "rotating machinery"],
+        "sim_properties": ["magnetic_moment_Am2", "signature_length_m"],
+        "mitigation": ["Degaussing", "DPM coils", "non-magnetic materials"]
+      },
+      "InfraredSignature": {
+        "id": "pwlm:sub:comp:IRSig",
+        "sources": ["reactor cooling water discharge", "exhaust (snorkel)", "hull thermal"],
+        "sim_properties": ["thermal_plume_temp_delta_C", "IR_radiance_W_per_m2_per_sr"],
+        "mitigation": ["Heat exchanger masking", "low-IR exhaust dilution"]
+      },
+      "PressureSignature": {
+        "id": "pwlm:sub:comp:PressureSig",
+        "label": "Non-Acoustic Pressure Signature (NAPS)",
+        "description": "Hydrostatic pressure disturbance field ahead of submarine.",
+        "sim_properties": ["pressure_coefficient", "detection_range_m_by_mine_fuze"],
+        "mitigation": ["Depth management", "speed reduction"]
+      },
+      "ElectromagneticSignature": {
+        "id": "pwlm:sub:comp:EMSig",
+        "sources": ["radar emissions", "communications", "stray EMI"],
+        "sim_properties": ["ELINT_detectability_range_km"],
+        "mitigation": ["EMCON state", "LPI radar", "shielded cables"]
+      },
+      "WakeSignatureSig": {
+        "id": "pwlm:sub:comp:WakeSig",
+        "label": "Surface & Bioluminescent Wake",
+        "description": "Visible or IR wake at periscope depth or during transit near surface.",
+        "sim_properties": ["wake_visibility_range_km", "bioluminescence_intensity"]
+      },
+      "RadarCrossSection": {
+        "id": "pwlm:sub:comp:RCS",
+        "description": "RCS of sail and antenna masts when at periscope depth.",
+        "sim_properties": ["sail_RCS_m2", "mast_RCS_m2"],
+        "mitigation": ["RAM coatings on sail", "retractable masts", "low-profile design"]
+      },
+      "Degaussing": {
+        "id": "pwlm:sub:comp:Degaussing",
+        "label": "Degaussing / Deperming System",
+        "sim_properties": ["coil_current_A", "compensation_field_T", "residual_moment_Am2"]
+      },
+      "VibrationIsolation": {
+        "id": "pwlm:sub:comp:VibIso",
+        "label": "Machinery Vibration Isolation",
+        "types": ["single-stage raft", "double-stage raft", "resilient mounts"],
+        "sim_properties": ["isolation_efficiency_dB_by_freq", "raft_natural_frequency_Hz"]
+      },
+      "NoiseIsolation": {
+        "id": "pwlm:sub:comp:NoiseIso",
+        "label": "Structural Noise Isolation",
+        "sim_properties": ["insertion_loss_dB"]
+      }
+    }
+  }
+}

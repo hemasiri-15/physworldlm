@@ -1,0 +1,1573 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/terrain.schema.json",
+  "title": "TerrainSpec",
+  "description": "PW-WSF-300 Terrain Standard. Defines every static physical feature of the world surface and subsurface. Terrain represents permanent geometry and composition. Does not own atmosphere, weather, lighting, time, planetary physics, or entities.",
+
+  "$defs": {
+
+    "TerrainUUID": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Universally unique identifier for a terrain object."
+    },
+
+    "TerrainVersionString": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version string, e.g. 1.0.0"
+    },
+
+    "TerrainTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp."
+    },
+
+    "ScalarWithUnit": {
+      "type": "object",
+      "description": "A scalar value with its SI unit and measurement uncertainty.",
+      "additionalProperties": false,
+      "required": ["value", "unit"],
+      "properties": {
+        "value":       { "type": "number" },
+        "unit":        { "type": "string", "description": "SI unit symbol, e.g. m, kg/m³, Pa." },
+        "uncertainty": { "type": "number", "description": "±1σ measurement uncertainty in same unit." }
+      }
+    },
+
+    "ValueRange": {
+      "type": "object",
+      "description": "A numeric range with unit.",
+      "additionalProperties": false,
+      "properties": {
+        "min":  { "type": "number" },
+        "max":  { "type": "number" },
+        "unit": { "type": "string" }
+      }
+    },
+
+    "TerrainVector2": {
+      "type": "object",
+      "required": ["x", "y"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" }
+      }
+    },
+
+    "TerrainVector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "additionalProperties": false,
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+
+    "GeoCoordinate2D": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90  },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180 }
+      }
+    },
+
+    "GeoCoordinate3D": {
+      "type": "object",
+      "required": ["latitude", "longitude"],
+      "additionalProperties": false,
+      "properties": {
+        "latitude":  { "type": "number", "minimum": -90,  "maximum": 90,  "description": "Geodetic latitude, degrees." },
+        "longitude": { "type": "number", "minimum": -180, "maximum": 180, "description": "Geodetic longitude, degrees." },
+        "altitude_m":{ "type": "number", "description": "Height above reference ellipsoid (WGS84 default), meters." }
+      }
+    },
+
+    "ECEFCoordinate": {
+      "type": "object",
+      "description": "Earth-Centered Earth-Fixed Cartesian coordinate, meters.",
+      "additionalProperties": false,
+      "required": ["x_m", "y_m", "z_m"],
+      "properties": {
+        "x_m": { "type": "number" },
+        "y_m": { "type": "number" },
+        "z_m": { "type": "number" }
+      }
+    },
+
+    "UTMCoordinate": {
+      "type": "object",
+      "description": "Universal Transverse Mercator coordinate.",
+      "additionalProperties": false,
+      "required": ["zone_number", "zone_letter", "easting_m", "northing_m"],
+      "properties": {
+        "zone_number": { "type": "integer", "minimum": 1, "maximum": 60 },
+        "zone_letter": { "type": "string", "pattern": "^[C-X]$" },
+        "easting_m":   { "type": "number" },
+        "northing_m":  { "type": "number" },
+        "altitude_m":  { "type": "number" }
+      }
+    },
+
+    "MGRSCoordinate": {
+      "type": "object",
+      "description": "Military Grid Reference System coordinate.",
+      "additionalProperties": false,
+      "required": ["grid_reference"],
+      "properties": {
+        "grid_reference": { "type": "string", "description": "Full MGRS string, e.g. 33TTN1234567890." },
+        "precision":      { "type": "integer", "enum": [1, 10, 100, 1000, 10000], "description": "Grid precision in meters." }
+      }
+    },
+
+    "CoordinateReference": {
+      "type": "object",
+      "description": "Multi-CRS coordinate supporting WGS84, ECEF, UTM, MGRS, EPSG, local, and planetocentric frames.",
+      "additionalProperties": false,
+      "properties": {
+        "wgs84":          { "$ref": "#/$defs/GeoCoordinate3D" },
+        "ecef":           { "$ref": "#/$defs/ECEFCoordinate" },
+        "utm":            { "$ref": "#/$defs/UTMCoordinate" },
+        "mgrs":           { "$ref": "#/$defs/MGRSCoordinate" },
+        "local_enu":      { "$ref": "#/$defs/TerrainVector3", "description": "East-North-Up local coordinate, meters from local origin." },
+        "local_ned":      { "$ref": "#/$defs/TerrainVector3", "description": "North-East-Down local coordinate, meters from local origin." },
+        "epsg_code":      { "type": "integer", "description": "EPSG CRS code, e.g. 4326 for WGS84." },
+        "epsg_coords":    { "type": "array", "items": { "type": "number" }, "description": "Coordinate values in EPSG CRS order." },
+        "planetocentric": { "$ref": "#/$defs/TerrainVector3", "description": "Planetocentric Cartesian, meters, for non-Earth bodies." },
+        "planetodetic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "latitude_deg":  { "type": "number" },
+            "longitude_deg": { "type": "number" },
+            "altitude_m":    { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "GeoBoundingBox": {
+      "type": "object",
+      "description": "Geographic bounding box in WGS84.",
+      "additionalProperties": false,
+      "required": ["southwest", "northeast"],
+      "properties": {
+        "southwest": { "$ref": "#/$defs/GeoCoordinate2D" },
+        "northeast": { "$ref": "#/$defs/GeoCoordinate2D" },
+        "min_altitude_m": { "type": "number", "description": "Minimum altitude in bounding volume, meters." },
+        "max_altitude_m": { "type": "number", "description": "Maximum altitude in bounding volume, meters." }
+      }
+    },
+
+    "LocalBoundingBox": {
+      "type": "object",
+      "description": "Local Cartesian axis-aligned bounding box.",
+      "additionalProperties": false,
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "$ref": "#/$defs/TerrainVector3" },
+        "max": { "$ref": "#/$defs/TerrainVector3" }
+      }
+    },
+
+    "TerrainIdentity": {
+      "type": "object",
+      "description": "Identity and provenance of a terrain object.",
+      "additionalProperties": false,
+      "required": ["id", "name", "version"],
+      "properties": {
+        "id":             { "$ref": "#/$defs/TerrainUUID", "description": "Globally unique terrain UUID." },
+        "name":           { "type": "string", "description": "Machine-readable short name, e.g. 'afghnvalley_k2_v1'." },
+        "display_name":   { "type": "string", "description": "Human-readable display name." },
+        "description":    { "type": "string", "description": "Narrative description of the terrain." },
+        "version":        { "$ref": "#/$defs/TerrainVersionString" },
+        "revision":       { "type": "integer", "minimum": 0, "description": "Monotonically increasing revision counter." },
+        "ontology_uri":   { "type": "string", "format": "uri", "description": "Ontology class URI for this terrain object." },
+        "knowledge_graph_uri": { "type": "string", "format": "uri", "description": "Knowledge graph node URI." },
+        "dataset_name":   { "type": "string", "description": "Source dataset name, e.g. 'Copernicus DEM GLO-30'." },
+        "dataset_version":{ "type": "string", "description": "Source dataset version." },
+        "source_crs":     { "type": "string", "description": "Source coordinate reference system, e.g. EPSG:4326." },
+        "created_at":     { "$ref": "#/$defs/TerrainTimestamp" },
+        "updated_at":     { "$ref": "#/$defs/TerrainTimestamp" },
+        "authors":        { "type": "array", "items": { "type": "string" } },
+        "license":        { "type": "string", "description": "Data license identifier, e.g. CC-BY-4.0." },
+        "classification_level": {
+          "type": "string",
+          "enum": ["unclassified", "restricted", "confidential", "secret", "top_secret", "custom"],
+          "default": "unclassified"
+        },
+        "tags":           { "type": "array", "items": { "type": "string" }, "description": "Freeform semantic tags." },
+        "custom_properties": { "type": "object", "description": "Extension point for domain-specific identity metadata." }
+      }
+    },
+
+    "TerrainClassification": {
+      "type": "object",
+      "description": "Multi-faceted terrain classification covering scientific, military, civilian, and planetary categories.",
+      "additionalProperties": false,
+      "properties": {
+        "terrain_type": {
+          "type": "string",
+          "enum": [
+            "natural", "artificial", "hybrid", "planetary", "underwater", "underground",
+            "extraterrestrial", "virtual", "unknown"
+          ],
+          "description": "Top-level ontological type."
+        },
+        "biome": {
+          "type": "string",
+          "enum": [
+            "tropical_rainforest", "tropical_dry_forest", "tropical_savanna",
+            "subtropical_desert", "mediterranean_shrubland", "temperate_grassland",
+            "temperate_broadleaf_forest", "temperate_conifer_forest",
+            "boreal_forest_taiga", "montane_grassland", "tundra",
+            "arctic_tundra", "mangrove", "flooded_grassland", "wetland",
+            "freshwater", "marine", "coastal", "desert", "salt_flat",
+            "urban", "agricultural", "industrial", "extraterrestrial", "unknown", "custom"
+          ]
+        },
+        "landform": {
+          "type": "string",
+          "enum": [
+            "mountain", "hill", "ridge", "escarpment", "cliff", "valley",
+            "plateau", "mesa", "plain", "basin", "depression", "crater",
+            "sand_dune", "loess_plain", "alluvial_fan", "delta",
+            "river_terrace", "floodplain", "floodplain_wetland",
+            "coastal_plain", "beach", "dune_field", "atoll",
+            "island", "peninsula", "cape", "fjord", "canyon", "gorge",
+            "karst", "cave", "lava_field", "caldera", "volcano",
+            "glacier", "ice_sheet", "ice_cap", "iceberg", "moraine",
+            "drumlin", "esker", "kettle", "outwash_plain",
+            "ocean_floor", "continental_shelf", "submarine_canyon", "seamount",
+            "abyssal_plain", "mid_ocean_ridge", "trench",
+            "urban_block", "industrial_zone", "road_network",
+            "underground_tunnel", "underground_cave_system",
+            "lunar_mare", "lunar_highlands", "lunar_crater",
+            "martian_plains", "martian_canyon", "asteroid_surface",
+            "space_station_floor", "artificial_habitat", "custom"
+          ]
+        },
+        "surface_class": {
+          "type": "string",
+          "enum": [
+            "bare_rock", "regolith", "sand", "gravel", "clay", "silt", "loam",
+            "peat", "soil", "permafrost", "snow", "ice", "glacier",
+            "water", "wetland", "grass", "shrub", "forest", "cropland",
+            "built_up", "road", "runway", "concrete", "asphalt", "metal",
+            "rubble", "lava", "ash", "salt", "mud", "debris",
+            "mixed", "unknown", "custom"
+          ]
+        },
+        "geology_class": {
+          "type": "string",
+          "enum": [
+            "igneous_intrusive", "igneous_extrusive", "sedimentary_clastic",
+            "sedimentary_carbonate", "sedimentary_evaporite", "sedimentary_organic",
+            "metamorphic_foliated", "metamorphic_non_foliated",
+            "unconsolidated", "alluvial", "aeolian", "glacial",
+            "volcanic", "hydrothermal", "extraterrestrial", "artificial", "unknown"
+          ]
+        },
+        "geomorphology": {
+          "type": "string",
+          "enum": [
+            "fluvial", "aeolian", "glacial", "periglacial", "coastal",
+            "karst", "volcanic", "tectonic", "mass_wasting",
+            "biogenic", "anthropogenic", "extraterrestrial", "unknown"
+          ]
+        },
+        "military_terrain_category": {
+          "type": "string",
+          "description": "NATO STANAG 2545 / APP-6 terrain category.",
+          "enum": [
+            "open", "rough", "close", "close_and_rough",
+            "urban", "urban_dense", "forest", "jungle",
+            "desert", "desert_extreme", "arctic", "mountain",
+            "water", "coastal", "riverine", "cave", "underground",
+            "mixed", "custom"
+          ]
+        },
+        "civilian_land_use": {
+          "type": "string",
+          "enum": [
+            "residential", "commercial", "industrial", "agricultural",
+            "transportation", "utility", "recreational", "conservation",
+            "military", "mixed_use", "vacant", "water_body", "unknown"
+          ]
+        },
+        "habitat_classification": {
+          "type": "string",
+          "description": "EUNIS, IUCN or custom habitat code.",
+          "examples": ["EUNIS:T1", "IUCN:1.6"]
+        },
+        "corine_land_cover_code": {
+          "type": "string",
+          "description": "CORINE Land Cover nomenclature code, e.g. 111 = continuous urban fabric."
+        },
+        "nlcd_code": {
+          "type": "integer",
+          "description": "USGS National Land Cover Database code."
+        },
+        "custom_classification": {
+          "type": "object",
+          "description": "Domain-specific classification extension.",
+          "additionalProperties": true
+        }
+      }
+    },
+
+    "SpatialExtent": {
+      "type": "object",
+      "description": "Spatial coverage, resolution, and streaming configuration of the terrain dataset.",
+      "additionalProperties": false,
+      "properties": {
+        "geo_bounding_box":   { "$ref": "#/$defs/GeoBoundingBox" },
+        "local_bounding_box": { "$ref": "#/$defs/LocalBoundingBox" },
+        "origin":             { "$ref": "#/$defs/CoordinateReference", "description": "Terrain datum origin." },
+        "extent_m": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "width_m":  { "type": "number", "description": "East-West extent, meters." },
+            "height_m": { "type": "number", "description": "North-South extent, meters." },
+            "depth_m":  { "type": "number", "description": "Vertical extent, meters." }
+          }
+        },
+        "area_km2":           { "type": "number", "minimum": 0, "description": "Total surface area, km²." },
+        "elevation_range_m": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "min_m": { "type": "number" },
+            "max_m": { "type": "number" }
+          }
+        },
+        "resolution": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "horizontal_m": { "type": "number", "description": "Ground sample distance, meters." },
+            "vertical_m":   { "type": "number", "description": "Vertical precision, meters." },
+            "angular_arcsec":{ "type": "number", "description": "Angular resolution in arc-seconds for geographic grids." }
+          }
+        },
+        "grid": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cols":      { "type": "integer", "minimum": 1 },
+            "rows":      { "type": "integer", "minimum": 1 },
+            "cell_size_m": { "type": "number", "minimum": 0 },
+            "origin_corner": {
+              "type": "string",
+              "enum": ["northwest", "southwest", "northeast", "southeast", "center"],
+              "default": "northwest"
+            },
+            "no_data_value": { "type": "number" }
+          }
+        },
+        "tiles": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "scheme":    { "type": "string", "enum": ["xyz", "tms", "wmts", "dted", "mgrs", "custom"] },
+            "tile_size": { "type": "integer", "description": "Tile size in pixels (square)." },
+            "max_zoom":  { "type": "integer", "minimum": 0, "maximum": 30 },
+            "min_zoom":  { "type": "integer", "minimum": 0, "maximum": 30 },
+            "format":    { "type": "string", "enum": ["png", "jpg", "webp", "geotiff", "terrain_quantized_mesh", "custom"] }
+          }
+        },
+        "lod": {
+          "type": "object",
+          "description": "Level-of-Detail configuration.",
+          "additionalProperties": false,
+          "properties": {
+            "levels": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "level":          { "type": "integer" },
+                  "resolution_m":   { "type": "number" },
+                  "range_m":        { "type": "number", "description": "Camera distance threshold for this LOD." },
+                  "asset_ref":      { "type": "string" }
+                }
+              }
+            },
+            "screen_space_error": { "type": "number", "description": "Cesium-style geometric error (pixels)." }
+          }
+        },
+        "streaming": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled":         { "type": "boolean", "default": false },
+            "source_url":      { "type": "string", "format": "uri" },
+            "cache_size_mb":   { "type": "number" },
+            "prefetch_radius_m": { "type": "number" }
+          }
+        },
+        "chunks": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "chunk_size_m": { "type": "number" },
+            "overlap_m":    { "type": "number", "description": "Chunk overlap to prevent seam artifacts." },
+            "indexing":     { "type": "string", "enum": ["morton", "hilbert", "linear", "custom"] }
+          }
+        }
+      }
+    },
+
+    "ElevationModel": {
+      "type": "object",
+      "description": "Digital elevation, surface, and terrain models plus derived products.",
+      "additionalProperties": false,
+      "properties": {
+        "dem_ref": {
+          "type": "string",
+          "description": "Reference to a Digital Elevation Model file, URI, or asset registry ID."
+        },
+        "dsm_ref": {
+          "type": "string",
+          "description": "Digital Surface Model reference (includes vegetation and built structures)."
+        },
+        "dtm_ref": {
+          "type": "string",
+          "description": "Digital Terrain Model reference (bare-earth only)."
+        },
+        "height_map_ref": {
+          "type": "string",
+          "description": "Reference to a 16- or 32-bit grayscale heightmap texture."
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "SRTM1", "SRTM3", "ASTER_GDEMv3", "Copernicus_DEM_GLO10",
+            "Copernicus_DEM_GLO30", "DTED0", "DTED1", "DTED2",
+            "NED_1_arcsec", "NED_1_3_arcsec", "LiDAR_derived",
+            "photogrammetry", "radar_interferometry", "synthetic",
+            "lunar_LOLA", "mars_MOLA", "custom"
+          ]
+        },
+        "vertical_datum": {
+          "type": "string",
+          "enum": ["EGM84", "EGM96", "EGM2008", "WGS84_ellipsoid", "mean_sea_level", "AHD", "custom"],
+          "default": "EGM96"
+        },
+        "horizontal_datum": {
+          "type": "string",
+          "enum": ["WGS84", "NAD83", "ETRS89", "GDA2020", "custom"],
+          "default": "WGS84"
+        },
+        "elevation_accuracy_m":  { "type": "number", "description": "RMS vertical accuracy in meters." },
+        "horizontal_accuracy_m": { "type": "number", "description": "RMS horizontal accuracy in meters." },
+        "derived_products": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "slope": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref":      { "type": "string" },
+                "method":   { "type": "string", "enum": ["horn", "zevenbergen_thorne", "finite_difference", "custom"] },
+                "unit":     { "type": "string", "enum": ["degrees", "percent", "radians"], "default": "degrees" }
+              }
+            },
+            "aspect": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref":  { "type": "string" },
+                "unit": { "type": "string", "enum": ["degrees_clockwise_north"], "default": "degrees_clockwise_north" }
+              }
+            },
+            "curvature": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "profile_curvature_ref":   { "type": "string" },
+                "plan_curvature_ref":      { "type": "string" },
+                "tangential_curvature_ref":{ "type": "string" }
+              }
+            },
+            "roughness": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref":    { "type": "string" },
+                "method": { "type": "string", "enum": ["TRI", "TPI", "stdev", "BPI", "custom"] }
+              }
+            },
+            "hillshade": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "ref":           { "type": "string" },
+                "azimuth_deg":   { "type": "number", "minimum": 0, "maximum": 360, "default": 315 },
+                "altitude_deg":  { "type": "number", "minimum": 0, "maximum": 90, "default": 45 },
+                "z_factor":      { "type": "number", "default": 1.0 }
+              }
+            },
+            "flow_direction":    { "type": "string", "description": "D8 or D-infinity flow direction raster reference." },
+            "flow_accumulation": { "type": "string", "description": "Flow accumulation raster reference." },
+            "topographic_wetness_index": { "type": "string", "description": "TWI raster reference." },
+            "visibility_map":    { "type": "string", "description": "Pre-computed visibility (viewshed) raster reference." }
+          }
+        }
+      }
+    },
+
+    "BathymetryModel": {
+      "type": "object",
+      "description": "Underwater terrain — seafloor, lake bottom, and river bottom.",
+      "additionalProperties": false,
+      "properties": {
+        "depth_grid_ref":   { "type": "string", "description": "Reference to a depth raster or GeoTIFF." },
+        "seafloor_dem_ref": { "type": "string" },
+        "source": {
+          "type": "string",
+          "enum": ["GEBCO_2023", "ETOPO1", "ETOPO2022", "multibeam_sonar", "single_beam_sonar",
+                   "airborne_lidar_bathy", "satellite_derived", "synthetic", "custom"]
+        },
+        "vertical_datum": {
+          "type": "string",
+          "enum": ["chart_datum", "mean_lower_low_water", "mean_sea_level", "LAT", "EGM2008", "custom"],
+          "default": "chart_datum"
+        },
+        "depth_accuracy_m":      { "type": "number" },
+        "max_depth_m":           { "type": "number", "minimum": 0 },
+        "water_body_type": {
+          "type": "string",
+          "enum": ["ocean", "sea", "lake", "river", "canal", "reservoir", "fjord", "lagoon", "estuary", "underwater_cave", "custom"]
+        },
+        "sediment_type": {
+          "type": "string",
+          "enum": ["sand", "silt", "clay", "gravel", "rock", "coral", "mud", "mixed", "unknown"]
+        },
+        "seafloor_features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "feature_type": {
+                "type": "string",
+                "enum": ["seamount", "trench", "ridge", "canyon", "abyssal_plain", "shelf_edge",
+                         "hydrothermal_vent", "cold_seep", "coral_reef", "kelp_forest", "custom"]
+              },
+              "name":  { "type": "string" },
+              "coord": { "$ref": "#/$defs/CoordinateReference" }
+            }
+          }
+        }
+      }
+    },
+
+    "SurfaceMaterialRef": {
+      "type": "object",
+      "description": "Reference to one or more material.schema.json materials for a terrain surface zone.",
+      "additionalProperties": false,
+      "properties": {
+        "primary_material_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "$ref to material.schema.json UUID."
+        },
+        "secondary_materials": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "material_id":   { "type": "string", "format": "uuid" },
+              "weight":        { "type": "number", "minimum": 0, "maximum": 1, "description": "Blend weight, sum should be ≤1." }
+            }
+          }
+        },
+        "dominant_type": {
+          "type": "string",
+          "enum": [
+            "rock", "concrete", "asphalt", "sand", "clay", "loam", "silt",
+            "gravel", "cobble", "peat", "snow", "ice", "mud", "water",
+            "grass", "shrub", "forest_floor", "leaf_litter",
+            "metal", "wood", "rubber", "composite", "unknown", "custom"
+          ]
+        },
+        "surface_roughness_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "RMS surface roughness, meters (engineering definition)."
+        },
+        "material_map_ref": {
+          "type": "string",
+          "description": "Reference to a material classification raster (e.g. land cover geotiff)."
+        }
+      }
+    },
+
+    "SoilProfile": {
+      "type": "object",
+      "description": "Pedological and geotechnical soil characterization.",
+      "additionalProperties": false,
+      "properties": {
+        "classification": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "usda_taxonomy":   { "type": "string", "description": "USDA Soil Taxonomy order, e.g. Entisol." },
+            "fao_wrb":         { "type": "string", "description": "FAO/WRB Reference Soil Group, e.g. Cambisol." },
+            "unified_soil_cs": { "type": "string", "description": "USCS symbol, e.g. SC (clayey sand)." },
+            "aashto_class":    { "type": "string", "description": "AASHTO soil classification." }
+          }
+        },
+        "horizons": {
+          "type": "array",
+          "description": "Soil horizon layers from surface downward.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "horizon_id":       { "type": "string", "description": "Munsell or FAO horizon symbol, e.g. Ah, Bw." },
+              "depth_top_m":      { "type": "number", "minimum": 0 },
+              "depth_bottom_m":   { "type": "number", "minimum": 0 },
+              "color_munsell":    { "type": "string", "description": "Munsell color, e.g. 10YR 4/4." },
+              "texture": {
+                "type": "string",
+                "enum": ["sand", "loamy_sand", "sandy_loam", "loam", "silt_loam",
+                         "silt", "sandy_clay_loam", "clay_loam", "silty_clay_loam",
+                         "sandy_clay", "silty_clay", "clay", "custom"]
+              },
+              "organic_carbon_pct":    { "type": "number", "minimum": 0, "maximum": 100 },
+              "ph":                    { "type": "number", "minimum": 0, "maximum": 14 },
+              "bulk_density_kg_m3":    { "type": "number", "minimum": 0 },
+              "particle_density_kg_m3":{ "type": "number", "minimum": 0 },
+              "porosity":              { "type": "number", "minimum": 0, "maximum": 1 },
+              "void_ratio":            { "type": "number", "minimum": 0 },
+              "moisture_content":      { "type": "number", "minimum": 0, "maximum": 1, "description": "Volumetric water content, m³/m³." },
+              "field_capacity":        { "type": "number", "minimum": 0, "maximum": 1 },
+              "wilting_point":         { "type": "number", "minimum": 0, "maximum": 1 },
+              "hydraulic_conductivity_m_s": { "type": "number", "minimum": 0 },
+              "permeability_m2":       { "type": "number", "minimum": 0 },
+              "bearing_capacity_kpa":  { "type": "number", "minimum": 0, "description": "Ultimate bearing capacity, kPa (Terzaghi)." },
+              "shear_strength_kpa":    { "type": "number", "minimum": 0 },
+              "cohesion_kpa":          { "type": "number", "minimum": 0, "description": "Effective cohesion c', kPa." },
+              "friction_angle_deg":    { "type": "number", "minimum": 0, "maximum": 90 },
+              "plasticity_index":      { "type": "number", "minimum": 0 },
+              "liquid_limit_pct":      { "type": "number", "minimum": 0, "maximum": 100 },
+              "plastic_limit_pct":     { "type": "number", "minimum": 0, "maximum": 100 },
+              "compression_index":     { "type": "number" },
+              "compaction_state": {
+                "type": "string",
+                "enum": ["very_loose", "loose", "medium_dense", "dense", "very_dense", "custom"]
+              },
+              "erosion_susceptibility": {
+                "type": "string",
+                "enum": ["very_low", "low", "moderate", "high", "very_high"]
+              },
+              "drainage_class": {
+                "type": "string",
+                "enum": ["excessively_drained", "well_drained", "moderately_well_drained",
+                         "somewhat_poorly_drained", "poorly_drained", "very_poorly_drained"]
+              }
+            }
+          }
+        },
+        "depth_to_bedrock_m":     { "type": "number", "minimum": 0 },
+        "depth_to_water_table_m": { "type": "number" },
+        "permafrost": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "present":           { "type": "boolean" },
+            "active_layer_depth_m": { "type": "number", "minimum": 0 },
+            "permafrost_top_m":  { "type": "number", "minimum": 0 },
+            "permafrost_base_m": { "type": "number", "minimum": 0 },
+            "ice_content":       { "type": "number", "minimum": 0, "maximum": 1 }
+          }
+        }
+      }
+    },
+
+    "GeologicalFeatures": {
+      "type": "object",
+      "description": "Geological and geotechnical features of terrain.",
+      "additionalProperties": false,
+      "properties": {
+        "bedrock_type": {
+          "type": "string",
+          "enum": [
+            "granite", "basalt", "andesite", "rhyolite", "gabbro", "diorite",
+            "sandstone", "limestone", "shale", "mudstone", "conglomerate", "breccia",
+            "chalk", "dolomite", "coal", "salt", "gypsum",
+            "schist", "gneiss", "quartzite", "marble", "slate", "phyllite",
+            "mixed", "unknown", "custom"
+          ]
+        },
+        "bedrock_depth_m": { "type": "number", "minimum": 0 },
+        "rock_strength": {
+          "type": "string",
+          "enum": ["extremely_weak", "very_weak", "weak", "medium", "strong", "very_strong", "extremely_strong"],
+          "description": "Uniaxial compressive strength class per ISRM."
+        },
+        "ucs_mpa": { "type": "number", "minimum": 0, "description": "Uniaxial compressive strength, MPa." },
+        "rqd_pct": { "type": "number", "minimum": 0, "maximum": 100, "description": "Rock Quality Designation, %." },
+        "rmr": { "type": "number", "minimum": 0, "maximum": 100, "description": "Rock Mass Rating (Bieniawski)." },
+        "gssi": { "type": "number", "description": "Geological Strength Index." },
+        "layers": {
+          "type": "array",
+          "description": "Subsurface stratigraphic layers.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "layer_name":    { "type": "string" },
+              "depth_top_m":   { "type": "number" },
+              "depth_base_m":  { "type": "number" },
+              "lithology":     { "type": "string" },
+              "age_ma":        { "type": "number", "description": "Geological age, million years." },
+              "formation":     { "type": "string" }
+            }
+          }
+        },
+        "faults": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id":            { "$ref": "#/$defs/TerrainUUID" },
+              "name":          { "type": "string" },
+              "fault_type":    { "type": "string", "enum": ["normal", "reverse", "strike_slip", "thrust", "oblique", "unknown"] },
+              "strike_deg":    { "type": "number" },
+              "dip_deg":       { "type": "number" },
+              "length_m":      { "type": "number" },
+              "active":        { "type": "boolean" },
+              "slip_rate_mm_yr":{ "type": "number" }
+            }
+          }
+        },
+        "volcanoes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id":          { "$ref": "#/$defs/TerrainUUID" },
+              "name":        { "type": "string" },
+              "volcano_type":{ "type": "string", "enum": ["shield", "stratovolcano", "cinder_cone", "lava_dome", "caldera", "maar", "submarine", "custom"] },
+              "coord":       { "$ref": "#/$defs/CoordinateReference" },
+              "summit_m":    { "type": "number" },
+              "status":      { "type": "string", "enum": ["active", "dormant", "extinct"] },
+              "last_eruption":{ "$ref": "#/$defs/TerrainTimestamp" }
+            }
+          }
+        },
+        "caves": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id":           { "$ref": "#/$defs/TerrainUUID" },
+              "name":         { "type": "string" },
+              "cave_type":    { "type": "string", "enum": ["karst", "lava_tube", "sea_cave", "ice_cave", "talus", "custom"] },
+              "entrance_coord":{ "$ref": "#/$defs/CoordinateReference" },
+              "total_length_m":{ "type": "number" },
+              "max_depth_m":  { "type": "number" },
+              "geometry_ref": { "type": "string", "description": "Reference to 3D geometry asset." }
+            }
+          }
+        },
+        "minerals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name":          { "type": "string" },
+              "formula":       { "type": "string" },
+              "concentration": { "type": "number", "description": "Estimated mass fraction, 0–1." },
+              "economic_grade":{ "type": "boolean" }
+            }
+          }
+        },
+        "seismic_hazard": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pga_g":     { "type": "number", "description": "Peak Ground Acceleration, g." },
+            "seismic_zone":{ "type": "string" },
+            "vs30_m_s":  { "type": "number", "description": "Average shear wave velocity to 30m depth, m/s." }
+          }
+        }
+      }
+    },
+
+    "VegetationLayer": {
+      "type": "object",
+      "description": "Spatial vegetation characterization for terrain.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "forest", "woodland", "shrubland", "grassland", "savanna",
+            "wetland_vegetation", "riparian", "mangrove", "tundra_scrub",
+            "alpine_meadow", "cropland", "plantation", "orchard",
+            "urban_green", "bare", "custom"
+          ]
+        },
+        "cover_pct": { "type": "number", "minimum": 0, "maximum": 100, "description": "Fractional canopy cover, %." },
+        "canopy_height_m": { "type": "number", "minimum": 0, "description": "Mean canopy height, meters." },
+        "max_tree_height_m": { "type": "number", "minimum": 0 },
+        "stem_density_per_ha": { "type": "number", "minimum": 0 },
+        "basal_area_m2_per_ha": { "type": "number", "minimum": 0 },
+        "leaf_area_index": { "type": "number", "minimum": 0, "description": "LAI, m²/m²." },
+        "species": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "scientific_name": { "type": "string" },
+              "common_name":     { "type": "string" },
+              "fraction":        { "type": "number", "minimum": 0, "maximum": 1 },
+              "height_m":        { "type": "number" },
+              "dbh_m":           { "type": "number", "description": "Diameter at breast height, meters." }
+            }
+          }
+        },
+        "understory": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "shrub_cover_pct":  { "type": "number" },
+            "shrub_height_m":   { "type": "number" },
+            "grass_cover_pct":  { "type": "number" }
+          }
+        },
+        "vegetation_map_ref": { "type": "string", "description": "Reference to vegetation classification raster." },
+        "chm_ref":  { "type": "string", "description": "Canopy Height Model raster reference." },
+        "lidar_point_cloud_ref": { "type": "string", "description": "LiDAR point cloud asset reference." },
+        "fire_risk": {
+          "type": "string",
+          "enum": ["very_low", "low", "moderate", "high", "very_high", "extreme"]
+        }
+      }
+    },
+
+    "HydrologyFeature": {
+      "type": "object",
+      "description": "Hydrological feature (river, lake, wetland, etc.).",
+      "additionalProperties": false,
+      "properties": {
+        "id":           { "$ref": "#/$defs/TerrainUUID" },
+        "name":         { "type": "string" },
+        "hydro_type": {
+          "type": "string",
+          "enum": [
+            "river", "stream", "creek", "canal", "aqueduct",
+            "lake", "pond", "reservoir", "lagoon", "oxbow",
+            "spring", "geyser", "waterfall", "rapid",
+            "wetland", "marsh", "swamp", "bog", "fen",
+            "floodplain", "delta", "estuary",
+            "groundwater_table", "aquifer", "custom"
+          ]
+        },
+        "geometry_ref":   { "type": "string" },
+        "network_ref":    { "type": "string", "description": "NHD / HydroSHEDS / custom hydrological network reference." },
+        "strahler_order": { "type": "integer", "minimum": 1, "description": "Strahler stream order." },
+        "flow_rate_m3_s": { "type": "number", "minimum": 0, "description": "Mean annual discharge, m³/s." },
+        "width_m":        { "type": "number", "minimum": 0 },
+        "depth_m":        { "type": "number", "minimum": 0 },
+        "velocity_m_s":   { "type": "number", "minimum": 0 },
+        "gradient_pct":   { "type": "number", "description": "Longitudinal gradient, %. Positive = descending." },
+        "crossable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "ford_possible": { "type": "boolean" },
+            "max_vehicle_class": { "type": "string" }
+          }
+        },
+        "flood_return_period_yr": { "type": "number" },
+        "floodplain_extent_ref":  { "type": "string" },
+        "water_quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "turbidity_ntu":  { "type": "number" },
+            "salinity_ppt":   { "type": "number" },
+            "ph":             { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "InfrastructureRef": {
+      "type": "object",
+      "description": "Reference-only record of static infrastructure features. Entity definitions live in entity.schema.json.",
+      "additionalProperties": false,
+      "properties": {
+        "id":            { "$ref": "#/$defs/TerrainUUID" },
+        "entity_id":     { "type": "string", "format": "uuid", "description": "$ref to entity.schema.json entity ID." },
+        "infra_type": {
+          "type": "string",
+          "enum": [
+            "road", "highway", "motorway", "unpaved_track", "footpath",
+            "bridge", "overpass", "underpass", "viaduct",
+            "tunnel", "road_tunnel", "rail_tunnel",
+            "railway", "tram", "metro",
+            "airport_runway", "taxiway", "helipad",
+            "port", "quay", "jetty", "dock",
+            "dam", "weir", "levee", "flood_barrier",
+            "powerline", "transmission_tower",
+            "pipeline", "gas", "water", "oil",
+            "fence", "wall", "barrier",
+            "building", "static_obstacle",
+            "antenna_tower", "wind_turbine", "solar_farm",
+            "custom"
+          ]
+        },
+        "name":          { "type": "string" },
+        "geometry_ref":  { "type": "string", "description": "Asset or GIS geometry reference." },
+        "osm_id":        { "type": "string", "description": "OpenStreetMap element ID." },
+        "attributes":    { "type": "object", "description": "Domain-specific attributes.", "additionalProperties": true }
+      }
+    },
+
+    "ObstacleFeature": {
+      "type": "object",
+      "description": "Natural or artificial obstacle affecting mobility.",
+      "additionalProperties": false,
+      "properties": {
+        "id":           { "$ref": "#/$defs/TerrainUUID" },
+        "obstacle_type": {
+          "type": "string",
+          "enum": [
+            "boulder", "rock_outcrop", "fallen_tree", "dense_vegetation",
+            "cliff", "escarpment", "ditch", "trench", "berm", "embankment",
+            "wall", "fence", "wire_obstacle", "anti_tank_ditch", "dragon_teeth",
+            "crater", "rubble", "debris", "minefield_ref",
+            "flood_zone", "mud", "quicksand",
+            "urban_rubble", "building_ruin",
+            "custom"
+          ]
+        },
+        "entity_ref": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Optional link to entity.schema.json entity."
+        },
+        "coord":        { "$ref": "#/$defs/CoordinateReference" },
+        "geometry_ref": { "type": "string" },
+        "height_m":     { "type": "number" },
+        "width_m":      { "type": "number" },
+        "passable": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "foot":    { "type": "boolean" },
+            "wheeled": { "type": "boolean" },
+            "tracked": { "type": "boolean" },
+            "air":     { "type": "boolean" }
+          }
+        },
+        "is_minefield_ref": {
+          "type": "boolean",
+          "description": "If true, entity_ref points to a minefield entity definition."
+        }
+      }
+    },
+
+    "NavigationSurface": {
+      "type": "object",
+      "description": "Traversability and navigation analysis for robots, vehicles, and pedestrians.",
+      "additionalProperties": false,
+      "properties": {
+        "traversability_map_ref": { "type": "string", "description": "Reference to a traversability raster." },
+        "mobility_cost_map_ref":  { "type": "string", "description": "Reference to a NATO mobility cost raster." },
+        "slope_limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max_slope_deg_wheeled": { "type": "number" },
+            "max_slope_deg_tracked": { "type": "number" },
+            "max_slope_deg_foot":    { "type": "number" },
+            "max_slope_deg_fixed_wing":{ "type": "number" }
+          }
+        },
+        "trafficability": {
+          "type": "object",
+          "description": "NATO STANAG trafficability ratings.",
+          "additionalProperties": false,
+          "properties": {
+            "wheeled_class":  { "type": "string", "enum": ["no_go", "difficult", "marginal", "go"] },
+            "tracked_class":  { "type": "string", "enum": ["no_go", "difficult", "marginal", "go"] },
+            "seasonal_variations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "season":         { "type": "string", "enum": ["spring", "summer", "autumn", "winter"] },
+                  "wheeled_class":  { "type": "string" },
+                  "tracked_class":  { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "navigation_mesh_ref":  { "type": "string", "description": "NavMesh asset reference." },
+        "road_network_ref":     { "type": "string", "description": "Road network graph asset reference." },
+        "waypoint_network_ref": { "type": "string", "description": "Waypoint network graph reference." },
+        "vehicle_restrictions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "vehicle_class": { "type": "string" },
+              "max_mass_kg":   { "type": "number" },
+              "max_width_m":   { "type": "number" },
+              "max_height_m":  { "type": "number" }
+            }
+          }
+        },
+        "walking_surface": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "step_height_m": { "type": "number" },
+            "surface_quality":{ "type": "string", "enum": ["excellent", "good", "fair", "poor", "impassable"] }
+          }
+        },
+        "sinkage_model": {
+          "type": "object",
+          "description": "Vehicle-terrain sinkage model parameters (Bekker-Wong).",
+          "additionalProperties": false,
+          "properties": {
+            "n":    { "type": "number", "description": "Sinkage exponent." },
+            "kc":   { "type": "number", "description": "Cohesive modulus of sinkage, N/m^(n+1)." },
+            "kphi": { "type": "number", "description": "Frictional modulus of sinkage, N/m^(n+2)." },
+            "c":    { "type": "number", "description": "Cohesion, kPa." },
+            "phi_deg": { "type": "number", "description": "Internal friction angle, degrees." }
+          }
+        }
+      }
+    },
+
+    "MilitaryTerrainAnalysis": {
+      "type": "object",
+      "description": "OCOKA terrain analysis: Observation and Fields of Fire, Cover and Concealment, Obstacles, Key Terrain, Avenues of Approach.",
+      "additionalProperties": false,
+      "properties": {
+        "cover": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "level":       { "type": "string", "enum": ["none", "sparse", "moderate", "good", "excellent"] },
+            "sources":     { "type": "array", "items": { "type": "string" } },
+            "cover_map_ref": { "type": "string" }
+          }
+        },
+        "concealment": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "level":         { "type": "string", "enum": ["none", "sparse", "moderate", "good", "excellent"] },
+            "thermal_concealment": { "type": "boolean" },
+            "visual_concealment":  { "type": "boolean" },
+            "radar_concealment":   { "type": "boolean" },
+            "concealment_map_ref": { "type": "string" }
+          }
+        },
+        "observation_fields_of_fire": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "max_observation_range_m": { "type": "number" },
+            "dead_ground_map_ref":    { "type": "string" },
+            "viewshed_map_ref":       { "type": "string" },
+            "radar_horizon_m":        { "type": "number" },
+            "radar_shadow_map_ref":   { "type": "string" }
+          }
+        },
+        "obstacles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ObstacleFeature" }
+        },
+        "key_terrain": {
+          "type": "array",
+          "description": "Features that, if controlled, afford marked advantage.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id":          { "$ref": "#/$defs/TerrainUUID" },
+              "name":        { "type": "string" },
+              "description": { "type": "string" },
+              "coord":       { "$ref": "#/$defs/CoordinateReference" },
+              "importance":  { "type": "string", "enum": ["critical", "important", "useful"] }
+            }
+          }
+        },
+        "avenues_of_approach": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id":         { "$ref": "#/$defs/TerrainUUID" },
+              "name":       { "type": "string" },
+              "direction":  { "type": "string" },
+              "width_m":    { "type": "number" },
+              "suitability":{ "type": "string", "enum": ["dismounted_only", "light_wheeled", "heavy_wheeled", "tracked", "all"] },
+              "geometry_ref":{ "type": "string" }
+            }
+          }
+        },
+        "dead_ground_map_ref": { "type": "string" },
+        "los_matrix_ref":      { "type": "string", "description": "Pre-computed line-of-sight matrix asset reference." },
+        "acoustic_propagation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "excess_attenuation_ref": { "type": "string" },
+            "dominant_effects":       { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+
+    "SensorTerrainEffects": {
+      "type": "object",
+      "description": "Terrain effects on electromagnetic, acoustic, and other sensor modalities.",
+      "additionalProperties": false,
+      "properties": {
+        "radar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "clutter_map_ref":    { "type": "string" },
+            "multipath_severity": { "type": "string", "enum": ["low", "moderate", "high"] },
+            "ground_reflection_coeff": { "type": "number", "minimum": 0, "maximum": 1 },
+            "attenuation_db_km":  { "type": "number" }
+          }
+        },
+        "sar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "backscatter_map_ref": { "type": "string" },
+            "layover_map_ref":     { "type": "string" },
+            "shadow_map_ref":      { "type": "string" },
+            "coherence_map_ref":   { "type": "string" }
+          }
+        },
+        "eo": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "surface_reflectance_map_ref": { "type": "string" },
+            "brdf_model":                 { "type": "string" },
+            "atmospheric_correction":     { "type": "string" }
+          }
+        },
+        "ir": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "thermal_map_ref":      { "type": "string" },
+            "thermal_inertia_ref":  { "type": "string" },
+            "skin_temperature_ref": { "type": "string" }
+          }
+        },
+        "lidar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "point_cloud_ref":      { "type": "string" },
+            "return_intensity_ref": { "type": "string" },
+            "multi_return_capable": { "type": "boolean" }
+          }
+        },
+        "sonar": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "bottom_type":          { "type": "string" },
+            "acoustic_impedance":   { "type": "number" },
+            "reverberation_level":  { "type": "number" }
+          }
+        },
+        "gnss": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sky_obstruction_pct": { "type": "number" },
+            "multipath_risk":      { "type": "string", "enum": ["low", "moderate", "high", "very_high"] },
+            "pdop_estimate":       { "type": "number" }
+          }
+        },
+        "seismic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "vp_m_s": { "type": "number", "description": "P-wave velocity, m/s." },
+            "vs_m_s": { "type": "number", "description": "S-wave velocity, m/s." },
+            "attenuation_factor": { "type": "number" }
+          }
+        },
+        "magnetic": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "declination_deg":    { "type": "number" },
+            "inclination_deg":    { "type": "number" },
+            "total_field_nt":     { "type": "number" },
+            "anomaly_map_ref":    { "type": "string" }
+          }
+        },
+        "chemical": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "cbrn_retention_factor": { "type": "number", "minimum": 0, "maximum": 1 },
+            "porosity_effects":      { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "TerrainPhysics": {
+      "type": "object",
+      "description": "Terrain physics properties. References physics.schema.json.",
+      "additionalProperties": false,
+      "properties": {
+        "physics_ref": {
+          "type": "string",
+          "format": "uri",
+          "description": "$ref to physics.schema.json TerrainPhysics definition.",
+          "default": "https://physworldlm.org/schemas/physics.schema.json#/$defs/TerrainPhysics"
+        },
+        "friction_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Static friction coefficient (Coulomb). Dimensionless."
+        },
+        "rolling_resistance_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Rolling resistance coefficient Crr. Dimensionless."
+        },
+        "restitution_coefficient": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Coefficient of restitution for impacts. Dimensionless."
+        },
+        "deformation": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "deformable":     { "type": "boolean", "default": false },
+            "max_sinkage_m":  { "type": "number" },
+            "elastic_modulus_mpa": { "type": "number" }
+          }
+        },
+        "surface_roughness_rms_m": {
+          "type": "number",
+          "minimum": 0,
+          "description": "RMS surface roughness, meters."
+        },
+        "thermal_conductivity_w_m_k": {
+          "type": "number",
+          "minimum": 0
+        },
+        "heat_capacity_j_kg_k": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+
+    "TerrainRendering": {
+      "type": "object",
+      "description": "Rendering metadata for terrain visualization.",
+      "additionalProperties": false,
+      "properties": {
+        "terrain_mesh_ref":       { "type": "string" },
+        "texture_refs":           { "type": "array", "items": { "type": "string" } },
+        "normal_map_ref":         { "type": "string" },
+        "height_map_ref":         { "type": "string" },
+        "displacement_map_ref":   { "type": "string" },
+        "roughness_map_ref":      { "type": "string" },
+        "ao_map_ref":             { "type": "string" },
+        "pbr_material_ref":       { "type": "string", "description": "USD/MaterialX PBR material reference." },
+        "base_color_ref":         { "type": "string" },
+        "lod_mesh_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "level":      { "type": "integer" },
+              "asset_ref":  { "type": "string" },
+              "error_m":    { "type": "number" }
+            }
+          }
+        },
+        "tile_source_url":    { "type": "string", "format": "uri" },
+        "texture_streaming":  { "type": "boolean", "default": false },
+        "render_pipeline":    { "type": "string", "enum": ["rasterization", "raytracing", "pathtracing", "hybrid"] },
+        "usd_stage_ref":      { "type": "string", "description": "OpenUSD stage reference." },
+        "cesium_ion_asset_id":{ "type": "integer" }
+      }
+    },
+
+    "GISIntegration": {
+      "type": "object",
+      "description": "GIS data source and format integration metadata.",
+      "additionalProperties": false,
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "format": {
+                "type": "string",
+                "enum": [
+                  "GeoTIFF", "COG", "DTED0", "DTED1", "DTED2",
+                  "SRTM", "ASTER_GDEM", "Copernicus_DEM",
+                  "CesiumTerrainQuantizedMesh", "3DTiles",
+                  "LAS", "LAZ", "Shapefile", "GeoJSON", "KML",
+                  "GPKG", "CityGML", "OSM_PBF", "OSM_XML",
+                  "WMS", "WMTS", "WFS", "WCS",
+                  "GeoPackage", "FileGDB", "NetCDF", "HDF5",
+                  "ENVI_BIL", "JP2", "MBTiles", "PMTiles",
+                  "OpenDRIVE", "OpenSceneGraph", "FBX_terrain",
+                  "custom"
+                ]
+              },
+              "url_or_path": { "type": "string" },
+              "crs_epsg":    { "type": "integer" },
+              "version":     { "type": "string" },
+              "license":     { "type": "string" }
+            }
+          }
+        },
+        "wms_url":   { "type": "string", "format": "uri" },
+        "wmts_url":  { "type": "string", "format": "uri" },
+        "wfs_url":   { "type": "string", "format": "uri" },
+        "cesium_terrain_url": { "type": "string", "format": "uri" },
+        "osm_extract_ref": { "type": "string" }
+      }
+    },
+
+    "TerrainAIMetadata": {
+      "type": "object",
+      "description": "AI and knowledge graph metadata for terrain semantic reasoning.",
+      "additionalProperties": false,
+      "properties": {
+        "semantic_tags":     { "type": "array", "items": { "type": "string" } },
+        "ontology_mappings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "ontology":    { "type": "string" },
+              "class_uri":   { "type": "string", "format": "uri" },
+              "confidence":  { "type": "number", "minimum": 0, "maximum": 1 }
+            }
+          }
+        },
+        "knowledge_graph_nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "graph": { "type": "string" },
+              "node_uri": { "type": "string", "format": "uri" }
+            }
+          }
+        },
+        "natural_language_description":  { "type": "string" },
+        "military_description":          { "type": "string" },
+        "civilian_description":          { "type": "string" },
+        "functional_tags":               { "type": "array", "items": { "type": "string" } },
+        "embedding_vector": {
+          "type": "array",
+          "items": { "type": "number" },
+          "description": "Semantic embedding vector for nearest-neighbor retrieval."
+        },
+        "synonyms":   { "type": "array", "items": { "type": "string" } },
+        "keywords":   { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "TerrainMetadataRef": {
+      "type": "object",
+      "description": "Reference to metadata.schema.json.",
+      "additionalProperties": false,
+      "properties": {
+        "metadata_id":   { "type": "string", "format": "uuid" },
+        "metadata_ref":  { "type": "string", "format": "uri",
+                           "default": "https://physworldlm.org/schemas/metadata.schema.json" }
+      }
+    },
+
+    "PlanetaryExtension": {
+      "type": "object",
+      "description": "Extension for non-Earth terrain (Moon, Mars, asteroids, space stations).",
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "type": "string",
+          "enum": ["Earth", "Moon", "Mars", "Phobos", "Deimos", "Ceres", "Vesta",
+                   "Europa", "Titan", "Ganymede", "Io", "Callisto",
+                   "asteroid", "comet", "space_station", "artificial_habitat",
+                   "exoplanet", "custom"]
+        },
+        "gravity_m_s2":           { "type": "number", "description": "Surface gravity, m/s²." },
+        "atmosphere_present":     { "type": "boolean" },
+        "atmosphere_ref":         { "type": "string", "format": "uri",
+                                    "description": "$ref to environment.schema.json." },
+        "ellipsoid": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "semi_major_m": { "type": "number" },
+            "semi_minor_m": { "type": "number" },
+            "flattening":   { "type": "number" }
+          }
+        },
+        "regolith_depth_m":   { "type": "number" },
+        "radiation_level_gy": { "type": "number", "description": "Surface radiation dose rate, Gy/day." },
+        "dust_properties": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "particle_size_um":   { "type": "number" },
+            "electrostatic":      { "type": "boolean" },
+            "adhesion_factor":    { "type": "number" }
+          }
+        }
+      }
+    },
+
+    "Terrain": {
+      "type": "object",
+      "title": "Terrain",
+      "description": "Complete terrain specification for a PhysWorldLM WorldSpec. Defines all static physical features of the world surface and subsurface.",
+      "additionalProperties": false,
+      "required": ["identity"],
+      "properties": {
+        "identity":          { "$ref": "#/$defs/TerrainIdentity" },
+        "classification":    { "$ref": "#/$defs/TerrainClassification" },
+        "spatial_extent":    { "$ref": "#/$defs/SpatialExtent" },
+        "elevation":         { "$ref": "#/$defs/ElevationModel" },
+        "bathymetry":        { "$ref": "#/$defs/BathymetryModel" },
+        "surface_material":  { "$ref": "#/$defs/SurfaceMaterialRef" },
+        "soil":              { "$ref": "#/$defs/SoilProfile" },
+        "geology":           { "$ref": "#/$defs/GeologicalFeatures" },
+        "vegetation":        { "$ref": "#/$defs/VegetationLayer" },
+        "hydrology": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/HydrologyFeature" }
+        },
+        "infrastructure": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/InfrastructureRef" }
+        },
+        "obstacles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ObstacleFeature" }
+        },
+        "navigation":       { "$ref": "#/$defs/NavigationSurface" },
+        "military_analysis":{ "$ref": "#/$defs/MilitaryTerrainAnalysis" },
+        "sensor_effects":   { "$ref": "#/$defs/SensorTerrainEffects" },
+        "physics":          { "$ref": "#/$defs/TerrainPhysics" },
+        "rendering":        { "$ref": "#/$defs/TerrainRendering" },
+        "gis":              { "$ref": "#/$defs/GISIntegration" },
+        "ai_metadata":      { "$ref": "#/$defs/TerrainAIMetadata" },
+        "metadata_ref":     { "$ref": "#/$defs/TerrainMetadataRef" },
+        "planetary":        { "$ref": "#/$defs/PlanetaryExtension" },
+        "sub_terrains": {
+          "type": "array",
+          "description": "Hierarchical nested terrain regions (e.g., city districts within a region).",
+          "items": { "$ref": "#/$defs/Terrain" }
+        },
+        "extensions": {
+          "type": "object",
+          "description": "Domain-specific extension fields. Use reverse-DNS namespace keys.",
+          "additionalProperties": true,
+          "examples": [{ "mil.nato.terrain": {}, "org.ros.terrain": {} }]
+        }
+      }
+    }
+
+  },
+
+  "type": "object",
+  "required": ["terrain"],
+  "additionalProperties": false,
+
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://physworldlm.org/schemas/terrain.schema.json"
+    },
+    "terrain": { "$ref": "#/$defs/Terrain" }
+  },
+
+  "examples": [
+    {
+      "$schema": "https://physworldlm.org/schemas/terrain.schema.json",
+      "terrain": {
+        "identity": {
+          "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "name": "helmand_river_valley_v1",
+          "display_name": "Helmand River Valley",
+          "description": "Southern Afghanistan alluvial plain and surrounding desert terrain.",
+          "version": "1.0.0",
+          "revision": 1,
+          "dataset_name": "Copernicus DEM GLO-30",
+          "dataset_version": "2021_1"
+        },
+        "classification": {
+          "terrain_type": "natural",
+          "biome": "subtropical_desert",
+          "landform": "alluvial_fan",
+          "surface_class": "sand",
+          "military_terrain_category": "desert"
+        },
+        "spatial_extent": {
+          "geo_bounding_box": {
+            "southwest": { "latitude": 31.0, "longitude": 64.0 },
+            "northeast": { "latitude": 31.5, "longitude": 64.5 }
+          },
+          "area_km2": 3000,
+          "resolution": { "horizontal_m": 30, "vertical_m": 1 }
+        },
+        "elevation": {
+          "source": "Copernicus_DEM_GLO30",
+          "vertical_datum": "EGM96"
+        }
+      }
+    }
+  ]
+}

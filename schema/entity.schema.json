@@ -1,0 +1,1196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://physworldlm.org/schemas/entity.schema.json",
+  "title": "PhysWorldLM Universal Entity",
+  "description": "Canonical Entity schema for PhysWorldLM (PW-ENTITY v1.0). Every object that can exist in a WorldSpec simulation — physical, virtual, logical, living, static, dynamic, composite, abstract — inherits from this schema.",
+  "type": "object",
+  "required": ["id", "entity_type"],
+  "additionalProperties": false,
+
+  "$defs": {
+
+    "UUID": { "type": "string", "format": "uuid" },
+    "URI":  { "type": "string", "format": "uri" },
+    "ISOTimestamp": { "type": "string", "format": "date-time" },
+    "VersionString": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "NonEmptyString": { "type": "string", "minLength": 1 },
+    "ConfidenceScore": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+
+    "Vector2": {
+      "type": "object", "required": ["x","y"], "additionalProperties": false,
+      "properties": { "x": {"type":"number"}, "y": {"type":"number"} }
+    },
+
+    "Vector3": {
+      "type": "object", "required": ["x","y","z"], "additionalProperties": false,
+      "properties": { "x": {"type":"number"}, "y": {"type":"number"}, "z": {"type":"number"} }
+    },
+
+    "Vector4": {
+      "type": "object", "required": ["x","y","z","w"], "additionalProperties": false,
+      "properties": { "x": {"type":"number"}, "y": {"type":"number"}, "z": {"type":"number"}, "w": {"type":"number"} }
+    },
+
+    "Quaternion": { "$ref": "#/$defs/Vector4" },
+
+    "EulerAngles": {
+      "type": "object", "additionalProperties": false,
+      "description": "Euler angles in degrees. Convention: roll-pitch-yaw (XYZ extrinsic).",
+      "properties": {
+        "roll_deg":  {"type":"number","minimum":-180,"maximum":180},
+        "pitch_deg": {"type":"number","minimum":-90, "maximum":90},
+        "yaw_deg":   {"type":"number","minimum":-180,"maximum":180},
+        "order":     {"type":"string","enum":["XYZ","XZY","YXZ","YZX","ZXY","ZYX"],"default":"ZYX"}
+      }
+    },
+
+    "Matrix4x4": {
+      "type": "array", "items": {"type":"number"}, "minItems": 16, "maxItems": 16,
+      "description": "Column-major 4x4 transformation matrix."
+    },
+
+    "BoundingBox3": {
+      "type": "object", "required": ["min","max"], "additionalProperties": false,
+      "properties": {
+        "min": {"$ref":"#/$defs/Vector3"},
+        "max": {"$ref":"#/$defs/Vector3"}
+      }
+    },
+
+    "BoundingSphere": {
+      "type": "object", "required": ["center","radius"], "additionalProperties": false,
+      "properties": {
+        "center": {"$ref":"#/$defs/Vector3"},
+        "radius": {"type":"number","exclusiveMinimum":0}
+      }
+    },
+
+    "GeoCoordinate": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "latitude":   {"type":"number","minimum":-90,  "maximum":90},
+        "longitude":  {"type":"number","minimum":-180, "maximum":180},
+        "altitude_m": {"type":"number"}
+      }
+    },
+
+    "ColorRGBA": {
+      "type": "object", "required": ["r","g","b"], "additionalProperties": false,
+      "properties": {
+        "r": {"type":"number","minimum":0,"maximum":1},
+        "g": {"type":"number","minimum":0,"maximum":1},
+        "b": {"type":"number","minimum":0,"maximum":1},
+        "a": {"type":"number","minimum":0,"maximum":1,"default":1.0}
+      }
+    },
+
+    "AssetRef": {
+      "type": "object", "required": ["path"], "additionalProperties": false,
+      "properties": {
+        "id":       {"$ref":"#/$defs/UUID"},
+        "path":     {"type":"string"},
+        "url":      {"$ref":"#/$defs/URI"},
+        "format":   {"type":"string","enum":["usd","usda","usdc","usdz","glb","gltf","fbx","obj","ply","stl","dae","abc","blend","png","jpg","exr","hdr","mp4","wav","custom"]},
+        "checksum": {"type":"string"},
+        "version":  {"$ref":"#/$defs/VersionString"}
+      }
+    },
+
+    "ResourceLevel": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "current":    {"type":"number","minimum":0},
+        "maximum":    {"type":"number","minimum":0},
+        "minimum":    {"type":"number","default":0},
+        "rate_per_s": {"type":"number","description":"Consumption rate per second (negative = consuming)."},
+        "unit":       {"type":"string"}
+      }
+    },
+
+    "Transform": {
+      "type": "object",
+      "description": "Full spatial transform of an entity.",
+      "additionalProperties": false,
+      "properties": {
+        "position":              {"$ref":"#/$defs/Vector3","description":"World-space position in meters."},
+        "position_geo":          {"$ref":"#/$defs/GeoCoordinate"},
+        "rotation_quaternion":   {"$ref":"#/$defs/Quaternion"},
+        "rotation_euler":        {"$ref":"#/$defs/EulerAngles"},
+        "scale":                 {"$ref":"#/$defs/Vector3"},
+        "world_matrix":          {"$ref":"#/$defs/Matrix4x4"},
+        "local_matrix":          {"$ref":"#/$defs/Matrix4x4"},
+        "pivot_offset":          {"$ref":"#/$defs/Vector3"},
+        "anchor_point":          {"$ref":"#/$defs/Vector3"},
+        "center_of_mass":        {"$ref":"#/$defs/Vector3"},
+        "center_of_pressure":    {"$ref":"#/$defs/Vector3"},
+        "center_of_gravity":     {"$ref":"#/$defs/Vector3"},
+        "velocity_linear":       {"$ref":"#/$defs/Vector3","description":"m/s"},
+        "velocity_angular":      {"$ref":"#/$defs/Vector3","description":"rad/s"},
+        "acceleration_linear":   {"$ref":"#/$defs/Vector3","description":"m/s²"},
+        "acceleration_angular":  {"$ref":"#/$defs/Vector3","description":"rad/s²"},
+        "bounding_box":          {"$ref":"#/$defs/BoundingBox3"},
+        "bounding_sphere":       {"$ref":"#/$defs/BoundingSphere"},
+        "reference_frame": {
+          "type":"string",
+          "enum":["world","local","parent","geo","body","NED","ENU","ECEF","inertial"],
+          "default":"world"
+        },
+        "up_axis":  {"type":"string","enum":["Y","Z"],"default":"Z"},
+        "parent_id":{"$ref":"#/$defs/UUID","description":"Entity whose local space this transform is relative to."}
+      }
+    },
+
+    "PhysicsBody": {
+      "type": "object",
+      "description": "Physics simulation properties.",
+      "additionalProperties": false,
+      "properties": {
+        "body_type": {
+          "type":"string",
+          "enum":["static","kinematic","dynamic","soft","particle","fluid","cloth","rope","articulated","none"]
+        },
+        "mass_kg":              {"type":"number","exclusiveMinimum":0},
+        "density_kg_m3":        {"type":"number","exclusiveMinimum":0},
+        "volume_m3":            {"type":"number","exclusiveMinimum":0},
+        "surface_area_m2":      {"type":"number","exclusiveMinimum":0},
+        "inertia_tensor":       {"$ref":"#/$defs/Matrix4x4","description":"Full 4x4 inertia tensor."},
+        "principal_inertia":    {"$ref":"#/$defs/Vector3","description":"Principal moments of inertia (Ixx, Iyy, Izz)."},
+        "linear_damping":       {"type":"number","minimum":0},
+        "angular_damping":      {"type":"number","minimum":0},
+        "drag_coefficient":     {"type":"number","minimum":0},
+        "lift_coefficient":     {"type":"number"},
+        "friction_static":      {"type":"number","minimum":0},
+        "friction_dynamic":     {"type":"number","minimum":0},
+        "restitution":          {"type":"number","minimum":0,"maximum":1},
+        "buoyancy_enabled":     {"type":"boolean","default":false},
+        "buoyancy_volume_m3":   {"type":"number"},
+        "gravity_scale":        {"type":"number","default":1.0},
+        "gravity_override":     {"$ref":"#/$defs/Vector3"},
+        "collision_enabled":    {"type":"boolean","default":true},
+        "collision_group":      {"type":"string"},
+        "collision_mask":       {"type":"array","items":{"type":"string"}},
+        "collision_shape": {
+          "type":"string",
+          "enum":["auto","box","sphere","capsule","cylinder","cone","convex_hull","trimesh","compound","none"],
+          "default":"auto"
+        },
+        "continuous_collision": {"type":"boolean","default":false},
+        "sleeping_enabled":     {"type":"boolean","default":true},
+        "sleep_threshold":      {"type":"number","default":0.005},
+        "max_linear_velocity":  {"type":"number"},
+        "max_angular_velocity": {"type":"number"},
+        "solver_iterations":    {"type":"integer","minimum":1,"default":4},
+        "material_ref":         {"type":"string","description":"Reference to physics material definition."}
+      }
+    },
+
+    "Geometry": {
+      "type": "object",
+      "description": "Shape, dimensions, and mesh references.",
+      "additionalProperties": false,
+      "properties": {
+        "primitive": {
+          "type":"string",
+          "enum":["box","sphere","capsule","cylinder","cone","plane","torus","convex_hull","trimesh","point","line","custom"]
+        },
+        "dimensions":  {"$ref":"#/$defs/Vector3","description":"Full extents (W×D×H) in meters."},
+        "length_m":    {"type":"number","exclusiveMinimum":0},
+        "width_m":     {"type":"number","exclusiveMinimum":0},
+        "height_m":    {"type":"number","exclusiveMinimum":0},
+        "radius_m":    {"type":"number","exclusiveMinimum":0},
+        "inner_radius_m": {"type":"number"},
+        "cross_section_m2": {"type":"number"},
+        "radar_cross_section_m2": {"type":"number"},
+        "bounding_box":   {"$ref":"#/$defs/BoundingBox3"},
+        "bounding_sphere":{"$ref":"#/$defs/BoundingSphere"},
+        "mesh_lod":       {"type":"array","items":{"$ref":"#/$defs/AssetRef"},"description":"LOD meshes from highest to lowest detail."},
+        "collision_mesh": {"$ref":"#/$defs/AssetRef"},
+        "cad_ref":        {"$ref":"#/$defs/AssetRef"},
+        "point_cloud_ref":{"$ref":"#/$defs/AssetRef"},
+        "usd_prim_path":  {"type":"string"}
+      }
+    },
+
+    "Material": {
+      "type": "object",
+      "description": "Physical and visual material of an entity surface.",
+      "additionalProperties": false,
+      "properties": {
+        "id":                 {"$ref":"#/$defs/UUID"},
+        "name":               {"type":"string"},
+        "material_class": {
+          "type":"string",
+          "enum":["metal","steel","aluminum","titanium","composite","rubber","glass","concrete","wood",
+                  "soil","sand","water","ice","vegetation","fabric","ceramic","plastic","explosive",
+                  "fuel","biological","custom"]
+        },
+        "density_kg_m3":           {"type":"number"},
+        "youngs_modulus_gpa":      {"type":"number"},
+        "poissons_ratio":          {"type":"number","minimum":0,"maximum":0.5},
+        "yield_strength_mpa":      {"type":"number"},
+        "ultimate_strength_mpa":   {"type":"number"},
+        "thermal_conductivity_wm": {"type":"number"},
+        "specific_heat_j_kg":      {"type":"number"},
+        "melting_point_c":         {"type":"number"},
+        "emissivity":              {"type":"number","minimum":0,"maximum":1},
+        "radar_absorbing":         {"type":"boolean","default":false},
+        "radar_cross_section_m2":  {"type":"number"},
+        "ir_signature":            {"type":"number"},
+        "acoustic_impedance":      {"type":"number"},
+        "flammable":               {"type":"boolean","default":false},
+        "color_albedo":            {"$ref":"#/$defs/ColorRGBA"},
+        "roughness":               {"type":"number","minimum":0,"maximum":1},
+        "metallic":                {"type":"number","minimum":0,"maximum":1},
+        "opacity":                 {"type":"number","minimum":0,"maximum":1,"default":1.0},
+        "texture_albedo":          {"$ref":"#/$defs/AssetRef"},
+        "texture_normal":          {"$ref":"#/$defs/AssetRef"},
+        "texture_roughness":       {"$ref":"#/$defs/AssetRef"},
+        "texture_metallic":        {"$ref":"#/$defs/AssetRef"},
+        "texture_emissive":        {"$ref":"#/$defs/AssetRef"},
+        "texture_ao":              {"$ref":"#/$defs/AssetRef"},
+        "shader_ref":              {"type":"string"}
+      }
+    },
+
+    "ComponentBase": {
+      "type": "object",
+      "description": "Base definition for any component attached to an entity.",
+      "required": ["id","component_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":             {"$ref":"#/$defs/UUID"},
+        "name":           {"type":"string"},
+        "component_type": {
+          "type":"string",
+          "enum":[
+            "engine","turbine","motor_electric","motor_hydraulic","transmission","gearbox",
+            "fuel_tank","fuel_pump","fuel_line","battery","capacitor","power_bus","inverter",
+            "generator","apu","solar_panel","nuclear_reactor",
+            "radar","sonar","lidar","camera_eo","camera_ir","camera_sar","gps","ins","imu",
+            "altimeter","barometer","magnetometer","weather_sensor","chemical_sensor",
+            "biological_sensor","radiation_sensor","acoustic_sensor","seismic_sensor",
+            "hyperspectral","multispectral","rfid","sigint","comint","elint",
+            "gun","cannon","missile_launcher","rocket_pod","torpedo_tube","bomb_bay",
+            "laser_designator","laser_weapon","directed_energy","mine_dispenser",
+            "radio_vhf","radio_uhf","radio_hf","satcom","data_link","link16","link22",
+            "mesh_radio","laser_comm","acoustic_modem","wifi","bluetooth","ethernet_mil",
+            "mil_std_1553","arinc429","spacewire",
+            "computer_mission","computer_flight","computer_fire_control","fpga","gpu_compute",
+            "navigation_computer","mission_planner","ai_inference_engine",
+            "cooling_liquid","cooling_air","cooling_thermoelectric",
+            "hydraulic_system","pneumatic_system","landing_gear","parachute",
+            "wing","rotor","propeller","control_surface_elevator","control_surface_aileron",
+            "control_surface_rudder","control_surface_flap","vectored_thrust_nozzle",
+            "track_system","wheel","suspension","steering",
+            "turret","gun_mount","weapon_station","remote_weapon_station",
+            "armor_passive","armor_reactive","armor_active","countermeasure_chaff",
+            "countermeasure_flare","countermeasure_decoy","jammer_ew",
+            "cargo_bay","bomb_bay","payload_bay","external_hardpoint",
+            "manipulator","robotic_arm","gripper","end_effector",
+            "servo","actuator_linear","actuator_rotary","actuator_hydraulic",
+            "reaction_wheel","thruster_cold_gas","thruster_ion","thruster_chemical",
+            "docking_port","refueling_probe","refueling_drogue",
+            "winch","crane","anchor","net_dispenser",
+            "medical_unit","decontamination_unit","repair_module",
+            "logistic_container","supply_module","ammunition_storage",
+            "light_navigation","light_spot","light_ir","laser_pointer",
+            "audio_emitter","audio_receiver",
+            "ai_module","behavior_module","autonomy_stack",
+            "custom"
+          ]
+        },
+        "mount_transform": {"$ref":"#/$defs/Transform"},
+        "parent_component_id": {"$ref":"#/$defs/UUID"},
+        "child_component_ids": {"type":"array","items":{"$ref":"#/$defs/UUID"}},
+        "mass_kg":             {"type":"number"},
+        "dimensions":          {"$ref":"#/$defs/Vector3"},
+        "power_input_w":       {"type":"number","description":"Required power draw in watts."},
+        "power_output_w":      {"type":"number"},
+        "state": {
+          "type":"string",
+          "enum":["operational","degraded","damaged","failed","disabled","off","standby","booting"],
+          "default":"operational"
+        },
+        "enabled":            {"type":"boolean","default":true},
+        "health_pct":         {"type":"number","minimum":0,"maximum":100,"default":100},
+        "temperature_c":      {"type":"number"},
+        "hours_operated":     {"type":"number"},
+        "manufacturer":       {"type":"string"},
+        "model":              {"type":"string"},
+        "serial_number":      {"type":"string"},
+        "properties":         {"type":"object","additionalProperties":true},
+        "asset_ref":          {"$ref":"#/$defs/AssetRef"}
+      }
+    },
+
+    "SensorSpec": {
+      "type": "object",
+      "description": "Sensor system specification.",
+      "required": ["id","sensor_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":           {"$ref":"#/$defs/UUID"},
+        "name":         {"type":"string"},
+        "sensor_type": {
+          "type":"string",
+          "enum":["radar","eo","ir","sar","lidar","sonar","gps","ins","imu","altimeter",
+                  "barometer","magnetometer","weather","chemical","biological","radiation",
+                  "acoustic","seismic","hyperspectral","multispectral","rfid","sigint",
+                  "comint","elint","camera_visible","camera_thermal","camera_uv",
+                  "camera_night_vision","event_camera","depth_camera","tof","structured_light",
+                  "force_torque","tactile","proximity","ultrasonic","optical_flow","custom"]
+        },
+        "mount_transform": {"$ref":"#/$defs/Transform"},
+        "fov_horizontal_deg": {"type":"number","minimum":0,"maximum":360},
+        "fov_vertical_deg":   {"type":"number","minimum":0,"maximum":180},
+        "fov_min_range_m":    {"type":"number","minimum":0},
+        "fov_max_range_m":    {"type":"number"},
+        "resolution_width":   {"type":"integer"},
+        "resolution_height":  {"type":"integer"},
+        "frame_rate_hz":      {"type":"number"},
+        "update_rate_hz":     {"type":"number"},
+        "spectral_band":      {"type":"string"},
+        "wavelength_min_nm":  {"type":"number"},
+        "wavelength_max_nm":  {"type":"number"},
+        "sensitivity":        {"type":"number"},
+        "dynamic_range_db":   {"type":"number"},
+        "noise_equivalent":   {"type":"number"},
+        "latency_ms":         {"type":"number"},
+        "accuracy":           {"type":"number"},
+        "precision":          {"type":"number"},
+        "power_w":            {"type":"number"},
+        "noise_model":        {"type":"string","enum":["none","gaussian","poisson","uniform","custom"],"default":"gaussian"},
+        "output_topic":       {"type":"string"},
+        "output_format":      {"type":"string"},
+        "gimbal_stabilized":  {"type":"boolean","default":false},
+        "steerable":          {"type":"boolean","default":false},
+        "enabled":            {"type":"boolean","default":true},
+        "active_mode":        {"type":"boolean","default":true,"description":"False = passive sensor."},
+        "properties":         {"type":"object","additionalProperties":true}
+      }
+    },
+
+    "ActuatorSpec": {
+      "type": "object",
+      "description": "Actuator system specification.",
+      "required": ["id","actuator_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":             {"$ref":"#/$defs/UUID"},
+        "name":           {"type":"string"},
+        "actuator_type": {
+          "type":"string",
+          "enum":["servo_rotary","servo_linear","motor_dc","motor_brushless","motor_stepper",
+                  "hydraulic_linear","hydraulic_rotary","pneumatic_linear","pneumatic_rotary",
+                  "thruster_fixed","thruster_vectored","propeller","rotor_main","rotor_tail",
+                  "control_surface","thrust_reverser","reaction_wheel","magnetorquer",
+                  "linear_actuator","cable_drive","belt_drive","rack_pinion",
+                  "shape_memory_alloy","piezoelectric","electroactive_polymer","custom"]
+        },
+        "mount_transform":   {"$ref":"#/$defs/Transform"},
+        "axis":              {"$ref":"#/$defs/Vector3"},
+        "max_force_n":       {"type":"number"},
+        "max_torque_nm":     {"type":"number"},
+        "max_velocity":      {"type":"number"},
+        "max_acceleration":  {"type":"number"},
+        "range_min":         {"type":"number"},
+        "range_max":         {"type":"number"},
+        "position_current":  {"type":"number"},
+        "power_w":           {"type":"number"},
+        "efficiency":        {"type":"number","minimum":0,"maximum":1},
+        "backdriveable":     {"type":"boolean","default":false},
+        "enabled":           {"type":"boolean","default":true},
+        "properties":        {"type":"object","additionalProperties":true}
+      }
+    },
+
+    "CommunicationSpec": {
+      "type": "object",
+      "required": ["id","comm_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":           {"$ref":"#/$defs/UUID"},
+        "name":         {"type":"string"},
+        "comm_type": {
+          "type":"string",
+          "enum":["radio_vhf","radio_uhf","radio_hf","radio_vhf_fm","radio_uhf_satcom",
+                  "satcom_wideband","satcom_narrowband","data_link_generic","link16","link22",
+                  "jtids","mids","maap","cdl","rover","isr_link","ethernet_mil",
+                  "mil_std_1553","arinc429","can","rs422","rs485","spacewire","fibre_channel",
+                  "afdx","arinc664","wifi_80211","bluetooth","zigbee","lora","nfc","rfid",
+                  "laser_comm_free_space","acoustic_uw","acoustic_uw_ofdm",
+                  "quantum_key_distribution","custom"]
+        },
+        "frequency_mhz":    {"type":"number"},
+        "bandwidth_mhz":    {"type":"number"},
+        "range_km":         {"type":"number"},
+        "data_rate_mbps":   {"type":"number"},
+        "latency_ms":       {"type":"number"},
+        "encryption":       {"type":"boolean","default":false},
+        "encryption_type":  {"type":"string"},
+        "protocol":         {"type":"string"},
+        "power_w":          {"type":"number"},
+        "antenna_gain_dbi": {"type":"number"},
+        "antenna_type":     {"type":"string","enum":["omnidirectional","directional","phased_array","yagi","parabolic","patch","custom"]},
+        "duplex_mode":      {"type":"string","enum":["simplex","half_duplex","full_duplex"]},
+        "jam_resistance":   {"type":"boolean","default":false},
+        "lpi_lpe":          {"type":"boolean","default":false,"description":"Low Probability of Intercept/Exploitation."},
+        "enabled":          {"type":"boolean","default":true},
+        "network_id":       {"type":"string"},
+        "properties":       {"type":"object","additionalProperties":true}
+      }
+    },
+
+    "WeaponSpec": {
+      "type": "object",
+      "required": ["id","weapon_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":              {"$ref":"#/$defs/UUID"},
+        "name":            {"type":"string"},
+        "weapon_type": {
+          "type":"string",
+          "enum":["gun_small_arms","gun_cannon","gun_naval","missile_air_to_air","missile_air_to_ground",
+                  "missile_ground_to_air","missile_ground_to_ground","missile_anti_ship",
+                  "missile_anti_submarine","missile_anti_tank","rocket_unguided","rocket_guided",
+                  "torpedo","bomb_unguided","bomb_guided","bomb_glide","loitering_munition",
+                  "laser_weapon","directed_energy_mw","railgun","coilgun",
+                  "grenade_launcher","mortar","howitzer","artillery","mlrs",
+                  "mine_land","mine_naval","counter_uav_net","counter_uav_kinetic","custom"]
+        },
+        "mount_transform":      {"$ref":"#/$defs/Transform"},
+        "caliber_mm":           {"type":"number"},
+        "muzzle_velocity_mps":  {"type":"number"},
+        "rate_of_fire_rpm":     {"type":"number"},
+        "effective_range_m":    {"type":"number"},
+        "max_range_m":          {"type":"number"},
+        "min_range_m":          {"type":"number"},
+        "ammunition_type":      {"type":"string"},
+        "ammunition_count":     {"type":"integer","minimum":0},
+        "ammunition_max":       {"type":"integer"},
+        "warhead_type":         {"type":"string"},
+        "warhead_mass_kg":      {"type":"number"},
+        "explosive_mass_tnt_kg":{"type":"number"},
+        "lethal_radius_m":      {"type":"number"},
+        "guidance_type": {
+          "type":"string",
+          "enum":["unguided","laser_guided","radar_guided","ir_homing","gps_inertial",
+                  "wire_guided","active_radar","semi_active_radar","passive_ir","tv_guided",
+                  "man_in_loop","loal","lobl","fire_and_forget","custom"]
+        },
+        "seeker_type":          {"type":"string"},
+        "reload_time_s":        {"type":"number"},
+        "target_types":         {"type":"array","items":{"type":"string"}},
+        "state": {
+          "type":"string",
+          "enum":["safe","ready","armed","firing","reloading","jammed","expended","malfunction"],
+          "default":"safe"
+        },
+        "enabled":              {"type":"boolean","default":true},
+        "eo_sensor_id":         {"$ref":"#/$defs/UUID","description":"EO/IR sensor used for targeting."},
+        "fire_control_id":      {"$ref":"#/$defs/UUID"},
+        "properties":           {"type":"object","additionalProperties":true}
+      }
+    },
+
+    "PowerSpec": {
+      "type": "object",
+      "description": "Power system and energy budget.",
+      "additionalProperties": false,
+      "properties": {
+        "source_type": {
+          "type":"string",
+          "enum":["diesel","gasoline","jet_a","avgas","hydrogen","nuclear","solar","wind",
+                  "battery_li_ion","battery_li_po","battery_solid_state","battery_nickel",
+                  "fuel_cell_hydrogen","fuel_cell_methanol","supercapacitor",
+                  "electric_grid","hybrid_series","hybrid_parallel","external_tow","custom"]
+        },
+        "capacity_kwh":           {"type":"number"},
+        "current_energy_kwh":     {"type":"number"},
+        "max_output_kw":          {"type":"number"},
+        "current_draw_kw":        {"type":"number"},
+        "voltage_v":              {"type":"number"},
+        "current_a":              {"type":"number"},
+        "fuel_type":              {"type":"string"},
+        "fuel_capacity_l":        {"type":"number"},
+        "fuel_remaining_l":       {"type":"number"},
+        "fuel_flow_rate_l_hr":    {"type":"number"},
+        "specific_fuel_consumption":{"type":"number","description":"g/kWh or lb/hp/hr."},
+        "charge_pct":             {"type":"number","minimum":0,"maximum":100},
+        "range_km":               {"type":"number"},
+        "endurance_hours":        {"type":"number"},
+        "recharge_rate_kw":       {"type":"number"},
+        "battery_cycles":         {"type":"integer"},
+        "battery_health_pct":     {"type":"number","minimum":0,"maximum":100},
+        "thermal_output_kw":      {"type":"number"},
+        "redundancy_level":       {"type":"integer","minimum":0,"description":"Number of backup power sources."}
+      }
+    },
+
+    "HealthSpec": {
+      "type": "object",
+      "description": "Structural health, damage, and survivability state.",
+      "additionalProperties": false,
+      "properties": {
+        "hp_max":                 {"type":"number","default":100},
+        "hp_current":             {"type":"number"},
+        "structural_integrity_pct":{"type":"number","minimum":0,"maximum":100},
+        "armor_rating_mm_rha":    {"type":"number","description":"Equivalent rolled homogeneous armor mm."},
+        "armor_type":             {"type":"string","enum":["none","steel","composite","reactive","active","spaced","slat","custom"]},
+        "damage_model":           {"type":"string","enum":["none","simple_hp","zonal","component_based","fcs","custom"],"default":"simple_hp"},
+        "hit_zones": {
+          "type":"array",
+          "items": {
+            "type":"object",
+            "properties": {
+              "zone_id":         {"type":"string"},
+              "zone_name":       {"type":"string"},
+              "hp_max":          {"type":"number"},
+              "hp_current":      {"type":"number"},
+              "armor_mm_rha":    {"type":"number"},
+              "critical_system": {"type":"string"}
+            }
+          }
+        },
+        "damaged_systems":       {"type":"array","items":{"type":"string"}},
+        "is_on_fire":            {"type":"boolean","default":false},
+        "is_flooding":           {"type":"boolean","default":false},
+        "is_destroyed":          {"type":"boolean","default":false},
+        "destruction_effect_ref":{"type":"string"},
+        "repair_rate_hp_s":      {"type":"number","minimum":0},
+        "can_self_repair":       {"type":"boolean","default":false},
+        "crew_survivability":    {"type":"number","minimum":0,"maximum":1}
+      }
+    },
+
+    "PropulsionSpec": {
+      "type": "object",
+      "description": "Mobility and propulsion system.",
+      "additionalProperties": false,
+      "properties": {
+        "propulsion_type": {
+          "type":"string",
+          "enum":["tracked","half_tracked","wheeled_4x4","wheeled_6x6","wheeled_8x8","legged_biped",
+                  "legged_quadruped","legged_hexapod","fixed_wing_prop","fixed_wing_jet",
+                  "rotary_wing_single","rotary_wing_coaxial","rotary_wing_tandem","tiltrotor",
+                  "multirotor","flapping_wing","hybrid_vtol","waterjet","screw_single",
+                  "screw_twin","sail","underwater_thruster","ion_thruster","chemical_rocket",
+                  "solid_rocket","ramjet","scramjet","none","custom"]
+        },
+        "max_speed_mps":          {"type":"number"},
+        "cruise_speed_mps":       {"type":"number"},
+        "min_speed_mps":          {"type":"number","default":0},
+        "max_altitude_m":         {"type":"number"},
+        "service_ceiling_m":      {"type":"number"},
+        "max_depth_m":            {"type":"number"},
+        "max_acceleration_mps2":  {"type":"number"},
+        "max_deceleration_mps2":  {"type":"number"},
+        "max_climb_rate_mps":     {"type":"number"},
+        "max_descent_rate_mps":   {"type":"number"},
+        "max_turn_rate_dps":      {"type":"number"},
+        "max_g_positive":         {"type":"number","description":"Maximum sustained positive G."},
+        "max_g_negative":         {"type":"number"},
+        "thrust_n":               {"type":"number"},
+        "thrust_to_weight":       {"type":"number"},
+        "engine_count":           {"type":"integer","minimum":0},
+        "rotor_count":            {"type":"integer","minimum":0},
+        "turning_radius_m":       {"type":"number"},
+        "step_height_m":          {"type":"number","description":"Max step height for ground vehicles."},
+        "trench_crossing_m":      {"type":"number"},
+        "swim_capable":           {"type":"boolean","default":false},
+        "terrain_following":      {"type":"boolean","default":false},
+        "vtol_capable":           {"type":"boolean","default":false}
+      }
+    },
+
+    "AISpec": {
+      "type": "object",
+      "description": "AI control, perception, and autonomy specification.",
+      "additionalProperties": false,
+      "properties": {
+        "controller_type": {
+          "type":"string",
+          "enum":["none","manual","assisted","scripted","behavior_tree","finite_state_machine",
+                  "hierarchical_fsm","planner_strips","planner_htn","planner_mcts","planner_pddl",
+                  "rl_policy","rl_ppo","rl_sac","rl_dqn","rl_multi_agent",
+                  "llm_agent","neuro_symbolic","rule_based","pid_controller","mpc","hybrid","custom"]
+        },
+        "autonomy_level": {
+          "type":"string",
+          "enum":["manual","decision_support","assisted","partial","conditional",
+                  "high","full","swarm_coordinated"],
+          "description":"SAE-like autonomy level adapted for military/robotics systems."
+        },
+        "behavior_tree_ref":      {"type":"string"},
+        "state_machine_ref":      {"type":"string"},
+        "planner_ref":            {"type":"string"},
+        "policy_ref":             {"type":"string"},
+        "knowledge_base_ref":     {"type":"string"},
+        "current_state":          {"type":"string"},
+        "current_task":           {"type":"string"},
+        "current_goal":           {"type":"string"},
+        "goals": {
+          "type":"array",
+          "items": {
+            "type":"object",
+            "required":["goal_type"],
+            "additionalProperties": false,
+            "properties": {
+              "goal_id":         {"$ref":"#/$defs/UUID"},
+              "goal_type":       {"type":"string"},
+              "description":     {"type":"string"},
+              "priority":        {"type":"integer","minimum":1},
+              "target_entity_id":{"$ref":"#/$defs/UUID"},
+              "target_position": {"$ref":"#/$defs/Vector3"},
+              "target_geo":      {"$ref":"#/$defs/GeoCoordinate"},
+              "deadline_s":      {"type":"number"},
+              "status":          {"type":"string","enum":["pending","active","achieved","failed","cancelled"]},
+              "parameters":      {"type":"object","additionalProperties":true}
+            }
+          }
+        },
+        "tasks": {
+          "type":"array",
+          "items": {
+            "type":"object",
+            "required":["task_type"],
+            "additionalProperties": false,
+            "properties": {
+              "task_id":         {"$ref":"#/$defs/UUID"},
+              "task_type":       {"type":"string"},
+              "assigned_goal_id":{"$ref":"#/$defs/UUID"},
+              "status":          {"type":"string"},
+              "priority":        {"type":"integer"},
+              "parameters":      {"type":"object","additionalProperties":true}
+            }
+          }
+        },
+        "perception_radius_m":    {"type":"number"},
+        "perception_fov_deg":     {"type":"number"},
+        "memory_duration_s":      {"type":"number","description":"How long entity remembers perceived objects."},
+        "working_memory": {
+          "type":"array",
+          "description":"Recently perceived entities and facts.",
+          "items": {
+            "type":"object",
+            "properties": {
+              "entity_id":      {"$ref":"#/$defs/UUID"},
+              "last_seen_s":    {"type":"number"},
+              "confidence":     {"$ref":"#/$defs/ConfidenceScore"},
+              "position_last":  {"$ref":"#/$defs/Vector3"}
+            }
+          }
+        },
+        "long_term_memory_ref":   {"type":"string"},
+        "faction":                {"type":"string"},
+        "team_id":                {"type":"string"},
+        "commander_id":           {"$ref":"#/$defs/UUID"},
+        "subordinate_ids":        {"type":"array","items":{"$ref":"#/$defs/UUID"}},
+        "rules_of_engagement":    {"type":"string"},
+        "threat_awareness":       {"type":"boolean","default":true},
+        "threat_list": {
+          "type":"array",
+          "items": {
+            "type":"object",
+            "properties": {
+              "entity_id":      {"$ref":"#/$defs/UUID"},
+              "threat_level":   {"type":"string","enum":["low","medium","high","critical"]},
+              "confidence":     {"$ref":"#/$defs/ConfidenceScore"}
+            }
+          }
+        },
+        "navigation_type":        {"type":"string","enum":["none","waypoint","path_follow","rrt","a_star","d_star","potential_field","slam_nav","custom"]},
+        "waypoints": {
+          "type":"array",
+          "items": {
+            "type":"object",
+            "properties": {
+              "id":           {"$ref":"#/$defs/UUID"},
+              "position":     {"$ref":"#/$defs/Vector3"},
+              "geo":          {"$ref":"#/$defs/GeoCoordinate"},
+              "action":       {"type":"string"},
+              "speed_mps":    {"type":"number"},
+              "altitude_m":   {"type":"number"},
+              "loiter_time_s":{"type":"number"}
+            }
+          }
+        },
+        "formation_role":         {"type":"string"},
+        "swarm_id":               {"type":"string"},
+        "swarm_algorithm":        {"type":"string"},
+        "rl_observation_space":   {"type":"string"},
+        "rl_action_space":        {"type":"string"},
+        "rl_reward_function":     {"type":"string"},
+        "llm_agent_profile":      {"type":"string"},
+        "coordination_protocol":  {"type":"string"},
+        "learning_enabled":       {"type":"boolean","default":false},
+        "prediction_horizon_s":   {"type":"number"},
+        "custom_properties":      {"type":"object","additionalProperties":true}
+      }
+    },
+
+    "SimulationSpec": {
+      "type": "object",
+      "description": "Simulation engine properties for this entity.",
+      "additionalProperties": false,
+      "properties": {
+        "simulation_enabled":   {"type":"boolean","default":true},
+        "physics_enabled":      {"type":"boolean","default":true},
+        "render_enabled":       {"type":"boolean","default":true},
+        "ai_enabled":           {"type":"boolean","default":true},
+        "sensor_enabled":       {"type":"boolean","default":true},
+        "collision_enabled":    {"type":"boolean","default":true},
+        "tick_rate_hz":         {"type":"number","default":60},
+        "update_frequency_hz":  {"type":"number"},
+        "sleep_state":          {"type":"boolean","default":false},
+        "sleep_distance_m":     {"type":"number","description":"Distance from camera at which entity enters sleep state."},
+        "activation_radius_m":  {"type":"number"},
+        "simulation_layer":     {"type":"integer","minimum":0,"description":"Simulation layer for selective updates."},
+        "lod_level":            {"type":"integer","minimum":0,"maximum":10},
+        "lod_auto":             {"type":"boolean","default":true},
+        "lod_distances_m":      {"type":"array","items":{"type":"number"}},
+        "spawn_rule":           {"type":"string"},
+        "despawn_rule":         {"type":"string"},
+        "respawn_enabled":      {"type":"boolean","default":false},
+        "respawn_delay_s":      {"type":"number"},
+        "network_replicated":   {"type":"boolean","default":false},
+        "network_role":         {"type":"string","enum":["authority","proxy","autonomous","simulated"]},
+        "engine_specific": {
+          "type":"object",
+          "description":"Engine-specific overrides. Keys are engine names.",
+          "additionalProperties": true,
+          "properties": {
+            "omniverse":  {"type":"object","additionalProperties":true},
+            "physx":      {"type":"object","additionalProperties":true},
+            "unreal":     {"type":"object","additionalProperties":true},
+            "unity":      {"type":"object","additionalProperties":true},
+            "mujoco":     {"type":"object","additionalProperties":true},
+            "gazebo":     {"type":"object","additionalProperties":true},
+            "ros2":       {"type":"object","additionalProperties":true}
+          }
+        }
+      }
+    },
+
+    "RenderSpec": {
+      "type": "object",
+      "description": "Rendering and visualization properties.",
+      "additionalProperties": false,
+      "properties": {
+        "visible":            {"type":"boolean","default":true},
+        "cast_shadow":        {"type":"boolean","default":true},
+        "receive_shadow":     {"type":"boolean","default":true},
+        "cast_reflection":    {"type":"boolean","default":true},
+        "translucent":        {"type":"boolean","default":false},
+        "emissive":           {"type":"boolean","default":false},
+        "emissive_color":     {"$ref":"#/$defs/ColorRGBA"},
+        "emissive_intensity": {"type":"number","minimum":0},
+        "opacity":            {"type":"number","minimum":0,"maximum":1,"default":1.0},
+        "render_layer":       {"type":"integer","minimum":0},
+        "render_priority":    {"type":"integer"},
+        "wireframe":          {"type":"boolean","default":false},
+        "two_sided":          {"type":"boolean","default":false},
+        "mesh_ref":           {"$ref":"#/$defs/AssetRef"},
+        "material_overrides": {"type":"array","items":{"$ref":"#/$defs/Material"}},
+        "skeleton_ref":       {"$ref":"#/$defs/AssetRef"},
+        "animation_clip":     {"type":"string"},
+        "animation_speed":    {"type":"number","default":1.0},
+        "animation_loop":     {"type":"boolean","default":true},
+        "particle_system_ref":{"$ref":"#/$defs/AssetRef"},
+        "trail_enabled":      {"type":"boolean","default":false},
+        "trail_width_m":      {"type":"number"},
+        "trail_length_m":     {"type":"number"},
+        "trail_color":        {"$ref":"#/$defs/ColorRGBA"},
+        "label_visible":      {"type":"boolean","default":false},
+        "label_text":         {"type":"string"},
+        "icon_ref":           {"$ref":"#/$defs/AssetRef"},
+        "light_ref":          {"$ref":"#/$defs/AssetRef"},
+        "post_process_ref":   {"type":"string"}
+      }
+    },
+
+    "BehaviorSpec": {
+      "type": "object",
+      "description": "Active behavior definition.",
+      "additionalProperties": false,
+      "properties": {
+        "current_behavior":   {"type":"string"},
+        "behavior_stack":     {"type":"array","items":{"type":"string"}},
+        "available_behaviors":{
+          "type":"array",
+          "items": {
+            "type":"string",
+            "enum":["idle","wait","move_to","follow","patrol","orbit","loiter","hover",
+                    "attack","engage","fire","reload","evade","retreat","defend","cover",
+                    "observe","scan","search","search_and_destroy","track","designate_target",
+                    "communicate","broadcast","jam","spoof","coordinate",
+                    "dock","undock","land","takeoff","hover","refuel","rearm","repair",
+                    "pickup","drop","deliver","escort","intercept","interdict",
+                    "suppress","screen","overwatch","flank","ambush","breach","clear",
+                    "surrender","capture","detain","evacuate","triage","treat","extract",
+                    "deploy","emplace","conceal","camouflage",
+                    "self_destruct","abort","emergency_landing","bailout",
+                    "boot","shutdown","sleep","wake",
+                    "mine","harvest","construct","survey","inspect","sample","custom"]
+          }
+        },
+        "behavior_tree_ref":  {"type":"string"},
+        "transition_conditions":{"type":"object","additionalProperties":true}
+      }
+    },
+
+    "RuntimeState": {
+      "type": "object",
+      "description": "Current runtime state of the entity.",
+      "additionalProperties": true,
+      "properties": {
+        "lifecycle": {
+          "type":"string",
+          "enum":["uninitialized","spawning","active","inactive","standby","sleeping","despawning","destroyed","custom"],
+          "default":"active"
+        },
+        "operational_status": {
+          "type":"string",
+          "enum":["fully_operational","degraded","mission_capable","combat_capable",
+                  "limited_capability","non_mission_capable","destroyed"],
+          "default":"fully_operational"
+        },
+        "alive":             {"type":"boolean","default":true},
+        "is_destroyed":      {"type":"boolean","default":false},
+        "is_active":         {"type":"boolean","default":true},
+        "is_collidable":     {"type":"boolean","default":true},
+        "is_visible":        {"type":"boolean","default":true},
+        "is_selected":       {"type":"boolean","default":false},
+        "is_targeted":       {"type":"boolean","default":false},
+        "is_locked":         {"type":"boolean","default":false,"description":"Radar/weapon lock."},
+        "is_tracked":        {"type":"boolean","default":false},
+        "is_detected":       {"type":"boolean","default":false},
+        "is_jammed":         {"type":"boolean","default":false},
+        "is_moving":         {"type":"boolean","default":false},
+        "is_firing":         {"type":"boolean","default":false},
+        "is_docked":         {"type":"boolean","default":false},
+        "is_flying":         {"type":"boolean","default":false},
+        "is_submerged":      {"type":"boolean","default":false},
+        "is_in_stealth":     {"type":"boolean","default":false},
+        "is_in_formation":   {"type":"boolean","default":false},
+        "is_on_fire":        {"type":"boolean","default":false},
+        "is_flooded":        {"type":"boolean","default":false},
+        "alert_level":       {"type":"string","enum":["green","yellow","orange","red","black"],"default":"green"},
+        "engagement_state":  {"type":"string","enum":["not_engaged","engaging","disengaging","evading"],"default":"not_engaged"},
+        "sim_time_spawned_s":{"type":"number"},
+        "sim_time_alive_s":  {"type":"number"},
+        "custom":            {"type":"object","additionalProperties":true}
+      }
+    },
+
+    "ResourceSet": {
+      "type": "object",
+      "description": "All resource levels of this entity.",
+      "additionalProperties": false,
+      "properties": {
+        "fuel":               {"$ref":"#/$defs/ResourceLevel"},
+        "battery":            {"$ref":"#/$defs/ResourceLevel"},
+        "hydraulic_pressure": {"$ref":"#/$defs/ResourceLevel"},
+        "coolant":            {"$ref":"#/$defs/ResourceLevel"},
+        "ammunition_primary": {"$ref":"#/$defs/ResourceLevel"},
+        "ammunition_secondary":{"$ref":"#/$defs/ResourceLevel"},
+        "missiles":           {"$ref":"#/$defs/ResourceLevel"},
+        "decoys":             {"$ref":"#/$defs/ResourceLevel"},
+        "cargo_mass_kg":      {"$ref":"#/$defs/ResourceLevel"},
+        "cargo_volume_m3":    {"$ref":"#/$defs/ResourceLevel"},
+        "bandwidth_mbps":     {"$ref":"#/$defs/ResourceLevel"},
+        "compute_tflops":     {"$ref":"#/$defs/ResourceLevel"},
+        "memory_gb":          {"$ref":"#/$defs/ResourceLevel"},
+        "storage_tb":         {"$ref":"#/$defs/ResourceLevel"},
+        "medical_supplies":   {"$ref":"#/$defs/ResourceLevel"},
+        "food":               {"$ref":"#/$defs/ResourceLevel"},
+        "water":              {"$ref":"#/$defs/ResourceLevel"},
+        "oxygen":             {"$ref":"#/$defs/ResourceLevel"},
+        "custom":             {"type":"object","additionalProperties":{"$ref":"#/$defs/ResourceLevel"}}
+      }
+    },
+
+    "Relationship": {
+      "type": "object",
+      "required": ["relation_type","target_id"],
+      "additionalProperties": false,
+      "properties": {
+        "relation_type": {
+          "type":"string",
+          "enum":["hasComponent","partOf","contains","mountedOn","attachedTo","integratedWith",
+                  "connectedTo","tetheredTo","dockedWith","carriageOf","carries",
+                  "communicatesWith","poweredBy","controlledBy","commandedBy","operatedBy",
+                  "tracks","detects","identifies","classifies","targets","designates",
+                  "firesAt","intercepts","escorts","follows","guards","shadows",
+                  "refuelsFrom","armsFrom","repairedBy","suppliedBy","consumes","produces",
+                  "belongsTo","owns","supports","protects","blocks","denies",
+                  "allyOf","enemyOf","neutralTo","cooperatesWith","competesWith",
+                  "spatiallyNear","inside","above","below","alongside","behind","inFrontOf",
+                  "providesDataTo","receivesDataFrom","interfacesWith","synchronizesWith",
+                  "calledBy","calls","responds_to","acknowledges",
+                  "custom"]
+        },
+        "target_id":      {"$ref":"#/$defs/UUID"},
+        "target_name":    {"type":"string"},
+        "weight":         {"type":"number","minimum":0,"maximum":1},
+        "bidirectional":  {"type":"boolean","default":false},
+        "valid_from_s":   {"type":"number","description":"Simulation time this relationship becomes valid."},
+        "valid_until_s":  {"type":"number"},
+        "confidence":     {"$ref":"#/$defs/ConfidenceScore"},
+        "properties":     {"type":"object","additionalProperties":true}
+      }
+    },
+
+    "EventBinding": {
+      "type": "object",
+      "description": "An event this entity can emit or listen to.",
+      "required": ["event_type","binding_mode"],
+      "additionalProperties": false,
+      "properties": {
+        "event_type": {
+          "type":"string",
+          "enum":["on_spawn","on_despawn","on_damage","on_destroy","on_repair",
+                  "on_move","on_stop","on_fire","on_reload","on_impact","on_explosion",
+                  "on_detect","on_track","on_lock","on_lock_lost","on_collision",
+                  "on_fuel_low","on_fuel_empty","on_power_loss","on_component_fail",
+                  "on_mission_start","on_mission_complete","on_mission_fail",
+                  "on_communication_received","on_communication_sent",
+                  "on_state_change","on_behavior_change","on_goal_achieved",
+                  "on_dock","on_undock","on_land","on_takeoff",
+                  "on_refuel_complete","on_rearm_complete","on_capture","on_surrender",
+                  "custom"]
+        },
+        "binding_mode":   {"type":"string","enum":["emit","listen","both"]},
+        "handler_ref":    {"type":"string","description":"Reference to event handler script or BT node."},
+        "parameters":     {"type":"object","additionalProperties":true},
+        "enabled":        {"type":"boolean","default":true}
+      }
+    },
+
+    "ConstraintBinding": {
+      "type": "object",
+      "required": ["constraint_type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":              {"$ref":"#/$defs/UUID"},
+        "constraint_type": {
+          "type":"string",
+          "enum":["fixed","hinge","prismatic","ball_socket","universal","spring",
+                  "distance_min","distance_max","gear","rack_pinion",
+                  "exclusion_zone","inclusion_zone","altitude_min","altitude_max",
+                  "speed_max","resource_min","mission_dependency","logical","custom"]
+        },
+        "target_entity_id":{"$ref":"#/$defs/UUID"},
+        "axis":            {"$ref":"#/$defs/Vector3"},
+        "anchor_local":    {"$ref":"#/$defs/Vector3"},
+        "limit_lower":     {"type":"number"},
+        "limit_upper":     {"type":"number"},
+        "stiffness":       {"type":"number"},
+        "damping":         {"type":"number"},
+        "breakable":       {"type":"boolean","default":false},
+        "break_force_n":   {"type":"number"},
+        "break_torque_nm": {"type":"number"},
+        "enabled":         {"type":"boolean","default":true},
+        "properties":      {"type":"object","additionalProperties":true}
+      }
+    },
+
+    "SecurityContext": {
+      "type": "object",
+      "description": "Access control and security properties of this entity record.",
+      "additionalProperties": false,
+      "properties": {
+        "classification_level": {
+          "type":"string",
+          "enum":["unclassified","restricted","confidential","secret","top_secret","top_secret_sci"],
+          "default":"unclassified"
+        },
+        "access_roles":      {"type":"array","items":{"type":"string"}},
+        "owner_faction":     {"type":"string"},
+        "iff_code":          {"type":"string","description":"Identification Friend or Foe transponder code."},
+        "iff_mode":          {"type":"string","enum":["mode1","mode2","mode3","mode4","mode5","mode_s","custom"]},
+        "authentication_required": {"type":"boolean","default":false},
+        "encrypted_comms":   {"type":"boolean","default":false},
+        "can_be_captured":   {"type":"boolean","default":false},
+        "deny_control_on_capture": {"type":"boolean","default":true},
+        "zeroize_on_capture":{"type":"boolean","default":false},
+        "trust_level":       {"type":"string","enum":["untrusted","low","medium","high","verified"],"default":"medium"},
+        "digital_signature": {"type":"string"}
+      }
+    }
+
+  },
+
+  "properties": {
+
+    "id": {
+      "$ref": "#/$defs/UUID",
+      "description": "Globally unique persistent entity identifier. Never reused."
+    },
+
+    "entity_type": {
+      "type": "string",
+      "description": "Primary classification of this entity.",
+      "enum": [
+        "aircraft_fixed_wing","aircraft_fighter","aircraft_bomber","aircraft_transport",
+        "aircraft_tanker","aircraft_aew","aircraft_isr","aircraft_trainer","aircraft_vip",
+        "rotorcraft_helicopter","rotorcraft_attack","rotorcraft_utility","rotorcraft_naval",
+        "uav_fixed_wing","uav_multirotor","uav_tiltrotor","uav_hybrid","uav_balloon",
+        "ucav","loitering_munition","decoy_air","airship","blimp",
+        "spacecraft_satellite","spacecraft_crewed","spacecraft_cargo","spacecraft_probe",
+        "spacecraft_lander","spacecraft_rover","space_station","space_debris",
+        "ground_vehicle_tank","ground_vehicle_apc","ground_vehicle_ifv","ground_vehicle_spg",
+        "ground_vehicle_aaa","ground_vehicle_sam","ground_vehicle_radar","ground_vehicle_mlrs",
+        "ground_vehicle_engineering","ground_vehicle_logistics","ground_vehicle_ambulance",
+        "ground_vehicle_command","ground_vehicle_civilian","ground_vehicle_wheeled",
+        "ugv","robot_legged","robot_manipulator","robot_swarm_unit",
+        "infantry_soldier","infantry_special_forces","infantry_crew","civilian_person","animal",
+        "naval_surface_combatant","naval_destroyer","naval_frigate","naval_corvette",
+        "naval_carrier","naval_amphibious","naval_mine_countermeasure","naval_patrol",
+        "naval_auxiliary","naval_civilian","hovercraft","hydrofoil",
+        "submarine_attack","submarine_ballistic","submarine_special_ops",
+        "uuv_torpedo","uuv_glider","uuv_hovering","uuv_towed",
+        "missile_air_to_air","missile_air_to_ground","missile_ground_to_air",
+        "missile_ground_to_ground","missile_anti_ship","missile_anti_submarine",
+        "missile_anti_tank","missile_ballistic","missile_hypersonic","missile_cruise",
+        "rocket_unguided","projectile_artillery","projectile_small_arms","torpedo","bomb",
+        "radar_ground","radar_naval","radar_airborne","radar_space","radar_fixed",
+        "sensor_platform","surveillance_tower","border_sensor","ew_system",
+        "building_military","building_civilian","building_industrial","building_medical",
+        "building_command","hangar","bunker","fortification","trench","sandbag_position",
+        "bridge","tunnel","dam","runway","taxiway","hardstand","road","railway","powerline",
+        "antenna","communication_tower","satellite_dish","radar_dish",
+        "terrain_feature","mountain","hill","valley","cliff","river","lake","ocean","beach",
+        "vegetation_tree","vegetation_forest","vegetation_bush","vegetation_crop","terrain_urban",
+        "weather_cell","cloud","fog_bank","dust_storm","storm","rain_cell","snow_cell",
+        "explosion","fire","smoke","debris","crater","oil_slick","chemical_agent","biological_agent",
+        "particle_system","light_source","sound_source","ambient_zone","trigger_zone",
+        "waypoint","spawn_point","mission_marker","boundary_marker","exclusion_zone",
+        "logistics_container","supply_cache","ammunition_depot","fuel_point","medical_station",
+        "generic","abstract_concept","logical_object","custom"
+      ]
+    },
+
+    "subtype":   {"type":"string","description":"Model/variant e.g. 'F-16C Block 50', 'T-90M'."},
+    "name":      {"type":"string"},
+    "label":     {"type":"string","description":"Display label in UI."},
+    "callsign":  {"type":"string"},
+    "description":{"type":"string"},
+    "tags":      {"type":"array","items":{"type":"string"}},
+
+    "namespace":             {"type":"string","description":"Ontology or system namespace this entity belongs to."},
+    "ontology_uri":          {"$ref":"#/$defs/URI"},
+    "knowledge_graph_uri":   {"$ref":"#/$defs/URI"},
+    "ontology_class":        {"type":"string"},
+    "template_id":           {"$ref":"#/$defs/UUID","description":"Prototype/prefab template this entity was instantiated from."},
+    "prototype_id":          {"$ref":"#/$defs/UUID"},
+    "instance_of":           {"type":"string","description":"Ontology class this is an instance of."},
+    "semantic_labels":       {"type":"array","items":{"type":"string"}},
+    "ground_truth_class_id": {"type":"integer","description":"Integer class for CV ground truth annotation."},
+
+    "parent_id":  {"$ref":"#/$defs/UUID","description":"Logical parent entity."},
+    "child_ids":  {"type":"array","items":{"$ref":"#/$defs/UUID"}},
+    "owner_id":   {"$ref":"#/$defs/UUID"},
+    "owner_faction":      {"type":"string"},
+    "owner_organization": {"type":"string"},
+    "crew_ids":   {"type":"array","items":{"$ref":"#/$defs/UUID"},"description":"Entity IDs of crew/occupants."},
+
+    "metadata": {
+      "$ref": "https://physworldlm.org/schemas/metadata.schema.json",
+      "description": "Full entity metadata. Conforms to metadata.schema.json."
+    },
+
+    "transform":    {"$ref":"#/$defs/Transform"},
+    "geometry":     {"$ref":"#/$defs/Geometry"},
+    "physics_body": {"$ref":"#/$defs/PhysicsBody"},
+    "materials":    {"type":"array","items":{"$ref":"#/$defs/Material"}},
+
+    "health":      {"$ref":"#/$defs/HealthSpec"},
+    "power":       {"$ref":"#/$defs/PowerSpec"},
+    "propulsion":  {"$ref":"#/$defs/PropulsionSpec"},
+    "resources":   {"$ref":"#/$defs/ResourceSet"},
+
+    "components": {
+      "type":"array",
+      "description":"All subsystems and components attached to this entity.",
+      "items":{"$ref":"#/$defs/ComponentBase"}
+    },
+
+    "sensors": {
+      "type":"array",
+      "description":"All sensors equipped on this entity.",
+      "items":{"$ref":"#/$defs/SensorSpec"}
+    },
+
+    "actuators": {
+      "type":"array",
+      "description":"All actuators of this entity.",
+      "items":{"$ref":"#/$defs/ActuatorSpec"}
+    },
+
+    "weapons": {
+      "type":"array",
+      "description":"All weapon systems of this entity.",
+      "items":{"$ref":"#/$defs/WeaponSpec"}
+    },
+
+    "communications": {
+      "type":"array",
+      "description":"All communication systems of this entity.",
+      "items":{"$ref":"#/$defs/CommunicationSpec"}
+    },
+
+    "ai_behavior":  {"$ref":"#/$defs/AISpec"},
+    "behaviors":    {"$ref":"#/$defs/BehaviorSpec"},
+    "state":        {"$ref":"#/$defs/RuntimeState"},
+
+    "simulation":   {"$ref":"#/$defs/SimulationSpec"},
+    "rendering":    {"$ref":"#/$defs/RenderSpec"},
+
+    "relationships": {
+      "type":"array",
+      "description":"Typed relationships to other entities.",
+      "items":{"$ref":"#/$defs/Relationship"}
+    },
+
+    "event_bindings": {
+      "type":"array",
+      "description":"Events this entity emits or listens to.",
+      "items":{"$ref":"#/$defs/EventBinding"}
+    },
+
+    "constraints": {
+      "type":"array",
+      "description":"Physical and logical constraints involving this entity.",
+      "items":{"$ref":"#/$defs/ConstraintBinding"}
+    },
+
+    "security": {"$ref":"#/$defs/SecurityContext"},
+
+    "mission_ids": {
+      "type":"array",
+      "description":"IDs of missions assigned to this entity.",
+      "items":{"$ref":"#/$defs/UUID"}
+    },
+    "organization_id": {
+      "$ref":"#/$defs/UUID",
+      "description":"ID of the Organization this entity belongs to."
+    },
+
+    "created_at_sim_s":  {"type":"number","description":"Simulation time in seconds when this entity was created."},
+    "modified_at_sim_s": {"type":"number"},
+
+    "custom_extensions": {
+      "type":"object",
+      "description":"Domain-specific fields not covered by the base schema. Use reverse-domain keys.",
+      "additionalProperties": true,
+      "properties": {
+        "_extensions_schema_ref": {
+          "type":"string",
+          "description":"URI of the JSON Schema validating these extensions."
+        }
+      }
+    }
+
+  }
+}

@@ -1,0 +1,512 @@
+{
+  "ontology_id": "physworldlm:submarine:propulsion_combat_navigation",
+  "version": "1.0.0",
+  "description": "Detailed system-level ontology for submarine propulsion, navigation, sonar, combat management, communications, electronic warfare, autonomous systems, and AI mission planning. Optimized for PhysWorldLM simulation and digital twin use.",
+  "namespace": "pwlm:sub:sys",
+
+  "Sonar": {
+    "id": "pwlm:sub:sys:Sonar",
+    "label": "Sonar Systems",
+    "description": "Primary sensor domain for submarine operations. Passive sonar is the fundamental detection modality.",
+    "sim_properties": [
+      "detection_range_passive_km",
+      "detection_range_active_km",
+      "bearing_accuracy_deg",
+      "frequency_range_Hz"
+    ],
+    "subsystems": {
+      "ActiveSonar": {
+        "id": "pwlm:sub:sys:ActiveSonar",
+        "description": "Transmits acoustic pulses; measures time-of-flight and Doppler for range/speed.",
+        "sim_properties": ["SL_source_level_dB", "pulse_duration_ms", "frequency_Hz", "detection_range_km"],
+        "detection_equation": "FOM = SL - TL - NL + DI - DT",
+        "tradeoff": "Active pings reveal own position; used sparingly in combat."
+      },
+      "PassiveSonar": {
+        "id": "pwlm:sub:sys:PassiveSonar",
+        "description": "Listens only; detects target radiated noise without self-emission.",
+        "modes": ["LOFAR", "DEMON", "broadband"],
+        "sim_properties": ["NL_noise_level_dB", "DI_directivity_index_dB", "DT_detection_threshold_dB"],
+        "detection_equation": "FOM = SL - TL - NL + DI - DT (passive)"
+      },
+      "BowSonar": {
+        "id": "pwlm:sub:sys:BowSonar",
+        "label": "Bow Array Sonar",
+        "array_type": "spherical or cylindrical",
+        "sim_properties": ["array_diameter_m", "frequency_range_Hz", "beam_count"],
+        "notable_examples": ["AN/BQQ-10", "Thales TSM 2233"]
+      },
+      "FlankArray": {
+        "id": "pwlm:sub:sys:FlankArray",
+        "description": "Long-aperture passive array running along hull flanks; high bearing accuracy at low frequencies.",
+        "sim_properties": ["array_length_m", "low_freq_limit_Hz", "bearing_resolution_deg"]
+      },
+      "TowedArraySonar": {
+        "id": "pwlm:sub:sys:TAS",
+        "label": "Towed Array Sonar (TASS)",
+        "types": ["thin-line towed array", "wide aperture array"],
+        "sim_properties": ["array_length_m", "tow_cable_length_m", "min_tow_speed_kt", "max_depth_m"],
+        "notable_examples": ["TB-29A", "TB-33", "Sonar 2074"]
+      },
+      "InterceptSonar": {
+        "id": "pwlm:sub:sys:InterceptSonar",
+        "description": "Detects active sonar emissions from adversary vessels.",
+        "sim_properties": ["frequency_range_Hz", "intercept_range_km"]
+      },
+      "MineAvoidanceSonar": {
+        "id": "pwlm:sub:sys:MAS",
+        "sim_properties": ["range_m", "resolution_m", "beam_width_deg"],
+        "notable_examples": ["AN/BQS-15"]
+      },
+      "ObstacleAvoidanceSonar": {
+        "id": "pwlm:sub:sys:OAS",
+        "sim_properties": ["range_m", "update_rate_Hz"]
+      },
+      "VariableDepthSonar": {
+        "id": "pwlm:sub:sys:VDS",
+        "sim_properties": ["depth_range_m", "cable_length_m"]
+      },
+      "SonobuoyReceiver": {
+        "id": "pwlm:sub:sys:SonobuoyRx",
+        "description": "Receives transmissions from air-dropped sonobuoys.",
+        "sim_properties": ["frequency_range_MHz", "channel_count"]
+      },
+      "AcousticProcessingUnit": {
+        "id": "pwlm:sub:sys:APU",
+        "label": "Sonar Signal Processor",
+        "functions": ["beamforming", "LOFAR", "DEMON", "COLTS", "track initiation"],
+        "sim_properties": ["processing_latency_ms", "track_capacity"]
+      }
+    }
+  },
+
+  "Navigation": {
+    "id": "pwlm:sub:sys:Navigation",
+    "label": "Navigation System",
+    "sim_properties": ["position_accuracy_CEP_m", "heading_accuracy_deg", "depth_accuracy_m"],
+    "subsystems": {
+      "INS": {
+        "id": "pwlm:sub:sys:INS",
+        "label": "Inertial Navigation System",
+        "types": ["ring laser gyroscope", "fiber optic gyroscope", "MEMS INS"],
+        "sim_properties": ["drift_rate_m_per_h", "alignment_time_min"],
+        "simulation_note": "INS drift accumulates; periodic GPS/SINS update required."
+      },
+      "RingLaserGyro": {
+        "id": "pwlm:sub:sys:RLG",
+        "sim_properties": ["bias_stability_deg_per_h", "scale_factor_error_ppm"]
+      },
+      "FiberOpticGyro": {
+        "id": "pwlm:sub:sys:FOG",
+        "sim_properties": ["bias_stability_deg_per_h", "bandwidth_Hz"]
+      },
+      "GPS": {
+        "id": "pwlm:sub:sys:GPS",
+        "label": "GPS (Periscope Depth Only)",
+        "update_requirement": "Requires antenna mast raised at periscope depth or surfaced.",
+        "sim_properties": ["position_accuracy_m", "update_rate_Hz"],
+        "simulation_note": "GPS unavailable at depth; INS coasts between fixes."
+      },
+      "DopplerVelocityLog": {
+        "id": "pwlm:sub:sys:DVL",
+        "sim_properties": ["velocity_accuracy_pct", "max_depth_m", "beam_angle_deg"]
+      },
+      "DepthSensor": {
+        "id": "pwlm:sub:sys:DepthSensor",
+        "types": ["pressure transducer"],
+        "sim_properties": ["accuracy_m", "range_m", "update_rate_Hz"]
+      },
+      "GyroCompass": {
+        "id": "pwlm:sub:sys:GyroCompass",
+        "sim_properties": ["settling_time_min", "accuracy_deg"]
+      },
+      "DeadReckoning": {
+        "id": "pwlm:sub:sys:DR",
+        "label": "Dead Reckoning Computer",
+        "inputs": ["speed", "heading", "depth", "current estimate"],
+        "sim_properties": ["position_error_growth_m_per_h"]
+      },
+      "UnderwaterNavSystem": {
+        "id": "pwlm:sub:sys:UNS",
+        "label": "Acoustic Positioning System (USBL/LBL)",
+        "sim_properties": ["range_m", "position_accuracy_m"],
+        "uses": ["UUV tracking", "covert navigation near beacons"]
+      },
+      "DigitalNavComputer": {
+        "id": "pwlm:sub:sys:DNC",
+        "functions": ["route planning", "chart integration", "hazard avoidance", "ECDIS"],
+        "sim_properties": ["chart_update_cycle_days"]
+      }
+    }
+  },
+
+  "Sensors": {
+    "id": "pwlm:sub:sys:Sensors",
+    "label": "Non-Acoustic Sensors",
+    "subsystems": {
+      "Periscope": {
+        "id": "pwlm:sub:sys:Periscope",
+        "types": ["Type I attack periscope", "Type II search periscope"],
+        "sim_properties": ["magnification_range", "max_depth_m", "IR_capable"],
+        "simulation_note": "Periscope raise creates visual and radar detectable signature."
+      },
+      "OptronicMast": {
+        "id": "pwlm:sub:sys:OptronicMast",
+        "label": "Optronic Non-Hull-Penetrating Mast",
+        "channels": ["EO (daylight)", "IR (thermal)", "laser rangefinder", "ESM"],
+        "sim_properties": ["max_range_km_EO", "max_range_km_IR", "video_resolution"],
+        "notable_examples": ["CM010 (Sagem)", "Kelvin Hughes SRMAST", "CK038"]
+      },
+      "Radar": {
+        "id": "pwlm:sub:sys:Radar",
+        "types": ["I-band navigation radar", "LPI radar"],
+        "sim_properties": ["frequency_GHz", "range_km", "scan_rate_rpm"],
+        "emcon_note": "Radar emission detectable by ESM; strict EMCON applies."
+      },
+      "ESM": {
+        "id": "pwlm:sub:sys:ESM",
+        "label": "Electronic Support Measures",
+        "functions": ["radar intercept", "signal classification", "emitter location"],
+        "sim_properties": ["frequency_range_GHz", "intercept_range_km", "sensitivity_dBm"]
+      },
+      "RadarWarningReceiver": {
+        "id": "pwlm:sub:sys:RWR",
+        "sim_properties": ["frequency_range_GHz", "warning_latency_ms"]
+      },
+      "InfraredCamera": {
+        "id": "pwlm:sub:sys:IRCamera",
+        "sim_properties": ["spectral_band_um", "NETD_mK", "FOV_deg"]
+      },
+      "LaserRangefinder": {
+        "id": "pwlm:sub:sys:LRF",
+        "sim_properties": ["wavelength_nm", "range_km", "accuracy_m"]
+      },
+      "SatelliteReceiver": {
+        "id": "pwlm:sub:sys:SatRx",
+        "label": "Satellite Navigation / Data Receiver",
+        "types": ["GPS", "GLONASS", "BeiDou", "SBAS"],
+        "sim_properties": ["acquisition_time_s"]
+      },
+      "EnvironmentalSensors": {
+        "id": "pwlm:sub:sys:EnvSensors",
+        "label": "Oceanographic / Environmental Sensors",
+        "types": ["CTD (conductivity-temperature-depth)", "SVP probe", "thermistor chain"],
+        "sim_properties": ["depth_range_m", "sampling_rate_Hz"],
+        "simulation_note": "SVP data drives sonar propagation model; essential for acoustic FOM computation."
+      },
+      "HullStressSensors": {
+        "id": "pwlm:sub:sys:HullStress",
+        "sim_properties": ["gauge_count", "sample_rate_Hz", "alarm_threshold_MPa"]
+      },
+      "RadiationSensors": {
+        "id": "pwlm:sub:sys:RadSensor",
+        "label": "Radiation / NBC Sensors",
+        "sim_properties": ["detection_threshold_mSv_per_h"]
+      }
+    }
+  },
+
+  "CombatManagement": {
+    "id": "pwlm:sub:sys:CMS",
+    "label": "Combat Management System",
+    "description": "Integrated system for tactical picture compilation, threat assessment, fire control, and decision support.",
+    "sim_properties": ["track_capacity", "update_rate_Hz", "latency_ms"],
+    "subsystems": {
+      "CombatManagementComputer": {
+        "id": "pwlm:sub:sys:CMC",
+        "label": "Combat Management Computer",
+        "notable_examples": ["AN/BSY-2", "SUBICS", "SMCS-NG", "ISUS 90", "ACMS"],
+        "functions": ["sensor fusion", "track management", "fire control", "tactical display"]
+      },
+      "FireControlSystem": {
+        "id": "pwlm:sub:sys:FCS",
+        "label": "Fire Control System",
+        "functions": ["target designation", "weapon assignment", "firing solution computation", "salvo coordination"],
+        "sim_properties": ["solution_update_rate_Hz", "weapon_channel_count"]
+      },
+      "SonarProcessing": {
+        "id": "pwlm:sub:sys:SonarProc",
+        "label": "Integrated Sonar Processing Suite",
+        "functions": ["contact classification", "TMA support", "broadband / narrowband processing"]
+      },
+      "TargetMotionAnalysis": {
+        "id": "pwlm:sub:sys:TMA",
+        "label": "Target Motion Analysis",
+        "description": "Algorithms for deriving target range, course, speed from passive bearing-only observations.",
+        "methods": ["manual plot", "MLE", "EKF", "particle filter", "ownship maneuver"],
+        "sim_properties": ["solution_time_min", "range_accuracy_pct", "course_accuracy_deg"],
+        "simulation_note": "TMA is the fundamental passive ASW closure problem; simulation must model bearing line geometry."
+      },
+      "WeaponAssignment": {
+        "id": "pwlm:sub:sys:WeaponAssign",
+        "functions": ["optimal weapon selection", "tube allocation", "shoot-look-shoot planning"]
+      },
+      "EngagementPlanning": {
+        "id": "pwlm:sub:sys:EngagePlan",
+        "sim_properties": ["torpedo_run_time_s", "enable_range_m", "enable_depth_m", "search_pattern"]
+      },
+      "TacticalPicture": {
+        "id": "pwlm:sub:sys:TactPic",
+        "label": "Tactical Picture / Situational Awareness",
+        "inputs": ["sonar tracks", "ESM", "communication intelligence", "data link"],
+        "display_types": ["geographic plot", "bearing-time recorder", "waterfall display"]
+      },
+      "ThreatEvaluation": {
+        "id": "pwlm:sub:sys:ThreatEval",
+        "functions": ["hostile classification", "threat prioritization", "torpedo detection"]
+      },
+      "TrackCorrelation": {
+        "id": "pwlm:sub:sys:TrackCorr",
+        "functions": ["multi-sensor fusion", "ambiguity resolution", "track splitting detection"]
+      },
+      "BattleDamageAssessment": {
+        "id": "pwlm:sub:sys:BDA",
+        "inputs": ["acoustic hit detection", "sonar track loss", "ESM silence"]
+      },
+      "MissionPlanning": {
+        "id": "pwlm:sub:sys:MissionPlan",
+        "functions": ["route optimization", "patrol box planning", "threat avoidance routing", "mine avoidance"]
+      },
+      "DecisionSupport": {
+        "id": "pwlm:sub:sys:DSS",
+        "label": "AI Decision Support",
+        "functions": ["COA recommendation", "torpedo evasion maneuver", "probability of detection modeling"]
+      }
+    }
+  },
+
+  "Communications": {
+    "id": "pwlm:sub:sys:Comms",
+    "label": "Communication Systems",
+    "sim_properties": ["latency_ms", "data_rate_bps", "transmission_detectability"],
+    "subsystems": {
+      "ELF": {
+        "id": "pwlm:sub:sys:ELF",
+        "label": "Extremely Low Frequency (ELF)",
+        "frequency_Hz": "30–300 Hz",
+        "penetration_depth_m": 100,
+        "data_rate_bps": 0.1,
+        "use": "One-way emergency message receipt at depth",
+        "notable_systems": ["US Navy TACAMO", "Russian ZEUS"]
+      },
+      "VLF": {
+        "id": "pwlm:sub:sys:VLF",
+        "label": "Very Low Frequency (VLF)",
+        "frequency_kHz": "3–30 kHz",
+        "penetration_depth_m": 20,
+        "data_rate_bps": 300,
+        "use": "Primary strategic command message receipt"
+      },
+      "HF": {
+        "id": "pwlm:sub:sys:HF",
+        "label": "High Frequency Radio",
+        "frequency_MHz": "3–30 MHz",
+        "use": "Surface / periscope depth communication",
+        "sim_properties": ["effective_range_km", "EMCON_risk"]
+      },
+      "SatelliteCommunication": {
+        "id": "pwlm:sub:sys:SATCOM",
+        "frequency_bands": ["UHF", "SHF", "EHF"],
+        "systems": ["AEHF", "Milstar", "MUOS", "Syracuse", "SICRAL"],
+        "sim_properties": ["data_rate_Mbps", "latency_ms", "LPI_rating"],
+        "requirement": "Antenna mast raised at periscope depth or surfaced."
+      },
+      "AcousticCommunication": {
+        "id": "pwlm:sub:sys:AcousticComm",
+        "label": "Underwater Acoustic Modem",
+        "frequency_kHz": "8–30 kHz",
+        "data_rate_bps": [100, 10000],
+        "range_km": [5, 30],
+        "use": "UUV control, submarine-to-submarine, DSRV",
+        "sim_properties": ["multipath_delay_spread_ms", "BER_at_range"]
+      },
+      "DataLink": {
+        "id": "pwlm:sub:sys:DataLink",
+        "label": "Tactical Data Link",
+        "standards": ["Link 11", "Link 16 (surfaced)", "Link 22"],
+        "sim_properties": ["update_rate_Hz", "track_capacity"]
+      },
+      "SecureCommunication": {
+        "id": "pwlm:sub:sys:SecureComm",
+        "label": "Crypto / Secure Comms",
+        "standards": ["NSA Type 1", "NATO CRYPTO"],
+        "sim_properties": ["key_update_cycle_h"]
+      },
+      "EmergencyBeacon": {
+        "id": "pwlm:sub:sys:EPIRB",
+        "label": "Emergency Position Indicating Radio Beacon",
+        "frequency_MHz": 406,
+        "activation": "Auto on flooding / manual",
+        "sim_properties": ["transmission_power_W", "battery_life_h"]
+      },
+      "InternalCommunication": {
+        "id": "pwlm:sub:sys:IntComm",
+        "types": ["sound-powered phone", "1MC/2MC announcing", "intercom"],
+        "sim_properties": ["zone_count"]
+      }
+    }
+  },
+
+  "ElectronicWarfare": {
+    "id": "pwlm:sub:sys:EW",
+    "label": "Electronic Warfare Systems",
+    "subsystems": {
+      "ESM_EW": {
+        "id": "pwlm:sub:sys:ESM_EW",
+        "label": "ESM Suite",
+        "functions": ["radar intercept", "emitter identification", "bearing estimation"]
+      },
+      "ECM": {
+        "id": "pwlm:sub:sys:ECM",
+        "label": "Electronic Countermeasures",
+        "functions": ["radar jamming", "deception", "spoofing"],
+        "sim_properties": ["jamming_power_W", "effective_range_km"]
+      },
+      "AcousticDecoy": {
+        "id": "pwlm:sub:sys:AcousticDecoy",
+        "label": "Acoustic Decoy / Torpedo Countermeasure",
+        "types": ["Mobile Submarine Simulator (MOSS)", "ADC Mk3"],
+        "sim_properties": ["SL_emission_dB", "speed_kt", "run_time_min", "diameter_mm"],
+        "simulation_note": "Acoustic decoy fools active torpedo seekers; simulation requires torpedo seeker modeling."
+      },
+      "TowedDecoy": {
+        "id": "pwlm:sub:sys:TowedDecoy",
+        "label": "Towed Torpedo Countermeasure",
+        "sim_properties": ["cable_length_m", "acoustic_amplification_dB"]
+      },
+      "NoiseGenerator": {
+        "id": "pwlm:sub:sys:NoiseGen",
+        "label": "Acoustic Noise Generator / Masker",
+        "sim_properties": ["frequency_range_Hz", "SL_dB"]
+      },
+      "ElectronicIntelligence": {
+        "id": "pwlm:sub:sys:ELINT_EW",
+        "functions": ["signal collection", "parametric measurement", "database correlation"]
+      },
+      "SignalRecorder": {
+        "id": "pwlm:sub:sys:SigRecord",
+        "sim_properties": ["storage_TB", "recording_channels"]
+      }
+    }
+  },
+
+  "AutonomousSystems": {
+    "id": "pwlm:sub:sys:Autonomous",
+    "label": "Autonomous & AI Control Systems",
+    "subsystems": {
+      "Autopilot": {
+        "id": "pwlm:sub:sys:Autopilot",
+        "functions": ["heading hold", "depth hold", "speed hold"],
+        "sim_properties": ["heading_deadband_deg", "depth_deadband_m", "control_law"]
+      },
+      "DepthController": {
+        "id": "pwlm:sub:sys:DepthCtrl",
+        "control_law": "PID + feedforward",
+        "sim_properties": ["kp", "ki", "kd", "max_plane_rate_deg_per_s"]
+      },
+      "TrimController": {
+        "id": "pwlm:sub:sys:TrimCtrl",
+        "functions": ["automatic trim by pumping", "adaptive compensation for stores use"]
+      },
+      "CollisionAvoidance": {
+        "id": "pwlm:sub:sys:COLAV",
+        "label": "Collision Avoidance System",
+        "inputs": ["obstacle sonar", "own navigation", "chart database"],
+        "sim_properties": ["clearance_distance_m", "reaction_time_s"]
+      },
+      "RoutePlanner": {
+        "id": "pwlm:sub:sys:RoutePlanner",
+        "algorithms": ["A*", "Dubins path", "kinodynamic RRT"],
+        "constraints": ["depth limits", "detection risk", "acoustic layers", "mine threat areas"]
+      },
+      "ThreatDetectionAI": {
+        "id": "pwlm:sub:sys:ThreatAI",
+        "functions": ["torpedo detection", "contact classification", "threat level assignment"],
+        "sim_properties": ["classification_latency_ms", "false_alarm_rate"]
+      },
+      "WeaponControlComputer": {
+        "id": "pwlm:sub:sys:WCC",
+        "functions": ["pre-set programming", "wire guidance", "salvo management"]
+      },
+      "DamageControlAI": {
+        "id": "pwlm:sub:sys:DCAI",
+        "functions": ["flooding rate prediction", "stability monitoring", "survivability assessment", "crew tasking"]
+      },
+      "HealthMonitoring": {
+        "id": "pwlm:sub:sys:PHM",
+        "label": "Prognostic Health Management",
+        "functions": ["machinery condition monitoring", "predictive maintenance", "MTBF tracking"],
+        "sim_properties": ["sensor_count", "update_cycle_min"]
+      },
+      "AIMissionPlanner": {
+        "id": "pwlm:sub:sys:AIMission",
+        "label": "AI Mission Planner",
+        "functions": [
+          "multi-objective route optimization",
+          "patrol box generation",
+          "UUV swarm tasking",
+          "COA generation",
+          "acoustic environment assessment",
+          "EMCON state management"
+        ],
+        "sim_note": "Core PhysWorldLM planning interface; outputs WorldSpec-compatible task sequences."
+      }
+    }
+  },
+
+  "UUVIntegration": {
+    "id": "pwlm:sub:sys:UUV",
+    "label": "UUV Integration & Control",
+    "subsystems": {
+      "AUV": {
+        "id": "pwlm:sub:sys:AUV",
+        "label": "Autonomous Underwater Vehicle",
+        "types": ["large displacement AUV", "REMUS class", "Bluefin"],
+        "sim_properties": ["length_m", "diameter_m", "endurance_h", "speed_kt", "depth_m"]
+      },
+      "ROV": {
+        "id": "pwlm:sub:sys:ROV",
+        "label": "Remotely Operated Vehicle",
+        "tether_length_m": [50, 500],
+        "sim_properties": ["power_kW", "depth_m", "manipulator_DOF"]
+      },
+      "MCM_UUV": {
+        "id": "pwlm:sub:sys:MCMUUV",
+        "label": "Mine Countermeasure UUV",
+        "payloads": ["synthetic aperture sonar", "mine neutralization charge"],
+        "sim_properties": ["detection_accuracy_m", "neutralization_range_m"]
+      },
+      "ISR_UUV": {
+        "id": "pwlm:sub:sys:ISRUUV",
+        "label": "ISR / Reconnaissance UUV",
+        "payloads": ["passive sonar", "camera array", "ELINT module"]
+      },
+      "CargoUUV": {
+        "id": "pwlm:sub:sys:CargoUUV",
+        "label": "Cargo / Resupply UUV",
+        "payload_kg": [50, 500]
+      },
+      "DecoyUUV": {
+        "id": "pwlm:sub:sys:DecoyUUV",
+        "label": "Acoustic Decoy UUV",
+        "sim_properties": ["SL_emission_dB", "speed_kt", "endurance_min"]
+      },
+      "DockingSystem": {
+        "id": "pwlm:sub:sys:UUVDock",
+        "label": "UUV Docking / Hangar System",
+        "types": ["dry deck shelter (DDS)", "torpedo tube launch", "VLS launch", "hull hangar"],
+        "sim_properties": ["recovery_time_min", "launch_depth_m"]
+      },
+      "UUVControlLink": {
+        "id": "pwlm:sub:sys:UUVLink",
+        "types": ["acoustic modem", "tether", "optical"],
+        "sim_properties": ["range_km", "data_rate_bps", "latency_ms"]
+      },
+      "UUVChargingSystem": {
+        "id": "pwlm:sub:sys:UUVCharge",
+        "methods": ["inductive charging", "wet-mate connector"],
+        "sim_properties": ["charge_rate_kW", "charge_time_h"]
+      }
+    }
+  }
+}

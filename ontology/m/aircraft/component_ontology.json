@@ -1,0 +1,649 @@
+{
+  "ontology_id": "PWMO-AIRCRAFT-COMPONENT-ONTOLOGY",
+  "version": "1.0.0",
+  "description": "Complete engineering component and subsystem ontology for military aircraft. Every subsystem is expanded to its lowest field-replaceable or engineering-meaningful unit.",
+  "schema_version": "PWMO-2025",
+
+  "components": {
+
+    "Airframe": {
+      "id": "COMP-AF",
+      "label": "Airframe",
+      "description": "The primary structural skeleton of the aircraft. Everything that provides shape, loads paths, and structural integrity.",
+      "subcomponents": {
+
+        "Fuselage": {
+          "id": "COMP-AF-FUS",
+          "label": "Fuselage",
+          "description": "Main body structure housing crew, fuel, avionics, and payload.",
+          "subcomponents": {
+            "NoseSection": {
+              "id": "COMP-AF-FUS-NOS",
+              "label": "Nose Section",
+              "description": "Forward fuselage. Houses radar, FLIR sensors, and pitot-static probes.",
+              "subcomponents": {
+                "RadomeFairing": { "id": "COMP-AF-FUS-NOS-RD", "label": "Radome Fairing", "material_options": ["fiberglass", "ceramic_composite", "quartz_composite"], "description": "RF-transparent nose cone protecting radar antenna." },
+                "PitotTube": { "id": "COMP-AF-FUS-NOS-PT", "label": "Pitot Tube", "description": "Measures dynamic pressure for airspeed indication." },
+                "AngleOfAttackSensor": { "id": "COMP-AF-FUS-NOS-AOA", "label": "Angle of Attack Vane", "description": "Measures aircraft's angle of attack for flight control and stall warning." },
+                "SideslipSensor": { "id": "COMP-AF-FUS-NOS-SS", "label": "Sideslip Sensor", "description": "Measures beta angle for flight envelope management." },
+                "NoseLandingGearBay": { "id": "COMP-AF-FUS-NOS-NGB", "label": "Nose Gear Bay", "description": "Structural recess for retracted nose landing gear." }
+              }
+            },
+            "ForwardFuselage": {
+              "id": "COMP-AF-FUS-FWD",
+              "label": "Forward Fuselage",
+              "description": "Contains cockpit, ejection system, and forward avionics bays.",
+              "subcomponents": {
+                "CockpitStructure": { "id": "COMP-AF-FUS-FWD-CPT", "label": "Cockpit Structural Shell", "description": "Pressure vessel and structural frame around crew station." },
+                "AvionicsBay": { "id": "COMP-AF-FUS-FWD-AVB", "label": "Forward Avionics Bay", "description": "Pressurized or cooled bay for forward mission electronics." }
+              }
+            },
+            "CenterFuselage": {
+              "id": "COMP-AF-FUS-CTR",
+              "label": "Center Fuselage",
+              "description": "Structural core. Carries wing box carry-through structure, fuel cells, and main landing gear.",
+              "subcomponents": {
+                "WingCarryThrough": { "id": "COMP-AF-FUS-CTR-WCT", "label": "Wing Carry-Through Box", "description": "The central structural element that transfers wing bending loads through the fuselage." },
+                "FuelCells": { "id": "COMP-AF-FUS-CTR-FC", "label": "Fuselage Fuel Cells", "description": "Internal wet-wing or bag fuel cells in fuselage." },
+                "MainGearBay": { "id": "COMP-AF-FUS-CTR-MGB", "label": "Main Gear Bay", "description": "Retraction cavity for main landing gear." },
+                "InternalWeaponBay": { "id": "COMP-AF-FUS-CTR-IWB", "label": "Internal Weapon Bay", "description": "Enclosed bay for weapons carriage with reduced RCS.", "attributes": { "rcs_benefit": "major", "typical_capacity": "varies" } }
+              }
+            },
+            "AftFuselage": {
+              "id": "COMP-AF-FUS-AFT",
+              "label": "Aft Fuselage",
+              "description": "Rear fuselage section carrying engine exhausts, tail surfaces, and aft avionics.",
+              "subcomponents": {
+                "EngineNacelleAft": { "id": "COMP-AF-FUS-AFT-ENA", "label": "Engine Nacelle (Aft)", "description": "Structural housing for turbine engines in aft fuselage." },
+                "TailBoom": { "id": "COMP-AF-FUS-AFT-TB", "label": "Tail Boom", "description": "Extension carrying empennage on some designs." },
+                "EWAntennaBay": { "id": "COMP-AF-FUS-AFT-EWA", "label": "Aft EW Antenna Bay", "description": "Houses tail radar warning receivers and EW sensors." }
+              }
+            }
+          }
+        },
+
+        "Wing": {
+          "id": "COMP-AF-WNG",
+          "label": "Wing Assembly",
+          "description": "Primary lift-generating surface. Also carries fuel, weapon hardpoints, and control surfaces.",
+          "subcomponents": {
+            "WingBox": { "id": "COMP-AF-WNG-BOX", "label": "Wing Box", "description": "Primary load-bearing structure of the wing. Front and rear spars with upper and lower skin panels." },
+            "WingRoot": { "id": "COMP-AF-WNG-RT", "label": "Wing Root", "description": "Junction between wing and fuselage. Maximum bending moment point." },
+            "WingTip": { "id": "COMP-AF-WNG-TIP", "label": "Wing Tip", "description": "Outboard extremity. May carry AAM rails, EO pods, or winglets." },
+            "Winglet": { "id": "COMP-AF-WNG-WGL", "label": "Winglet", "description": "Upturned wingtip devices reducing induced drag.", "types": ["blended_winglet", "split_scimitar", "sharklet", "canted_winglet"] },
+            "LeadingEdge": {
+              "id": "COMP-AF-WNG-LE",
+              "label": "Leading Edge Assembly",
+              "subcomponents": {
+                "FixedLeadingEdge": { "id": "COMP-AF-WNG-LE-FIX", "label": "Fixed Leading Edge" },
+                "Slat": { "id": "COMP-AF-WNG-LE-SLT", "label": "Leading Edge Slat", "description": "Deployable surface for increased lift at low speeds." },
+                "KruegerFlap": { "id": "COMP-AF-WNG-LE-KF", "label": "Krueger Flap", "description": "Leading edge droop flap on some designs." },
+                "LeadingEdgeExtension": { "id": "COMP-AF-WNG-LE-LEX", "label": "Leading Edge Extension (LERX)", "description": "Vortex generating strake improving high-AoA performance." }
+              }
+            },
+            "TrailingEdge": {
+              "id": "COMP-AF-WNG-TE",
+              "label": "Trailing Edge Assembly",
+              "subcomponents": {
+                "Flap": { "id": "COMP-AF-WNG-TE-FLP", "label": "Trailing Edge Flap", "types": ["simple_flap", "fowler_flap", "slotted_flap", "split_flap", "blown_flap"] },
+                "Aileron": { "id": "COMP-AF-WNG-TE-AIL", "label": "Aileron", "description": "Roll control surface on outer trailing edge." },
+                "Flaperon": { "id": "COMP-AF-WNG-TE-FLR", "label": "Flaperon", "description": "Combined flap and aileron function." },
+                "Spoiler": { "id": "COMP-AF-WNG-TE-SPL", "label": "Spoiler / Speed Brake", "description": "Disrupts airflow to reduce lift and increase drag." }
+              }
+            },
+            "WingFuelTanks": { "id": "COMP-AF-WNG-FT", "label": "Wing Fuel Tanks", "description": "Integral wet wing or bladder fuel tanks within wing structure." },
+            "HardpointPylon": {
+              "id": "COMP-AF-WNG-HP",
+              "label": "Hardpoint Pylon",
+              "description": "Structural attachment point for external stores.",
+              "subcomponents": {
+                "PyloStation": { "id": "COMP-AF-WNG-HP-PYL", "label": "Pylon Station", "description": "Individual numbered weapon station on wing." },
+                "MissileRail": { "id": "COMP-AF-WNG-HP-MRL", "label": "Missile Launch Rail", "types": ["LAU-61", "LAU-68", "MAU-12", "BRU-32", "BRU-57"] },
+                "BombRack": { "id": "COMP-AF-WNG-HP-BRK", "label": "Bomb Rack Unit", "types": ["BRU-32", "BRU-41A", "BRU-55", "MAU-40"] },
+                "ConformalFuelTankAttachment": { "id": "COMP-AF-WNG-HP-CFT", "label": "CFT Attachment", "description": "Structural points for conformal fuel tank integration." }
+              }
+            },
+            "VariableSweepMechanism": {
+              "id": "COMP-AF-WNG-VS",
+              "label": "Variable Sweep Wing Mechanism",
+              "description": "Pivot and actuator system for variable geometry wings.",
+              "examples_on": ["F-14A/D", "B-1B", "Tu-160", "Su-24", "Tornado"]
+            }
+          }
+        },
+
+        "Empennage": {
+          "id": "COMP-AF-EMP",
+          "label": "Empennage (Tail Assembly)",
+          "description": "Tail group providing pitch, yaw, and roll stability and control.",
+          "subcomponents": {
+            "VerticalStabilizer": {
+              "id": "COMP-AF-EMP-VS",
+              "label": "Vertical Stabilizer (Fin)",
+              "description": "Provides directional stability.",
+              "subcomponents": {
+                "Rudder": { "id": "COMP-AF-EMP-VS-RUD", "label": "Rudder", "description": "Movable surface on vertical stabilizer for yaw control." },
+                "VentralFin": { "id": "COMP-AF-EMP-VS-VF", "label": "Ventral Fin", "description": "Undersurface fin for enhanced directional stability at high AoA." },
+                "TwinVerticals": { "id": "COMP-AF-EMP-VS-TWN", "label": "Twin Vertical Stabilizers", "description": "Dual-fin configuration for stability at high AoA. Common on high-performance fighters." }
+              }
+            },
+            "HorizontalStabilizer": {
+              "id": "COMP-AF-EMP-HS",
+              "label": "Horizontal Stabilizer",
+              "description": "Pitch stability and control surface.",
+              "subcomponents": {
+                "AllMovingStabilizer": { "id": "COMP-AF-EMP-HS-THS", "label": "All-Moving Stabilizer (Tailplane)", "description": "Entire horizontal surface moves for pitch control. Also called stabilator." },
+                "Elevator": { "id": "COMP-AF-EMP-HS-ELV", "label": "Elevator", "description": "Hinged trailing edge surface on fixed tailplane for pitch control." },
+                "Canard": { "id": "COMP-AF-EMP-HS-CND", "label": "Canard Foreplane", "description": "Forward small wing providing additional pitch authority and vortex lift.", "types": ["close_coupled_canard", "delta_canard", "long_arm_canard"] }
+              }
+            },
+            "VTailConfiguration": { "id": "COMP-AF-EMP-VT", "label": "V-Tail / Butterfly Tail", "description": "Combined pitch and yaw control using V-shaped surfaces. Reduces wetted area." },
+            "TailBoomConfiguration": { "id": "COMP-AF-EMP-TBC", "label": "Twin Tail Boom", "description": "Twin boom structure supporting empennage. Used on some twin-engine designs." }
+          }
+        },
+
+        "Cockpit": {
+          "id": "COMP-AF-CPT",
+          "label": "Cockpit",
+          "description": "Crew station. Includes all pilot interfaces, displays, controls, and life support.",
+          "subcomponents": {
+            "Canopy": {
+              "id": "COMP-AF-CPT-CAN",
+              "label": "Canopy",
+              "description": "Transparent enclosure over cockpit.",
+              "subcomponents": {
+                "WindshieldPanel": { "id": "COMP-AF-CPT-CAN-WS", "label": "Windshield", "description": "Forward fixed transparency. Birdstrike and HUD layer." },
+                "SlidingCanopy": { "id": "COMP-AF-CPT-CAN-SL", "label": "Sliding / Clamshell Canopy", "description": "Opening mechanism for cockpit access." },
+                "CanopyJettisonSystem": { "id": "COMP-AF-CPT-CAN-JET", "label": "Canopy Jettison System", "description": "Explosive cord or rocket-based canopy separation for ejection sequence." },
+                "HUDLayeredGlass": { "id": "COMP-AF-CPT-CAN-HUD", "label": "HUD Combiner Glass", "description": "Optical combiner built into windshield for HUD projection." }
+              }
+            },
+            "EjectionSeat": {
+              "id": "COMP-AF-CPT-EJS",
+              "label": "Ejection Seat",
+              "description": "Rocket-propelled crew escape system.",
+              "types": ["ACES_II", "Martin_Baker_Mk16", "K-36DM", "NACES", "ACES_5"],
+              "subcomponents": {
+                "RocketPack": { "id": "COMP-AF-CPT-EJS-RKT", "label": "Seat Rocket Pack", "description": "Solid propellant rocket for seat trajectory after ejection." },
+                "DraguteParachute": { "id": "COMP-AF-CPT-EJS-DRG", "label": "Drogue Parachute", "description": "Small stabilizing chute deployed first." },
+                "MainParachute": { "id": "COMP-AF-CPT-EJS-MAN", "label": "Main Parachute", "description": "Primary descent chute." },
+                "PersonalSurvivalKit": { "id": "COMP-AF-CPT-EJS-PSK", "label": "Personal Survival Kit", "description": "Emergency survival equipment attached to seat pan." },
+                "SeatRailGun": { "id": "COMP-AF-CPT-EJS-GUN", "label": "Catapult Rail Gun", "description": "Aircraft seat rail that accelerates seat before rocket ignition." },
+                "ZeroZeroCapability": { "id": "COMP-AF-CPT-EJS-ZZ", "label": "Zero-Zero Capability", "description": "Can eject safely at zero altitude and zero speed." }
+              }
+            },
+            "SeatAndHarness": {
+              "id": "COMP-AF-CPT-SHR",
+              "label": "Seat and Harness System",
+              "subcomponents": {
+                "ACES": { "id": "COMP-AF-CPT-SHR-ACE", "label": "Advanced Crew Escape System" },
+                "NeckRestraint": { "id": "COMP-AF-CPT-SHR-NRK", "label": "Neck Restraint System", "description": "Prevents cervical spine injury during ejection." },
+                "AntiGSuit": { "id": "COMP-AF-CPT-SHR-AGS", "label": "Anti-G Suit Port", "description": "Connectors for pilot G-suit inflation system." },
+                "OxygenConnector": { "id": "COMP-AF-CPT-SHR-OXY", "label": "Oxygen Connector", "description": "Quick-disconnect for pilot oxygen supply." }
+              }
+            },
+            "FlightControls_Cockpit": {
+              "id": "COMP-AF-CPT-FCC",
+              "label": "Cockpit Flight Controls",
+              "subcomponents": {
+                "HOTAS": { "id": "COMP-AF-CPT-FCC-HTS", "label": "HOTAS", "description": "Hands On Throttle And Stick. All combat-critical functions accessible without removing hands from primary controls.", "functions": ["radar_mode_switch", "weapon_select", "countermeasure_release", "comm_select", "trim", "cursor_control", "autopilot_engage"] },
+                "Sidestick": { "id": "COMP-AF-CPT-FCC-SS", "label": "Sidestick Controller", "description": "Side-mounted control column replacing center stick.", "examples_on": ["F-16", "Rafale", "F-35", "A400M"] },
+                "CenterStick": { "id": "COMP-AF-CPT-FCC-CS", "label": "Center Stick", "description": "Traditional center-mounted flight control column.", "examples_on": ["F-15", "F/A-18", "Su-27", "Gripen"] },
+                "ThrottleLever": { "id": "COMP-AF-CPT-FCC-THL", "label": "Throttle Lever(s)", "description": "Engine power control including afterburner detent." },
+                "RudderPedals": { "id": "COMP-AF-CPT-FCC-RDP", "label": "Rudder Pedals", "description": "Foot controls for yaw/nose wheel steering." },
+                "TrimmingSystem": { "id": "COMP-AF-CPT-FCC-TRM", "label": "Trim System", "description": "Electrical or mechanical pitch/roll/yaw trim." }
+              }
+            }
+          }
+        },
+
+        "LandingGear": {
+          "id": "COMP-AF-LG",
+          "label": "Landing Gear System",
+          "description": "Structural system supporting aircraft on ground and absorbing landing loads.",
+          "subcomponents": {
+            "NoseLandingGear": {
+              "id": "COMP-AF-LG-NLG",
+              "label": "Nose Landing Gear",
+              "subcomponents": {
+                "NoseStrut": { "id": "COMP-AF-LG-NLG-STR", "label": "Nose Oleo-Pneumatic Strut", "description": "Hydraulic/pneumatic shock absorber." },
+                "NoseWheel": { "id": "COMP-AF-LG-NLG-WHL", "label": "Nose Wheel Assembly" },
+                "NoseWheelSteering": { "id": "COMP-AF-LG-NLG-NWS", "label": "Nose Wheel Steering System" },
+                "CatapultBar": { "id": "COMP-AF-LG-NLG-CAT", "label": "Catapult Launch Bar", "description": "Structural bar on NLG for carrier catapult attachment." }
+              }
+            },
+            "MainLandingGear": {
+              "id": "COMP-AF-LG-MLG",
+              "label": "Main Landing Gear",
+              "subcomponents": {
+                "MainStrut": { "id": "COMP-AF-LG-MLG-STR", "label": "Main Oleo-Pneumatic Strut" },
+                "MainWheels": { "id": "COMP-AF-LG-MLG-WHL", "label": "Main Wheel Assembly" },
+                "Brakes": {
+                  "id": "COMP-AF-LG-MLG-BRK",
+                  "label": "Wheel Brake System",
+                  "types": ["carbon_carbon_disc", "steel_disc", "anti_skid_system"],
+                  "subcomponents": {
+                    "AntiSkidUnit": { "id": "COMP-AF-LG-MLG-BRK-ABS", "label": "Anti-Skid Control Unit (ABS)" },
+                    "BrakeTemperatureMonitor": { "id": "COMP-AF-LG-MLG-BRK-BTM", "label": "Brake Temperature Monitor" }
+                  }
+                },
+                "TailHook": { "id": "COMP-AF-LG-MLG-TH", "label": "Tail Hook", "description": "Arresting hook for carrier deck or emergency field arrested landing." }
+              }
+            },
+            "RetractActuation": {
+              "id": "COMP-AF-LG-RET",
+              "label": "Gear Retraction System",
+              "subcomponents": {
+                "HydraulicActuator": { "id": "COMP-AF-LG-RET-ACT", "label": "Hydraulic Retraction Actuator" },
+                "EmergencyExtension": { "id": "COMP-AF-LG-RET-EMG", "label": "Emergency Gear Extension", "description": "Gravity or pneumatic backup extension system." },
+                "GearDoorActuator": { "id": "COMP-AF-LG-RET-DRA", "label": "Gear Door Actuator" },
+                "PositionIndicator": { "id": "COMP-AF-LG-RET-POS", "label": "Gear Position Indicator" }
+              }
+            }
+          }
+        },
+
+        "ControlSurfaces": {
+          "id": "COMP-AF-CS",
+          "label": "Flight Control Surfaces",
+          "description": "All movable aerodynamic surfaces for aircraft attitude control.",
+          "nodes": {
+            "Aileron": "COMP-AF-WNG-TE-AIL",
+            "Elevator": "COMP-AF-EMP-HS-ELV",
+            "Rudder": "COMP-AF-EMP-VS-RUD",
+            "Flap": "COMP-AF-WNG-TE-FLP",
+            "Slat": "COMP-AF-WNG-LE-SLT",
+            "Spoiler": "COMP-AF-WNG-TE-SPL",
+            "Canard": "COMP-AF-EMP-HS-CND",
+            "ThrustVectoring": "COMP-PROP-TV"
+          }
+        }
+      }
+    },
+
+    "PropulsionSystem": {
+      "id": "COMP-PROP",
+      "label": "Propulsion System",
+      "description": "All components that generate thrust and manage power output.",
+      "subcomponents": {
+
+        "TurbojetEngine": {
+          "id": "COMP-PROP-TJ",
+          "label": "Turbojet Engine",
+          "description": "Gas turbine engine exhausting all flow through propulsive nozzle. High specific thrust, lower efficiency.",
+          "subcomponents": {
+            "Intake": { "id": "COMP-PROP-TJ-INT", "label": "Engine Air Intake", "types": ["pitot_intake", "DSI_intake", "variable_geometry_intake", "chin_intake", "serpentine_duct"], "description": "Decelerates and conditions airflow before compressor." },
+            "InletSeparator": { "id": "COMP-PROP-TJ-SEP", "label": "Boundary Layer Diverter / SPIV", "description": "Separates sluggish boundary layer from intake flow to compressor." },
+            "FanSection": { "id": "COMP-PROP-TJ-FAN", "label": "Fan (Low-Pressure Compressor Stage 0)", "description": "Large diameter first-stage blade row on turbofans." },
+            "LowPressureCompressor": { "id": "COMP-PROP-TJ-LPC", "label": "Low Pressure Compressor (LPC)", "description": "Multi-stage axial compressor raising pressure moderately." },
+            "HighPressureCompressor": { "id": "COMP-PROP-TJ-HPC", "label": "High Pressure Compressor (HPC)", "description": "Multi-stage compressor raising pressure to combustion levels." },
+            "CombustionChamber": {
+              "id": "COMP-PROP-TJ-CC",
+              "label": "Combustion Chamber",
+              "types": ["annular", "can_annular", "silo"],
+              "subcomponents": {
+                "FuelNozzle": { "id": "COMP-PROP-TJ-CC-FN", "label": "Fuel Atomizer / Nozzle", "description": "Atomizes fuel for combustion." },
+                "IgniterPlug": { "id": "COMP-PROP-TJ-CC-IGN", "label": "Igniter Plug", "description": "Initiates combustion." },
+                "Dilution_Zone": { "id": "COMP-PROP-TJ-CC-DIL", "label": "Dilution Zone", "description": "Mixes cooling air to reduce turbine inlet temperature." }
+              }
+            },
+            "HighPressureTurbine": { "id": "COMP-PROP-TJ-HPT", "label": "High Pressure Turbine (HPT)", "description": "Drives the HPC. Highest temperature section of engine." },
+            "LowPressureTurbine": { "id": "COMP-PROP-TJ-LPT", "label": "Low Pressure Turbine (LPT)", "description": "Drives fan and LPC. Extracts remaining energy." },
+            "ExhaustNozzle": {
+              "id": "COMP-PROP-TJ-NOZ",
+              "label": "Exhaust Nozzle",
+              "types": ["convergent", "convergent_divergent", "iris_nozzle", "ejector_nozzle", "2D_nozzle"],
+              "subcomponents": {
+                "NozzleActuator": { "id": "COMP-PROP-TJ-NOZ-ACT", "label": "Nozzle Area Control Actuator", "description": "Adjusts throat area for optimal thrust at each flight condition." },
+                "DivergentFlap": { "id": "COMP-PROP-TJ-NOZ-DF", "label": "Divergent Nozzle Flap", "description": "Expands exhaust below ambient pressure for additional thrust." }
+              }
+            },
+            "Afterburner": {
+              "id": "COMP-PROP-TJ-AB",
+              "label": "Afterburner / Reheat",
+              "description": "Injects additional fuel into exhaust stream for temporary thrust augmentation.",
+              "subcomponents": {
+                "AugmentorFuelNozzles": { "id": "COMP-PROP-TJ-AB-FN", "label": "Augmentor Fuel Spray Bars" },
+                "AugmentorIgniter": { "id": "COMP-PROP-TJ-AB-IGN", "label": "Augmentor Igniter / Hot Streak" },
+                "FlameHolder": { "id": "COMP-PROP-TJ-AB-FH", "label": "V-Gutter Flame Holder", "description": "Stabilizes afterburner combustion at high airspeeds." }
+              }
+            }
+          }
+        },
+
+        "TurbofanEngine": {
+          "id": "COMP-PROP-TF",
+          "label": "Turbofan Engine",
+          "description": "Gas turbine with large bypass fan improving fuel efficiency at high subsonic and supersonic speeds.",
+          "bypass_ratio_types": {
+            "LowBypass": { "ratio": "0.3-1.0", "use": "supersonic_fighters", "examples": ["F100-PW-229", "F110-GE-132", "AL-41F1S", "M88-2"] },
+            "MediumBypass": { "ratio": "1.0-3.0", "use": "fighter_bombers", "examples": ["F135-PW-100", "EJ200", "M53-P2"] },
+            "HighBypass": { "ratio": "4.0-12.0", "use": "transport_tanker", "examples": ["TF33", "CFM56", "GE CF6", "PW2000"] }
+          },
+          "inherits": "COMP-PROP-TJ",
+          "additional_subcomponents": {
+            "BypassDuct": { "id": "COMP-PROP-TF-BPD", "label": "Bypass Duct", "description": "Channels bypass airflow around core." },
+            "MixerNozzle": { "id": "COMP-PROP-TF-MIX", "label": "Exhaust Mixer", "description": "Mixes core and bypass flow for noise reduction and efficiency." },
+            "FADEC": {
+              "id": "COMP-PROP-TF-FADEC",
+              "label": "Full Authority Digital Engine Control",
+              "description": "Electronic controller managing all engine parameters.",
+              "functions": ["thrust_management", "fuel_flow_control", "variable_geometry_control", "surge_protection", "health_monitoring", "start_sequence", "afterburner_scheduling"]
+            }
+          }
+        },
+
+        "TurbopropEngine": {
+          "id": "COMP-PROP-TP",
+          "label": "Turboprop Engine",
+          "description": "Gas turbine driving a propeller via reduction gearbox. Efficient at medium speeds (300-500 knots).",
+          "subcomponents": {
+            "PropellerGearbox": { "id": "COMP-PROP-TP-GB", "label": "Reduction Gearbox", "description": "Reduces turbine speed (15000+ RPM) to propeller speed (1000-2000 RPM)." },
+            "Propeller": {
+              "id": "COMP-PROP-TP-PROP",
+              "label": "Propeller Assembly",
+              "subcomponents": {
+                "BladeAssembly": { "id": "COMP-PROP-TP-PROP-BLD", "label": "Propeller Blade" },
+                "Hub": { "id": "COMP-PROP-TP-PROP-HUB", "label": "Propeller Hub" },
+                "ConstantSpeedUnit": { "id": "COMP-PROP-TP-PROP-CSU", "label": "Constant Speed / Variable Pitch Unit", "description": "Maintains constant RPM by varying blade pitch." },
+                "FeatheringMechanism": { "id": "COMP-PROP-TP-PROP-FTH", "label": "Feathering Mechanism", "description": "Turns blades edge-on to airflow to minimize drag after engine failure." },
+                "ReverseThrust": { "id": "COMP-PROP-TP-PROP-REV", "label": "Beta Range / Reverse Pitch", "description": "Negative pitch for ground roll deceleration." }
+              }
+            }
+          }
+        },
+
+        "TurboshaftEngine": {
+          "id": "COMP-PROP-TS",
+          "label": "Turboshaft Engine",
+          "description": "Gas turbine optimized to deliver shaft power to rotor or other output shaft. Primary helicopter powerplant.",
+          "examples": ["T700-GE-701D", "GE T408", "RTM322", "AL-5F", "Shakti (HAL)"],
+          "subcomponents": {
+            "PowerTurbine": { "id": "COMP-PROP-TS-PT", "label": "Free Power Turbine", "description": "Uncoupled turbine stage extracting shaft power output." },
+            "OutputShaft": { "id": "COMP-PROP-TS-OS", "label": "Output / Power Shaft" },
+            "ParticleSeparator": { "id": "COMP-PROP-TS-IPS", "label": "Engine Inlet Particle Separator", "description": "Centrifugal separator removing sand and debris from inlet air." }
+          }
+        },
+
+        "Ramjet": {
+          "id": "COMP-PROP-RJ",
+          "label": "Ramjet",
+          "description": "Air-breathing jet without rotating machinery. Requires supersonic inlet flow. Cannot operate from standstill.",
+          "subcomponents": {
+            "SupersonicInlet": { "id": "COMP-PROP-RJ-INT", "label": "Supersonic Diffuser Inlet" },
+            "SubsonicDiffuser": { "id": "COMP-PROP-RJ-SD", "label": "Subsonic Diffuser Section" },
+            "RamjetCombustor": { "id": "COMP-PROP-RJ-CC", "label": "Ramjet Combustion Chamber" },
+            "RamjetNozzle": { "id": "COMP-PROP-RJ-NOZ", "label": "Ramjet Propulsive Nozzle" }
+          }
+        },
+
+        "Scramjet": {
+          "id": "COMP-PROP-SCJ",
+          "label": "Scramjet (Supersonic Combustion Ramjet)",
+          "description": "Air-breathing engine where combustion occurs at supersonic flow velocities. Operates above Mach 5.",
+          "subcomponents": {
+            "HypersonicInlet": { "id": "COMP-PROP-SCJ-INT", "label": "Hypersonic Inlet / Forebody" },
+            "IsolatorSection": { "id": "COMP-PROP-SCJ-ISO", "label": "Isolator / Pre-combustion Shock Train" },
+            "ScramjetCombustor": { "id": "COMP-PROP-SCJ-CC", "label": "Supersonic Combustion Chamber" },
+            "ExpansionNozzle": { "id": "COMP-PROP-SCJ-NOZ", "label": "Expansion Nozzle / Nozzle-Afterbody" }
+          }
+        },
+
+        "VariableCycleEngine": {
+          "id": "COMP-PROP-VCE",
+          "label": "Variable Cycle Engine (VCE)",
+          "description": "Engine that can change bypass ratio in flight to optimize efficiency at subsonic cruise and supersonic dash.",
+          "description_extended": "Critical for 6th generation aircraft. Can operate as turbofan at subsonic, shift to low-bypass turbojet for supersonic.",
+          "examples": ["GE XA100", "P&W XA101", "ADVENT Program derivatives"]
+        },
+
+        "ElectricPropulsion": {
+          "id": "COMP-PROP-EP",
+          "label": "Electric Propulsion",
+          "description": "Motor-driven propeller using electrical power from batteries, fuel cells, or generators.",
+          "subcomponents": {
+            "ElectricMotor": { "id": "COMP-PROP-EP-EM", "label": "Electric Motor" },
+            "BatterySystem": { "id": "COMP-PROP-EP-BAT", "label": "Battery Pack" },
+            "PowerElectronics": { "id": "COMP-PROP-EP-PE", "label": "Power Electronics / Inverter" },
+            "HydrogenFuelCell": { "id": "COMP-PROP-EP-HFC", "label": "Hydrogen Fuel Cell Stack" }
+          }
+        },
+
+        "ThrustVectoring": {
+          "id": "COMP-PROP-TV",
+          "label": "Thrust Vectoring System",
+          "description": "Deflects engine exhaust to provide pitch, yaw, and roll control authority beyond aerodynamic surfaces.",
+          "types": {
+            "TwoDimensional": { "id": "COMP-PROP-TV-2D", "label": "2D Thrust Vectoring", "description": "Pitch axis only. Used on F-22.", "examples_on": ["F-22A"] },
+            "ThreeDimensional": { "id": "COMP-PROP-TV-3D", "label": "3D Thrust Vectoring", "description": "Pitch and yaw axes. KNVK (full 3D) as on Su-35S, Su-57.", "examples_on": ["Su-35S", "Su-57", "X-31"] },
+            "Swiveling_Nozzle": { "id": "COMP-PROP-TV-SWV", "label": "Swiveling Nozzle (STOVL)", "description": "Rotates full nozzle for VTOL thrust. F-35B.", "examples_on": ["F-35B", "AV-8B"] },
+            "PaddleDeflector": { "id": "COMP-PROP-TV-PAD", "label": "Paddle / Petal Deflector", "description": "Jet deflector paddles at nozzle exit." }
+          }
+        },
+
+        "FuelSystem": {
+          "id": "COMP-FUEL",
+          "label": "Fuel System",
+          "description": "Complete aircraft fuel storage, transfer, and management.",
+          "subcomponents": {
+            "FuelTanks": {
+              "id": "COMP-FUEL-TK",
+              "label": "Fuel Tanks",
+              "types": {
+                "IntegralWetWing": { "id": "COMP-FUEL-TK-IWW", "label": "Integral Wet Wing Tank", "description": "Wing structure sealed to form tank directly." },
+                "FuselageCells": { "id": "COMP-FUEL-TK-FUS", "label": "Fuselage Fuel Cells" },
+                "BladderBag": { "id": "COMP-FUEL-TK-BLB", "label": "Bladder / Bag Fuel Cell", "description": "Flexible sealed bags within structural bays." },
+                "ConformalFuelTank": { "id": "COMP-FUEL-TK-CFT", "label": "Conformal Fuel Tank (CFT)", "description": "External tanks that conform to aircraft shape, reducing drag vs standard tanks." },
+                "ExternalDropTank": { "id": "COMP-FUEL-TK-EXT", "label": "External Drop Tank", "description": "Jettisable external fuel tank on pylons." }
+              }
+            },
+            "FuelTransfer": {
+              "id": "COMP-FUEL-XFR",
+              "label": "Fuel Transfer System",
+              "subcomponents": {
+                "BoostPumps": { "id": "COMP-FUEL-XFR-BP", "label": "Tank Boost Pumps", "description": "Electrically driven pumps pressurizing fuel to engine." },
+                "CrossfeedValves": { "id": "COMP-FUEL-XFR-CFV", "label": "Crossfeed Valves", "description": "Allow transfer between tanks and to either engine." },
+                "JettisonSystem": { "id": "COMP-FUEL-XFR-JET", "label": "Fuel Dump / Jettison System", "description": "Emergency rapid fuel dumping to reduce landing weight." }
+              }
+            },
+            "AerialRefueling": {
+              "id": "COMP-FUEL-AR",
+              "label": "Aerial Refueling System",
+              "types": {
+                "ProbeAndDrogue": {
+                  "id": "COMP-FUEL-AR-PD",
+                  "label": "Probe and Drogue Receiver",
+                  "subcomponents": {
+                    "RefuelingProbe": { "id": "COMP-FUEL-AR-PD-PRB", "label": "Refueling Probe", "types": ["fixed_probe", "retractable_probe"] },
+                    "DrogueBasket": { "id": "COMP-FUEL-AR-PD-DRG", "label": "Drogue Basket (on tanker)" }
+                  }
+                },
+                "FlyingBoom": {
+                  "id": "COMP-FUEL-AR-FB",
+                  "label": "Flying Boom Receiver",
+                  "subcomponents": {
+                    "BoomReceptacle": { "id": "COMP-FUEL-AR-FB-REC", "label": "Boom Receptacle", "description": "Dorsal receptacle that accepts boom nozzle." },
+                    "RefuelingLight": { "id": "COMP-FUEL-AR-FB-LGT", "label": "Air Refueling Lighting" }
+                  }
+                }
+              }
+            },
+            "FuelManagementComputer": { "id": "COMP-FUEL-FMC", "label": "Fuel Management Computer", "description": "Manages transfer sequencing, CG control, and fuel remaining calculations." },
+            "InertGasSystem": { "id": "COMP-FUEL-IGS", "label": "Inert Gas / OBIGGS", "description": "On-Board Inert Gas Generation System. Fills tank ullage with nitrogen to prevent explosion." }
+          }
+        },
+
+        "HydraulicSystem": {
+          "id": "COMP-HYD",
+          "label": "Hydraulic System",
+          "description": "High-pressure fluid power for flight controls, landing gear, brakes, and weapon bay doors.",
+          "operating_pressure_psi": "3000-5000",
+          "subcomponents": {
+            "HydraulicPump": { "id": "COMP-HYD-PMP", "label": "Engine-Driven Hydraulic Pump", "description": "Primary source of hydraulic pressure." },
+            "ElectricBackupPump": { "id": "COMP-HYD-EBP", "label": "Electric Backup Hydraulic Pump", "description": "Powers hydraulics when engine-driven pumps unavailable." },
+            "RAT": { "id": "COMP-HYD-RAT", "label": "Ram Air Turbine (RAT)", "description": "Emergency hydraulic/electric power from airstream in total power loss." },
+            "HydraulicReservoir": { "id": "COMP-HYD-RES", "label": "Hydraulic Reservoir", "description": "Pressurized fluid storage." },
+            "Actuators": {
+              "id": "COMP-HYD-ACT",
+              "label": "Hydraulic Actuators",
+              "types": {
+                "FlightControlActuator": { "id": "COMP-HYD-ACT-FCA", "label": "Flight Control Surface Actuator" },
+                "GearActuator": { "id": "COMP-HYD-ACT-GA", "label": "Landing Gear Actuator" },
+                "BrakeActuator": { "id": "COMP-HYD-ACT-BA", "label": "Wheel Brake Actuator" },
+                "WeaponBayDoor": { "id": "COMP-HYD-ACT-WBD", "label": "Weapon Bay Door Actuator" },
+                "CanopyActuator": { "id": "COMP-HYD-ACT-CAN", "label": "Canopy Open/Close Actuator" },
+                "AirBrakeActuator": { "id": "COMP-HYD-ACT-ABR", "label": "Speed Brake / Air Brake Actuator" }
+              }
+            },
+            "HydraulicLines": { "id": "COMP-HYD-LNS", "label": "Hydraulic Lines and Fittings" },
+            "SystemManifold": { "id": "COMP-HYD-MAN", "label": "Hydraulic Manifold / Distribution Block" },
+            "HydraulicFilter": { "id": "COMP-HYD-FLT", "label": "Hydraulic Filter" },
+            "PressureAccumulator": { "id": "COMP-HYD-ACC", "label": "Pressure Accumulator", "description": "Stores pressurized fluid for immediate demand response." }
+          }
+        },
+
+        "ElectricalSystem": {
+          "id": "COMP-ELEC",
+          "label": "Electrical Power System",
+          "description": "Generation, distribution, and management of electrical power throughout aircraft.",
+          "subcomponents": {
+            "MainGenerator": { "id": "COMP-ELEC-GEN", "label": "Main AC Generator", "description": "Engine-driven alternator. Typically 115/200V, 400Hz." },
+            "APU": {
+              "id": "COMP-ELEC-APU",
+              "label": "Auxiliary Power Unit",
+              "description": "Small gas turbine providing electrical and bleed air power on ground and as backup.",
+              "functions": ["engine_start", "ground_electrical_power", "ground_bleed_air", "emergency_power"]
+            },
+            "BatterySystem": { "id": "COMP-ELEC-BAT", "label": "Aircraft Battery System", "types": ["nickel_cadmium", "lithium_ion", "lead_acid"] },
+            "ExternalPower": { "id": "COMP-ELEC-EXP", "label": "External Power Receptacle", "description": "Ground power connection." },
+            "BusPowerDistribution": {
+              "id": "COMP-ELEC-BUS",
+              "label": "Power Distribution Bus",
+              "types": ["essential_bus", "primary_bus", "secondary_bus", "avionics_bus", "weapon_bus"],
+              "subcomponents": {
+                "CircuitBreakers": { "id": "COMP-ELEC-BUS-CB", "label": "Circuit Breaker Panel" },
+                "SolidStateCircuitBreaker": { "id": "COMP-ELEC-BUS-SSCB", "label": "Solid State Power Controller" },
+                "BusProtectionUnit": { "id": "COMP-ELEC-BUS-BPU", "label": "Bus Protection Unit" }
+              }
+            },
+            "GeneratorControlUnit": { "id": "COMP-ELEC-GCU", "label": "Generator Control Unit (GCU)", "description": "Controls generator output voltage, frequency, and load sharing." },
+            "DCPowerConverter": { "id": "COMP-ELEC-DCC", "label": "DC Power Converter / TRU", "description": "Transforms AC to DC for avionics and equipment." }
+          }
+        },
+
+        "EnvironmentalControlSystem": {
+          "id": "COMP-ECS",
+          "label": "Environmental Control System (ECS)",
+          "description": "Manages cockpit and avionics bay temperature, pressurization, and oxygen.",
+          "subcomponents": {
+            "EngineBleedAir": { "id": "COMP-ECS-BLD", "label": "Engine Bleed Air System", "description": "Taps compressed air from compressor for ECS." },
+            "AirCycleUnit": { "id": "COMP-ECS-ACU", "label": "Air Cycle Machine / Pack", "description": "Bootstrap cycle machine cooling bleed air." },
+            "CockpitPressurization": {
+              "id": "COMP-ECS-CPR",
+              "label": "Cockpit Pressurization System",
+              "subcomponents": {
+                "PressureController": { "id": "COMP-ECS-CPR-PC", "label": "Cabin Pressure Controller" },
+                "OutflowValve": { "id": "COMP-ECS-CPR-OFV", "label": "Outflow Valve" },
+                "SafetyValve": { "id": "COMP-ECS-CPR-SFV", "label": "Safety / Negative Pressure Relief Valve" }
+              }
+            },
+            "OxygenSystem": {
+              "id": "COMP-ECS-OXY",
+              "label": "Crew Oxygen System",
+              "types": {
+                "OBOGS": { "id": "COMP-ECS-OXY-OBG", "label": "On-Board Oxygen Generation System", "description": "Molecular sieve generates oxygen from bleed air. No bottled oxygen needed." },
+                "LOX": { "id": "COMP-ECS-OXY-LOX", "label": "Liquid Oxygen System", "description": "Cryogenic oxygen converted to gaseous for crew breathing." },
+                "GOX": { "id": "COMP-ECS-OXY-GOX", "label": "Gaseous Oxygen Bottle System" }
+              }
+            },
+            "AvionicsCooling": { "id": "COMP-ECS-AVC", "label": "Avionics Liquid Cooling System", "description": "Circulates coolant through avionics bays for thermal management." },
+            "AntiIceDeIce": {
+              "id": "COMP-ECS-ICE",
+              "label": "Anti-Ice / De-Ice System",
+              "subcomponents": {
+                "LeadingEdgeHeat": { "id": "COMP-ECS-ICE-LEH", "label": "Leading Edge Thermal Anti-Ice" },
+                "PitotHeat": { "id": "COMP-ECS-ICE-PTH", "label": "Pitot and Static Port Heat" },
+                "WindshieldHeat": { "id": "COMP-ECS-ICE-WSH", "label": "Windshield Anti-Ice Heat" }
+              }
+            }
+          }
+        },
+
+        "FireSuppressionSystem": {
+          "id": "COMP-FIRE",
+          "label": "Fire Detection and Suppression System",
+          "subcomponents": {
+            "EngineFireDetector": { "id": "COMP-FIRE-EFD", "label": "Engine Fire Detection Loop", "description": "Pneumatic or electrolytic continuous loop sensor around engine nacelle." },
+            "ApuFireDetector": { "id": "COMP-FIRE-AFD", "label": "APU Fire Detector" },
+            "FireExtinguisher": { "id": "COMP-FIRE-EXT", "label": "HRD Fire Extinguisher Bottle", "types": ["Halon_1301", "HFC-125", "FM-200"], "description": "High Rate Discharge bottle delivering suppressant to engine bay." },
+            "PyroFireHandles": { "id": "COMP-FIRE-PHD", "label": "Fire Handle / T-Handle", "description": "Crew-operated handle to shut down engine and discharge suppressant." }
+          }
+        },
+
+        "SurvivalSystems": {
+          "id": "COMP-SRV",
+          "label": "Crew Survival Systems",
+          "subcomponents": {
+            "EjectionSeat": "COMP-AF-CPT-EJS",
+            "AntiGGarment": { "id": "COMP-SRV-AGS", "label": "Anti-G Suit (ATAGS / CSU-13B)", "description": "Pneumatically inflates to restrict blood pooling in lower body during high-G maneuvers." },
+            "HelmetSystem": {
+              "id": "COMP-SRV-HLM",
+              "label": "Crew Helmet",
+              "subcomponents": {
+                "HMD": { "id": "COMP-SRV-HLM-HMD", "label": "Helmet Mounted Display / Sight", "types": ["JHMCS", "JHMCS_II", "Typhoon_HMD", "Scorpion_HMCS", "DAS_display_F35"], "description": "Symbology and targeting cues projected onto visor." },
+                "NVG_Mount": { "id": "COMP-SRV-HLM-NVG", "label": "Night Vision Goggle Mount" },
+                "OxygenMask": { "id": "COMP-SRV-HLM-OXM", "label": "Oxygen Mask with Chemical Defense" },
+                "HearingProtection": { "id": "COMP-SRV-HLM-HRP", "label": "Hearing Protection / Comm Earphones" }
+              }
+            },
+            "SurvivalKit": { "id": "COMP-SRV-KIT", "label": "Personal Survival Kit", "contents": ["emergency_radio", "flares", "water", "food", "first_aid", "compass", "shelter"] },
+            "EmergencyLocator": { "id": "COMP-SRV-ELT", "label": "Emergency Locator Transmitter (ELT / PLB)", "description": "Activates automatically on ejection for rescue services." }
+          }
+        },
+
+        "WeaponStation": {
+          "id": "COMP-WPN",
+          "label": "Weapon Stations",
+          "description": "All hardpoints, bays, and mounting systems for weapons and stores.",
+          "subcomponents": {
+            "ExternalHardpoints": {
+              "id": "COMP-WPN-EXT",
+              "label": "External Hardpoints / Pylons",
+              "attributes": { "rcs_penalty": "significant", "drag_penalty": "significant" },
+              "subcomponents": {
+                "CenterlinePylon": { "id": "COMP-WPN-EXT-CL", "label": "Centerline Pylon" },
+                "InboardWingPylon": { "id": "COMP-WPN-EXT-IB", "label": "Inboard Wing Pylon" },
+                "MidboardPylon": { "id": "COMP-WPN-EXT-MB", "label": "Midboard Wing Pylon" },
+                "OutboardPylon": { "id": "COMP-WPN-EXT-OB", "label": "Outboard Wing Pylon" },
+                "WingtipRail": { "id": "COMP-WPN-EXT-TIP", "label": "Wingtip Missile Rail" },
+                "FuselageStation": { "id": "COMP-WPN-EXT-FUS", "label": "Fuselage Cheek Station" }
+              }
+            },
+            "InternalWeaponBay": {
+              "id": "COMP-WPN-INT",
+              "label": "Internal Weapon Bay",
+              "attributes": { "rcs_benefit": "major", "stealth_enabling": true },
+              "subcomponents": {
+                "WeaponBayDoor": { "id": "COMP-WPN-INT-DR", "label": "Weapon Bay Door", "actuator": "COMP-HYD-ACT-WBD" },
+                "WeaponEjector": { "id": "COMP-WPN-INT-EJC", "label": "Pneumatic / Explosive Weapon Ejector", "description": "Forces weapon clear of bay before motor ignition." },
+                "CarouselLauncher": { "id": "COMP-WPN-INT-CRS", "label": "Rotary Weapon Carousel", "description": "Rotating launcher for multiple weapons in a single bay." },
+                "LowObservableRail": { "id": "COMP-WPN-INT-LOR", "label": "Low Observable Missile Rail (LOMR)" }
+              }
+            },
+            "CannonInstallation": {
+              "id": "COMP-WPN-GUN",
+              "label": "Internal Cannon Installation",
+              "subcomponents": {
+                "CannonBreech": { "id": "COMP-WPN-GUN-BRH", "label": "Cannon Breech and Feed System" },
+                "AmmunitionDrum": { "id": "COMP-WPN-GUN-AMM", "label": "Ammunition Drum", "description": "Rotary drum storing rounds." },
+                "GunMuzzle": { "id": "COMP-WPN-GUN-MZL", "label": "Gun Muzzle / Gas Deflector" },
+                "GunGasVenting": { "id": "COMP-WPN-GUN-GGV", "label": "Gun Gas Venting System", "description": "Prevents gun gases from entering engine intake." },
+                "CannonTypes": { "examples": ["M61A2 Vulcan 20mm", "M50A3 20mm", "GAU-8/A Avenger 30mm", "Gsh-30-1 30mm", "BK-27 27mm", "ADEN 30mm", "DEFA 554"] }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

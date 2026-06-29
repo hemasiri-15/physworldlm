@@ -1,0 +1,362 @@
+{
+  "@context": {
+    "pwmo": "https://physworld.ai/ontology/radar#",
+    "owl": "http://www.w3.org/2002/07/owl#",
+    "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "skos": "http://www.w3.org/2004/02/skos/core#"
+  },
+  "@id": "pwmo:RadarOntology",
+  "@type": "owl:Ontology",
+  "rdfs:label": "PhysWorld Military Radar Ontology (PWMO-RADAR)",
+  "rdfs:comment": "The PhysWorldLM Master Radar Ontology. Canonical engineering-grade schema covering every radar class, component, RF characteristic, signal processing block, countermeasure, vulnerability, logistic concept, relationship type, and worldwide inventory. Version 1.0.0.",
+  "owl:versionInfo": "1.0.0",
+  "pwmo:status": "ACTIVE",
+  "pwmo:classification": "UNCLASSIFIED // OPEN SOURCE AGGREGATION",
+
+  "UpperTaxonomy": {
+    "@id": "pwmo:Radar",
+    "@type": "owl:Class",
+    "rdfs:label": "Radar",
+    "skos:definition": "A Radio Detection And Ranging system that uses electromagnetic radiation to detect, locate, track, and classify objects by measuring reflected signals. Encompasses all military, dual-use, and experimental radar variants.",
+    "rdfs:subClassOf": "pwmo:ElectromagneticSensor",
+    "pwmo:physics": "Emits electromagnetic pulses or continuous waveforms; detects backscatter from targets; measures range (time-of-flight), velocity (Doppler shift), angle (beam position), and in advanced systems: polarimetric and coherent phase information.",
+    "pwmo:fundamentalEquation": "P_r = (P_t * G_t * G_r * lambda^2 * sigma) / ((4*pi)^3 * R^4 * L)",
+
+    "TopLevelBranches": {
+      "ByDomain": {
+        "AirborneRadar": {
+          "@id": "pwmo:AirborneRadar",
+          "@type": "owl:Class",
+          "rdfs:subClassOf": "pwmo:Radar",
+          "rdfs:label": "Airborne Radar",
+          "skos:definition": "Radar systems installed on manned or unmanned aircraft, helicopters, airships, or UAVs. Subject to size, weight, power (SWaP) constraints and vibration environments.",
+          "pwmo:subClasses": [
+            "pwmo:AirborneFCR",
+            "pwmo:AirborneEWR",
+            "pwmo:AirborneSAR",
+            "pwmo:AirborneISAR",
+            "pwmo:AirborneGMTI",
+            "pwmo:AirborneAWACS",
+            "pwmo:AirborneMAD",
+            "pwmo:AirborneWeatherRadar",
+            "pwmo:AirborneTerrainFollowing",
+            "pwmo:AirborneNavigation",
+            "pwmo:AirborneAltimeter",
+            "pwmo:AirborneMaritimePatrol",
+            "pwmo:AirborneCollisionAvoidance",
+            "pwmo:AirborneMissileApproachWarning"
+          ],
+          "pwmo:typicalPlatforms": ["Fighter", "Bomber", "AWACS", "Patrol Aircraft", "Helicopter", "UAV", "UCAV", "Airship"],
+          "pwmo:SWaP_constraints": {
+            "maxMass_kg": [10, 1000],
+            "maxPower_kW": [0.5, 20],
+            "coolingMethod": ["Air", "LiquidCooling", "VaporCycle"]
+          },
+          "pwmo:environmentalChallenges": ["Vibration", "Temperature extremes", "Pressure variation", "Humidity", "EMI from platform"],
+          "pwmo:advantages": ["Elevated vantage point", "Extended radar horizon", "High mobility", "Look-down capability"],
+          "pwmo:disadvantages": ["SWaP constraints", "Platform vulnerability", "Limited power", "Maintenance in-flight impossible"]
+        },
+        "GroundRadar": {
+          "@id": "pwmo:GroundRadar",
+          "@type": "owl:Class",
+          "rdfs:subClassOf": "pwmo:Radar",
+          "rdfs:label": "Ground-Based Radar",
+          "skos:definition": "Radar systems deployed on land, including fixed installations, mobile platforms, vehicle-mounted systems, and man-portable units.",
+          "pwmo:subClasses": [
+            "pwmo:EarlyWarningRadar",
+            "pwmo:LongRangeSurveillanceRadar",
+            "pwmo:MediumRangeSurveillanceRadar",
+            "pwmo:FireControlRadar",
+            "pwmo:CounterBatteryRadar",
+            "pwmo:WeaponLocatingRadar",
+            "pwmo:AirDefenseRadar",
+            "pwmo:BallasticMissileDefenseRadar",
+            "pwmo:GroundSurveillanceRadar",
+            "pwmo:CoastalSurveillanceRadar",
+            "pwmo:HarborSurveillanceRadar",
+            "pwmo:GroundPenetratingRadar",
+            "pwmo:UASDetectionRadar",
+            "pwmo:CounterUASRadar",
+            "pwmo:ArtilleryLocatingRadar",
+            "pwmo:MortarLocatingRadar",
+            "pwmo:GapFillerRadar",
+            "pwmo:LowLevelRadar",
+            "pwmo:3DSurveillanceRadar",
+            "pwmo:2DSurveillanceRadar",
+            "pwmo:TargetAcquisitionRadar",
+            "pwmo:BattlefieldSurveillanceRadar",
+            "pwmo:PortableSurveillanceRadar"
+          ],
+          "pwmo:mobilityCategories": ["Fixed", "Semi-fixed", "Mobile", "Transportable", "Man-portable", "Towed"],
+          "pwmo:advantages": ["High power", "Large aperture", "Long range", "Persistent surveillance", "No SWaP constraint"],
+          "pwmo:disadvantages": ["Fixed installations vulnerable", "Limited elevation coverage for ground clutter", "Terrain masking"]
+        },
+        "NavalRadar": {
+          "@id": "pwmo:NavalRadar",
+          "@type": "owl:Class",
+          "rdfs:subClassOf": "pwmo:Radar",
+          "rdfs:label": "Naval Radar",
+          "skos:definition": "Radar systems installed on surface ships, submarines, and unmanned surface/underwater vehicles. Must operate in high-salt, high-humidity marine environments.",
+          "pwmo:subClasses": [
+            "pwmo:NavalAirSearchRadar",
+            "pwmo:NavalSurfaceSearchRadar",
+            "pwmo:NavalFireControlRadar",
+            "pwmo:NavalNavigationRadar",
+            "pwmo:NavalVolumeSurveillanceRadar",
+            "pwmo:NavalAEGIS",
+            "pwmo:NavalCIWSRadar",
+            "pwmo:NavalHelicopterControlRadar",
+            "pwmo:NavalBallasticMissileDefenseRadar",
+            "pwmo:SubmarineRadar",
+            "pwmo:NavalTargetIlluminationRadar",
+            "pwmo:NavalGunFireControlRadar",
+            "pwmo:NavalTorpedoControlRadar"
+          ],
+          "pwmo:environmentalChallenges": ["Corrosion", "Sea clutter", "Multipath over sea surface", "Platform roll/pitch", "Spray and salt"],
+          "pwmo:seaClutterModels": ["GIT", "Weibull", "Log-Normal", "K-distribution"],
+          "pwmo:advantages": ["360-degree coverage", "High platform stability vs aircraft", "High power available"],
+          "pwmo:disadvantages": ["Sea clutter", "Multipath", "Limited elevation for missile defense", "Platform signature"]
+        },
+        "SpaceRadar": {
+          "@id": "pwmo:SpaceRadar",
+          "@type": "owl:Class",
+          "rdfs:subClassOf": "pwmo:Radar",
+          "rdfs:label": "Space-Based Radar",
+          "skos:definition": "Radar systems deployed on satellites or space stations, providing global coverage and persistent surveillance from low-earth, medium-earth, or geostationary orbit.",
+          "pwmo:subClasses": [
+            "pwmo:SpaceSAR",
+            "pwmo:SpaceGMTI",
+            "pwmo:SpaceDebrisTrackingRadar",
+            "pwmo:SpaceSurveillanceRadar",
+            "pwmo:SpaceMissileWarningRadar"
+          ],
+          "pwmo:orbits": ["LEO", "MEO", "GEO", "HEO", "Molniya"],
+          "pwmo:advantages": ["Global coverage", "Persistent surveillance", "No terrain masking", "Access denied areas"],
+          "pwmo:disadvantages": ["Long revisit time (LEO)", "High cost", "Vulnerability to ASAT", "Limited power budget", "Limited resolution vs airborne at same geometry"]
+        },
+        "PassiveRadar": {
+          "@id": "pwmo:PassiveRadar",
+          "@type": "owl:Class",
+          "rdfs:subClassOf": "pwmo:Radar",
+          "rdfs:label": "Passive Radar",
+          "skos:definition": "Radar systems that do not transmit their own signal but instead exploit third-party transmissions (broadcast, cellular, DVB-T, DAB, WiFi, etc.) as illuminators of opportunity to detect and track targets.",
+          "pwmo:alternativeNames": ["Passive Coherent Location (PCL)", "Passive Bistatic Radar (PBR)", "Commensal Radar"],
+          "pwmo:illuminatorTypes": ["FM Radio", "DAB Radio", "DVB-T TV", "GSM Cellular", "LTE", "WiFi", "WiMAX", "HF Shortwave", "GPS", "DVB-S"],
+          "pwmo:advantages": ["No RF emissions (covert)", "Immune to ARM", "Wide frequency diversity", "Low cost", "Difficult to jam"],
+          "pwmo:disadvantages": ["Dependent on third-party illuminators", "Complex signal processing", "Lower power density", "Geometry-dependent coverage"],
+          "pwmo:processingRequirements": ["Cross-Ambiguity Function (CAF)", "Extensive CFAR", "Multipath mitigation", "Direct signal interference cancellation"]
+        },
+        "BistaticRadar": {
+          "@id": "pwmo:BistaticRadar",
+          "@type": "owl:Class",
+          "rdfs:subClassOf": "pwmo:Radar",
+          "rdfs:label": "Bistatic Radar",
+          "skos:definition": "Radar in which the transmitter and receiver are separated by a distance comparable to the expected target range, enabling detection of targets with low monostatic RCS.",
+          "pwmo:bistatic_RCS_advantage": "Stealth aircraft optimized to minimize monostatic RCS may have large bistatic RCS at certain geometries (specular return)",
+          "pwmo:subClasses": ["pwmo:GroundBistatic", "pwmo:AirborneBistatic", "pwmo:NetCentricBistatic", "pwmo:ForwardScatterRadar"],
+          "pwmo:challenges": ["Synchronization between TX/RX", "Bistatic geometry calculation", "Platform motion compensation"]
+        },
+        "MultistaticRadar": {
+          "@id": "pwmo:MultistaticRadar",
+          "@type": "owl:Class",
+          "rdfs:subClassOf": "pwmo:BistaticRadar",
+          "rdfs:label": "Multistatic Radar",
+          "skos:definition": "Network of multiple spatially diverse transmitters and receivers providing cooperative target detection with superior coverage, accuracy, and stealth aircraft detection probability.",
+          "pwmo:advantages": ["Redundancy", "Improved geometry", "Anti-stealth", "Distributed LPI"],
+          "pwmo:keyMetric": "Multistatic RCS averaging across multiple aspect angles defeats stealth coatings optimized for single-look geometries"
+        }
+      },
+
+      "ByScanningMethod": {
+        "MechanicalScanRadar": {
+          "@id": "pwmo:MechanicalScanRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Mechanically Scanned Radar",
+          "skos:definition": "Radar using physical rotation or mechanical beam steering. Includes parabolic dish and slotted array antennas driven by servo motors.",
+          "pwmo:antennaTypes": ["Parabolic Reflector", "Cassegrain", "Slotted Waveguide Array", "Horn Reflector"],
+          "pwmo:scanTypes": ["Continuous Rotation", "Sector Scan", "Nodding", "Conical Scan", "Lobe Switching"],
+          "pwmo:advantages": ["Simple", "Low cost", "High gain for size", "Battle-proven"],
+          "pwmo:disadvantages": ["Slow scan rate", "Mechanical wear", "Beam agility limited", "Vulnerable to servo damage"],
+          "pwmo:typicalUpdateRate_s": [1, 12]
+        },
+        "PESARadar": {
+          "@id": "pwmo:PESARadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Passive Electronically Scanned Array (PESA)",
+          "skos:definition": "Radar with a phased array antenna using electronic phase shifters driven by a single central transmitter to steer the beam electronically without mechanical movement.",
+          "pwmo:keyComponents": ["Single High-Power Transmitter (TWT or Klystron)", "Corporate Feed Network", "Ferrite or PIN Diode Phase Shifters", "Corporate Combiner"],
+          "pwmo:advantages": ["Fast beam steering (microseconds)", "No mechanical wear", "Beam agility", "Multiple simultaneous beams possible"],
+          "pwmo:disadvantages": ["Single transmitter is single point of failure", "High phase shifter losses", "Narrowband"],
+          "pwmo:examples": ["AN/APG-63v1", "N001 Bars", "Zhuk-ME", "AN/SPY-1"]
+        },
+        "AESARadar": {
+          "@id": "pwmo:AESARadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Active Electronically Scanned Array (AESA)",
+          "skos:definition": "Radar where each antenna element has its own Transmit/Receive (TR) module containing an individual solid-state power amplifier, phase shifter, and low-noise amplifier. Enables simultaneous multiple beams, high reliability, extreme agility, and LPI.",
+          "pwmo:keyComponents": ["TR Modules (GaAs or GaN)", "Monolithic Microwave Integrated Circuits (MMICs)", "Digital Beamformer", "Wideband Frequency Synthesizer", "High-Speed ADC", "FPGA/DSP Signal Processor"],
+          "pwmo:TRmodule_technologies": {
+            "GaAs": {
+              "maturity": "Mature (1990s-present)",
+              "advantages": ["Low noise figure", "High electron mobility"],
+              "disadvantages": ["Lower power density vs GaN", "Less rugged"],
+              "typicalFrequency": "1-40 GHz"
+            },
+            "GaN": {
+              "maturity": "Current generation (2010s-present)",
+              "advantages": ["3-10x higher power density vs GaAs", "Higher breakdown voltage", "Better thermal conductivity", "Wider bandwidth"],
+              "disadvantages": ["Higher cost", "More complex manufacturing"],
+              "typicalFrequency": "0.5-100 GHz",
+              "countries_with_indigenous": ["USA", "Israel", "Japan", "Germany", "Russia", "China", "India", "South Korea", "France"]
+            }
+          },
+          "pwmo:advantages": ["Extreme beam agility (<1ms beam switching)", "Multiple simultaneous beams/functions", "High reliability (graceful degradation)", "Low Probability of Intercept (LPI)", "Wideband operation", "ECCM superiority", "Electronic attack capability", "Cognitive/adaptive waveforms", "No single point of failure"],
+          "pwmo:disadvantages": ["High cost ($5M-$50M per system)", "Complex thermal management", "Manufacturing complexity", "Export controlled"],
+          "pwmo:beamSteeringTime_us": [1, 50],
+          "pwmo:gracefulDegradation": "AESA maintains reduced but functional performance when up to 25-30% of TR modules fail",
+          "pwmo:LPI_mechanisms": ["Frequency hopping", "Low peak power", "Wide bandwidth", "Variable PRF", "Pseudo-random waveforms"],
+          "pwmo:examples": ["AN/APG-77", "AN/APG-81", "EL/M-2052", "CAPTOR-E", "RBE2-AA", "SABR", "Type 1475/KLJ-7A", "APAR", "SPY-6"]
+        },
+        "HybridScanRadar": {
+          "@id": "pwmo:HybridScanRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Hybrid Scan Radar",
+          "skos:definition": "Radar combining mechanical rotation or tilt with electronic scanning in one or more axes. Common configuration: mechanical azimuth rotation with electronic elevation scanning.",
+          "pwmo:examples": ["S-400 92N6 Grave Stone", "Patriot MPQ-53/65", "NASAMS MPQ-64F1"],
+          "pwmo:advantages": ["Cost-effective 3D coverage", "Simpler than full AESA", "Good elevation resolution"],
+          "pwmo:disadvantages": ["Mechanical rotation limits azimuth update rate"]
+        },
+        "SoftwareDefinedRadar": {
+          "@id": "pwmo:SoftwareDefinedRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Software Defined Radar (SDR)",
+          "skos:definition": "Radar where waveform generation, signal processing, and operational modes are defined and reconfigured in software rather than hardware, enabling rapid mission adaptation and multi-function operation.",
+          "pwmo:keyEnablers": ["High-Speed DAC/ADC", "FPGA", "GPU", "General Purpose Processor", "Open Architecture"],
+          "pwmo:capabilities": ["Rapid waveform reprogramming", "Multi-function (radar/EW/comms)", "Cognitive adaptation", "Field upgradeable"],
+          "pwmo:examples": ["AN/APG-79 (partial)", "AN/APG-82", "Advanced Multifunction RF Concept (AMRFC)"]
+        },
+        "CognitiveRadar": {
+          "@id": "pwmo:CognitiveRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Cognitive Radar",
+          "skos:definition": "Radar incorporating closed-loop perception-action cycles: continuously learns from the environment, adapts waveforms, processing, and beam management to optimize performance against evolving threats and interference.",
+          "pwmo:corePrinciple": "Bayesian inference or reinforcement learning to adapt TX waveform based on RX observations",
+          "pwmo:capabilities": ["Interference avoidance", "Optimal waveform selection", "Environment mapping", "Threat recognition", "Autonomous spectrum sharing"],
+          "pwmo:maturityLevel": "Research/Early operational (2020s)",
+          "pwmo:keyResearch": ["DARPA SSPARC", "NATO SET-227", "UK Dstl Cognitive Radar"]
+        },
+        "QuantumRadar": {
+          "@id": "pwmo:QuantumRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Quantum Radar",
+          "skos:definition": "Theoretical/experimental radar exploiting quantum entanglement (quantum illumination) or photon number states to detect stealth targets at very low signal-to-noise ratios, potentially defeating radar-absorbing materials.",
+          "pwmo:maturityLevel": "Research / TRL 2-4 (2020s)",
+          "pwmo:theoreticalAdvantage": "6 dB SNR advantage over classical radar in quantum-noise-limited regime",
+          "pwmo:currentLimitations": ["Microwave quantum entanglement extremely fragile", "Range limited to meters in current implementations", "Cannot yet scale to operational radar ranges"],
+          "pwmo:claimedPrograms": ["China CETC quantum radar claims (2016, disputed)", "Canada NRC research"],
+          "pwmo:consensus": "No operational quantum radar exists; claims should be treated with extreme skepticism"
+        }
+      },
+
+      "ByMission": {
+        "EarlyWarningRadar": {
+          "@id": "pwmo:EarlyWarningRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Early Warning Radar (EWR)",
+          "skos:definition": "Long-range radar providing maximum detection range and early cueing of incoming threats including aircraft, cruise missiles, and ballistic missiles. Typically operates in VHF/UHF/L-band for long range and counter-stealth capability.",
+          "pwmo:primaryMission": "Maximum unambiguous detection range; cueing downstream fire-control systems; national/theater air picture generation",
+          "pwmo:typicalRange_km": [400, 6000],
+          "pwmo:frequencyBands": ["VHF (P-band)", "UHF", "L-band"],
+          "pwmo:counterStealthCapability": "VHF/UHF wavelengths (1-2m) approach resonance region for stealth aircraft with wingspan ~10-20m, degrading RAM effectiveness",
+          "pwmo:examples": ["AN/FPS-117", "AN/FPS-132 UEWR", "Voronezh-M", "DFL-2 (China)", "Green Pine (Israel)", "Swordfish (India)", "BMEWS AN/FPS-49", "Jindalee OTHR"],
+          "pwmo:subClasses": ["pwmo:Over-The-Horizon Radar", "pwmo:BallasticMissileEarlyWarning", "pwmo:Continental_EWR", "pwmo:Theater_EWR"]
+        },
+        "FireControlRadar": {
+          "@id": "pwmo:FireControlRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Fire Control Radar (FCR)",
+          "skos:definition": "Precision tracking radar providing continuous, high-accuracy target position data to weapon systems for engagement. Requires high update rate, precise angular tracking, and range/velocity measurement accuracy.",
+          "pwmo:primaryMission": "Single or multi-target precise tracking for weapon guidance; illumination; terminal homing support",
+          "pwmo:typicalRange_km": [20, 200],
+          "pwmo:accuracyRequirements": {
+            "range_m": [1, 10],
+            "azimuth_mrad": [0.1, 1.0],
+            "elevation_mrad": [0.1, 1.0],
+            "velocity_ms": [0.1, 1.0]
+          },
+          "pwmo:typicalFrequency": ["X-band", "Ku-band"],
+          "pwmo:trackingModes": ["Pencil beam monopulse tracking", "TWS", "STT"],
+          "pwmo:examples": ["AN/APG-77 (F-22)", "AN/APG-81 (F-35)", "N035 Irbis-E (Su-35)", "EL/M-2052", "MPQ-53 (Patriot)", "9S32 (S-300V)", "CAPTOR-E (Typhoon)"]
+        },
+        "CounterBatteryRadar": {
+          "@id": "pwmo:CounterBatteryRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Counter-Battery / Weapon Locating Radar",
+          "skos:definition": "Radar system detecting projectiles in flight (shells, rockets, mortars, missiles) and back-computing their launch point to enable counter-fire. Also predicts impact point for force protection.",
+          "pwmo:operatingPrinciple": "Detects small-RCS projectiles in clutter; multi-point tracking extrapolation to solve ballistic trajectory; least-squares or Kalman filter back-extrapolation to origin",
+          "pwmo:targetRCS_dBsm": [-30, -10],
+          "pwmo:typicalRange_km": [5, 60],
+          "pwmo:accuracyRequirement_CEP_m": [10, 100],
+          "pwmo:frequencyBands": ["C-band", "X-band", "Ku-band"],
+          "pwmo:examples": ["AN/TPQ-37 Firefinder", "AN/TPQ-53 Firefinder", "ARTHUR (Sweden)", "COBRA (Germany/UK/France)", "Swathi (India)", "1L260 Zoopark-1M (Russia)", "Q-63 (China)"],
+          "pwmo:outputData": ["Projectile launch coordinates (lat/lon/alt)", "Projectile impact prediction", "Weapon type classification", "Time of origin", "Azimuth/elevation of trajectory"]
+        },
+        "SARRadar": {
+          "@id": "pwmo:SARRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Synthetic Aperture Radar (SAR)",
+          "skos:definition": "Imaging radar exploiting platform motion to synthesize a very large virtual antenna aperture, producing high-resolution ground images regardless of weather and day/night conditions.",
+          "pwmo:fundamentalPrinciple": "Coherent integration of returns across platform travel distance L_SA; azimuth resolution d_az ≈ D/2 independent of range (for focused SAR)",
+          "pwmo:imagingModes": {
+            "Stripmap": "Beam fixed relative to platform; continuous strip image along track",
+            "Spotlight": "Beam steered to illuminate fixed area longer; higher azimuth resolution",
+            "ScanSAR": "Beam steps across multiple strips; wide swath at reduced resolution",
+            "TOPSAR": "Terrain Observation by Progressive Scans; burst mode wide-swath, uniform azimuth ambiguity",
+            "Circular_SAR": "Platform orbits target; 360-degree look",
+            "Inverse_SAR_ISAR": "Target moves, radar fixed; ship and aircraft imaging"
+          },
+          "pwmo:polarimetricModes": ["Single pol (HH/VV/HV/VH)", "Dual pol", "Compact pol", "Full quad-pol"],
+          "pwmo:interferometric": {
+            "InSAR": "Phase difference between two passes; terrain height map (DEM generation)",
+            "DInSAR": "Differential InSAR; ground deformation measurement (mm accuracy)",
+            "Persistent_Scatterer_InSAR": "Long time series; infrastructure monitoring"
+          },
+          "pwmo:changeDetection": "Comparison of multi-temporal SAR images to detect changes in terrain, infrastructure, or military disposition",
+          "pwmo:applicationToStructDiff": "SAR image domain; speckle noise is multiplicative Gamma-distributed; despeckling is core preprocessing task. Connects directly to StructDiff SAR-DDPM framework.",
+          "pwmo:examples": ["JSTARS AN/APY-7 (GMTI)", "Global Hawk AN/ZPY-2 (MP-RTIP)", "Sentinel-1 (ESA)", "COSMO-SkyMed (Italy)", "TerraSAR-X (Germany)", "RISAT (India)", "Kompsat-5 (S. Korea)", "YaoGan series (China)"]
+        },
+        "GMTIRadar": {
+          "@id": "pwmo:GMTIRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Ground Moving Target Indicator (GMTI) Radar",
+          "skos:definition": "Airborne or space-based radar detecting and tracking slow-moving ground targets (vehicles, personnel) against strong ground clutter returns using Doppler processing and space-time adaptive processing (STAP).",
+          "pwmo:keyProcessing": "STAP (Space-Time Adaptive Processing) nulls clutter while preserving slow-moving target signals; minimum detectable velocity (MDV) is key metric",
+          "pwmo:MDV_ms": [0.5, 3.0],
+          "pwmo:examples": ["AN/APY-7 (JSTARS)", "ASTOR (UK)", "SENTINEL (France)", "AN/ZPY-2 (MQ-4C)"],
+          "pwmo:challengesInSAR": "Slow targets smear in SAR image; GMTI processing separates them from clutter"
+        },
+        "UASCounterRadar": {
+          "@id": "pwmo:UASCounterRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Counter-UAS Radar",
+          "skos:definition": "Radar optimized to detect, classify, and track small unmanned aircraft systems (UAS/drones) which present very low RCS, potentially fly nap-of-earth, and may operate in swarms.",
+          "pwmo:challenges": ["Very low RCS (0.001-0.01 m²)", "Low altitude (high clutter)", "Slow speed (bird-like)", "Swarm coordination", "Commercial hardware", "Rapid proliferation"],
+          "pwmo:detectionApproaches": ["High-resolution micro-Doppler signature", "Multi-sensor fusion (radar+EO/IR+acoustic+RF)", "AI-based classification", "High PRF short-range modes"],
+          "pwmo:examples": ["AN/TPS-80 G/ATOR (partial)", "Dedrone RadarZero", "Squire (Leonardo)", "Spexer 500 (Hensoldt)", "AUDS (UK)", "HARPY ADAR", "3D Finder (Israel)", "FortemTech TrueView"],
+          "pwmo:frequencyBands": ["Ku-band", "Ka-band", "X-band", "W-band (millimeter wave)"]
+        },
+        "HypersonicTrackingRadar": {
+          "@id": "pwmo:HypersonicTrackingRadar",
+          "@type": "owl:Class",
+          "rdfs:label": "Hypersonic Missile Tracking Radar",
+          "skos:definition": "Radar designed to detect, track, and support intercept of hypersonic glide vehicles (HGV) and hypersonic cruise missiles traveling at Mach 5+, characterized by maneuvering flight, plasma sheath, and very short intercept timelines.",
+          "pwmo:challenges": ["Plasma sheath RF attenuation", "Extreme maneuver envelope", "Very short timelines (<5 min)", "High closing velocity requires very fast beam updates"],
+          "pwmo:programs": ["LTAMDS (USA)", "Next Generation Overhead Persistent Infrared (OPIR)", "HBTSS", "AN/TPY-2 adaptation", "Russia 77Ya6 Voronezh adaptation (claimed)"],
+          "pwmo:maturityLevel": "Active development (2020s); no confirmed fully operational system"
+        }
+      }
+    }
+  }
+}
