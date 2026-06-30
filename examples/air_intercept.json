@@ -1,6 +1,8 @@
 {
   "$comment": "PhysWorldLM Golden Reference Example — PW-WSF-1300 Example 04: Air Intercept. 1v1 beyond-visual-range air-to-air engagement between a Blue Force F-16C (Viper) and a Red Force Su-30MK (Flanker). Exercises metadata, world, environment, terrain, weather, organizations, entities (aircraft × 2, BVRAAM missile, radar, IRST, RWR, GPS, INS), assets, missions, behavior, timeline, events, renderer, and output. Canonical integration-test scenario for PhysWorldLM WorldSpec v1.0.0.",
 
+  "scene_id": "air_intercept_demo",
+
   "metadata": {
     "worldspec_version": "1.0.0",
     "scene_name":        "Air Intercept — Viper vs Flanker",
@@ -448,7 +450,7 @@
         "is_collidable": true,
         "speed_mps":     250.0,
         "altitude_m":    7500.0,
-        "heading_deg":   090.0,
+        "heading_deg":   90.0,
         "mach":          0.79,
         "g_load":        1.0,
         "radar_mode":    "track_while_scan",
