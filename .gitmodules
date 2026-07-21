@@ -1,3 +1,6 @@
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/hemasiri-15/physworldlm-frontend.git
+[submodule "pso-uav-pp"]
+	path = pso-uav-pp
+	url = https://github.com/hemasiri-15/pso-uav-pp.git
