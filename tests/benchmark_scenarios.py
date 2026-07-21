@@ -63,7 +63,7 @@ from dataclasses import dataclass, field
 from typing import Callable
 
 # ── project imports ────────────────────────────────────────────────────────────
-from models.world_spec import (
+from world_spec import (
     BoundingBox,
     Entity,
     Environment,

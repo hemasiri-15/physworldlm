@@ -47,7 +47,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from models.world_spec import (
+from world_spec import (
     WorldSpec, Entity, Environment, Interaction,
     SimulationGraph, Vec3, MATERIAL_DEFAULTS,
 )

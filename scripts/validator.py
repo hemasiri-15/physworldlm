@@ -15,7 +15,7 @@ Usage:
 
 from __future__ import annotations
 from dataclasses import dataclass, field
-from models.world_spec import WorldSpec
+from world_spec import WorldSpec
 
 
 @dataclass

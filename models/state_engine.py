@@ -89,7 +89,7 @@ import csv
 from dataclasses import dataclass, field, replace
 from typing import Optional
 
-from models.world_spec import WorldSpec, Entity, Vec3
+from world_spec import WorldSpec, Entity, Vec3
 from models.physics_encoder import PhysicsEncoder, EntityState
 from models.trajectory import Frame, Trajectory
 
@@ -103,7 +103,7 @@ class MutableEntityState:
     """
     Mutable kinematic + dynamic state for a single dynamic entity.
 
-    Unlike :class:`models.world_spec.PhysicsState` (an immutable snapshot
+    Unlike :class:`world_spec.PhysicsState` (an immutable snapshot
     used for serialization), ``MutableEntityState`` is the *working*
     representation that the integrator reads from and writes to on every
     timestep. Position, velocity, and acceleration are stored as flat
@@ -115,7 +115,7 @@ class MutableEntityState:
     Attributes
     ----------
     entity_id:
-        Identifier matching :attr:`models.world_spec.Entity.id`.
+        Identifier matching :attr:`world_spec.Entity.id`.
     mass:
         Mass in kilograms. Constant throughout the simulation.
     x, y, z:
@@ -248,7 +248,7 @@ class StateEngine:
     Parameters
     ----------
     spec:
-        A fully populated :class:`models.world_spec.WorldSpec`. The engine
+        A fully populated :class:`world_spec.WorldSpec`. The engine
         reads ``dt``, ``duration``, ``export_fps``, and ``integrator`` from
         ``spec.simulation_graph``.
 
@@ -347,7 +347,7 @@ class StateEngine:
     def _mutable_state_from_entity(entity: Entity) -> MutableEntityState:
         """
         Build a :class:`MutableEntityState` from an :class:`Entity`'s
-        initial :class:`models.world_spec.PhysicsState`.
+        initial :class:`world_spec.PhysicsState`.
 
         Acceleration is initialized to zero; it is recomputed from forces
         on the first call to :meth:`StateEngine._compute_accelerations`
@@ -569,7 +569,7 @@ class StateEngine:
         Gravitational potential energy ``PE = m · |g| · h`` in joules,
         where ``h`` is the entity's height (``y`` coordinate, metres)
         above the ``y = 0`` reference plane and ``|g|`` is the magnitude
-        of :attr:`models.world_spec.Environment.gravity`.
+        of :attr:`world_spec.Environment.gravity`.
 
         Negative heights (an entity below the reference plane) yield
         negative potential energy, which is physically consistent with the
@@ -771,7 +771,7 @@ def _self_test() -> None:
     verification (``python -m models.state_engine``) rather than as part
     of the automated test suite.
     """
-    from models.world_spec import (
+    from world_spec import (
         WorldSpec, Entity, PhysicsState, Environment,
         SimulationGraph, BoundingBox, Vec3,
     )

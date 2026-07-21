@@ -257,9 +257,9 @@ class Transform:
 
     def to_dict(self) -> dict:
         return {
-            "translation": self.translation,
-            "rotation_euler_rad": self.rotation_euler_rad,
-            "scale": self.scale,
+            "translation": list(self.translation),
+            "rotation_euler_rad": list(self.rotation_euler_rad),
+            "scale": list(self.scale),
         }
 
 

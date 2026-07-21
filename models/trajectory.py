@@ -24,7 +24,7 @@ import json
 import math
 from dataclasses import dataclass, field
 from typing import Optional
-from models.world_spec import Vec3
+from world_spec import Vec3
 
 # ─────────────────────────────────────────────
 # Frame  (one timestep snapshot for one entity)

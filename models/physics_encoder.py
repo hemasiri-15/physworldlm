@@ -38,7 +38,7 @@ from __future__ import annotations
 import math
 from typing import NamedTuple
 
-from models.world_spec import WorldSpec, Entity, Environment, Interaction
+from world_spec import WorldSpec, Entity, Environment, Interaction
 
 
 # ─────────────────────────────────────────────

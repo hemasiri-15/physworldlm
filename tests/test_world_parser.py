@@ -18,7 +18,7 @@ import math
 import pytest
 
 from models.world_parser import WorldParser
-from models.world_spec import WorldSpec
+from world_spec import WorldSpec
 
 # ─────────────────────────────────────────────
 # Fixture

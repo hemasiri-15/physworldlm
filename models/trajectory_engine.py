@@ -49,9 +49,9 @@ interface now.
 
 Interface contracts on collaborating modules
 ────────────────────────────────────────────
-``models.world_spec.WorldSpec``           — world description (entities, env, sim graph)
-``models.world_spec.Vec3``                — 3-component vector
-``models.world_spec.PhysicsState``        — single-instant kinematic snapshot
+``world_spec.WorldSpec``           — world description (entities, env, sim graph)
+``world_spec.Vec3``                — 3-component vector
+``world_spec.PhysicsState``        — single-instant kinematic snapshot
 ``models.state_engine.StateEngine``       — deterministic Euler/RK4 integrator
 ``models.state_engine.MutableEntityState``— working per-entity kinematic state
 ``models.temporal_world_model.TemporalWorldModel``  — learned world-evolution model
@@ -80,7 +80,7 @@ import torch.nn.functional as F
 
 # ── internal imports (contract-only; real modules must be installed) ──────────
 try:
-    from models.world_spec import WorldSpec, Entity, PhysicsState, Vec3
+    from world_spec import WorldSpec, Entity, PhysicsState, Vec3
     from models.state_engine import StateEngine, MutableEntityState
     from models.temporal_world_model import (
         TemporalWorldModel, PredictedState, TemporalOutput,
@@ -2510,7 +2510,7 @@ class TrajectoryEngine:
         Raises:
             ValueError: If ``scenario`` is not recognised.
         """
-        from models.world_spec import (
+        from world_spec import (
             WorldSpec, Entity, PhysicsState, Environment,
             SimulationGraph, BoundingBox, Vec3, Interaction,
         )
@@ -2633,7 +2633,7 @@ def main() -> None:
           f"[events={len(out_mc.events)}]")
 
     # ── sample_trajectories ───────────────────────────────────────────────────
-    from models.world_spec import (
+    from world_spec import (
         WorldSpec, Entity, PhysicsState, Environment, SimulationGraph, BoundingBox, Vec3,
     )
     e_sphere = Entity(

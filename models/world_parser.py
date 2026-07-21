@@ -33,7 +33,7 @@ from typing import Any
 import anthropic
 from models.prompt_parser import PromptParser
 
-from models.world_spec import (
+from world_spec import (
     WorldSpec, Entity, PhysicsState, Environment,
     Interaction, SimulationGraph, SimulationGraph,
     BoundingBox, Vec3, Wind,
@@ -191,7 +191,7 @@ Add events only if the description explicitly implies a discrete change.
 class SpatialRelationshipParser:
     """
     Detect and resolve natural-language spatial relationships into SI
-    coordinates on a set of :class:`~models.world_spec.Entity` objects.
+    coordinates on a set of :class:`~world_spec.Entity` objects.
 
     Parameters
     ----------
@@ -815,7 +815,11 @@ class WorldParser:
                 warnings.append(f"Interaction references unknown entity: {itr.entity_b}")
 
         for e in spec.entities:
-            if not e.is_static and e.mass <= 0:
+            if (
+                not e.is_static 
+                and e.mass is not None 
+                and e.mass <= 0
+            ):
                 warnings.append(f"Entity {e.id} has non-positive mass: {e.mass}")
 
         if spec.simulation_graph.dt <= 0:

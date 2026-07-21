@@ -31,7 +31,7 @@ from typing import Any
 
 import anthropic
 
-from models.world_spec import (
+from world_spec import (
     WorldSpec, Entity, PhysicsState, Environment,
     Interaction, SimulationGraph, SimulationGraph,
     BoundingBox, Vec3, Wind,

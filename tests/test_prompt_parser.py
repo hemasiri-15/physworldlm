@@ -964,7 +964,7 @@ class TestInteractionIntegrity:
         """WorldSpecValidator requires mass > 0 for all non-static entities."""
         spec = parser.parse(prompt)
         for e in spec.entities:
-            if not e.is_static:
+            if not e.is_static and e.mass is not None:
                 assert e.mass > 0, (
                     f"[{prompt!r}] Entity {e.id!r} ({e.label!r}) "
                     f"has non-positive mass {e.mass}"

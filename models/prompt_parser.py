@@ -66,7 +66,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Optional
 
-from models.world_spec import (
+from world_spec import (
     BoundingBox,
     Entity,
     Environment,
@@ -95,7 +95,7 @@ class _RawEntity:
     entity_type:  str                    # vehicle|projectile|object|structure|terrain
     is_static:    bool          = False
     mass_kg:      Optional[float] = None
-    material:     str           = "generic"
+    material:     Optional[str] = None
     position:     Vec3          = field(default_factory=Vec3)
     velocity:     Vec3          = field(default_factory=Vec3)
     bounding_box: BoundingBox   = field(default_factory=BoundingBox)
@@ -308,7 +308,7 @@ _SUFFIX_TO_TYPE: list[tuple[str, str]] = [
 _NUM = r"[-+]?\d+(?:\.\d+)?"
 
 _RE_SPEED = re.compile(
-    rf"({_NUM})\s*(m/s|km/h|kmh|kph|mph|ft/s|fps|ms\b)",
+    rf"({_NUM})\s*(m/s|km/h|kmh|kmph|kph|mph|ft/s|fps|ms\b)",
     re.IGNORECASE,
 )
 
@@ -375,14 +375,14 @@ _MOTION_VERBS = re.compile(
     r"drives?\s+(?:at)?|slides?\s+(?:at)?|rolls?\s+(?:at)?|"
     r"launched?\s+(?:at)?|fires?\s+(?:at)?|thrown?\s+(?:at)?|"
     r"going\s+(?:at)?|speed(?:ing)?\s+(?:at|of)?|"
-    r"velocity\s+(?:of)?)\s*" + rf"({_NUM})\s*(m/s|km/h|kmh|kph|mph|ft/s|fps)",
+    r"velocity\s+(?:of)?)\s*" + rf"({_NUM})\s*(m/s|km/h|kmph|kmh|kph|mph|ft/s|fps)",
     re.IGNORECASE,
 )
 
 # Per-entity speed pattern: "<label> moving at <speed>" or "<speed> <label>"
 _RE_ENTITY_SPEED = re.compile(
     rf"(\w+)\s+(?:moving|travelling|traveling|going|drives?|slides?)?\s*"
-    rf"(?:at|with\s+(?:a\s+)?(?:speed|velocity)\s+of)?\s*({_NUM})\s*(m/s|km/h|kmh|kph|mph|ft/s|fps)",
+    rf"(?:at|with\s+(?:a\s+)?(?:speed|velocity)\s+of)?\s*({_NUM})\s*(m/s|km/h|kmh|kmph|kph|mph|ft/s|fps)",
     re.IGNORECASE,
 )
 
@@ -394,7 +394,7 @@ def _to_ms(value: float, unit: str) -> float:
     unit = unit.lower().strip().rstrip(".")
     if unit in ("m/s", "ms", "metres/s", "meters/s", "mps"):
         return value
-    if unit in ("km/h", "kmh", "kph", "km/hr"):
+    if unit in ("km/h", "kmh", "kmph", "kph", "km/hr"):
         return kmh_to_ms(value)
     if unit in ("mph", "mi/h", "miles/h", "miles/hr"):
         return mph_to_ms(value)
@@ -437,7 +437,7 @@ def _to_kg(value: float, unit: str) -> float:
 
 class PromptParser:
     """
-    Convert a plain-English scene description into a :class:`~models.world_spec.WorldSpec`.
+    Convert a plain-English scene description into a :class:`~world_spec.WorldSpec`.
 
     This is a deterministic, rule-based parser — no LLM calls are made.
 
@@ -478,6 +478,11 @@ class PromptParser:
         text = self._normalise(prompt)
         self._warnings = []
 
+        self._known = []
+        self._derived = []
+        self._unknown = []
+        self._assumptions = []
+
         self._log(f"parsing scene_id={scene_id}")
         self._log(f"  normalised: {text[:80]!r}{'…' if len(text)>80 else ''}")
 
@@ -489,8 +494,8 @@ class PromptParser:
                     label="object",
                     entity_type="object",
                     is_static=False,
-                    mass_kg=1.0,
-                    material="generic",
+                    mass_kg=None,
+                    material="unknown",
                     bounding_box=_DEFAULT_BBOX["object"],
                     tags=["object"],
                 )
@@ -717,7 +722,7 @@ class PromptParser:
         for mat, synonyms in _MATERIAL_WORDS.items():
             if any(w.strip(".,;:") in synonyms for w in window):
                 return mat
-        return "generic"
+        return None
 
     @staticmethod
     def _build_label(words: list[str], idx: int, noun: str) -> str:
@@ -1020,6 +1025,31 @@ class PromptParser:
             return None
         try:
             speed = _to_ms(float(sm.group(1)), sm.group(2))
+
+            original_value = float(sm.group(1))
+            original_unit = sm.group(2)
+
+            speed = _to_ms(original_value, original_unit)
+
+            self._known.append({
+                "entity": entity.label,
+                "property": "speed",
+                "value": original_value,
+                "unit": original_unit,
+            })
+
+            self._derived.append({
+                "entity": entity.label,
+                "property": "velocity",
+                "value": {
+                    "x": round(speed, 4),
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "unit": "m/s",
+                "derived_from": f"{original_value} {original_unit}"
+            })
+
         except ValueError:
             return None
 
@@ -1189,18 +1219,22 @@ class PromptParser:
                 return min(max(separation / relative_speed, 2.0), 30.0)
             return 5.0
 
-        # 2e. Vehicle + distance
+        # 2e. Vehicle + explicit travel distance
         if re.search(r"\b(?:travels?|drives?|moves?|covers?)\b", text):
-            hm = _RE_HEIGHT.search(text)
+            dm = _RE_DISTANCE.search(text)
             sm = _RE_SPEED.search(text)
-            if hm and sm:
+
+            if dm and sm:
                 try:
-                    dist  = _to_metres(float(hm.group(1)), hm.group(2))
+                    dist = _to_metres(float(dm.group(1)), dm.group(2))
                     speed = _to_ms(float(sm.group(1)), sm.group(2))
+
                     if speed > 0:
                         return dist / speed * 1.1
+
                 except ValueError:
                     pass
+
 
         # 3. Default
         return 10.0
@@ -1364,14 +1398,19 @@ class PromptParser:
 
         for re_ in raw_entities:
             mat     = re_.material
+            if mat is None:
+                mat = "unknown"
+
             mat_def = MATERIAL_DEFAULTS.get(mat, MATERIAL_DEFAULTS["generic"])
 
             mass = re_.mass_kg
+
             if mass is None:
-                vol  = re_.bounding_box.volume()
-                mass = mat_def["density"] * vol
-                if mass is None or mass <= 0:
-                    mass = _DEFAULT_MASS.get(re_.entity_type, 1.0)
+                self._unknown.append({
+                    "entity": re_.label,
+                    "property": "mass",
+                    "required_for": "dynamic simulation"
+                })
 
             if re_.entity_type == "terrain":
                 mass = 0.0
@@ -1394,7 +1433,7 @@ class PromptParser:
                 label=        re_.label,
                 entity_type=  re_.entity_type,
                 is_static=    re_.is_static,
-                mass=         float(mass),
+                mass=         float(mass) if mass is not None else None,
                 material=     mat,
                 restitution=  mat_def["restitution"],
                 friction=     mat_def["friction"],
@@ -1449,6 +1488,16 @@ class PromptParser:
                     "_warnings",
                     []
                 ),
+                "reasoning": {
+
+                    "known": self._known,
+
+                    "derived": self._derived,
+
+                    "unknown": self._unknown,
+
+                    "assumptions": self._assumptions,
+                }
             },
         )
 
