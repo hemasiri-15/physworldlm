@@ -8,6 +8,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from compiler.scene_compiler import SceneCompiler
+from pathlib import Path
+
+from omniverse.omniverse_connector import OmniverseConnector
+
 from models.world_parser import WorldParser
 
 app = FastAPI()
@@ -25,12 +30,43 @@ app.add_middleware(
 
 parser = WorldParser()
 
+compiler = SceneCompiler()
+
+connector = OmniverseConnector()
 
 class Prompt(BaseModel):
     prompt: str
 
+@app.on_event("startup")
+def startup():
+    connector.initialize()
+
+@app.on_event("shutdown")
+def shutdown():
+    connector.shutdown()
 
 @app.post("/generate")
 def generate(data: Prompt):
+
+    # Parse prompt
     spec = parser.parse(data.prompt)
-    return spec.to_dict()
+
+    # Compile to USD
+    output_dir = Path("outputs")
+    output_dir.mkdir(exist_ok=True)
+
+    usd_file = output_dir / f"{spec.scene_id}.usda"
+
+    report = compiler.compile(
+        world_spec=spec,
+        output_path=usd_file,
+    )
+    connector.load_stage(usd_file)
+
+    return {
+        "status": report.status.name,
+        "scene_id": spec.scene_id,
+        "worldspec": spec.to_dict(),
+        "usd_path": str(usd_file),
+        "diagnostics": [d.to_dict() for d in report.diagnostics],
+    }
