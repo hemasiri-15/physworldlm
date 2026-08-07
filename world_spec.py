@@ -4,6 +4,13 @@ world_spec.py
 Canonical data contract for PhysWorldLM.
 Every component (parser, encoder, state engine, dataset gen) imports from here.
 All quantities are stored in SI units (kg, m, m/s, rad, Pa, K).
+
+PATCH NOTE (ontology grounding integration):
+  Added `Entity.ontology: dict` — backward-compatible (defaults to {}),
+  holds OntologyResolver output that has no dedicated Entity field
+  (parent_class, root_class, capabilities, affordances, scene_roles, etc.).
+  to_dict()/from_dict() updated to round-trip it. Everything else in this
+  file is unchanged from the original.
 """
 
 from __future__ import annotations
@@ -128,6 +135,10 @@ class Entity:
     forces:        list[dict]    = field(default_factory=list)  # applied force vectors
     constraints:   list[str]     = field(default_factory=list)  # references to other entity ids
     tags:          list[str]     = field(default_factory=list)  # semantic tags
+    ontology:      dict          = field(default_factory=dict)  # NEW: OntologyResolver output
+    # (parent_class, root_class, coarse_class, phase, mobility, size_class,
+    #  shape, mass_class, contact_type, stability, friction_class,
+    #  restitution_class, capabilities, affordances, scene_roles, _grounded)
 
     def to_dict(self) -> dict:
         return {
@@ -144,6 +155,7 @@ class Entity:
             "forces":       self.forces,
             "constraints":  self.constraints,
             "tags":         self.tags,
+            "ontology":     self.ontology,
         }
 
 
@@ -316,6 +328,7 @@ class WorldSpec:
                 forces=       ed.get("forces", []),
                 constraints=  ed.get("constraints", []),
                 tags=         ed.get("tags", []),
+                ontology=     ed.get("ontology", {}),
             ))
         env_d  = d.get("environment", {})
         env    = Environment(
