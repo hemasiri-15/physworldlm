@@ -329,24 +329,46 @@ class PhysicsValidator:
         B = self.B
         for e in spec.entities:
             eid = e.id
+            mass = e.mass if e.mass is not None else 0.0
 
             # ── Mass ──────────────────────────────────────────────────────────
             if not e.is_static:
-                if e.mass <= 0:
-                    res.error("PHYS_MASS_NONPOSITIVE",
-                              f"mass = {e.mass} kg — must be > 0", eid)
-                elif e.mass < B.MASS_MIN_KG:
-                    res.error("PHYS_MASS_BELOW_PHYSICAL_LIMIT",
-                              f"mass = {e.mass:.2e} kg — below nanogram threshold", eid)
-                elif e.mass > B.MASS_MAX_KG:
-                    res.error("PHYS_MASS_EXCEEDS_LIMIT",
-                              f"mass = {e.mass:.2e} kg — exceeds asteroid threshold", eid)
-                elif e.mass < B.MASS_WARN_LOW_KG:
-                    res.warn("PHYS_MASS_VERY_SMALL",
-                             f"mass = {e.mass:.2e} kg — unusually small", eid)
-                elif e.mass > B.MASS_WARN_HIGH_KG:
-                    res.warn("PHYS_MASS_VERY_LARGE",
-                             f"mass = {e.mass:.2e} kg — unusually large", eid)
+                if e.mass is None:
+                    res.error(
+                        "PHYS_MASS_NONPOSITIVE",
+                        "mass is missing",
+                        eid,
+                    )
+                elif mass <= 0:
+                    res.error(
+                        "PHYS_MASS_NONPOSITIVE",
+                        f"mass = {mass} kg — must be > 0",
+                        eid,
+                    )
+                elif mass < B.MASS_MIN_KG:
+                    res.error(
+                        "PHYS_MASS_BELOW_PHYSICAL_LIMIT",
+                        f"mass = {mass:.2e} kg — below nanogram threshold",
+                        eid,
+                    )
+                elif mass > B.MASS_MAX_KG:
+                    res.error(
+                        "PHYS_MASS_EXCEEDS_LIMIT",
+                        f"mass = {mass:.2e} kg — exceeds asteroid threshold",
+                        eid,
+                    )
+                elif mass < B.MASS_WARN_LOW_KG:
+                    res.warn(
+                        "PHYS_MASS_VERY_SMALL",
+                        f"mass = {mass:.2e} kg — unusually small",
+                        eid,
+                    )
+                elif mass > B.MASS_WARN_HIGH_KG:
+                    res.warn(
+                        "PHYS_MASS_VERY_LARGE",
+                        f"mass = {mass:.2e} kg — unusually large",
+                        eid,
+                    )
 
             # ── Friction ──────────────────────────────────────────────────────
             if e.friction < B.FRICTION_MIN:
@@ -407,10 +429,10 @@ class PhysicsValidator:
                              f"bounding_box.{dim_name} = {dim_val} m — larger than 1000 km", eid)
 
             # ── Density cross-check ───────────────────────────────────────────
-            if not e.is_static and e.mass > 0:
+            if not e.is_static and mass > 0:
                 vol = bb.volume()
                 if vol > 0:
-                    implied_density = e.mass / vol
+                    implied_density = mass / vol
                     mat_density     = MATERIAL_DEFAULTS.get(
                         e.material, MATERIAL_DEFAULTS["generic"]
                     )["density"]
@@ -587,8 +609,10 @@ class PhysicsValidator:
         for e in spec.entities:
             if e.is_static:
                 continue
+
+            mass = e.mass if e.mass is not None else 0.0
             spd = e.state.velocity.magnitude()
-            ke  = 0.5 * e.mass * spd ** 2
+            ke  = 0.5 * mass * spd ** 2
             total_ke += ke
             if ke > WARN_KE_JOULES:
                 res.warn(
@@ -740,6 +764,8 @@ class PhysicsValidator:
         Per-unit-mass forces (accelerations) should be ≤ 1000 m/s².
         """
         for e in spec.entities:
+            mass = e.mass if e.mass is not None else 0.0
+
             for f in e.forces:
                 vec = f.get("vector_N", {})
                 if not isinstance(vec, dict):
@@ -760,12 +786,12 @@ class PhysicsValidator:
                         )
                 else:
                     # Absolute force (N)
-                    max_plausible = e.mass * 10000  # 1000g × mass
-                    if mag > max_plausible and e.mass > 0:
+                    max_plausible = mass * 10000  # 1000g × mass
+                    if mag > max_plausible and mass > 0:
                         res.warn(
                             "PHYS_FORCE_TOO_LARGE",
                             f"force '{f.get('label','')}' = {mag:.2e} N on "
-                            f"{e.mass} kg entity — implies {mag/e.mass:.0f} m/s² (>{10000} m/s²)",
+                            f"{mass} kg entity — implies {mag/mass:.0f} m/s² (>{10000} m/s²)",
                             e.id,
                         )
 

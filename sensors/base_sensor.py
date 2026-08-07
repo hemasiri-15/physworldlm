@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Optional
 
-from sensor_types import (
+from .sensor_types import (
     CalibrationData,
     NoiseModel,
     SensorData,

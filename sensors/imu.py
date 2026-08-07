@@ -29,8 +29,8 @@ from __future__ import annotations
 import time
 from typing import Any, Optional
 
-from base_sensor import Sensor
-from sensor_types import (
+from .base_sensor import Sensor
+from .sensor_types import (
     ClockDomain,
     GaussianNoise,
     IMUReading,

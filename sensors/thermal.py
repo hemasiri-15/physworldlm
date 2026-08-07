@@ -10,8 +10,8 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from base_sensor import Sensor
-from sensor_types import GaussianNoise, SensorType, ThermalFrame
+from .base_sensor import Sensor
+from .sensor_types import GaussianNoise, SensorType, ThermalFrame
 
 __all__ = ["ThermalCamera"]
 

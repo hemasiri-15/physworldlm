@@ -86,6 +86,18 @@ from spatial_relationship_parser import SpatialRelationshipParser  # noqa: E402
 # ("split files larger than ~800-1000 lines"). See that file — the class
 # body is byte-identical to the original world_parser.py's version.
 
+from models.sensor_mention_parser import SensorMentionParser  # noqa: E402
+# NEW: deterministic sensor-mention detection (sensor_mention_parser.py).
+# Same architectural pattern as SpatialRelationshipParser — a standalone,
+# regex-based class with .apply(description, entities), run AFTER
+# PromptParser has already produced entities. Does not modify entity
+# extraction, physics extraction, interaction extraction, ontology, or
+# validation — purely additive. See that file's module docstring for the
+# full design rationale, including the one known limitation (entity
+# nouns not in PromptParser's existing vocabulary, e.g. "robot", have no
+# Entity to attach a sensor mention to — inherent to leaving entity
+# extraction unmodified, not a bug in the sensor parser).
+
 
 # ─────────────────────────────────────────────
 # Targeted LLM repair (bounded — NOT a full-scene parser)
@@ -232,6 +244,7 @@ class WorldParser:
         self.verbose = verbose
         self._prompt_parser = PromptParser()
         self._spatial_parser = SpatialRelationshipParser()
+        self._sensor_mention_parser = SensorMentionParser()
 
         ontology_resolver = None
         if entity_encoder_checkpoint:
@@ -275,6 +288,10 @@ class WorldParser:
 
         spec = self._prompt_parser.parse(description, scene_id=scene_id)
         self._spatial_parser.apply(description, spec.entities)
+
+        self._sensor_mention_parser.apply(description, spec.entities)
+        if self._sensor_mention_parser.warnings:
+            spec.metadata.setdefault("warnings", []).extend(self._sensor_mention_parser.warnings)
 
         spec, pass_results = self._compiler.compile(spec)
         for name, result in pass_results.items():

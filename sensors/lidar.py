@@ -13,8 +13,8 @@ from __future__ import annotations
 import math
 from typing import Any, Literal, Optional
 
-from base_sensor import Sensor
-from sensor_types import LidarKind, PointCloud, PointCloudFormat, SensorType
+from .base_sensor import Sensor
+from .sensor_types import LidarKind, PointCloud, PointCloudFormat, SensorType
 
 __all__ = ["Lidar"]
 

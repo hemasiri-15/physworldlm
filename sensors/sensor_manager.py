@@ -25,17 +25,17 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Optional, TYPE_CHECKING
 
-from base_sensor import Sensor, SensorHealth
-from sensor_types import SensorData, SensorStatus, SensorType, Transform6DoF
+from .base_sensor import Sensor, SensorHealth
+from .sensor_types import SensorData, SensorStatus, SensorType, Transform6DoF
 
 if TYPE_CHECKING:
-    from camera import Camera
-    from depth_camera import DepthCamera
-    from gps import Gps
-    from imu import Imu
-    from lidar import Lidar
-    from radar import Radar
-    from thermal import ThermalCamera
+    from .camera import Camera
+    from .depth_camera import DepthCamera
+    from .gps import Gps
+    from .imu import Imu
+    from .lidar import Lidar
+    from .radar import Radar
+    from .thermal import ThermalCamera
 
 __all__ = [
     "SensorManagerError",
@@ -78,13 +78,13 @@ def _default_sensor_classes() -> dict[str, type[Sensor]]:
     """Lazily import concrete sensor classes so `SensorManager` can be
     imported (and used purely as a container for externally-constructed
     `Sensor`s) without pulling in every concrete sensor module."""
-    from camera import Camera
-    from depth_camera import DepthCamera
-    from gps import Gps
-    from imu import Imu
-    from lidar import Lidar
-    from radar import Radar
-    from thermal import ThermalCamera
+    from .camera import Camera
+    from .depth_camera import DepthCamera
+    from .gps import Gps
+    from .imu import Imu
+    from .lidar import Lidar
+    from .radar import Radar
+    from .thermal import ThermalCamera
 
     return {
         SensorType.CAMERA.value: Camera,

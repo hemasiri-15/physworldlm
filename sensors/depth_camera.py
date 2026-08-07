@@ -11,8 +11,8 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from base_sensor import Sensor
-from sensor_types import (
+from .base_sensor import Sensor
+from .sensor_types import (
     DepthFrame,
     PointCloud,
     PointCloudFormat,

@@ -34,8 +34,8 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Optional
 
-from base_sensor import Sensor
-from sensor_types import CoordinateFrame, CoordinateTransformer, SensorType, Vec3
+from .base_sensor import Sensor
+from .sensor_types import CoordinateFrame, CoordinateTransformer, SensorType, Vec3
 
 __all__ = ["Gps", "GNSSConstellation", "GNSSFrequencyBand", "FixQuality", "GPSReading"]
 
