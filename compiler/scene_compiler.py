@@ -565,9 +565,14 @@ class SensorBuilder:
         manager = SensorManager()
         context.sensor_manager = manager  # survives past this compile() via CompilationReport
         built = 0
+
+        print("ENTERED SENSOR BUILDER")
+        print("Sensor list:", context.world_spec.all_sensors())
+
         seen_keys: set = set()  # (entity_id, sensor_name) — duplicate detection
 
         for entity, spec in context.world_spec.all_sensors():
+            print("LOOP:", entity.id, spec.sensor_type, spec.name)
             dedup_key = (entity.id, spec.name)
             if dedup_key in seen_keys:
                 context.warning(
@@ -598,6 +603,8 @@ class SensorBuilder:
                     entity_ref=entity.id,
                 )
                 params.pop(key)
+                print("LOOP:", entity.id, spec.sensor_type, spec.name)
+                print("BEFORE CREATE")
 
             try:
                 sensor = manager.create(
@@ -607,6 +614,10 @@ class SensorBuilder:
                     enabled=spec.enabled,
                     **params,
                 )
+
+                print("AFTER CREATE")
+                print("CREATED:", sensor.sensor_id)
+
             except Exception as exc:  # noqa: BLE001
                 # DELIBERATELY broad, not narrowed to guessed exception
                 # types: sensor_types.py's real exception hierarchy is
@@ -620,6 +631,10 @@ class SensorBuilder:
                 # against a GUESSED hierarchy would risk silently letting
                 # a real construction failure crash compilation instead
                 # of being caught here.
+
+                print("CREATE FAILED:", repr(exc))
+                raise
+
                 context.warning(
                     f"Could not construct sensor '{spec.name}' (type='{spec.sensor_type}') "
                     f"for entity '{entity.id}': {exc}",
@@ -830,6 +845,12 @@ class SceneCompiler:
     def compile(self, world_spec: WorldSpec, output_path) -> CompilationReport:
         output_path = Path(output_path)
         context = CompilationContext(world_spec=world_spec, config=self.config, builder_registry=self.registry)
+
+        print("===== BEFORE SENSOR BUILDER =====")
+        print("WorldSpec id:", id(context.world_spec))
+        print("Sensors:", context.world_spec.all_sensors())
+        print("===============================")
+
         try:
             self._run_stage(context, CompilationStage.VALIDATE_WORLD_SPEC, self._stage_validate_world_spec)
             self._run_stage(context, CompilationStage.CREATE_CONTEXT, lambda ctx: None)
