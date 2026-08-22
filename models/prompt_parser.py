@@ -204,7 +204,6 @@ ENTITY_ALIASES: dict[str, set[str]] = {
         "ball", "balls", "sphere", "spheres",
         "cube", "cubes", "block", "blocks",
         "box", "boxes", "rock", "rocks",
-        "mass", "masses", "weight", "weights",
         "object", "objects", "particle", "particles",
         "body", "bodies", "disc", "discs", "disk", "disks",
         "cylinder", "cylinders", "ring", "rings",
@@ -981,55 +980,80 @@ class PromptParser:
             return
 
         # ── Multi-entity velocity assignment ──────────────────────────────
-        # For each dynamic entity look for an associated speed near it in the text.
+        # Explicit stationary state always takes precedence over a shared
+        #/global speed. This prevents:
+        #
+        #   "a car is moving at 60 km/h and a ball is stationary"
+        #
+        # from incorrectly assigning 60 km/h to the ball.
         for entity in dynamic:
-            entity_speed  = self._find_entity_speed(text, entity)
+            half_h = entity.bounding_box.height / 2.0
+            entity.position = Vec3(0.0, half_h, 0.0)
+
+            if self._is_stationary_in_context(text, entity.label):
+                entity.velocity = Vec3(0.0, 0.0, 0.0)
+                continue
+
+            entity_speed = self._find_entity_speed(text, entity)
+
             if entity_speed is not None:
-                half_h = entity.bounding_box.height / 2.0
-                entity.position = Vec3(0.0, half_h, 0.0)
                 entity.velocity = Vec3(entity_speed, 0.0, 0.0)
-            elif is_forward and global_speed is not None:
-                # Assign global speed to all dynamic entities that have no
-                # dedicated speed unless marked "stationary"
-                if not self._is_stationary_in_context(text, entity.label):
-                    half_h = entity.bounding_box.height / 2.0
-                    entity.position = Vec3(0.0, half_h, 0.0)
-                    entity.velocity = Vec3(global_speed, 0.0, 0.0)
             else:
-                half_h = entity.bounding_box.height / 2.0
-                entity.position = Vec3(0.0, half_h, 0.0)
                 entity.velocity = Vec3(0.0, 0.0, 0.0)
 
     def _find_entity_speed(self, text: str, entity: _RawEntity) -> Optional[float]:
-        """
-        Search for a speed phrase within ±100 characters of the entity label
-        in the text.  Returns speed in m/s, or None if not found.
+        """Return the speed explicitly associated with ``entity``.
 
-        Also applies directional sign:
-          "moving west at 10 m/s" → -10 m/s
+        Handles both coordinated and independently specified motion:
+
+            "a car and a truck are moving at 60 km/h"
+                -> both receive 60 km/h
+
+            "a car is moving at 20 km/h while a truck is moving at 80 km/h"
+                -> car receives 20 km/h, truck receives 80 km/h
+
+        A speed from one entity's clause must never leak into another
+        entity's independent clause.
         """
         label = entity.label.lower()
-        # Find occurrence of label in text
-        match = re.search(re.escape(label), text)
-        if match is None:
+
+        # Keep conjunctions that represent shared predicates inside the
+        # same clause, but split independent predicates.
+        clauses = re.split(
+            r"\s*(?:[.;]|\bwhile\b|\bwhereas\b)\s*",
+            text,
+            flags=re.IGNORECASE,
+        )
+
+        entity_clauses = [
+            clause
+            for clause in clauses
+            if re.search(
+                rf"\b{re.escape(label)}\b",
+                clause,
+                re.IGNORECASE,
+            )
+        ]
+
+        if not entity_clauses:
             return None
-        centre = match.start()
-        window = text[max(0, centre - 100): centre + 150]
 
-        # Check for "stationary" / "at rest" near this entity
-        #if re.search(r"\b(?:stationary|at\s+rest|standing\s+still|stopped)\b", window):
-        #    return 0.0  # explicitly zero
+        for clause in entity_clauses:
+            # Find every speed in the clause.
+            speeds = list(_RE_SPEED.finditer(clause))
+            if not speeds:
+                continue
 
-        sm = _RE_SPEED.search(window)
-        if sm is None:
-            return None
-        try:
-            speed = _to_ms(float(sm.group(1)), sm.group(2))
+            # If the clause contains multiple entities with one shared
+            # predicate, the speed is intentionally shared.
+            sm = speeds[0]
 
-            original_value = float(sm.group(1))
-            original_unit = sm.group(2)
-
-            speed = _to_ms(original_value, original_unit)
+            try:
+                original_value = float(sm.group(1))
+                original_unit = sm.group(2)
+                speed = _to_ms(original_value, original_unit)
+            except ValueError:
+                continue
 
             self._known.append({
                 "entity": entity.label,
@@ -1044,35 +1068,84 @@ class PromptParser:
                 "value": {
                     "x": round(speed, 4),
                     "y": 0.0,
-                    "z": 0.0
+                    "z": 0.0,
                 },
                 "unit": "m/s",
-                "derived_from": f"{original_value} {original_unit}"
+                "derived_from": f"{original_value} {original_unit}",
             })
 
-        except ValueError:
-            return None
+            # Direction belongs to the same clause.
+            for direction, sign in _DIRECTION_SIGN.items():
+                if re.search(
+                    rf"\b{direction}\b",
+                    clause,
+                    re.IGNORECASE,
+                ):
+                    speed *= sign
+                    break
 
-        # Apply direction sign
-        for direction, sign in _DIRECTION_SIGN.items():
-            if re.search(rf"\b{direction}\b", window, re.IGNORECASE):
-                speed *= sign
-                break
+            return speed
 
-        return speed
+        return None
 
     @staticmethod
     def _is_stationary_in_context(text: str, label: str) -> bool:
-        """Return True if the entity is described as stationary."""
+        """Return True when ``label`` is explicitly described as stationary.
+
+        The stationary qualifier must belong to the entity itself.  A
+        neighboring entity's state must not leak across predicates, e.g.
+
+            "a car moving at 20 m/s hits a stationary wall"
+
+        means the wall is stationary, not the car.
+        """
         label = label.lower()
-        m = re.search(re.escape(label), text)
-        if m is None:
-            return False
-        window = text[max(0, m.start() - 60): m.start() + 80]
-        return bool(re.search(
-            r"\b(?:stationary|at\s+rest|standing\s+still|stopped|parked)\b",
-            window,
+
+        # Find every occurrence of the entity label.
+        matches = list(re.finditer(
+            rf"\b{re.escape(label)}\b",
+            text,
+            re.IGNORECASE,
         ))
+
+        if not matches:
+            return False
+
+        stationary_pattern = re.compile(
+            r"\b(?:stationary|at\s+rest|standing\s+still|stopped|parked)\b",
+            re.IGNORECASE,
+        )
+
+        # Predicates that introduce a new entity/state relationship.
+        boundary_pattern = re.compile(
+            r"\b(?:and|while|but|whereas|hits?|strikes?|collides?|"
+            r"crashes?|bumps?|pushes?|pulls?|chases?|follows?)\b"
+            r"|[.;]",
+            re.IGNORECASE,
+        )
+
+        for match in matches:
+            before = text[:match.start()]
+            after = text[match.end():]
+
+            # Look backwards only until the previous predicate/conjunction.
+            previous = list(boundary_pattern.finditer(before))
+            left = previous[-1].end() if previous else 0
+
+            # Look forwards only until the next predicate/conjunction.
+            next_match = boundary_pattern.search(after)
+            right = (
+                match.end() + next_match.start()
+                if next_match
+                else len(text)
+            )
+
+            local_context = text[left:right]
+
+            if stationary_pattern.search(local_context):
+                return True
+
+        return False
 
     # ── environment ───────────────────────────────────────────────────────────
 

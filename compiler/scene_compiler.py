@@ -402,13 +402,50 @@ class EntityBuilder:
 
     def build(self, context: CompilationContext) -> None:
         root = context.scene_graph.root
-        entities_group = root.add_child(SceneNode(name="Entities", node_type=NodeType.ENTITIES_GROUP))
+        entities_group = root.add_child(
+            SceneNode(name="Entities", node_type=NodeType.ENTITIES_GROUP)
+        )
+
         for entity in context.world_spec.entities:
-            node = SceneNode(name=entity.label or entity.id, node_type=NodeType.ENTITY, node_uuid=self._stable_uuid(entity.id) if context.config.deterministic else str(uuid.uuid4()))
-            node.metadata.update({"world_spec_id": entity.id, "entity_type": entity.entity_type, "is_static": entity.is_static, "tags": list(entity.tags)})
+            node = SceneNode(
+                name=entity.label or entity.id,
+                node_type=NodeType.ENTITY,
+                node_uuid=(
+                    self._stable_uuid(entity.id)
+                    if context.config.deterministic
+                    else str(uuid.uuid4())
+                ),
+            )
+
+            node.metadata.update(
+                {
+                    "world_spec_id": entity.id,
+                    "entity_type": entity.entity_type,
+                    "is_static": entity.is_static,
+                    "tags": list(entity.tags),
+                }
+            )
+
             node.components["entity"] = entity.to_dict()
+
+            # Preserve asset references resolved by AssetResolver.
+            asset_refs = []
+            for tag in entity.tags:
+                if tag.startswith(AssetResolver.ASSET_TAG_PREFIX):
+                    ref = tag[len(AssetResolver.ASSET_TAG_PREFIX):]
+                    asset_refs.append(
+                        {
+                            "reference": ref,
+                            "path": str(context.asset_registry.get(ref, ref)),
+                        }
+                    )
+
+            if asset_refs:
+                node.components["assets"] = asset_refs
+
             entities_group.add_child(node)
             context.entity_node_index[entity.id] = node
+
         context.statistics.entity_count = len(context.world_spec.entities)
 
     @staticmethod

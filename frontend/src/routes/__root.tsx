@@ -78,24 +78,47 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "PhysWorldLM — Physics-Aware Conversational World Editor" },
-      { name: "description", content: "Transform natural language into structured WorldSpecs, OpenUSD scenes, planners, and NVIDIA Omniverse environments." },
+      {
+        name: "description",
+        content:
+          "Transform natural language into structured WorldSpecs, OpenUSD scenes, planners, and NVIDIA Omniverse environments.",
+      },
       { name: "author", content: "PhysWorldLM" },
       { property: "og:title", content: "PhysWorldLM — Physics-Aware Conversational World Editor" },
-      { property: "og:description", content: "Transform natural language into structured WorldSpecs, OpenUSD scenes, planners, and NVIDIA Omniverse environments." },
+      {
+        property: "og:description",
+        content:
+          "Transform natural language into structured WorldSpecs, OpenUSD scenes, planners, and NVIDIA Omniverse environments.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "PhysWorldLM — Physics-Aware Conversational World Editor" },
-      { name: "twitter:description", content: "Transform natural language into structured WorldSpecs, OpenUSD scenes, planners, and NVIDIA Omniverse environments." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dbe13ba2-ff22-4893-8e77-aa344df5e437/id-preview-fe83ceb1--212967d5-2ed5-4d1a-a965-e50453f0e425.lovable.app-1784483483193.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dbe13ba2-ff22-4893-8e77-aa344df5e437/id-preview-fe83ceb1--212967d5-2ed5-4d1a-a965-e50453f0e425.lovable.app-1784483483193.png" },
+      {
+        name: "twitter:description",
+        content:
+          "Transform natural language into structured WorldSpecs, OpenUSD scenes, planners, and NVIDIA Omniverse environments.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dbe13ba2-ff22-4893-8e77-aa344df5e437/id-preview-fe83ceb1--212967d5-2ed5-4d1a-a965-e50453f0e425.lovable.app-1784483483193.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dbe13ba2-ff22-4893-8e77-aa344df5e437/id-preview-fe83ceb1--212967d5-2ed5-4d1a-a965-e50453f0e425.lovable.app-1784483483193.png",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+      },
     ],
   }),
   shellComponent: RootShell,

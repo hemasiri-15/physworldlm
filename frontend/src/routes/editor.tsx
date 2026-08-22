@@ -185,9 +185,14 @@ const SAMPLE_SPEC = `{
 
 type StageStatus = "done" | "active" | "pending";
 
+type WorldSpecResponse = {
+  usd_path?: string;
+  [key: string]: unknown;
+};
+
 function Editor() {
   const [prompt, setPrompt] = useState(EXAMPLE_CHIPS[0].prompt);
-  const [worldSpec, setWorldSpec] = useState<any>(null);
+  const [worldSpec, setWorldSpec] = useState<WorldSpecResponse | null>(null);
   const [tab, setTab] = useState<TabId>("mission");
   const [activeStage, setActiveStage] = useState(5); // Scene Compiler by default
   const [generating, setGenerating] = useState(false);
@@ -207,53 +212,47 @@ function Editor() {
   }, []);
 
   const handleGenerate = async () => {
-      console.log("Generate button clicked!");
+    console.log("Generate button clicked!");
 
-      setCompleted(false);
-      setGenerating(true);
+    setCompleted(false);
+    setGenerating(true);
 
-      // Reset pipeline
+    // Reset pipeline
+    setActiveStage(0);
+
+    try {
+      // Natural Language
+      setActiveStage(1);
+
+      const result = await generateWorld(prompt);
+
+      console.log(result);
+
+      // Backend finished successfully
+      setWorldSpec(result);
+
+      // Complete all stages
+      setActiveStage(PIPELINE.length - 1);
+
+      setCompleted(true);
+
+      setTimeout(() => {
+        setCompleted(false);
+      }, 3000);
+    } catch (err) {
+      console.error("Generation failed:", err);
+
+      alert("Failed to generate WorldSpec.\n\nMake sure the FastAPI server is running.");
+
       setActiveStage(0);
-
-      try {
-          // Natural Language
-          setActiveStage(1);
-
-          const result = await generateWorld(prompt);
-
-          console.log(result);
-
-          // Backend finished successfully
-          setWorldSpec(result);
-
-          // Complete all stages
-          setActiveStage(PIPELINE.length - 1);
-
-          setCompleted(true);
-
-          setTimeout(() => {
-              setCompleted(false);
-          }, 3000);
-
-      } catch (err) {
-          console.error("Generation failed:", err);
-
-          alert(
-              "Failed to generate WorldSpec.\n\nMake sure the FastAPI server is running."
-          );
-
-          setActiveStage(0);
-
-      } finally {
-          setGenerating(false);
-      }
+    } finally {
+      setGenerating(false);
+    }
   };
 
   const stageStatuses: StageStatus[] = useMemo(
     () =>
-    PIPELINE.map((_, i) =>
-        i < activeStage ? "done" : i === activeStage ? "active" : "pending",
-      ),
+      PIPELINE.map((_, i) => (i < activeStage ? "done" : i === activeStage ? "active" : "pending")),
     [activeStage],
   );
 
@@ -269,7 +268,7 @@ function Editor() {
           setTab={setTab}
           generating={generating}
           completed={completed}
-          onGenerate={handleGenerate}	
+          onGenerate={handleGenerate}
           stageStatuses={stageStatuses}
           textareaRef={textareaRef}
         />
@@ -295,9 +294,7 @@ function BackgroundFX() {
 
 function Nav() {
   return (
-    <header
-      className="sticky top-0 z-40 bg-black text-white"
-    >
+    <header className="sticky top-0 z-40 bg-black text-white">
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 py-4 md:px-6">
         <a href="/" className="flex items-center gap-2.5 text-white">
           <div
@@ -336,13 +333,7 @@ function Nav() {
   );
 }
 
-function NavLink({
-  children,
-  icon,
-}: {
-  children: React.ReactNode;
-  icon: React.ReactNode;
-}) {
+function NavLink({ children, icon }: { children: React.ReactNode; icon: React.ReactNode }) {
   return (
     <a
       href="#"
@@ -364,8 +355,8 @@ function Hero() {
       </h1>
       <p className="mx-auto mt-6 max-w-2xl text-balance text-base leading-relaxed text-muted-foreground md:text-lg">
         Transform natural language into structured{" "}
-        <span className="font-mono text-foreground">WorldSpecs</span>, simulation-ready
-        OpenUSD scenes, planners, and NVIDIA Omniverse environments.
+        <span className="font-mono text-foreground">WorldSpecs</span>, simulation-ready OpenUSD
+        scenes, planners, and NVIDIA Omniverse environments.
       </p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <a
@@ -495,9 +486,7 @@ function PromptEditor({
                 key={id}
                 onClick={() => setTab(id)}
                 className={`relative flex items-center gap-1.5 rounded-t-lg px-3 py-2 text-xs transition-colors ${
-                  active
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                  active ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -694,10 +683,7 @@ function StatusBadge({ tone, label }: { tone: string; label: string }) {
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-wider ${map[tone]}`}
     >
-      <span
-        className="h-1.5 w-1.5 rounded-full"
-        style={{ background: "currentColor" }}
-      />
+      <span className="h-1.5 w-1.5 rounded-full" style={{ background: "currentColor" }} />
       {label}
     </span>
   );
@@ -771,10 +757,8 @@ function PipelineProgressCard({
 }) {
   const doneCount = stageStatuses.filter((s) => s === "done").length;
   const pct = completed
-  ? 100
-  : Math.round(
-      ((doneCount + (generating ? 0.5 : 0)) / PIPELINE.length) * 100
-    );
+    ? 100
+    : Math.round(((doneCount + (generating ? 0.5 : 0)) / PIPELINE.length) * 100);
   return (
     <div id="pipeline" className="glass rounded-2xl p-5">
       <div className="mb-4 flex items-center justify-between">
@@ -796,17 +780,12 @@ function PipelineProgressCard({
       </div>
       <ol className="space-y-2">
         {PIPELINE.map((s, i) => (
-          <li
-            key={s.id}
-            className="flex items-center justify-between font-mono text-[11px]"
-          >
+          <li key={s.id} className="flex items-center justify-between font-mono text-[11px]">
             <div className="flex items-center gap-2">
               <StepDot status={stageStatuses[i]} />
               <span
                 className={
-                  stageStatuses[i] === "pending"
-                    ? "text-muted-foreground"
-                    : "text-foreground"
+                  stageStatuses[i] === "pending" ? "text-muted-foreground" : "text-foreground"
                 }
               >
                 {s.name}
@@ -845,16 +824,10 @@ function StepDot({ status }: { status: StageStatus }) {
 
 /* ────────────────────────────── spec viewer ────────────────────────────── */
 
-function SpecViewer({
-  worldSpec,
-}: {
-  worldSpec: any;
-}) {
+function SpecViewer({ worldSpec }: { worldSpec: WorldSpecResponse | null }) {
   const [expanded, setExpanded] = useState(true);
   const [copied, setCopied] = useState(false);
-  const jsonText = worldSpec
-    ? JSON.stringify(worldSpec, null, 2)
-    : SAMPLE_SPEC;
+  const jsonText = worldSpec ? JSON.stringify(worldSpec, null, 2) : SAMPLE_SPEC;
 
   const lines = jsonText.split("\n");
 
@@ -912,9 +885,7 @@ function SpecViewer({
             <pre className="grid grid-cols-[auto_1fr] gap-x-4 p-5 font-mono text-[12.5px] leading-6">
               {lines.map((line, i) => (
                 <div key={i} className="contents">
-                  <span className="select-none text-right text-muted-foreground/50">
-                    {i + 1}
-                  </span>
+                  <span className="select-none text-right text-muted-foreground/50">{i + 1}</span>
                   <code
                     className="whitespace-pre"
                     dangerouslySetInnerHTML={{ __html: highlight(line) }}
@@ -951,16 +922,12 @@ function IconAction({
 
 function highlight(line: string) {
   return line
-    .replace(
-      /(&|<|>)/g,
-      (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m] || m,
-    )
-    .replace(/(\"[^\"]+\")(\s*:)/g, '<span style="color:oklch(0.4 0.15 260)">$1</span>$2')
-    .replace(/:\s*(\"[^\"]*\")/g, ': <span style="color:oklch(0.45 0.15 150)">$1</span>')
+    .replace(/(&|<|>)/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[m] || m)
+    .replace(/("[^"]+")(\s*:)/g, '<span style="color:oklch(0.4 0.15 260)">$1</span>$2')
+    .replace(/:\s*("[^"]*")/g, ': <span style="color:oklch(0.45 0.15 150)">$1</span>')
     .replace(/:\s*(-?\d+\.?\d*)/g, ': <span style="color:oklch(0.5 0.2 25)">$1</span>')
     .replace(/\b(true|false|null)\b/g, '<span style="color:oklch(0.4 0.2 295)">$1</span>');
 }
-
 
 /* ────────────────────────────── overlays ────────────────────────────── */
 
@@ -987,16 +954,13 @@ function SuccessToast({ show }: { show: boolean }) {
   );
 }
 
-
 /* ────────────────────────────── footer ────────────────────────────── */
 
 function Footer() {
   return (
     <footer className="border-t border-white/5 py-8">
       <div className="mx-auto flex max-w-[1400px] flex-col items-center justify-between gap-3 px-6 text-xs text-muted-foreground md:flex-row">
-        <div className="font-mono">
-          © 2026 PhysWorldLM Research · alpine build 4.2.1
-        </div>
+        <div className="font-mono">© 2026 PhysWorldLM Research · alpine build 4.2.1</div>
         <div className="flex items-center gap-4 font-mono">
           <span>compiled with OpenUSD 24.11</span>
           <span className="opacity-40">·</span>
