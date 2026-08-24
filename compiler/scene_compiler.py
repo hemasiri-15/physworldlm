@@ -526,7 +526,20 @@ class PhysicsBuilder:
             if entity_node is None:
                 continue
             body_node = SceneNode(name=f"{entity_node.name}_physics", node_type=NodeType.PHYSICS_BODY)
-            body_node.components["physics_body"] = {"body_type": "static" if entity.is_static else "dynamic", "mass_kg": entity.mass, "restitution": entity.restitution, "friction": entity.friction, "forces": entity.forces, "constraints": entity.constraints}
+            velocity = entity.state.velocity
+            body_node.components["physics_body"] = {
+                "body_type": "static" if entity.is_static else "dynamic",
+                "mass_kg": entity.mass,
+                "restitution": entity.restitution,
+                "friction": entity.friction,
+                "forces": entity.forces,
+                "constraints": entity.constraints,
+                "velocity": {
+                    "x": velocity.x,
+                    "y": velocity.y,
+                    "z": velocity.z,
+                },
+            }
             physics_group.add_child(body_node)
             entity_node.components["physics_ref"] = body_node.node_uuid
 
@@ -603,13 +616,10 @@ class SensorBuilder:
         context.sensor_manager = manager  # survives past this compile() via CompilationReport
         built = 0
 
-        print("ENTERED SENSOR BUILDER")
-        print("Sensor list:", context.world_spec.all_sensors())
 
         seen_keys: set = set()  # (entity_id, sensor_name) — duplicate detection
 
         for entity, spec in context.world_spec.all_sensors():
-            print("LOOP:", entity.id, spec.sensor_type, spec.name)
             dedup_key = (entity.id, spec.name)
             if dedup_key in seen_keys:
                 context.warning(
@@ -640,9 +650,7 @@ class SensorBuilder:
                     entity_ref=entity.id,
                 )
                 params.pop(key)
-                print("LOOP:", entity.id, spec.sensor_type, spec.name)
-                print("BEFORE CREATE")
-
+    
             try:
                 sensor = manager.create(
                     spec.sensor_type,
@@ -652,8 +660,6 @@ class SensorBuilder:
                     **params,
                 )
 
-                print("AFTER CREATE")
-                print("CREATED:", sensor.sensor_id)
 
             except Exception as exc:  # noqa: BLE001
                 # DELIBERATELY broad, not narrowed to guessed exception
@@ -668,9 +674,6 @@ class SensorBuilder:
                 # against a GUESSED hierarchy would risk silently letting
                 # a real construction failure crash compilation instead
                 # of being caught here.
-
-                print("CREATE FAILED:", repr(exc))
-                raise
 
                 context.warning(
                     f"Could not construct sensor '{spec.name}' (type='{spec.sensor_type}') "
@@ -772,103 +775,371 @@ class USDAsciiExporter(Exporter):
     name = "usd_ascii_exporter"
 
     def export(self, scene_graph, output_path, context):
+        output_path = Path(output_path)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Prefer the installed USD runtime when available.
+        # The application environment may expose USD through NVIDIA Kit
+        # rather than the project's Python virtualenv.
         try:
-            from pxr import Usd, UsdGeom
-            return self._export_with_pxr(scene_graph, output_path, Usd, UsdGeom)
+            from pxr import Usd, UsdGeom, UsdPhysics
         except ImportError:
             return self._export_manual(scene_graph, output_path, context)
 
-    # ── NEW: sensor component flattening (shared by both export paths) ──
-    #
-    # SensorBuilder already attaches the sensor's full, backend-agnostic
-    # config to node.components["sensor"] (whatever sensor.serialize()
-    # returned — resolution, fov_deg, range, noise model, calibration,
-    # whatever fields exist there, unknown to this exporter and not
-    # duplicated here). This helper only FLATTENS that existing dict into
-    # USD-attribute-safe string values; it never re-derives or
-    # re-instantiates anything sensor-specific — no new sensor logic, no
-    # Isaac Sim/PhysX APIs, just USD custom-attribute authoring.
-    #
-    # Nested dict/list values (e.g. a noise model sub-dict) are
-    # JSON-encoded into a single string attribute rather than guessed at
-    # field-by-field, since this exporter has no knowledge of what shape
-    # sensor.serialize() actually returns for any given sensor type.
+        return self._export_with_pxr(
+            scene_graph,
+            output_path,
+            Usd,
+            UsdGeom,
+            UsdPhysics,
+        )
+
     @staticmethod
     def _sensor_custom_data(node) -> dict:
         if node.node_type is not NodeType.SENSOR:
             return {}
+
         sensor_data = node.components.get("sensor")
         if not isinstance(sensor_data, dict):
             return {}
+
+        import json
+
         flattened = {}
         for key, value in sensor_data.items():
             if isinstance(value, (dict, list)):
-                import json as _json
-                flattened[f"sensor:{key}"] = _json.dumps(value)
+                flattened[f"sensor:{key}"] = json.dumps(
+                    value,
+                    separators=(",", ":"),
+                )
             else:
                 flattened[f"sensor:{key}"] = value
+
         return flattened
 
-    def _export_with_pxr(self, scene_graph, output_path, Usd, UsdGeom):
+    @staticmethod
+    def _physics_component(node, scene_graph):
+        ref = node.components.get("physics_ref")
+        if not ref:
+            return None
+
+        body = scene_graph.root.find_by_uuid(ref)
+        if body is None:
+            return None
+
+        data = body.components.get("physics_body")
+        return data if isinstance(data, dict) else None
+
+    @staticmethod
+    def _material_component(node, scene_graph):
+        ref = node.components.get("material_ref")
+        if not ref:
+            return None
+
+        material = scene_graph.root.find_by_uuid(ref)
+        if material is None:
+            return None
+
+        data = material.components.get("material")
+        return data if isinstance(data, dict) else None
+
+    @staticmethod
+    def _set_custom_data(prim, data):
+        for key, value in data.items():
+            try:
+                prim.SetCustomDataByKey(key, value)
+            except Exception:
+                # USD custom data is metadata, so an unsupported value
+                # must not make an otherwise valid scene fail.
+                pass
+
+    def _export_with_pxr(
+        self,
+        scene_graph,
+        output_path,
+        Usd,
+        UsdGeom,
+        UsdPhysics,
+    ):
         stage = Usd.Stage.CreateNew(str(output_path))
         UsdGeom.SetStageUpAxis(stage, UsdGeom.Tokens.y)
 
         def visit(node, parent_path):
-            prim_path = f"{parent_path}/{node._safe_name()}" if parent_path != "/" else f"/{node._safe_name()}"
+            prim_path = (
+                f"{parent_path}/{node._safe_name()}"
+                if parent_path != "/"
+                else f"/{node._safe_name()}"
+            )
+
             xform = UsdGeom.Xform.Define(stage, prim_path)
+
             t = node.transform
             xform.AddTranslateOp().Set(tuple(t.translation))
-            xform.AddRotateXYZOp().Set(tuple(r * 57.29577951308232 for r in t.rotation_euler_rad))
+            xform.AddRotateXYZOp().Set(
+                tuple(
+                    r * 57.29577951308232
+                    for r in t.rotation_euler_rad
+                )
+            )
             xform.AddScaleOp().Set(tuple(t.scale))
+
             prim = xform.GetPrim()
             prim.SetActive(node.enabled)
-            UsdGeom.Imageable(prim).MakeVisible() if node.visible else UsdGeom.Imageable(prim).MakeInvisible()
-            for key, value in node.metadata.items():
-                try:
-                    prim.SetCustomDataByKey(key, value)
-                except Exception:  # noqa: BLE001 - metadata best-effort only
-                    pass
-            # NEW: sensor component data, same best-effort custom-data
-            # mechanism already used for node.metadata above.
-            for key, value in self._sensor_custom_data(node).items():
-                try:
-                    prim.SetCustomDataByKey(key, value)
-                except Exception:  # noqa: BLE001
-                    pass
+
+            imageable = UsdGeom.Imageable(prim)
+            if node.visible:
+                imageable.MakeVisible()
+            else:
+                imageable.MakeInvisible()
+
+            self._set_custom_data(prim, node.metadata)
+            self._set_custom_data(
+                prim,
+                self._sensor_custom_data(node),
+            )
+
+            physics = self._physics_component(node, scene_graph)
+            if physics is not None:
+                self._apply_physics(
+                    prim,
+                    physics,
+                    UsdPhysics,
+                )
+
+            material = self._material_component(node, scene_graph)
+            if material is not None:
+                self._set_custom_data(
+                    prim,
+                    {
+                        "material_name": material.get("name", "unknown"),
+                        "material_density": material.get("density", 0.0),
+                        "material_restitution": material.get(
+                            "restitution", 0.5
+                        ),
+                        "material_friction": material.get(
+                            "friction", 0.5
+                        ),
+                    },
+                )
+
             for child in node.children:
                 visit(child, prim_path)
 
         visit(scene_graph.root, "/")
+
         stage.GetRootLayer().Save()
+
+        # Re-open the exact artifact we just generated. This catches
+        # malformed USD before the compiler reports success.
+        reopened = Usd.Stage.Open(str(output_path))
+        if reopened is None:
+            raise ExportError(
+                "USD exporter generated a file that USD could not reopen"
+            )
+
         return output_path
 
+    @staticmethod
+    def _apply_physics(prim, physics, UsdPhysics):
+        body_type = physics.get("body_type", "dynamic")
+
+        rigid = UsdPhysics.RigidBodyAPI.Apply(prim)
+        rigid.CreateRigidBodyEnabledAttr(
+            body_type != "static"
+        )
+
+        mass = physics.get("mass_kg")
+        if body_type != "static" and mass is not None:
+            mass_api = UsdPhysics.MassAPI.Apply(prim)
+            mass_api.CreateMassAttr(float(mass))
+
+        if "restitution" in physics or "friction" in physics:
+            material_api = UsdPhysics.MaterialAPI.Apply(prim)
+
+            if "restitution" in physics:
+                material_api.CreateRestitutionAttr(
+                    float(physics["restitution"])
+                )
+
+            if "friction" in physics:
+                friction = float(physics["friction"])
+                material_api.CreateStaticFrictionAttr(friction)
+                material_api.CreateDynamicFrictionAttr(friction)
+
+        # Preserve dynamic state in backend-neutral custom data.
+        # The authoritative values originate in WorldSpec.
+        state_metadata = {
+            "physics_body_type": body_type,
+        }
+
+        for key in (
+            "velocity",
+            "angular_velocity",
+            "acceleration",
+            "forces",
+            "constraints",
+        ):
+            if key in physics:
+                state_metadata[f"physics_{key}"] = physics[key]
+
+        for key, value in state_metadata.items():
+            try:
+                prim.SetCustomDataByKey(key, value)
+            except Exception:
+                pass
+
     def _export_manual(self, scene_graph, output_path, context):
-        lines = ['#usda 1.0', "(", '    doc = "Generated by PhysWorldLM SceneCompiler"', ")", ""]
+        import json
+
+        lines = [
+            "#usda 1.0",
+            "",
+            "(",
+            '    doc = "Generated by PhysWorldLM SceneCompiler"',
+            ")",
+            "",
+        ]
+
+        def quote(value):
+            """Serialize a customData value as a valid USDA string."""
+
+            import json
+
+            if isinstance(value, (dict, list, tuple)):
+                value = json.dumps(
+                    value,
+                    separators=(",", ":"),
+                )
+
+            value = str(value)
+            value = value.replace("\\", "\\\\")
+            value = value.replace('"', '\\"')
+            value = value.replace("\n", "\\n")
+
+            return f'"{value}"'
 
         def emit(node, indent):
             pad = "    " * indent
-            t = node.transform
-            lines.append(f'{pad}def Xform "{node._safe_name()}"')
-            lines.append(f"{pad}{{")
             inner = "    " * (indent + 1)
-            # NEW: combine metadata + sensor component data into one
-            # customData block, same mechanism, so a sensor node's data
-            # shows up right alongside every other node's metadata.
-            combined_data = dict(node.metadata)
-            combined_data.update(self._sensor_custom_data(node))
-            if combined_data:
+
+            metadata = dict(node.metadata)
+            metadata.update(self._sensor_custom_data(node))
+
+            physics = self._physics_component(node, scene_graph)
+            if physics is not None:
+                metadata["physics_body_type"] = physics.get(
+                    "body_type",
+                    "dynamic",
+                )
+
+                if physics.get("body_type") != "static":
+                    if physics.get("mass_kg") is not None:
+                        metadata["mass_kg"] = physics["mass_kg"]
+
+                if physics.get("restitution") is not None:
+                    metadata["restitution"] = physics["restitution"]
+
+                if physics.get("friction") is not None:
+                    metadata["friction"] = physics["friction"]
+
+                if physics.get("forces"):
+                    metadata["physics_forces"] = physics["forces"]
+
+                if physics.get("constraints"):
+                    metadata["physics_constraints"] = physics[
+                        "constraints"
+                    ]
+
+            material = self._material_component(node, scene_graph)
+            if material is not None:
+                metadata["material_name"] = material.get(
+                    "name",
+                    "unknown",
+                )
+                metadata["material_density"] = material.get(
+                    "density",
+                    0.0,
+                )
+                metadata["material_restitution"] = material.get(
+                    "restitution",
+                    0.5,
+                )
+                metadata["material_friction"] = material.get(
+                    "friction",
+                    0.5,
+                )
+
+            lines.append(
+                f'{pad}def Xform "{node._safe_name()}"'
+            )
+
+            if metadata:
+                lines[-1] += " ("
                 lines.append(f"{inner}customData = {{")
-                for key, value in combined_data.items():
-                    escaped = str(value).replace('"', '\\"')
-                    lines.append(f'{inner}    string {key} = "{escaped}"')
+
+                for key, value in metadata.items():
+                    safe_key = "".join(
+                        c if c.isalnum() or c == "_"
+                        else "_"
+                        for c in str(key)
+                    )
+
+                    lines.append(
+                        f"{inner}    string {safe_key} = "
+                        f"{quote(value)}"
+                    )
+
                 lines.append(f"{inner}}}")
+                lines.append(f"{pad})")
+
+            lines.append(f"{pad}{{")
+
+            t = node.transform
+
+            if tuple(t.translation) != (0.0, 0.0, 0.0):
+                lines.append(
+                    f"{inner}double3 xformOp:translate = "
+                    f"({t.translation[0]}, {t.translation[1]}, "
+                    f"{t.translation[2]})"
+                )
+
+            if tuple(t.rotation_euler_rad) != (
+                0.0,
+                0.0,
+                0.0,
+            ):
+                deg = tuple(
+                    r * 57.29577951308232
+                    for r in t.rotation_euler_rad
+                )
+                lines.append(
+                    f"{inner}float3 xformOp:rotateXYZ = "
+                    f"({deg[0]}, {deg[1]}, {deg[2]})"
+                )
+
+            if tuple(t.scale) != (1.0, 1.0, 1.0):
+                lines.append(
+                    f"{inner}float3 xformOp:scale = "
+                    f"({t.scale[0]}, {t.scale[1]}, {t.scale[2]})"
+                )
+
             for child in node.children:
                 emit(child, indent + 1)
+
             lines.append(f"{pad}}}")
 
         emit(scene_graph.root, 0)
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        output_path.write_text("\n".join(lines), encoding="utf-8")
+
+        output_path.parent.mkdir(
+            parents=True,
+            exist_ok=True,
+        )
+
+        output_path.write_text(
+            "\n".join(lines) + "\n",
+            encoding="utf-8",
+        )
+
         return output_path
 
 
@@ -882,11 +1153,6 @@ class SceneCompiler:
     def compile(self, world_spec: WorldSpec, output_path) -> CompilationReport:
         output_path = Path(output_path)
         context = CompilationContext(world_spec=world_spec, config=self.config, builder_registry=self.registry)
-
-        print("===== BEFORE SENSOR BUILDER =====")
-        print("WorldSpec id:", id(context.world_spec))
-        print("Sensors:", context.world_spec.all_sensors())
-        print("===============================")
 
         try:
             self._run_stage(context, CompilationStage.VALIDATE_WORLD_SPEC, self._stage_validate_world_spec)
