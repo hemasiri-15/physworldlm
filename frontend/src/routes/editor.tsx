@@ -203,6 +203,30 @@ function Editor() {
   const [omniverseConnected, setOmniverseConnected] = useState(false);
   const [connectingOmniverse, setConnectingOmniverse] = useState(false);
   const [completed, setCompleted] = useState(false);
+
+  const handleConnectOmniverse = async () => {
+    setConnectingOmniverse(true);
+
+    try {
+      const result = await connectOmniverse();
+
+      console.log("Omniverse connected:", result);
+
+      setOmniverseConnected(result?.state === "running");
+    } catch (err) {
+      console.error("Omniverse connection failed:", err);
+
+      alert(
+        "Failed to connect to NVIDIA Omniverse.\n\n" +
+        "Make sure the FastAPI backend is running with Omniverse enabled."
+      );
+
+      setOmniverseConnected(false);
+    } finally {
+      setConnectingOmniverse(false);
+  }
+};
+
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Ctrl+Enter shortcut.
@@ -222,7 +246,6 @@ function Editor() {
 
   try {
     const result = await connectOmniverse();
-
     console.log("Omniverse connected:", result);
 
     setOmniverseConnected(
