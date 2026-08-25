@@ -241,30 +241,6 @@ function Editor() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const handleConnectOmniverse = async () => {
-  setConnectingOmniverse(true);
-
-  try {
-    const result = await connectOmniverse();
-    console.log("Omniverse connected:", result);
-
-    setOmniverseConnected(
-      result?.state === "running"
-    );
-  } catch (err) {
-    console.error("Omniverse connection failed:", err);
-
-    alert(
-      "Failed to connect to NVIDIA Omniverse.\n\n" +
-      "Make sure the FastAPI backend is running with Omniverse enabled."
-    );
-
-    setOmniverseConnected(false);
-  } finally {
-    setConnectingOmniverse(false);
-  }
-};
-
   const handleGenerate = async () => {
     console.log("Generate button clicked!");
 
