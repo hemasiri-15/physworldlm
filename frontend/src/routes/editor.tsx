@@ -422,6 +422,9 @@ function Workspace({
   generating,
   completed,
   onGenerate,
+  onConnectOmniverse,
+  omniverseStatus,
+  connectingOmniverse,
   stageStatuses,
   textareaRef,
 }: {
@@ -432,6 +435,9 @@ function Workspace({
   generating: boolean;
   completed: boolean;
   onGenerate: () => void;
+  onConnectOmniverse: () => void;
+  omniverseStatus: string;
+  connectingOmniverse: boolean;
   stageStatuses: StageStatus[];
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
 }) {
