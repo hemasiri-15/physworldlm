@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { generateWorld } from "../lib/api";
+import {
+  generateWorld,
+  connectOmniverse,
+  getOmniverseStatus,
+} from "../lib/api";
 import {
   Sparkles,
   Github,
@@ -196,6 +200,8 @@ function Editor() {
   const [tab, setTab] = useState<TabId>("mission");
   const [activeStage, setActiveStage] = useState(5); // Scene Compiler by default
   const [generating, setGenerating] = useState(false);
+  const [omniverseConnected, setOmniverseConnected] = useState(false);
+  const [connectingOmniverse, setConnectingOmniverse] = useState(false);
   const [completed, setCompleted] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -210,6 +216,31 @@ function Editor() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  const handleConnectOmniverse = async () => {
+  setConnectingOmniverse(true);
+
+  try {
+    const result = await connectOmniverse();
+
+    console.log("Omniverse connected:", result);
+
+    setOmniverseConnected(
+      result?.state === "running"
+    );
+  } catch (err) {
+    console.error("Omniverse connection failed:", err);
+
+    alert(
+      "Failed to connect to NVIDIA Omniverse.\n\n" +
+      "Make sure the FastAPI backend is running with Omniverse enabled."
+    );
+
+    setOmniverseConnected(false);
+  } finally {
+    setConnectingOmniverse(false);
+  }
+};
 
   const handleGenerate = async () => {
     console.log("Generate button clicked!");
@@ -555,6 +586,8 @@ function PromptEditor({
               {generating ? "Composing…" : "Generate World"}
             </button>
             <button
+              onClick={handleConnectOmniverse}
+              disabled={connectingOmniverse}
               className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02]"
               style={{
                 background: "var(--gradient-primary)",
@@ -562,7 +595,11 @@ function PromptEditor({
               }}
             >
               <Network className="h-4 w-4 fill-white" />
-              Connect Omniverse
+              {connectingOmniverse
+                ? "Connecting..."
+                : omniverseConnected
+                  ? "Omniverse Connected"
+                  : "Connect Omniverse"}
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
             </button>
           </div>

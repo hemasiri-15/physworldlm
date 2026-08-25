@@ -10,29 +10,35 @@ export async function generateWorld(prompt: string) {
   });
 
   if (!response.ok) {
-    throw new Error("Generation failed");
+    const text = await response.text();
+    throw new Error(text || "Generation failed");
   }
 
-  const result = await response.json();
+  return response.json();
+}
 
-  // Once the USD is generated, immediately open it in Omniverse.
-  if (result.usd_path) {
-    const omniverseResponse = await fetch(`${API_URL}/omniverse/show`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        usd_path: result.usd_path,
-      }),
-    });
+export async function connectOmniverse() {
+  const response = await fetch(`${API_URL}/omniverse/connect`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-    if (!omniverseResponse.ok) {
-      throw new Error("USD generated, but failed to open in Omniverse");
-    }
-
-    result.omniverse = await omniverseResponse.json();
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || "Omniverse connection failed");
   }
 
-  return result;
+  return response.json();
+}
+
+export async function getOmniverseStatus() {
+  const response = await fetch(`${API_URL}/omniverse/status`);
+
+  if (!response.ok) {
+    throw new Error("Failed to get Omniverse status");
+  }
+
+  return response.json();
 }
