@@ -96,7 +96,7 @@ class KitInstallation:
     executable: Path
     root: Path
     version: Optional[str]
-
+    app_config: Optional[Path]
 
 class KitLocator:
     """Locates an Omniverse Kit executable using a fixed, ordered strategy.
@@ -168,6 +168,54 @@ class KitLocator:
         return chosen
 
     # ── internals ────────────────────────────────────────────────────
+    @staticmethod
+    def _find_app_config(executable: Path) -> Optional[Path]:
+        """Find the preferred viewport Kit application configuration."""
+        root = executable.parent
+
+        candidates = (
+            root / "apps" / "omni.app.viewport.kit",
+        )
+
+        for candidate in candidates:
+            if candidate.is_file():
+                return candidate
+
+        return None
+
+
+    #@staticmethod
+    #def _find_app_config(executable: Path) -> Optional[Path]:
+        #"""Find the preferred headless Kit application configuration."""
+        #root = executable.parent
+        #apps = root / "apps"
+
+        #candidates = (
+            #apps / "omni.app.empty.kit",
+            #apps / "omni.app.mini.kit",
+            #apps / "omni.app.viewport.kit",
+        #)
+
+        #for candidate in candidates:
+            #if candidate.is_file():
+                #return candidate
+
+        #return None
+
+    #@staticmethod
+    #def _find_app_config(executable: Path) -> Optional[Path]:
+        #"""Find the preferred viewport Kit application configuration."""
+        #root = executable.parent
+
+        #candidates = (
+            #root / "apps" / "omni.app.viewport.kit",
+        #)
+
+        #for candidate in candidates:
+            #if candidate.is_file():
+                #return candidate
+
+        #return None
 
     def _from_path(self, path: Path) -> KitInstallation:
         exe = self._resolve_executable(path)
@@ -176,7 +224,12 @@ class KitLocator:
                 f"'{path}' is not a Kit executable and no '{_KIT_EXECUTABLE_NAMES}' "
                 "was found inside it."
             )
-        return KitInstallation(executable=exe, root=exe.parent, version=self._extract_version(path))
+        return KitInstallation(
+            executable=exe,
+            root=exe.parent,
+            version=self._extract_version(path),
+            app_config=self._find_app_config(exe),
+        )
 
     def _resolve_executable(self, path: Path) -> Optional[Path]:
         """Return an executable Kit binary at or under `path`, if any."""
@@ -216,7 +269,13 @@ class KitLocator:
                     continue
                 exe = self._resolve_executable(entry)
                 if exe is not None:
-                    yield KitInstallation(executable=exe, root=exe.parent, version=self._extract_version(entry))
+                    yield KitInstallation(
+                        executable=exe,
+                        root=exe.parent,
+                        version=self._extract_version(version_entry),
+                        app_config=self._find_app_config(exe),
+                    )
+
 
     def _discover_packman(self) -> Iterator[KitInstallation]:
         """Find a bare `kit-kernel` deployment under the Packman dependency cache.
@@ -238,7 +297,10 @@ class KitLocator:
                 exe = self._resolve_executable(version_entry)
                 if exe is not None:
                     yield KitInstallation(
-                        executable=exe, root=exe.parent, version=self._extract_version(version_entry)
+                        executable=exe,
+                        root=exe.parent,
+                        version=self._extract_version(version_entry),
+                        app_config=self._find_app_config(exe),
                     )
 
     @classmethod

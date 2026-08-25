@@ -138,17 +138,45 @@ def generate(data: Prompt):
             },
         )
 
+    omniverse = None
+
+    if connector is not None:
+        try:
+            connector.show_stage(usd_file)
+            omniverse = connector.statistics()
+        except Exception as exc:
+            omniverse = {
+                "state": "error",
+                "message": str(exc),
+            }
+
     return {
         "status": report.status.name,
         "scene_id": spec.scene_id,
         "worldspec": spec.to_dict(),
         "usd_path": str(usd_file),
+        "omniverse": omniverse,
         "diagnostics": [
             diagnostic.to_dict()
             for diagnostic in report.diagnostics
         ],
     }
 
+@app.post("/omniverse/connect")
+def omniverse_connect():
+    if connector is None:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "state": "unavailable",
+                "message": "Omniverse Kit is not available in the current runtime.",
+            },
+        )
+
+    if not connector.is_running():
+        connector.launch()
+
+    return connector.statistics()
 
 @app.get("/omniverse/status")
 def omniverse_status():

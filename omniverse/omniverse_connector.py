@@ -377,12 +377,33 @@ class OmniverseConnector:
             if self._guard is not None:
                 self._guard.acquire(pid=os.getpid())
 
+            #args = [str(self._installation.executable)]
+
+            #app_config = self._installation.app_config
+            #if app_config is not None:
+                #args.append(str(app_config))
+
+            #for folder in self._ext_folders:
+                #args.extend(["--ext-folder", str(folder)])
+
+            #args.extend(self._extra_kit_args)
+
+            #if resolved_stage is not None:
+                #args.append(f"--/app/content/usdFile={resolved_stage}")
+
             args = [str(self._installation.executable)]
-            if resolved_stage is not None:
-                args.append(str(resolved_stage))
+
+            app_config = self._installation.app_config
+            if app_config is not None:
+                args.append(str(app_config))
+
             for folder in self._ext_folders:
                 args.extend(["--ext-folder", str(folder)])
+
             args.extend(self._extra_kit_args)
+
+            if resolved_stage is not None:
+                args.append(f"--/app/content/usdFile={resolved_stage}")
 
             stdout_target, stderr_target, log_path = self._open_output_targets()
 
