@@ -444,6 +444,9 @@ function Workspace({
             generating={generating}
             onGenerate={onGenerate}
             textareaRef={textareaRef}
+            onConnectOmniverse={handleConnectOmniverse}
+            omniverseConnected={omniverseConnected}
+            connectingOmniverse={connectingOmniverse}
           />
           <RecentPrompts onPick={(p) => setPrompt(p)} />
           <ExampleChips onPick={(p) => setPrompt(p)} />
@@ -489,6 +492,9 @@ function PromptEditor({
   generating,
   onGenerate,
   textareaRef,
+  onConnectOmniverse,
+  omniverseConnected,
+  connectingOmniverse,
 }: {
   prompt: string;
   setPrompt: (s: string) => void;
@@ -497,6 +503,9 @@ function PromptEditor({
   generating: boolean;
   onGenerate: () => void;
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
+  onConnectOmniverse: () => void;
+  omniverseConnected: boolean;
+  connectingOmniverse: boolean;
 }) {
   const [dragOver, setDragOver] = useState(false);
 
@@ -585,7 +594,7 @@ function PromptEditor({
               {generating ? "Composing…" : "Generate World"}
             </button>
             <button
-              onClick={handleConnectOmniverse}
+              onClick={onConnectOmniverse}
               disabled={connectingOmniverse}
               className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl px-5 py-3 text-sm font-semibold text-white transition-all hover:scale-[1.02]"
               style={{
