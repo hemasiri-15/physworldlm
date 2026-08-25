@@ -301,6 +301,9 @@ function Editor() {
           onGenerate={handleGenerate}
           stageStatuses={stageStatuses}
           textareaRef={textareaRef}
+          onConnectOmniverse={handleConnectOmniverse}
+          omniverseStatus={omniverseConnected ? "Connected" : "Disconnected"}
+          connectingOmniverse={connectingOmniverse}
         />
         <SpecViewer worldSpec={worldSpec} />
       </main>
@@ -443,10 +446,10 @@ function Workspace({
             setTab={setTab}
             generating={generating}
             onGenerate={onGenerate}
-            textareaRef={textareaRef}
-            onConnectOmniverse={handleConnectOmniverse}
-            omniverseConnected={omniverseConnected}
+            onConnectOmniverse={onConnectOmniverse}
+            omniverseConnected={omniverseConnected === "Connected"}
             connectingOmniverse={connectingOmniverse}
+            textareaRef={textareaRef}
           />
           <RecentPrompts onPick={(p) => setPrompt(p)} />
           <ExampleChips onPick={(p) => setPrompt(p)} />
