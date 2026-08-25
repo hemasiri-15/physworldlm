@@ -453,7 +453,7 @@ function Workspace({
             generating={generating}
             onGenerate={onGenerate}
             onConnectOmniverse={onConnectOmniverse}
-            omniverseConnected={omniverseConnected === "Connected"}
+            omniverseConnected={omniverseStatus === "Connected"}
             connectingOmniverse={connectingOmniverse}
             textareaRef={textareaRef}
           />
